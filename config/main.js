@@ -10,6 +10,11 @@ var config = {
     head: {
       title: 'Impactasaurus',
       titleTemplate: '%s | Impactasaurus',
+    },
+    auth: {
+      clientID: "pfKiAOUJh5r6jCxRn5vUYq7odQsjPUKf",
+      domain: "impact.eu.auth0.com",
+      scope : "openid app_metadata user_metadata"
     }
   }
 };
