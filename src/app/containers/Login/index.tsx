@@ -4,6 +4,7 @@ import * as React from 'react';
 import auth0Lock from 'auth0-lock';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
+import {saveAuth} from 'modules/auth';
 const { connect } = require('react-redux');
 
 interface IProps {
@@ -38,16 +39,14 @@ class Login extends React.Component<IProps, {}> {
       },
     });
     this.lock.show();
-    this.lock.on('authenticated', (authResult) => {
-      this.lock.getUserInfo(authResult.accessToken, (err, profile) => {
+    this.lock.on('authenticated', (authResult: auth0.Auth0DecodedHash) => {
+      this.lock.getUserInfo(authResult.accessToken, (err: auth0.Auth0Error, profile: auth0.Auth0UserProfile) => {
         if (err) {
           console.error(err);
           return;
         }
 
-        localStorage.setItem('token', authResult.idToken);
-        localStorage.setItem('refresh', authResult.refreshToken);
-        localStorage.setItem('profile', JSON.stringify(profile));
+        saveAuth(authResult, profile);
         this.props.setURL('');
       });
     });

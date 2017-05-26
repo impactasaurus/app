@@ -1,4 +1,5 @@
 import { IStars, IStarsAction } from 'models/stars';
+import { authFetch } from 'helpers/fetch';
 
 /** Action Types */
 export const GET_REQUEST: string = 'stars/GET_REQUEST';
@@ -41,15 +42,9 @@ export function getStars() {
   return (dispatch) => {
     dispatch(starsRequest());
 
-    return fetch('https://api.github.com/repos/barbar/vortigern')
+    return authFetch('https://api.github.com/repos/barbar/vortigern')
       .then((res) => {
-        if (res.ok) {
-          return res.json()
-            .then((res) => dispatch(starsSuccess(res.stargazers_count)));
-        } else {
-          return res.json()
-            .then((res) => dispatch(starsFailure(res)));
-        }
+        dispatch(starsSuccess(res.stargazers_count));
       })
       .catch((err) => dispatch(starsFailure(err)));
   };

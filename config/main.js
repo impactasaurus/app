@@ -7,6 +7,7 @@ var config = {
   karmaPort: 9876,
 
   app: {
+    api: "api.github.com",
     head: {
       title: 'Impactasaurus',
       titleTemplate: '%s | Impactasaurus',
