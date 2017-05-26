@@ -32,6 +32,7 @@ class Login extends React.Component<IProps, {}> {
     this.lock = new auth0Lock(appConfig.app.auth.clientID, appConfig.app.auth.domain, {
       autofocus: true,
       container: this.container.id,
+      allowSignUp: false,
       auth: {
         params: {
           scope: appConfig.app.auth.scope,
