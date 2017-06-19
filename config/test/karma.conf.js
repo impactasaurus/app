@@ -137,7 +137,6 @@ module.exports = function (config) {
   if (process.env.NODE_ENV === 'ci') {
     conf.autoWatch = false;
     conf.singleRun = true;
-    conf.browsers.push('Firefox');
     conf.coverageReporter.reporters.push({
       type: 'lcov',
       subdir: '.'
@@ -147,7 +146,6 @@ module.exports = function (config) {
       type: 'html',
       subdir: 'html'
     });
-    conf.browsers.push('Chrome');
   }
 
   config.set(conf);
