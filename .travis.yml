@@ -1,6 +1,8 @@
 language: node_js
 node_js:
   - "node"
+env:
+  - NODE_ENV=ci
 deploy:
   provider: s3
   access_key_id: AKIAJCHOGUGH6XDFP4GQ
