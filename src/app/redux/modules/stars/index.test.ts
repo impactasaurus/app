@@ -45,27 +45,6 @@ describe('Stars Module', () => {
           .catch((err) => done(err));
       });
 
-      /** 400 */
-      it('dispatches Failure on failed requests', (done) => {
-
-        fetchMock.mock('https://api.github.com/repos/barbar/vortigern', {
-          status: 400,
-          body: errResponse,
-        });
-
-        const expectedActions: IStarsAction[] = [
-          { type: stars.GET_REQUEST },
-          { type: stars.GET_FAILURE, payload: { message: errResponse } },
-        ];
-
-        const store = mockStore({});
-
-        store.dispatch(stars.getStars())
-          .then(() => expect(store.getActions()).to.eql(expectedActions))
-          .then(() => done())
-          .catch((err) => done(err));
-      });
-
     });
 
   });
