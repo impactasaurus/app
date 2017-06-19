@@ -8,10 +8,6 @@ const githubResponse = {
   stargazers_count: 999,
 };
 
-const errResponse = {
-  message: 'ERROR :-O',
-};
-
 /** Stargazers Module */
 describe('Stars Module', () => {
 
