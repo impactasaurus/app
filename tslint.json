@@ -25,6 +25,9 @@
     ],
     "jsx-alignment": [
       false
+    ],
+    "max-line-length": [
+      false
     ]
   }
 }

@@ -1,13 +1,15 @@
 import * as React from 'react';
 import { IndexRoute, Route } from 'react-router';
-import { App, Home, About, Counter, Stars, Login } from 'containers';
+import { App, Home, Login, Review, Conduct, Settings, SettingQuestions } from 'containers';
 
 export default (
   <Route path="/" component={App}>
     <IndexRoute component={Home} />
-    <Route path="about" component={About} />
-    <Route path="counter" component={Counter} />
-    <Route path="stars" component={Stars} />
+    <Route path="conduct" component={Conduct} />
+    <Route path="review" component={Review} />
+    <Route path="settings" component={Settings}>
+      <Route path="questions" component={SettingQuestions} />
+    </Route>
     <Route path="login" component={Login} />
   </Route>
 );

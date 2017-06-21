@@ -1,6 +1,6 @@
 .Home {
-  & li {
+  text-align: center;
+  li {
     list-style: none;
   }
-  text-align: center;
 }
