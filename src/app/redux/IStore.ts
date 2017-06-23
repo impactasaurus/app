@@ -6,4 +6,6 @@ export interface IStore {
   counter: ICounter;
   stars: IStars;
   routing: RouterState;
+  reduxAsyncConnect: any;
+  apollo: any;
 };

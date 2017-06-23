@@ -6,11 +6,12 @@ import { IStore } from './IStore';
 
 const { reducer } = require('redux-connect');
 
-const rootReducer: Redux.Reducer<IStore> = combineReducers<IStore>({
-  routing: routerReducer,
-  counter: counterReducer,
-  stars: starsReducer,
-  reduxAsyncConnect: reducer,
-});
-
-export default rootReducer;
+export default function getReducers(clientReducers: Redux.ReducersMapObject): Redux.Reducer<IStore> {
+  const internalReducers = {
+    routing: routerReducer,
+    counter: counterReducer,
+    stars: starsReducer,
+    reduxAsyncConnect: reducer,
+  };
+  return combineReducers<IStore>({...internalReducers, ...clientReducers});
+};
