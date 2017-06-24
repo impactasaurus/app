@@ -80,7 +80,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
         <p>description: {os.description}</p>
         <p>number of questions: {os.questions.length}</p>
         <button onClick={this.deleteQS(os.id)}>Delete</button>
-        <button onClick={this.navigateToOutcomeSet(os.id)}>Add Questions</button>
+        <button onClick={this.navigateToOutcomeSet(os.id)}>Edit</button>
         <p>{this.state.deleteError}</p>
       </div>
     );
