@@ -125,5 +125,5 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     );
   }
 }
-const SettingQuestions = allOutcomeSets(deleteQuestionSet(newQuestionSet(SettingQuestionsInner)));
-export { SettingQuestions }
+const OutcomeSets = allOutcomeSets(deleteQuestionSet(newQuestionSet(SettingQuestionsInner)));
+export {OutcomeSets }

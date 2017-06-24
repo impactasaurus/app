@@ -1,30 +1,54 @@
 import {gql, graphql, QueryProps} from 'react-apollo';
 import {IOutcomeSet} from 'models/outcomeSet';
+import {IDExtractor} from 'helpers/apollo';
+
+export const fragments = {
+  defaultOutcomeSet: gql`
+  fragment defaultOutcomeSet on OutcomeSet {
+    name,
+    description,
+    id,
+    questions {
+      id
+    }
+  }
+  `,
+};
+
+export const getOutcomeSet = <T>(idExtractor: IDExtractor<T>): any => {
+  return graphql<T>(gql`
+    query getOutcomeSet($id: String!) {
+      getOutcomeSet: outcomeset(id:$id) {
+        ...defaultOutcomeSet
+      }
+    }
+    ${fragments.defaultOutcomeSet}`,
+  {
+    options: (props: T) => {
+      return {
+        variables: {
+          id: idExtractor(props),
+        },
+      };
+    },
+  });
+};
 
 export const allOutcomeSets = graphql(gql`
 query allOutcomeSets {
   allOutcomeSets: outcomesets{
-    name,
-    description,
-    id,
-    questions {
-      id
-    }
+    ...defaultOutcomeSet
   }
-}`);
+}
+${fragments.defaultOutcomeSet}`);
 
 export const newQuestionSet = graphql(gql`
 mutation ($name: String!, $description: String) {
   newQuestionSet: AddOutcomeSet(name:$name, description:$description) {
-    name,
-    description,
-    id,
-    questions {
-      id
-    }
+    ...defaultOutcomeSet
   }
 }
-`, {
+${fragments.defaultOutcomeSet}`, {
   options: {
     refetchQueries: ['allOutcomeSets'],
   } as any,
@@ -58,6 +82,7 @@ mutation ($id: ID!) {
 export interface IOutcomeResult extends QueryProps {
     allOutcomeSets?: IOutcomeSet[];
     newQuestionSet?: IOutcomeSet;
+    getOutcomeSet?: IOutcomeSet;
 }
 
 export interface IOutcomeMutation {
