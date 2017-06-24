@@ -1,8 +1,11 @@
 import * as React from 'react';
 import {IOutcomeResult, getOutcomeSet, IOutcomeMutation, editQuestionSet} from 'redux/modules/outcomeSets';
+import {IQuestionMutation, addLikertQuestion, deleteQuestion} from 'redux/modules/questions';
+import {renderArray} from 'helpers/react';
+import {Question} from 'models/question';
 const style = require('./style.css');
 
-interface IProps extends IOutcomeMutation {
+interface IProps extends IOutcomeMutation, IQuestionMutation {
   data: IOutcomeResult;
   params: {
       id: string,
@@ -11,30 +14,35 @@ interface IProps extends IOutcomeMutation {
 
 interface IState {
   editError: string;
+  newQuestionError: string;
+  deleteError: string;
 };
 
 class OutcomeSetInner extends React.Component<IProps, IState> {
 
   private newName: React.HTMLAttributes<string>;
   private newDescription: React.HTMLAttributes<string>;
+  private newQuestion: React.HTMLAttributes<string>;
+  private newMaxValue: React.HTMLAttributes<string>;
 
   constructor(props) {
     super(props);
     this.state = {
       editError: undefined,
+      newQuestionError: undefined,
+      deleteError: undefined,
     };
     this.renderEditControl = this.renderEditControl.bind(this);
-    this.setNewName = this.setNewName.bind(this);
-    this.setNewDescription = this.setNewDescription.bind(this);
+    this.setRef = this.setRef.bind(this);
     this.editQS = this.editQS.bind(this);
+    this.renderNewQuestionControl = this.renderNewQuestionControl.bind(this);
+    this.renderQuestion = this.renderQuestion.bind(this);
+    this.addQuestion = this.addQuestion.bind(this);
+    this.deleteQuestion = this.deleteQuestion.bind(this);
   }
 
-  private setNewName(input) {
-    this.newName = input;
-  }
-
-  private setNewDescription(input) {
-    this.newDescription = input;
+  private setRef(attrName: string) {
+    return (input) => {this[attrName] = input;};
   }
 
   private editQS() {
@@ -51,13 +59,65 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     });
   }
 
+  private deleteQuestion(questionID: string) {
+    return () => {
+      this.props.deleteQuestion(this.props.params.id, questionID)
+      .then(() => {
+        this.setState({
+          deleteError: undefined,
+        });
+      })
+      .catch((e: Error)=> {
+        this.setState({
+          deleteError: e.message,
+        });
+      });
+    };
+  }
+
+  private addQuestion() {
+    this.props.addLikertQuestion(this.props.params.id, this.newQuestion.value as string, this.newMaxValue.value as number)
+    .then(() => {
+      this.setState({
+        newQuestionError: undefined,
+      });
+    })
+    .catch((e: Error)=> {
+      this.setState({
+        newQuestionError: e.message,
+      });
+    });
+  }
+
   private renderEditControl(): JSX.Element {
     return (
       <div>
-        <input type="text" placeholder="Name" ref={this.setNewName}/>
-        <input type="text" placeholder="Description" ref={this.setNewDescription}/>
+        <input type="text" placeholder="Name" ref={this.setRef('newName')}/>
+        <input type="text" placeholder="Description" ref={this.setRef('newDescription')}/>
         <button onClick={this.editQS}>Edit</button>
         <p>{this.state.editError}</p>
+      </div>
+    );
+  }
+
+  private renderQuestion(q: Question): JSX.Element {
+    return (
+      <div key={q.id} className={style.Question}>
+        <p>question: {q.question}</p>
+        <p>max value: {q.maxValue}</p>
+        <button onClick={this.deleteQuestion(q.id)}>Delete</button>
+        <p>{this.state.deleteError}</p>
+      </div>
+    );
+  }
+
+  private renderNewQuestionControl(): JSX.Element {
+    return (
+      <div>
+        <input type="text" placeholder="Question" ref={this.setRef('newQuestion')}/>
+        <input type="number" placeholder="Max Value" ref={this.setRef('newMaxValue')} defaultValue="10"/>
+        <button onClick={this.addQuestion}>Add</button>
+        <p>{this.state.newQuestionError}</p>
       </div>
     );
   }
@@ -72,11 +132,14 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
       <div className={style.Home}>
         <p>name: {os.name}</p>
         <p>description: {os.description}</p>
-        <p>number of questions: {os.questions.length}</p>
         {this.renderEditControl()}
+        <hr />
+        <h2>Questions</h2>
+        {renderArray(this.renderQuestion, os.questions)}
+        {this.renderNewQuestionControl()}
       </div>
     );
   }
 }
-const OutcomeSet = getOutcomeSet<IProps>((props) => props.params.id)(editQuestionSet(OutcomeSetInner));
+const OutcomeSet = getOutcomeSet<IProps>((props) => props.params.id)(editQuestionSet(addLikertQuestion(deleteQuestion(OutcomeSetInner))));
 export { OutcomeSet }

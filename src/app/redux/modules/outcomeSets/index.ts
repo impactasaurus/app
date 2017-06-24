@@ -1,18 +1,6 @@
 import {gql, graphql, QueryProps} from 'react-apollo';
-import {IOutcomeSet} from 'models/outcomeSet';
+import {IOutcomeSet, fragment} from 'models/outcomeSet';
 import {IDExtractor} from 'helpers/apollo';
-
-export const fragments = {
-  defaultOutcomeSet: gql`
-  fragment defaultOutcomeSet on OutcomeSet {
-    name,
-    description,
-    id,
-    questions {
-      id
-    }
-  }`,
-};
 
 export const getOutcomeSet = <T>(idExtractor: IDExtractor<T>): any => {
   return graphql<T>(gql`
@@ -21,7 +9,7 @@ export const getOutcomeSet = <T>(idExtractor: IDExtractor<T>): any => {
         ...defaultOutcomeSet
       }
     }
-    ${fragments.defaultOutcomeSet}`,
+    ${fragment}`,
   {
     options: (props: T) => {
       return {
@@ -39,7 +27,7 @@ export const allOutcomeSets = graphql(gql`
       ...defaultOutcomeSet
     }
   }
-  ${fragments.defaultOutcomeSet}`);
+  ${fragment}`);
 
 export const newQuestionSet = graphql(gql`
   mutation ($name: String!, $description: String) {
@@ -47,7 +35,7 @@ export const newQuestionSet = graphql(gql`
       ...defaultOutcomeSet
     }
   }
-  ${fragments.defaultOutcomeSet}`, {
+  ${fragment}`, {
     options: {
       refetchQueries: ['allOutcomeSets'],
     } as any,
@@ -67,7 +55,7 @@ export const editQuestionSet = graphql(gql`
       ...defaultOutcomeSet
     }
   }
-  ${fragments.defaultOutcomeSet}`, {
+  ${fragment}`, {
     props: ({ mutate }) => ({
       editQuestionSet: (id: string, name: string, description?: string) => mutate({
           variables: {
