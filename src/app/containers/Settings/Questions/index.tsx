@@ -1,80 +1,129 @@
 import * as React from 'react';
-import {gql, graphql} from 'react-apollo';
+import {IOutcomeResult, IOutcomeMutation, allOutcomeSets, newQuestionSet, deleteQuestionSet} from 'redux/modules/outcomeSets';
+import {IOutcomeSet} from 'models/outcomeSet';
+import {IURLConnector} from 'redux/modules/url';
+import {renderArray} from 'helpers/react';
+import {setURL} from 'modules/url';
+import { bindActionCreators } from 'redux';
+const { connect } = require('react-redux');
 const style = require('./style.css');
 
-interface IProps {
-  data: any;
-  mutate: any;
+interface IProps extends IOutcomeMutation, IURLConnector {
+  data: IOutcomeResult;
+};
+
+interface IState {
+  createError: string;
+  deleteError: string;
 }
 
-const questionSetQuery = gql`
-query allOutcomeSets {
-  qs: outcomesets{
-    name,
-    description,
-    id,
-    questions {
-      id
-    }
-  }
-}`;
+@connect(undefined, (dispatch) => ({
+  setURL: bindActionCreators(setURL, dispatch),
+}))
+class SettingQuestionsInner extends React.Component<IProps, IState> {
 
-const newQuestionSet = gql`
-mutation ($name: String!, $description: String) {
-  AddOutcomeSet(name:$name, description:$description) {
-    name,
-    description,
-    id,
-    questions {
-      id
-    }
-  }
-}
-`;
-
-class SettingQuestionsInner extends React.Component<IProps, {}> {
+  private newName: React.HTMLAttributes<string>;
+  private newDescription: React.HTMLAttributes<string>;
 
   constructor(props) {
     super(props);
+    this.state = {
+      createError: undefined,
+      deleteError: undefined,
+    };
     this.createQS = this.createQS.bind(this);
+    this.deleteQS = this.deleteQS.bind(this);
+    this.navigateToOutcomeSet = this.navigateToOutcomeSet.bind(this);
+    this.renderOutcomeSet = this.renderOutcomeSet.bind(this);
+    this.renderNewControl = this.renderNewControl.bind(this);
+    this.setNewName = this.setNewName.bind(this);;
+    this.setNewDescription = this.setNewDescription.bind(this);
+  }
+
+  private navigateToOutcomeSet(id: string) {
+    return () => this.props.setURL(`/outcomeset/${id}`);
   }
 
   private createQS() {
-    this.props.mutate({
-      variables: {
-       name: 'wow',
-       description: 'this is cool',
-      },
+    this.props.newQuestionSet(this.newName.value as string, this.newDescription.value as string)
+    .then(() => {
+      this.setState({
+        createError: undefined,
+      });
+    })
+    .catch((e: Error)=> {
+      this.setState({
+        createError: e.message,
+      });
     });
+  }
+
+  private deleteQS(id: string) {
+    return () =>
+    this.props.deleteQuestionSet(id)
+    .then(() => {
+      this.setState({
+        deleteError: undefined,
+      });
+    })
+    .catch((e: Error)=> {
+      this.setState({
+        deleteError: e.message,
+      });
+    });
+  }
+
+  private renderOutcomeSet(os: IOutcomeSet): JSX.Element {
+    return (
+      <div className={style.OutcomeSet} key={os.id}> 
+        <p>name: {os.name}</p>
+        <p>description: {os.description}</p>
+        <p>number of questions: {os.questions.length}</p>
+        <button onClick={this.deleteQS(os.id)}>Delete</button>
+        <button onClick={this.navigateToOutcomeSet(os.id)}>Add Questions</button>
+        <p>{this.state.deleteError}</p>
+      </div>
+    );
+  }
+
+  private setNewName(input) {
+    this.newName = input;
+  }
+
+  private setNewDescription(input) {
+    this.newDescription = input;
+  }
+
+  private renderNewControl(): JSX.Element {
+    return (
+      <div>
+        <input type="text" placeholder="Name" ref={this.setNewName}/>
+        <input type="text" placeholder="Description" ref={this.setNewDescription}/>
+        <button onClick={this.createQS}>Create</button>
+        <p>{this.state.createError}</p>
+      </div>
+    );
   }
 
   public render() {
     const { data } = this.props;
     return (
       <div className={style.Home}>
-        <p>Define question sets here</p>
-        <p>An organisation can have multiple questions sets, these will initially been shown in a list here along with a new button</p>
-        <p>One hitting new, the user is asked to define a set of likert scale style questions</p>
-        <p>Once the first question set has been defined, the organisation can start gathering feedback from beneficiaries</p>
-        <p>loading = {data.loading ? 'true' : 'false'}</p>
-        <p>qs = {data.qs !== undefined? data.qs.length : ''}</p>
-        <div onClick={this.createQS}>
-          Click me
-        </div>
+        <p>
+          Define question sets here<br />
+          An organisation can have multiple questions sets, these will initially been shown in a list here along with a new button<br />
+          One hitting new, the user is asked to define a set of likert scale style questions<br />
+          Once the first question set has been defined, the organisation can start gathering feedback from beneficiaries<br />
+        </p>
+        <hr />
+        <h2>Question Sets</h2>
+          {renderArray(this.renderOutcomeSet, data.allOutcomeSets)}
+        <hr />
+        <h2>New Question Set</h2>
+        {this.renderNewControl()}
       </div>
     );
   }
 }
-const SettingQuestions = graphql(questionSetQuery)(graphql(newQuestionSet, {
-  options: {
-    refetchQueries: ['allOutcomeSets'],
-    /*
-    update: (proxy, { data: { AddOutcomeSet } }) => {
-      const data = proxy.readQuery({ questionSetQuery });
-      data.qs.push(AddOutcomeSet);
-      proxy.writeQuery({ questionSetQuery, data });
-    },
-    */
-  } as any,
-})(SettingQuestionsInner));
+const SettingQuestions = allOutcomeSets(deleteQuestionSet(newQuestionSet(SettingQuestionsInner)));
 export { SettingQuestions }

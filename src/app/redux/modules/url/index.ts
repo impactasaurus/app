@@ -12,3 +12,7 @@ export function setURL(url: string) {
     }));
   };
 }
+
+export interface IURLConnector {
+    setURL(url: string);
+};
