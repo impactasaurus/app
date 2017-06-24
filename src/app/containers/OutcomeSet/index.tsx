@@ -23,7 +23,6 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
   private newName: React.HTMLAttributes<string>;
   private newDescription: React.HTMLAttributes<string>;
   private newQuestion: React.HTMLAttributes<string>;
-  private newMaxValue: React.HTMLAttributes<string>;
 
   constructor(props) {
     super(props);
@@ -76,7 +75,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
   }
 
   private addQuestion() {
-    this.props.addLikertQuestion(this.props.params.id, this.newQuestion.value as string, this.newMaxValue.value as number)
+    this.props.addLikertQuestion(this.props.params.id, this.newQuestion.value as string, 10)
     .then(() => {
       this.setState({
         newQuestionError: undefined,
@@ -104,7 +103,6 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     return (
       <div key={q.id} className={style.Question}>
         <p>question: {q.question}</p>
-        <p>max value: {q.maxValue}</p>
         <button onClick={this.deleteQuestion(q.id)}>Delete</button>
         <p>{this.state.deleteError}</p>
       </div>
@@ -115,7 +113,6 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     return (
       <div>
         <input type="text" placeholder="Question" ref={this.setRef('newQuestion')}/>
-        <input type="number" placeholder="Max Value" ref={this.setRef('newMaxValue')} defaultValue="10"/>
         <button onClick={this.addQuestion}>Add</button>
         <p>{this.state.newQuestionError}</p>
       </div>
