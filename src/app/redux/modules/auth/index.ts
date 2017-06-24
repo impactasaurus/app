@@ -7,3 +7,53 @@ export function saveAuth(authResult: auth0.Auth0DecodedHash, profile: auth0.Auth
   localStorage.setItem('refresh', authResult.refreshToken);
   localStorage.setItem('profile', JSON.stringify(profile));
 }
+
+function getDecodedToken() {
+  const token = getToken();
+
+  const urlBase64Decode = (str) => {
+    let output = str.replace(/-/g, '+').replace(/_/g, '/');
+    switch (output.length % 4) {
+      case 0: { break; }
+      case 2: { output += '=='; break; }
+      case 3: { output += '='; break; }
+      default: {
+        throw new Error('Illegal base64url string!');
+      }
+    }
+    return decodeURIComponent(encodeURIComponent(atob(output)));
+  };
+
+  const decodeToken = (jwt) => {
+    const parts = jwt.split('.');
+
+    if (parts.length !== 3) {
+      throw new Error('JWT must have 3 parts');
+    }
+
+    const decoded = urlBase64Decode(parts[1]);
+    if (!decoded) {
+      throw new Error('Cannot decode the token');
+    }
+
+    return JSON.parse(decoded);
+  };
+
+  if (token === undefined || token === null) {
+    return null;
+  }
+  try {
+    return decodeToken(token);
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
+export function getExpiryDate(): Date|null {
+  const decoded = getDecodedToken();
+  if (decoded === null || decoded.exp === undefined) {
+    return null;
+  }
+  return new Date(decoded.exp * 1000);
+}
