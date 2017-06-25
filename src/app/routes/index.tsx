@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { IndexRoute, Route } from 'react-router';
-import { App, Home, Login, Review, Conduct, Settings, OutcomeSets, OutcomeSet } from 'containers';
+import { App, Home, Login, Review, Conduct, Settings, OutcomeSets, OutcomeSet, Meeting } from 'containers';
 
 export default (
   <Route path="/" component={App}>
@@ -13,5 +13,6 @@ export default (
     <Route path="outcomeset" component={OutcomeSets} />
     <Route path="outcomeset/:id" component={OutcomeSet} />
     <Route path="login" component={Login} />
+    <Route path="meeting/:id" component={Meeting} />
   </Route>
 );

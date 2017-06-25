@@ -1,4 +1,5 @@
 import {IAnswer, fragment as aFragment} from './answer';
+import {fragment as osFragment, IOutcomeSet} from './outcomeSet';
 import {gql} from 'react-apollo';
 
 export interface IMeeting {
@@ -6,6 +7,7 @@ export interface IMeeting {
   beneficiary: string;
   user: string;
   outcomeSetID: string;
+  outcomeSet?: IOutcomeSet;
   answers: IAnswer[];
   conducted: Date;
   created: Date;
@@ -25,3 +27,11 @@ export const fragment = gql`
     created,
     modified
   } ${aFragment}`;
+
+export const fragmentWithOutcomeSet = gql`
+  fragment meetingWithOutcomeSet on Meeting {
+    ...defaultMeeting
+    outcomeSet {
+      ...defaultOutcomeSet
+    }
+  } ${fragment} ${osFragment}`;
