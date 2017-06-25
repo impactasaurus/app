@@ -75,7 +75,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
 
   private renderOutcomeSet(os: IOutcomeSet): JSX.Element {
     return (
-      <div className={style.OutcomeSet} key={os.id}> 
+      <div className={style.OutcomeSet} key={os.id}>
         <p>name: {os.name}</p>
         <p>description: {os.description}</p>
         <p>number of questions: {os.questions.length}</p>
@@ -117,7 +117,9 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
         </p>
         <hr />
         <h2>Question Sets</h2>
+        <div>
           {renderArray(this.renderOutcomeSet, data.allOutcomeSets)}
+        </div>
         <hr />
         <h2>New Question Set</h2>
         {this.renderNewControl()}

@@ -132,7 +132,9 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
         {this.renderEditControl()}
         <hr />
         <h2>Questions</h2>
-        {renderArray(this.renderQuestion, os.questions)}
+        <div>
+          {renderArray(this.renderQuestion, os.questions)}
+        </div>
         {this.renderNewQuestionControl()}
       </div>
     );
