@@ -1,6 +1,6 @@
 import {gql, graphql, QueryProps} from 'react-apollo';
 import {IOutcomeSet, fragment} from 'models/outcomeSet';
-import {IDExtractor} from 'helpers/apollo';
+import {IDExtractor, mutationResultExtractor} from 'helpers/apollo';
 
 export const getOutcomeSet = <T>(idExtractor: IDExtractor<T>): any => {
   return graphql<T>(gql`
@@ -40,12 +40,12 @@ export const newQuestionSet = graphql(gql`
       refetchQueries: ['allOutcomeSets'],
     } as any,
     props: ({ mutate }) => ({
-      newQuestionSet: (name: string, description?: string) => mutate({
+      newQuestionSet: (name: string, description?: string): Promise<IOutcomeSet> => mutate({
           variables: {
               name,
               description,
           },
-      }),
+      }).then(mutationResultExtractor<IOutcomeSet>('newQuestionSet')),
     }),
   });
 
@@ -57,13 +57,13 @@ export const editQuestionSet = graphql(gql`
   }
   ${fragment}`, {
     props: ({ mutate }) => ({
-      editQuestionSet: (id: string, name: string, description?: string) => mutate({
+      editQuestionSet: (id: string, name: string, description?: string): Promise<IOutcomeSet> => mutate({
           variables: {
               id,
               name,
               description,
           },
-      }),
+      }).then(mutationResultExtractor<IOutcomeSet>('editQuestionSet')),
     }),
   });
 
@@ -76,23 +76,21 @@ export const deleteQuestionSet = graphql(gql`
       refetchQueries: ['allOutcomeSets'],
     } as any,
     props: ({ mutate }) => ({
-      deleteQuestionSet: (id: string) => mutate({
+      deleteQuestionSet: (id: string): Promise<string> => mutate({
           variables: {
               id,
           },
-      }),
+      }).then(mutationResultExtractor<string>('deleteQuestionSet')),
     }),
   });
 
 export interface IOutcomeResult extends QueryProps {
     allOutcomeSets?: IOutcomeSet[];
-    newQuestionSet?: IOutcomeSet;
     getOutcomeSet?: IOutcomeSet;
-    editQuestionSet?: IOutcomeSet;
 }
 
 export interface IOutcomeMutation {
-    newQuestionSet(name: string, description?: string);
-    deleteQuestionSet(id: string);
-    editQuestionSet(id: string, name: string, description?: string);
+    newQuestionSet(name: string, description?: string): Promise<IOutcomeSet>;
+    deleteQuestionSet(id: string): Promise<string>;
+    editQuestionSet(id: string, name: string, description?: string): Promise<IOutcomeSet>;
 }

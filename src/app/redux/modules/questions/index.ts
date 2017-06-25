@@ -1,5 +1,6 @@
 import {gql, graphql} from 'react-apollo';
-import {fragment as osFragment} from 'models/outcomeSet';
+import {IOutcomeSet, fragment as osFragment} from 'models/outcomeSet';
+import {mutationResultExtractor} from 'helpers/apollo';
 
 export const addLikertQuestion = graphql(gql`
   mutation ($outcomeSetID: ID!, $question: String!, $maxValue: Int!) {
@@ -9,13 +10,13 @@ export const addLikertQuestion = graphql(gql`
   }
   ${osFragment}`, {
     props: ({ mutate }) => ({
-      addLikertQuestion: (outcomeSetID: string, question: string, maxValue: number) => mutate({
+      addLikertQuestion: (outcomeSetID: string, question: string, maxValue: number): Promise<IOutcomeSet> => mutate({
           variables: {
             outcomeSetID,
             question,
             maxValue,
           },
-      }),
+      }).then(mutationResultExtractor<IOutcomeSet>('newQuestionSet')),
     }),
   });
 
@@ -27,16 +28,16 @@ export const deleteQuestion = graphql(gql`
   }
   ${osFragment}`, {
     props: ({ mutate }) => ({
-      deleteQuestion: (outcomeSetID: string, questionID: string) => mutate({
+      deleteQuestion: (outcomeSetID: string, questionID: string): Promise<IOutcomeSet> => mutate({
           variables: {
             outcomeSetID,
             questionID,
           },
-      }),
+      }).then(mutationResultExtractor<IOutcomeSet>('newQuestionSet')),
     }),
   });
 
 export interface IQuestionMutation {
-    addLikertQuestion(outcomeSetID: string, question: string, maxValue: number);
-    deleteQuestion(outcomeSetID: string, questionID: string);
+    addLikertQuestion(outcomeSetID: string, question: string, maxValue: number): Promise<IOutcomeSet>;
+    deleteQuestion(outcomeSetID: string, questionID: string): Promise<IOutcomeSet>;
 }
