@@ -38,10 +38,29 @@ export const newMeeting = graphql(gql`
     }),
   });
 
+export const addLikertAnswer = graphql(gql`
+  mutation ($meetingID: String!, $questionID: String!, $value: Int!) {
+    addLikertAnswer: AddLikertAnswer(meetingID: $meetingID, questionID: $questionID, value: $value) {
+      ...meetingWithOutcomeSet
+    }
+  }
+  ${fragmentWithOutcomeSet}`, {
+    props: ({ mutate }) => ({
+      addLikertAnswer: (meetingID: string, questionID: string, value: number): Promise<IMeeting> => mutate({
+        variables: {
+          meetingID,
+          questionID,
+          value,
+        },
+      }).then(mutationResultExtractor<IMeeting>('addLikertAnswer')),
+    }),
+  });
+
 export interface IMeetingResult extends QueryProps {
     getMeeting?: IMeeting;
 }
 
 export interface IMeetingMutation {
     newMeeting(beneficiaryID: string, outcomeSetID: string, conducted: Date): Promise<IMeeting>;
+    addLikertAnswer(meetingID: string, questionID: string, value: number): Promise<IMeeting>;
 }

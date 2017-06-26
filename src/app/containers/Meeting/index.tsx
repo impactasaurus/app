@@ -1,12 +1,11 @@
 import * as React from 'react';
-import {IMeetingResult, getMeeting} from 'redux/modules/meetings';
+import {IMeetingResult, IMeetingMutation, getMeeting, addLikertAnswer} from 'redux/modules/meetings';
 import {Question} from 'models/question';
-import {renderArray} from 'helpers/react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 const style = require('./style.css');
 
-interface IProps {
+interface IProps extends IMeetingMutation {
   data: IMeetingResult;
   params: {
       id: string,
@@ -14,9 +13,10 @@ interface IProps {
 };
 
 interface IState {
-    answers: {
-      [questionID: string]: any;
-    };
+    currentQuestion?: string;
+    finished?: boolean;
+    saveError?: string;
+    currentValue?: number;
 };
 
 class MeetingInner extends React.Component<IProps, IState> {
@@ -24,51 +24,103 @@ class MeetingInner extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      answers: {},
+      currentQuestion: undefined,
+      finished: false,
+      saveError: undefined,
     };
-    this.renderQuestion = this.renderQuestion.bind(this);
     this.setAnswer = this.setAnswer.bind(this);
-    this.save = this.save.bind(this);
+    this.next = this.next.bind(this);
+    this.getNextQuestionToAnswer = this.getNextQuestionToAnswer.bind(this);
   }
 
-  private setAnswer(id: string) {
-    return (value: number) => {
-      const state = this.state;
-      state.answers[id] = value;
-      this.setState(state);
-    };
+  public componentDidUpdate() {
+    if (this.state.currentQuestion === undefined &&
+      this.state.finished === false &&
+      this.props.data.getMeeting !== undefined ) {
+      const nextQuestion = this.getNextQuestionToAnswer();
+      if (nextQuestion === null) {
+        this.setState({
+          currentQuestion: undefined,
+          finished: true,
+        });
+      } else {
+        this.setState({
+          currentQuestion: nextQuestion,
+          finished: false,
+        });
+      }
+    }
   }
 
-  private renderQuestion(q: Question): JSX.Element {
-    return (
-      <div key={q.id}>
-        <p>{q.question}</p>
-        <Slider className={style.likertScale} min={q.minValue} max={q.maxValue} defaultValue={q.minValue} onChange={this.setAnswer(q.id)} />
-      </div>
-    );
+  private getNextQuestionToAnswer(): string|null {
+    const questionsToAnswer = this.props.data.getMeeting.outcomeSet.questions.filter((question) => {
+      const found = this.props.data.getMeeting.answers.find((answer) => answer.questionID === question.id);
+      if (found === undefined) {
+        return true;
+      }
+      return false;
+    });
+    if (questionsToAnswer.length > 0) {
+      return questionsToAnswer[0].id;
+    }
+    return null;
   }
 
-  private save() {
+  private setAnswer(value: number) {
+    this.setState({
+      currentValue: value,
+    });
+  }
 
+  private next() {
+    this.props.addLikertAnswer(this.props.params.id, this.state.currentQuestion, this.state.currentValue)
+    .then(() => {
+      this.setState({
+        currentQuestion: undefined,
+        currentValue: 0,
+      });
+    })
+    .catch((e: string) => {
+      this.setState({
+        saveError: e,
+      });
+    });
   }
 
   public render() {
-    const { data } = this.props;
-    const meeting = data.getMeeting;
+    const meeting = this.props.data.getMeeting;
     if (meeting === undefined) {
         return (<div />);
     }
-    const os = meeting.outcomeSet;
+    if (this.state.finished) {
+      return (
+        <div>
+          Thanks!
+        </div>
+      );
+    }
+    const currentQuestionID = this.state.currentQuestion;
+    if (currentQuestionID === undefined) {
+      return (<div />);
+    }
+    const question = meeting.outcomeSet.questions.find((q) => q.id === currentQuestionID);
+    if (question === undefined) {
+      return (
+        <div>
+          Unknown question
+        </div>
+      );
+    }
+    const q = question as Question;
     return (
       <div>
-        <h2>Questions</h2>
-        <div>
-          {renderArray(this.renderQuestion, os.questions)}
-        </div>
-        <button onClick={this.save}>Save and Finish</button>
+        <h3>{question.question}</h3>
+        <Slider className={style.likertScale} min={q.minValue} max={q.maxValue} defaultValue={q.minValue} onChange={this.setAnswer} />
+        <button onClick={this.next}>Next</button>
+        <p>{this.state.saveError}</p>
       </div>
     );
   }
 }
-const Meeting = getMeeting<IProps>((props) => props.params.id)(MeetingInner);
+const Meeting = getMeeting<IProps>((props) => props.params.id)(addLikertAnswer(MeetingInner));
 export { Meeting }
