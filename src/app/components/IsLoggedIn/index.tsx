@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getToken, getExpiryDate } from 'redux/modules/auth';
+import { getToken, getExpiryDate } from 'helpers/auth';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import { RouterState } from '@types/react-router-redux';

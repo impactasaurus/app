@@ -8,6 +8,7 @@ const { Router, browserHistory } = require('react-router');
 import { syncHistoryWithStore } from 'react-router-redux';
 const { ReduxAsyncConnect } = require('redux-connect');
 import { configureStore } from './app/redux/store';
+import { getToken } from 'helpers/auth';
 import 'isomorphic-fetch';
 import routes from './app/routes';
 
@@ -21,7 +22,7 @@ networkInterface.use([{
     if (!req.options.headers) {
       req.options.headers = {};  // Create the header object if needed.
     }
-    req.options.headers.authorization = localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : null;
+    req.options.headers.authorization = getToken() ? `Bearer ${getToken()}` : null;
     next();
   },
 }]);

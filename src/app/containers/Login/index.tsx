@@ -4,7 +4,7 @@ import * as React from 'react';
 import auth0Lock from 'auth0-lock';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
-import {saveAuth} from 'modules/auth';
+import {saveAuth} from 'helpers/auth';
 const { connect } = require('react-redux');
 
 interface IProps {

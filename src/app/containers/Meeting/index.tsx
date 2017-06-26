@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {IMeetingResult, IMeetingMutation, getMeeting, addLikertAnswer} from 'redux/modules/meetings';
+import {IMeetingResult, IMeetingMutation, getMeeting, addLikertAnswer} from 'apollo/modules/meetings';
 import {Question} from 'models/question';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';

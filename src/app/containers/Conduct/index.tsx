@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {IOutcomeResult, IOutcomeMutation, allOutcomeSets} from 'redux/modules/outcomeSets';
-import {IMeetingMutation, newMeeting} from 'redux/modules/meetings';
+import {IOutcomeResult, IOutcomeMutation, allOutcomeSets} from 'apollo/modules/outcomeSets';
+import {IMeetingMutation, newMeeting} from 'apollo/modules/meetings';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {renderArray} from 'helpers/react';
 import {IURLConnector} from 'redux/modules/url';

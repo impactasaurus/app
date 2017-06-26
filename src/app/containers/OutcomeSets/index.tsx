@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {IOutcomeResult, IOutcomeMutation, allOutcomeSets, newQuestionSet, deleteQuestionSet} from 'redux/modules/outcomeSets';
+import {IOutcomeResult, IOutcomeMutation, allOutcomeSets, newQuestionSet, deleteQuestionSet} from 'apollo/modules/outcomeSets';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IURLConnector} from 'redux/modules/url';
 import {renderArray} from 'helpers/react';

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {IOutcomeResult, getOutcomeSet, IOutcomeMutation, editQuestionSet} from 'redux/modules/outcomeSets';
-import {IQuestionMutation, addLikertQuestion, deleteQuestion} from 'redux/modules/questions';
+import {IOutcomeResult, getOutcomeSet, IOutcomeMutation, editQuestionSet} from 'apollo/modules/outcomeSets';
+import {IQuestionMutation, addLikertQuestion, deleteQuestion} from 'apollo/modules/questions';
 import {renderArray} from 'helpers/react';
 import {Question} from 'models/question';
 const style = require('./style.css');
