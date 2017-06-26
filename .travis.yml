@@ -3,6 +3,8 @@ node_js:
   - "node"
 env:
   - NODE_ENV=ci
+before_install:
+  - export CHROME_BIN=chromium-browser
 before_deploy: "npm run build:prod"
 deploy:
   provider: s3
