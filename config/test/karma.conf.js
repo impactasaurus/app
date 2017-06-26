@@ -8,7 +8,7 @@ module.exports = function (config) {
   const conf = {
     frameworks: ['mocha', 'chai', 'es6-shim'],
 
-    browsers: ['PhantomJS'],
+    browsers: ['ChromeHeadless'],
 
     files: ['../webpack/test.js'],
 
