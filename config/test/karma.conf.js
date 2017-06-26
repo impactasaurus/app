@@ -41,6 +41,8 @@ module.exports = function (config) {
 
     concurrency: Infinity,
 
+    failOnEmptyTestSuite: false,
+
     webpack: {
       devtool: 'inline-source-map',
 
