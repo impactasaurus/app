@@ -9,9 +9,9 @@ export interface IMeeting {
   outcomeSetID: string;
   outcomeSet?: IOutcomeSet;
   answers: IAnswer[];
-  conducted: Date;
-  created: Date;
-  modified: Date;
+  conducted: string;
+  created: string;
+  modified: string;
 }
 
 export const fragment = gql`

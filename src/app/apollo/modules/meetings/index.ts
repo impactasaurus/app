@@ -2,8 +2,8 @@ import {gql, graphql, QueryProps} from 'react-apollo';
 import {IMeeting, fragment, fragmentWithOutcomeSet} from 'models/meeting';
 import {IDExtractor, mutationResultExtractor} from 'helpers/apollo';
 
-export const getMeeting = <T>(idExtractor: IDExtractor<T>): any => {
-  return graphql<T>(gql`
+export const getMeeting = <T>(idExtractor: IDExtractor<T>) => {
+  return graphql<any, T>(gql`
     query ($id: String!){
       getMeeting: meeting(id:$id) {
         ...meetingWithOutcomeSet
@@ -19,6 +19,24 @@ export const getMeeting = <T>(idExtractor: IDExtractor<T>): any => {
     },
   });
 };
+
+export const getMeetings = <T>(idExtractor: IDExtractor<T>) => {
+  return graphql<any, T>(gql`
+    query ($beneficiaryID: String!) {
+      getMeetings: meetings(beneficiary: $beneficiaryID) {
+        ...meetingWithOutcomeSet
+      }
+    }
+    ${fragmentWithOutcomeSet}`, {
+      options: (props: T) => {
+        return {
+          variables: {
+            beneficiaryID: idExtractor(props),
+          },
+        };
+      },
+    });
+  };
 
 export const newMeeting = graphql(gql`
   mutation ($beneficiaryID: String!, $outcomeSetID: String!, $conducted: String!) {
@@ -38,7 +56,8 @@ export const newMeeting = graphql(gql`
     }),
   });
 
-export const addLikertAnswer = graphql(gql`
+export function addLikertAnswer<T>(component) {
+  return graphql<any, T>(gql`
   mutation ($meetingID: String!, $questionID: String!, $value: Int!) {
     addLikertAnswer: AddLikertAnswer(meetingID: $meetingID, questionID: $questionID, value: $value) {
       ...meetingWithOutcomeSet
@@ -54,10 +73,12 @@ export const addLikertAnswer = graphql(gql`
         },
       }).then(mutationResultExtractor<IMeeting>('addLikertAnswer')),
     }),
-  });
+  })(component);
+}
 
 export interface IMeetingResult extends QueryProps {
     getMeeting?: IMeeting;
+    getMeetings?: IMeeting[];
 }
 
 export interface IMeetingMutation {

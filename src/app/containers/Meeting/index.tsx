@@ -122,5 +122,5 @@ class MeetingInner extends React.Component<IProps, IState> {
     );
   }
 }
-const Meeting = getMeeting<IProps>((props) => props.params.id)(addLikertAnswer(MeetingInner));
+const Meeting = getMeeting<IProps>((props) => props.params.id)(addLikertAnswer<IProps>(MeetingInner));
 export { Meeting }

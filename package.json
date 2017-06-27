@@ -102,6 +102,7 @@
     "webpack-manifest-plugin": "^1.1.0"
   },
   "dependencies": {
+    "@ald-life/outcome-graph": "^1.0.1",
     "@types/auth0-lock": "^10.10.1",
     "auth0-lock": "^10.16.0",
     "es6-promise": "^4.0.5",
