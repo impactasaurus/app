@@ -20,23 +20,25 @@ export const getMeeting = <T>(idExtractor: IDExtractor<T>) => {
   });
 };
 
-export const getMeetings = <T>(idExtractor: IDExtractor<T>) => {
-  return graphql<any, T>(gql`
-    query ($beneficiaryID: String!) {
-      getMeetings: meetings(beneficiary: $beneficiaryID) {
-        ...meetingWithOutcomeSet
-      }
+const getMeetingGQL = gql`
+  query ($beneficiaryID: String!) {
+    getMeetings: meetings(beneficiary: $beneficiaryID) {
+      ...meetingWithOutcomeSet
     }
-    ${fragmentWithOutcomeSet}`, {
-      options: (props: T) => {
-        return {
-          variables: {
-            beneficiaryID: idExtractor(props),
-          },
-        };
-      },
-    });
-  };
+  }
+  ${fragmentWithOutcomeSet}`;
+
+export const getMeetings = <T>(idExtractor: IDExtractor<T>) => {
+  return graphql<any, T>(getMeetingGQL, {
+    options: (props: T) => {
+      return {
+        variables: {
+          beneficiaryID: idExtractor(props),
+        },
+      };
+    },
+  });
+};
 
 export const newMeeting = graphql(gql`
   mutation ($beneficiaryID: String!, $outcomeSetID: String!, $conducted: String!) {
@@ -52,7 +54,11 @@ export const newMeeting = graphql(gql`
             outcomeSetID,
             conducted: conducted.toISOString(),
         },
-      }).then(mutationResultExtractor<IMeeting>('newMeeting')),
+        refetchQueries: [{
+          query: getMeetingGQL,
+          variables: { beneficiaryID },
+        }],
+      } as any).then(mutationResultExtractor<IMeeting>('newMeeting')),
     }),
   });
 
