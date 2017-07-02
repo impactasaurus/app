@@ -2,10 +2,10 @@ import * as React from 'react';
 import {IOutcomeResult, IOutcomeMutation, allOutcomeSets} from 'apollo/modules/outcomeSets';
 import {IMeetingMutation, newMeeting} from 'apollo/modules/meetings';
 import {IOutcomeSet} from 'models/outcomeSet';
-import {renderArray} from 'helpers/react';
 import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
+import { Button, Select, Input } from 'semantic-ui-react';
 const { connect } = require('react-redux');
 const style = require('./style.css');
 
@@ -53,20 +53,25 @@ class ConductInner extends React.Component<IProp, IState> {
     });
   }
 
-  private renderOutcomeSet(os: IOutcomeSet): JSX.Element {
-    return (
-      <option value={os.id} key={os.id}>{os.name}</option>
-    );
+  private getOptions(oss: IOutcomeSet[]): any[] {
+    if (oss === undefined) {
+      return [];
+    }
+    return oss.map((os) => {
+      return {
+        key: os.id,
+        value: os.id,
+        text: os.name,
+      };
+    });
   }
 
   private renderNewMeetingControl(outcomeSets: IOutcomeSet[]|undefined): JSX.Element {
     return (
       <div>
-        <input type="text" placeholder="Beneficiary ID" ref={this.setRef('beneficiaryControl')}/>
-        <select placeholder="Outcome Set" ref={this.setRef('outcomeSetControl')}>
-          {renderArray(this.renderOutcomeSet, outcomeSets)}
-        </select>
-        <button onClick={this.startMeeting}>Start</button>
+        <Input type="text" placeholder="Beneficiary ID" ref={this.setRef('beneficiaryControl')}/>
+        <Select placeholder="Outcome Set" ref={this.setRef('outcomeSetControl')} options={this.getOptions(outcomeSets)} />
+        <Button onClick={this.startMeeting}>Start</Button>
         <p>{this.state.startMeetingError}</p>
       </div>
     );

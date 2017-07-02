@@ -3,6 +3,7 @@ import {IMeetingResult, IMeetingMutation, getMeeting, addLikertAnswer} from 'apo
 import {Question} from 'models/question';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
+import { Button } from 'semantic-ui-react';
 const style = require('./style.css');
 
 interface IProps extends IMeetingMutation {
@@ -116,7 +117,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       <div>
         <h3>{question.question}</h3>
         <Slider className={style.likertScale} min={q.minValue} max={q.maxValue} defaultValue={q.minValue} onChange={this.setAnswer} />
-        <button onClick={this.next}>Next</button>
+        <Button onClick={this.next}>Next</Button>
         <p>{this.state.saveError}</p>
       </div>
     );

@@ -34,7 +34,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
-
 app.get('*', function(_, res){
   res.sendFile(path.join(__dirname, 'index.html'));
 });

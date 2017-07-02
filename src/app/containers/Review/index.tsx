@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {MeetingView} from 'components/MeetingView';
+import { Button, Input } from 'semantic-ui-react';
 const style = require('./style.css');
 
 interface IState {
@@ -48,8 +49,8 @@ class Review extends React.Component<any, IState> {
           Visualisation of meetings can be toggled. Also meetings will be able to be deleted from here <br />
         </p>
         <hr />
-        <input type="text" placeholder="Beneficiary ID" ref={this.setRef('beneficiaryControl')}/>
-        <button onClick={this.review}>Review</button>
+        <Input type="text" placeholder="Beneficiary ID" ref={this.setRef('beneficiaryControl')}/>
+        <Button onClick={this.review}>Review</Button>
         <hr />
         {this.showMeetingDetails()}
       </div>

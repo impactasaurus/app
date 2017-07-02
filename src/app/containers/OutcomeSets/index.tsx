@@ -5,6 +5,7 @@ import {IURLConnector} from 'redux/modules/url';
 import {renderArray} from 'helpers/react';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
+import { Button, Input } from 'semantic-ui-react';
 const { connect } = require('react-redux');
 const style = require('./style.css');
 
@@ -79,8 +80,8 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
         <p>name: {os.name}</p>
         <p>description: {os.description}</p>
         <p>number of questions: {os.questions.length}</p>
-        <button onClick={this.deleteQS(os.id)}>Delete</button>
-        <button onClick={this.navigateToOutcomeSet(os.id)}>Edit</button>
+        <Button onClick={this.deleteQS(os.id)}>Delete</Button>
+        <Button onClick={this.navigateToOutcomeSet(os.id)}>Edit</Button>
         <p>{this.state.deleteError}</p>
       </div>
     );
@@ -97,9 +98,9 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
   private renderNewControl(): JSX.Element {
     return (
       <div>
-        <input type="text" placeholder="Name" ref={this.setNewName}/>
-        <input type="text" placeholder="Description" ref={this.setNewDescription}/>
-        <button onClick={this.createQS}>Create</button>
+        <Input type="text" placeholder="Name" ref={this.setNewName}/>
+        <Input type="text" placeholder="Description" ref={this.setNewDescription}/>
+        <Button onClick={this.createQS}>Create</Button>
         <p>{this.state.createError}</p>
       </div>
     );

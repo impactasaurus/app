@@ -3,6 +3,7 @@ import {IOutcomeResult, getOutcomeSet, IOutcomeMutation, editQuestionSet} from '
 import {IQuestionMutation, addLikertQuestion, deleteQuestion} from 'apollo/modules/questions';
 import {renderArray} from 'helpers/react';
 import {Question} from 'models/question';
+import { Button, Input } from 'semantic-ui-react';
 const style = require('./style.css');
 
 interface IProps extends IOutcomeMutation, IQuestionMutation {
@@ -91,9 +92,9 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
   private renderEditControl(): JSX.Element {
     return (
       <div>
-        <input type="text" placeholder="Name" ref={this.setRef('newName')}/>
-        <input type="text" placeholder="Description" ref={this.setRef('newDescription')}/>
-        <button onClick={this.editQS}>Edit</button>
+        <Input type="text" placeholder="Name" ref={this.setRef('newName')}/>
+        <Input type="text" placeholder="Description" ref={this.setRef('newDescription')}/>
+        <Button onClick={this.editQS}>Edit</Button>
         <p>{this.state.editError}</p>
       </div>
     );
@@ -103,7 +104,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     return (
       <div key={q.id} className={style.Question}>
         <p>question: {q.question}</p>
-        <button onClick={this.deleteQuestion(q.id)}>Delete</button>
+        <Button onClick={this.deleteQuestion(q.id)}>Delete</Button>
         <p>{this.state.deleteError}</p>
       </div>
     );
@@ -112,8 +113,8 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
   private renderNewQuestionControl(): JSX.Element {
     return (
       <div>
-        <input type="text" placeholder="Question" ref={this.setRef('newQuestion')}/>
-        <button onClick={this.addQuestion}>Add</button>
+        <Input type="text" placeholder="Question" ref={this.setRef('newQuestion')}/>
+        <Button onClick={this.addQuestion}>Add</Button>
         <p>{this.state.newQuestionError}</p>
       </div>
     );
