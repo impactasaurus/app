@@ -17,13 +17,12 @@ interface IState {
   editError: string;
   newQuestionError: string;
   deleteError: string;
+  newName?: string;
+  newDescription?: string;
+  newQuestion?: string;
 };
 
 class OutcomeSetInner extends React.Component<IProps, IState> {
-
-  private newName: React.HTMLAttributes<string>;
-  private newDescription: React.HTMLAttributes<string>;
-  private newQuestion: React.HTMLAttributes<string>;
 
   constructor(props) {
     super(props);
@@ -33,20 +32,18 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
       deleteError: undefined,
     };
     this.renderEditControl = this.renderEditControl.bind(this);
-    this.setRef = this.setRef.bind(this);
     this.editQS = this.editQS.bind(this);
     this.renderNewQuestionControl = this.renderNewQuestionControl.bind(this);
     this.renderQuestion = this.renderQuestion.bind(this);
     this.addQuestion = this.addQuestion.bind(this);
     this.deleteQuestion = this.deleteQuestion.bind(this);
-  }
-
-  private setRef(attrName: string) {
-    return (input) => {this[attrName] = input;};
+    this.setNewName = this.setNewName.bind(this);
+    this.setNewDescription = this.setNewDescription.bind(this);
+    this.setNewQuestion = this.setNewQuestion.bind(this);
   }
 
   private editQS() {
-    this.props.editQuestionSet(this.props.params.id, this.newName.value as string, this.newDescription.value as string)
+    this.props.editQuestionSet(this.props.params.id, this.state.newName, this.state.newDescription)
     .then(() => {
       this.setState({
         editError: undefined,
@@ -76,7 +73,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
   }
 
   private addQuestion() {
-    this.props.addLikertQuestion(this.props.params.id, this.newQuestion.value as string, 10)
+    this.props.addLikertQuestion(this.props.params.id, this.state.newQuestion, 10)
     .then(() => {
       this.setState({
         newQuestionError: undefined,
@@ -89,11 +86,29 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     });
   }
 
+  private setNewName(_, data) {
+    this.setState({
+      newName: data.value,
+    });
+  }
+
+  private setNewDescription(_, data) {
+    this.setState({
+      newDescription: data.value,
+    });
+  }
+
+  private setNewQuestion(_, data) {
+    this.setState({
+      newQuestion: data.value,
+    });
+  }
+
   private renderEditControl(): JSX.Element {
     return (
       <div>
-        <Input type="text" placeholder="Name" ref={this.setRef('newName')}/>
-        <Input type="text" placeholder="Description" ref={this.setRef('newDescription')}/>
+        <Input type="text" placeholder="Name" onChange={this.setNewName}/>
+        <Input type="text" placeholder="Description" onChange={this.setNewDescription}/>
         <Button onClick={this.editQS}>Edit</Button>
         <p>{this.state.editError}</p>
       </div>
@@ -113,7 +128,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
   private renderNewQuestionControl(): JSX.Element {
     return (
       <div>
-        <Input type="text" placeholder="Question" ref={this.setRef('newQuestion')}/>
+        <Input type="text" placeholder="Question" onChange={this.setNewQuestion}/>
         <Button onClick={this.addQuestion}>Add</Button>
         <p>{this.state.newQuestionError}</p>
       </div>

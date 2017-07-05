@@ -16,15 +16,14 @@ interface IProps extends IOutcomeMutation, IURLConnector {
 interface IState {
   createError: string;
   deleteError: string;
+  newName?: string;
+  newDescription?: string;
 }
 
 @connect(undefined, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
 class SettingQuestionsInner extends React.Component<IProps, IState> {
-
-  private newName: React.HTMLAttributes<string>;
-  private newDescription: React.HTMLAttributes<string>;
 
   constructor(props) {
     super(props);
@@ -46,7 +45,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
   }
 
   private createQS() {
-    this.props.newQuestionSet(this.newName.value as string, this.newDescription.value as string)
+    this.props.newQuestionSet(this.state.newName, this.state.newDescription)
     .then(() => {
       this.setState({
         createError: undefined,
@@ -87,19 +86,23 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     );
   }
 
-  private setNewName(input) {
-    this.newName = input;
+  private setNewName(_, data) {
+    this.setState({
+      newName: data.value,
+    });
   }
 
-  private setNewDescription(input) {
-    this.newDescription = input;
+  private setNewDescription(_, data) {
+    this.setState({
+      newDescription: data.value,
+    });
   }
 
   private renderNewControl(): JSX.Element {
     return (
       <div>
-        <Input type="text" placeholder="Name" ref={this.setNewName}/>
-        <Input type="text" placeholder="Description" ref={this.setNewDescription}/>
+        <Input type="text" placeholder="Name" onChange={this.setNewName}/>
+        <Input type="text" placeholder="Description" onChange={this.setNewDescription}/>
         <Button onClick={this.createQS}>Create</Button>
         <p>{this.state.createError}</p>
       </div>

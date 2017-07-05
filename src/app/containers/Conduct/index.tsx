@@ -15,6 +15,8 @@ interface IProp extends IOutcomeMutation, IMeetingMutation, IURLConnector {
 
 interface IState {
   startMeetingError: string;
+  selectedOS?: string;
+  selectedBenID?: string;
 }
 
 @connect(undefined, (dispatch) => ({
@@ -22,26 +24,20 @@ interface IState {
 }))
 class ConductInner extends React.Component<IProp, IState> {
 
-  private beneficiaryControl: React.HTMLAttributes<string>;
-  private outcomeSetControl: React.HTMLAttributes<string>;
-
   constructor(props) {
     super(props);
     this.state = {
       startMeetingError: undefined,
     };
-    this.setRef = this.setRef.bind(this);
     this.renderNewMeetingControl = this.renderNewMeetingControl.bind(this);
     this.startMeeting = this.startMeeting.bind(this);
-  }
-
-  private setRef(attrName: string) {
-    return (input) => {this[attrName] = input;};
+    this.setOS = this.setOS.bind(this);
+    this.setBenID = this.setBenID.bind(this);
   }
 
   private startMeeting() {
-    const benID = this.beneficiaryControl.value as string;
-    const osID = this.outcomeSetControl.value as string;
+    const benID = this.state.selectedBenID;
+    const osID = this.state.selectedOS;
     this.props.newMeeting(benID, osID, new Date())
     .then((meeting) => {
       this.props.setURL(`/meeting/${meeting.id}`);
@@ -66,11 +62,23 @@ class ConductInner extends React.Component<IProp, IState> {
     });
   }
 
+  private setOS(_, data) {
+    this.setState({
+      selectedOS: data.value,
+    });
+  }
+
+  private setBenID(_, data) {
+    this.setState({
+      selectedBenID: data.value,
+    });
+  }
+
   private renderNewMeetingControl(outcomeSets: IOutcomeSet[]|undefined): JSX.Element {
     return (
       <div>
-        <Input type="text" placeholder="Beneficiary ID" ref={this.setRef('beneficiaryControl')}/>
-        <Select placeholder="Outcome Set" ref={this.setRef('outcomeSetControl')} options={this.getOptions(outcomeSets)} />
+        <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID} />
+        <Select placeholder="Outcome Set" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
         <Button onClick={this.startMeeting}>Start</Button>
         <p>{this.state.startMeetingError}</p>
       </div>

@@ -10,4 +10,4 @@ export default function getReducers(clientReducers: Redux.ReducersMapObject): Re
     reduxAsyncConnect: reducer,
   };
   return combineReducers<IStore>({...internalReducers, ...clientReducers});
-};
+}

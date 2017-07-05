@@ -5,26 +5,21 @@ const style = require('./style.css');
 
 interface IState {
   beneficiaryID?: string;
+  enteredBenID?: string;
 }
 
 class Review extends React.Component<any, IState> {
 
-  private beneficiaryControl: React.HTMLAttributes<string>;
-
   constructor(props) {
     super(props);
     this.state = {};
-    this.setRef = this.setRef.bind(this);
     this.review = this.review.bind(this);
     this.showMeetingDetails = this.showMeetingDetails.bind(this);
-  }
-
-  private setRef(attrName: string) {
-    return (input) => {this[attrName] = input;};
+    this.setBenID = this.setBenID.bind(this);
   }
 
   private review() {
-    const benID = this.beneficiaryControl.value as string;
+    const benID = this.state.enteredBenID;
     this.setState({
       beneficiaryID: benID,
     });
@@ -39,6 +34,12 @@ class Review extends React.Component<any, IState> {
     );
   }
 
+  private setBenID(_, data) {
+    this.setState({
+      enteredBenID: data.value,
+    });
+  }
+
   public render() {
     return (
       <div className={style.Home}>
@@ -49,7 +50,7 @@ class Review extends React.Component<any, IState> {
           Visualisation of meetings can be toggled. Also meetings will be able to be deleted from here <br />
         </p>
         <hr />
-        <Input type="text" placeholder="Beneficiary ID" ref={this.setRef('beneficiaryControl')}/>
+        <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID}/>
         <Button onClick={this.review}>Review</Button>
         <hr />
         {this.showMeetingDetails()}
