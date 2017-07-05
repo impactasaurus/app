@@ -1,6 +1,7 @@
 .Home {
-  & li {
-    list-style: none;
-  }
   text-align: center;
+}
+
+.Home li {
+  list-style: none;
 }

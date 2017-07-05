@@ -61,7 +61,17 @@ var config = {
         loaders: [
           'style-loader',
           'css-loader?modules&importLoaders=2&localIdentName=[local]___[hash:base64:5]',
-          'postcss-loader'
+          {
+            loader: 'postcss-loader',
+            options: {
+              plugins: (loader) => [
+                require('postcss-import')({
+                  root: loader.resourcePath
+                }),
+                require('postcss-simple-vars')(),
+              ]
+            }
+          },
         ]
       },
       {
