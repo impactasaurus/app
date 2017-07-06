@@ -4,7 +4,6 @@ import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 const { connect } = require('react-redux');
-
 const style = require('./style.css');
 
 interface IState {
@@ -42,7 +41,6 @@ class Header extends React.Component<IURLConnector, IState> {
 
         <Menu.Menu position="right">
           <Menu.Item className={style.Item} name="settings" active={activeItem === 'settings'} onClick={this.handleClick('/settings')} />
-          <Menu.Item className={style.Item} name="login" active={activeItem === 'login'} onClick={this.handleClick('/login')} />
         </Menu.Menu>
       </Menu>
     );
