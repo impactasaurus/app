@@ -1,0 +1,18 @@
+@import './../../variables.less';
+
+@margin: 0em 0em;
+@background: @primary;
+@borderRadius: 0em;
+@border: 0em;
+
+
+@menuSelectedTextColor: darken(@primaryTextColor, 5%);
+
+@itemTextColor: @primaryTextColor;
+@activeItemTextColor: @menuSelectedTextColor;
+@hoverItemTextColor: @menuSelectedTextColor;
+@pressedItemTextColor: @menuSelectedTextColor;
+@activeHoverItemColor: @menuSelectedTextColor;
+@dropdownSelectedItemColor: @menuSelectedTextColor;
+@dropdownActiveItemColor: @menuSelectedTextColor;
+@subMenuActiveTextColor: @menuSelectedTextColor;

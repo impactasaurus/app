@@ -1,0 +1,18 @@
+@import './../../variables.less';
+
+@fontName          : 'Source Sans Pro';
+@headerFont        : @fontName, Helvetica, sans-serif;
+@pageFont          : @fontName, Helvetica, sans-serif;
+@importGoogleFonts : false;
+
+@emSize   : 14px;
+@fontSize : 14px;
+
+@primaryColor: @primary;
+@secondaryColor: @accent;
+@lightPrimaryColor: @primaryl;
+@lightSecondaryColor: @accentl;
+
+
+@textColor: rgb(99,99,99);
+@linkColor: @primary;

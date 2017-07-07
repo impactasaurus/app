@@ -4,7 +4,6 @@ import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 const { connect } = require('react-redux');
-const style = require('./style.css');
 
 interface IState {
   active: string;
@@ -34,13 +33,13 @@ class Header extends React.Component<IURLConnector, IState> {
   public render() {
     const activeItem = this.state.active;
     return (
-      <Menu size="massive" id={style.Menu}>
-        <Menu.Item className={style.Item} name="home" active={activeItem === 'home'} onClick={this.handleClick('/')} />
-        <Menu.Item className={style.Item} name="conduct" active={activeItem === 'conduct'} onClick={this.handleClick('/conduct')} />
-        <Menu.Item className={style.Item} name="review" active={activeItem === 'review'} onClick={this.handleClick('/review')} />
+      <Menu size="massive">
+        <Menu.Item name="home" active={activeItem === 'home'} onClick={this.handleClick('/')} />
+        <Menu.Item name="conduct" active={activeItem === 'conduct'} onClick={this.handleClick('/conduct')} />
+        <Menu.Item name="review" active={activeItem === 'review'} onClick={this.handleClick('/review')} />
 
         <Menu.Menu position="right">
-          <Menu.Item className={style.Item} name="settings" active={activeItem === 'settings'} onClick={this.handleClick('/settings')} />
+          <Menu.Item name="settings" active={activeItem === 'settings'} onClick={this.handleClick('/settings')} />
         </Menu.Menu>
       </Menu>
     );
