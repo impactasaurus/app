@@ -20,6 +20,10 @@ var config = {
       'app',
       'app/redux'
     ],
+    alias: {
+      // for semantic: redirect theme access to our custom theme (https://medium.com/webmonkeys/webpack-2-semantic-ui-theming-a216ddf60daf)
+      '../../theme.config$': path.join(__dirname, '../../src/app/semantic/theme.config')
+    }
   },
 
   entry: {
@@ -80,6 +84,14 @@ var config = {
         loaders: [
           'style-loader',
           'css-loader'
+        ]
+      },
+      {
+        test: /\.less$/,
+        loaders: [
+          "style-loader",
+          "css-loader",
+          "less-loader"
         ]
       },
 
