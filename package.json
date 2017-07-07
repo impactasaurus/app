@@ -7,8 +7,7 @@
     "prebuild": "npm run clean",
     "build": "webpack --config config/webpack/index.js",
     "build:prod": "cross-env NODE_ENV=production npm run build",
-    "prestart": "npm run build && webpack --config config/webpack/server.js",
-    "start": "node build/server.js",
+    "start": "webpack-dev-server --inline --config config/webpack/index.js",
     "start:prod": "cross-env NODE_ENV=production npm start",
     "test": "karma start config/test/karma.conf.js",
     "lint": "tslint \"src/**/**.ts*\""

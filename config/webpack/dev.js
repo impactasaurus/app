@@ -140,7 +140,11 @@ var config = {
     new HtmlWebpackPlugin({
       template: './src/index.ejs'
     })
-  ]
+  ],
+  devServer: {
+    hot: true,
+    historyApiFallback: true,
+  }
 };
 
 const copySync = (src, dest, overwrite) => {
