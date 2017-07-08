@@ -1,11 +1,12 @@
 import * as React from 'react';
 import {Icon} from 'semantic-ui-react';
-const style = require('./style.css');
+import './style.less';
 
 interface IProps {
   text: string;
   title: string;
   icon: string;
+  onClick?: React.ReactEventHandler<any>;
 }
 
 class FancyBox extends React.Component<IProps, any> {
@@ -16,10 +17,10 @@ class FancyBox extends React.Component<IProps, any> {
 
   public render() {
     return (
-      <div className={style.Wrapper}>
+      <div className="FancyBox" onClick={this.props.onClick}>
         <Icon name={this.props.icon} />
-        <span className={style.Title}>{this.props.title}</span>
-        <p className={style.Text}>{this.props.text}</p>
+        <h2>{this.props.title}</h2>
+        <p>{this.props.text}</p>
       </div>
     );
   }
