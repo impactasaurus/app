@@ -1,0 +1,25 @@
+@import (reference) './../../theme/variables.less';
+
+#conduct {
+  .submit {
+    background-color: @primary;
+    color: @primaryTextColor;
+    display: block;
+    margin: auto;
+    margin-top: 20px;
+  }
+  .label, .conductedDate {
+    display: block;
+  }
+  .label {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+  }
+  .label:after {
+    content: ":";
+  }
+  .conductedDate {
+    margin-bottom: 5px;
+  }
+}

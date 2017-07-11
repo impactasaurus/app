@@ -5,9 +5,11 @@ import {IOutcomeSet} from 'models/outcomeSet';
 import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
+import * as moment from 'moment';
 import { Button, Select, Input } from 'semantic-ui-react';
+import {DateTimePicker} from 'components/DateTimePicker';
+import './style.less';
 const { connect } = require('react-redux');
-const style = require('./style.css');
 
 interface IProp extends IOutcomeMutation, IMeetingMutation, IURLConnector {
   data: IOutcomeResult;
@@ -17,6 +19,7 @@ interface IState {
   startMeetingError: string;
   selectedOS?: string;
   selectedBenID?: string;
+  conducted: moment.Moment;
 }
 
 @connect(undefined, (dispatch) => ({
@@ -28,17 +31,20 @@ class ConductInner extends React.Component<IProp, IState> {
     super(props);
     this.state = {
       startMeetingError: undefined,
+      conducted: moment(),
     };
     this.renderNewMeetingControl = this.renderNewMeetingControl.bind(this);
     this.startMeeting = this.startMeeting.bind(this);
     this.setOS = this.setOS.bind(this);
     this.setBenID = this.setBenID.bind(this);
+    this.setConductedDate = this.setConductedDate.bind(this);
   }
 
   private startMeeting() {
     const benID = this.state.selectedBenID;
     const osID = this.state.selectedOS;
-    this.props.newMeeting(benID, osID, new Date())
+    const conducted = this.state.conducted;
+    this.props.newMeeting(benID, osID, conducted.toDate())
     .then((meeting) => {
       this.props.setURL(`/meeting/${meeting.id}`);
     })
@@ -74,12 +80,23 @@ class ConductInner extends React.Component<IProp, IState> {
     });
   }
 
+  private setConductedDate(date: moment.Moment) {
+    this.setState({
+      conducted: date,
+    });
+  }
+
   private renderNewMeetingControl(outcomeSets: IOutcomeSet[]|undefined): JSX.Element {
     return (
       <div>
+        <h3 className="label">Beneficiary ID</h3>
         <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID} />
+        <h3 className="label">Question Set</h3>
         <Select placeholder="Outcome Set" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
-        <Button onClick={this.startMeeting}>Start</Button>
+        <h3 className="label">Date Conducted</h3>
+        <span className="conductedDate">{this.state.conducted.format('llll')}</span>
+        <DateTimePicker moment={this.state.conducted} onChange={this.setConductedDate}/>
+        <Button className="submit" onClick={this.startMeeting}>Start</Button>
         <p>{this.state.startMeetingError}</p>
       </div>
     );
@@ -88,14 +105,8 @@ class ConductInner extends React.Component<IProp, IState> {
   public render() {
     const { data } = this.props;
     return (
-      <div className={style.Home}>
-        <p>
-          Conduct meetings with beneficiaries here <br />
-          Initially capture: Beneficiary ID, question set to use and time meeting was conducted <br />
-          Then show questions from question set, recording each response from the beneficiary <br />
-        </p>
-        <hr />
-        <h2>Start Meeting</h2>
+      <div id="conduct">
+        <h1>Conduct Meeting</h1>
         {this.renderNewMeetingControl(data.allOutcomeSets)}
       </div>
     );

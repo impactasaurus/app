@@ -20,7 +20,7 @@ class FancyBox extends React.Component<IProps, any> {
       <div className="FancyBox" onClick={this.props.onClick}>
         <Icon name={this.props.icon} />
         <h1>{this.props.title}</h1>
-        <p>{this.props.text}</p>
+        <h3>{this.props.text}</h3>
       </div>
     );
   }
