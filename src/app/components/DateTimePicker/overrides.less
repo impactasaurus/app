@@ -1,6 +1,17 @@
+@import (reference) './../../theme/variables.less';
+
 .DateTimePicker {
   .btn-save {
     display: none;
+  }
+  .current-day {
+    color: @primaryTextColor;
+    background-color: @primary !important;
+    border-color: @primary;
+  }
+  tbody td:hover{
+    background-color: @primaryll;
+    border-color: @primaryll;
   }
   .chevron.icon {
     margin: auto;
