@@ -1,29 +1,33 @@
 @import (reference) './../../theme/variables.less';
 
 .DateTimePicker {
-  .btn-save {
+
+  button.btn-save {
     display: none;
   }
-  .current-day {
-    color: @primaryTextColor;
-    background-color: @primary !important;
-    border-color: @primary;
-  }
-  tbody td:hover{
-    background-color: @primaryll;
-    border-color: @primaryll;
-  }
-  .chevron.icon {
-    margin: auto;
-    height: 100%;
-    width: 100%;
-
-    &.right {
-      padding-left: 3px;
+ 
+  .m-calendar  {
+    .current-day {
+      color: @primaryTextColor;
+      background-color: @primary !important;
+      border-color: @primary;
     }
+    tbody td:hover{
+      background-color: @primaryll;
+      border-color: @primaryll;
+    }
+    .chevron.icon {
+      margin: auto;
+      height: 100%;
+      width: 100%;
 
-    &.left {
-      padding-right: 3px;
+      &.right {
+        padding-left: 3px;
+      }
+
+      &.left {
+        padding-right: 3px;
+      }
     }
   }
 }
