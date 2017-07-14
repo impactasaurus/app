@@ -1,0 +1,26 @@
+@import (reference) './../../theme/variables.less';
+
+#meeting {
+  .likert-scale {
+    width: 50vw;
+    margin: auto;
+    margin-top: 50px;
+    margin-bottom: 60px;
+
+    .rc-slider-track {
+      background-color: @primary;
+    }
+
+    .rc-slider-handle {
+      border-color: @primary;
+
+      &:active {
+        box-shadow: 0 0 5px lighten(@primary, 10%);
+      }
+    }
+
+    .rc-slider-dot-active {
+      border-color: @primary;
+    }
+  }
+}

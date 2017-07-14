@@ -4,7 +4,7 @@ import {Question} from 'models/question';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { Button } from 'semantic-ui-react';
-const style = require('./style.css');
+import './style.less';
 
 interface IProps extends IMeetingMutation {
   data: IMeetingResult;
@@ -113,10 +113,16 @@ class MeetingInner extends React.Component<IProps, IState> {
       );
     }
     const q = question as Question;
+    let marks;
+    if (q.maxLabel !== null || q.minLabel !== null) {
+      marks = {};
+      marks[q.maxValue] = q.maxLabel;
+      marks[q.minValue] = q.minLabel;
+    }
     return (
-      <div>
-        <h3>{question.question}</h3>
-        <Slider className={style.likertScale} min={q.minValue} max={q.maxValue} defaultValue={q.minValue} onChange={this.setAnswer} />
+      <div id="meeting">
+        <h1>{question.question}</h1>
+        <Slider className="likert-scale" min={q.minValue} max={q.maxValue} defaultValue={Math.floor((q.maxValue-q.minValue)/2)} marks={marks} dots={true} onChange={this.setAnswer} />
         <Button onClick={this.next}>Next</Button>
         <p>{this.state.saveError}</p>
       </div>
