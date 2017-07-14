@@ -5,8 +5,12 @@ import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { Button } from 'semantic-ui-react';
 import './style.less';
+import {setURL} from 'modules/url';
+import { bindActionCreators } from 'redux';
+import {IURLConnector} from 'redux/modules/url';
+const { connect } = require('react-redux');
 
-interface IProps extends IMeetingMutation {
+interface IProps extends IMeetingMutation, IURLConnector {
   data: IMeetingResult;
   params: {
       id: string,
@@ -20,6 +24,9 @@ interface IState {
     currentValue?: number;
 };
 
+@connect(undefined, (dispatch) => ({
+  setURL: bindActionCreators(setURL, dispatch),
+}))
 class MeetingInner extends React.Component<IProps, IState> {
 
   constructor(props) {
@@ -32,6 +39,8 @@ class MeetingInner extends React.Component<IProps, IState> {
     this.setAnswer = this.setAnswer.bind(this);
     this.next = this.next.bind(this);
     this.getNextQuestionToAnswer = this.getNextQuestionToAnswer.bind(this);
+    this.renderFinished = this.renderFinished.bind(this);
+    this.review = this.review.bind(this);
   }
 
   public componentDidUpdate() {
@@ -88,17 +97,26 @@ class MeetingInner extends React.Component<IProps, IState> {
     });
   }
 
+  private review() {
+    this.props.setURL(`/review/${this.props.data.getMeeting.beneficiary}`);
+  }
+
+  private renderFinished(): JSX.Element {
+    return (
+      <div id="meeting">
+        <h1>Thanks!</h1>
+        <Button onClick={this.review}>Review</Button>
+      </div>
+    );
+  }
+
   public render() {
     const meeting = this.props.data.getMeeting;
     if (meeting === undefined) {
         return (<div />);
     }
     if (this.state.finished) {
-      return (
-        <div>
-          Thanks!
-        </div>
-      );
+      return this.renderFinished();
     }
     const currentQuestionID = this.state.currentQuestion;
     if (currentQuestionID === undefined) {
