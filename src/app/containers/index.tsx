@@ -3,6 +3,7 @@ export { App } from './App';
 export { Home } from './Home';
 export { Login } from './Login';
 export { Review } from './Review';
+export { ReviewSelector } from './ReviewSelector';
 export { Conduct } from './Conduct';
 export { Settings } from './Settings';
 export { OutcomeSets } from './OutcomeSets';

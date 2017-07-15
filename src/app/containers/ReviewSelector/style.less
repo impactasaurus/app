@@ -1,0 +1,26 @@
+@import (reference) './../../theme/variables.less';
+
+#reviewselector {
+  .submit {
+    background-color: @primary;
+    color: @primaryTextColor;
+    display: block;
+    margin: auto;
+    margin-top: 20px;
+    display: inline-block;
+  }
+  .label {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+    display: inline-block;
+  }
+  input {
+    display: inline-block;
+    margin-left: 1em;
+    margin-right: 1em;
+  }
+  .label:after {
+    content: ":";
+  }
+}
