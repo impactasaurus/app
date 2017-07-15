@@ -14,9 +14,9 @@ interface IProps extends IOutcomeMutation, IQuestionMutation {
 };
 
 interface IState {
-  editError: string;
-  newQuestionError: string;
-  deleteError: string;
+  editError?: string;
+  newQuestionError?: string;
+  deleteError?: string;
   newName?: string;
   newDescription?: string;
   newQuestion?: string;

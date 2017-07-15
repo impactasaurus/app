@@ -14,8 +14,8 @@ interface IProps extends IOutcomeMutation, IURLConnector {
 };
 
 interface IState {
-  createError: string;
-  deleteError: string;
+  createError?: string;
+  deleteError?: string;
   newName?: string;
   newDescription?: string;
 }

@@ -16,10 +16,10 @@ interface IProp extends IOutcomeMutation, IMeetingMutation, IURLConnector {
 }
 
 interface IState {
-  startMeetingError: string;
+  startMeetingError?: string;
   selectedOS?: string;
   selectedBenID?: string;
-  conducted: moment.Moment;
+  conducted?: moment.Moment;
 }
 
 @connect(undefined, (dispatch) => ({
