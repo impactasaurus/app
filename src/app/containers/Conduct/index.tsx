@@ -20,6 +20,7 @@ interface IState {
   selectedOS?: string;
   selectedBenID?: string;
   conducted?: moment.Moment;
+  dateSelectionError?: string;
 }
 
 @connect(undefined, (dispatch) => ({
@@ -81,12 +82,21 @@ class ConductInner extends React.Component<IProp, IState> {
   }
 
   private setConductedDate(date: moment.Moment) {
+    if (date > moment()) {
+      this.setState({
+        dateSelectionError: 'Conducted date must be in the past',
+        conducted: this.state.conducted,
+      });
+      return;
+    }
     this.setState({
       conducted: date,
+      dateSelectionError: undefined,
     });
   }
 
   private renderNewMeetingControl(outcomeSets: IOutcomeSet[]|undefined): JSX.Element {
+    const conductedCopy = this.state.conducted.clone();
     return (
       <div>
         <h3 className="label">Beneficiary ID</h3>
@@ -95,7 +105,8 @@ class ConductInner extends React.Component<IProp, IState> {
         <Select placeholder="Outcome Set" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
         <h3 className="label">Date Conducted</h3>
         <span className="conductedDate">{this.state.conducted.format('llll')}</span>
-        <DateTimePicker moment={this.state.conducted} onChange={this.setConductedDate}/>
+        <DateTimePicker moment={conductedCopy} onChange={this.setConductedDate}/>
+        <p>{this.state.dateSelectionError}</p>
         <Button className="submit" onClick={this.startMeeting}>Start</Button>
         <p>{this.state.startMeetingError}</p>
       </div>
