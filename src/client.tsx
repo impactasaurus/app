@@ -15,8 +15,10 @@ import 'semantic-ui-less/semantic.less';
 
 import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo';
 
+const appConfig = require('../config/main');
+
 const networkInterface = createNetworkInterface({
-  uri: 'https://impact-server.herokuapp.com/v1/graphql',
+  uri: appConfig.app.api,
 });
 networkInterface.use([{
   applyMiddleware(req, next) {
