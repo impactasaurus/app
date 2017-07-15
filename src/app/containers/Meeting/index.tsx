@@ -55,14 +55,15 @@ class MeetingInner extends React.Component<IProps, IState> {
         });
       } else {
         this.setState({
-          currentQuestion: nextQuestion,
+          currentQuestion: nextQuestion.id,
+          currentValue: this.getDefaultValue(nextQuestion),
           finished: false,
         });
       }
     }
   }
 
-  private getNextQuestionToAnswer(): string|null {
+  private getNextQuestionToAnswer(): Question|null {
     const questionsToAnswer = this.props.data.getMeeting.outcomeSet.questions.filter((question) => {
       const found = this.props.data.getMeeting.answers.find((answer) => answer.questionID === question.id);
       if (found === undefined) {
@@ -71,7 +72,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       return false;
     });
     if (questionsToAnswer.length > 0) {
-      return questionsToAnswer[0].id;
+      return questionsToAnswer[0] as Question;
     }
     return null;
   }
@@ -82,12 +83,15 @@ class MeetingInner extends React.Component<IProps, IState> {
     });
   }
 
+  private getDefaultValue(q: Question): number {
+    return Math.floor((q.maxValue-q.minValue)/2);
+  }
+
   private next() {
     this.props.addLikertAnswer(this.props.params.id, this.state.currentQuestion, this.state.currentValue)
     .then(() => {
       this.setState({
         currentQuestion: undefined,
-        currentValue: 0,
       });
     })
     .catch((e: string) => {
@@ -140,7 +144,7 @@ class MeetingInner extends React.Component<IProps, IState> {
     return (
       <div id="meeting">
         <h1>{question.question}</h1>
-        <Slider className="likert-scale" min={q.minValue} max={q.maxValue} defaultValue={Math.floor((q.maxValue-q.minValue)/2)} marks={marks} dots={true} onChange={this.setAnswer} />
+        <Slider className="likert-scale" min={q.minValue} max={q.maxValue} defaultValue={this.getDefaultValue(q)} marks={marks} dots={true} onChange={this.setAnswer} />
         <Button onClick={this.next}>Next</Button>
         <p>{this.state.saveError}</p>
       </div>
