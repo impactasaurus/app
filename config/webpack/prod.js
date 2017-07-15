@@ -63,33 +63,29 @@ var config = {
       {
         test: /\.css$/,
         include: path.resolve('./src/app'),
-        loader: ExtractTextPlugin.extract({
-          fallbackLoader: 'style-loader',
-          loader: [
-            'css-loader?modules&importLoaders=2&localIdentName=[local]___[hash:base64:5]',
-            {
-              loader: 'postcss-loader',
-              options: {
-                plugins: (loader) => [
-                  require('postcss-import')({
-                    root: loader.resourcePath
-                  }),
-                  require('postcss-simple-vars')(),
-                ]
-              }
-            },
-          ]
-        })
+        loaders: [
+          'style-loader',
+          'css-loader?modules&importLoaders=2&localIdentName=[local]___[hash:base64:5]',
+          {
+            loader: 'postcss-loader',
+            options: {
+              plugins: (loader) => [
+                require('postcss-import')({
+                  root: loader.resourcePath
+                }),
+                require('postcss-simple-vars')(),
+              ]
+            }
+          },
+        ]
       },
       {
         test: /\.css$/,
         exclude: path.resolve('./src/app'),
-        loader: ExtractTextPlugin.extract({
-          fallbackLoader: 'style-loader',
-          loader: [
-            'css-loader',
-          ]
-        })
+        loaders: [
+          'style-loader',
+          'css-loader'
+        ]
       },
       {
         test: /\.less$/,
