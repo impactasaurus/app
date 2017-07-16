@@ -6,7 +6,7 @@ import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import * as moment from 'moment';
-import { Button, Select, Input } from 'semantic-ui-react';
+import { Button, Select, Input, Grid } from 'semantic-ui-react';
 import {DateTimePicker} from 'components/DateTimePicker';
 import './style.less';
 const { connect } = require('react-redux');
@@ -116,10 +116,12 @@ class ConductInner extends React.Component<IProp, IState> {
   public render() {
     const { data } = this.props;
     return (
-      <div id="conduct">
-        <h1>Conduct Meeting</h1>
-        {this.renderNewMeetingControl(data.allOutcomeSets)}
-      </div>
+      <Grid container columns={1} id="conduct">
+        <Grid.Column>
+          <h1>Conduct Meeting</h1>
+          {this.renderNewMeetingControl(data.allOutcomeSets)}
+        </Grid.Column>
+      </Grid>
     );
   }
 }

@@ -3,7 +3,7 @@ import {IMeetingResult, IMeetingMutation, getMeeting, addLikertAnswer} from 'apo
 import {Question} from 'models/question';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import { Button } from 'semantic-ui-react';
+import { Button, Grid } from 'semantic-ui-react';
 import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
@@ -142,12 +142,14 @@ class MeetingInner extends React.Component<IProps, IState> {
       marks[q.minValue] = q.minLabel;
     }
     return (
-      <div id="meeting">
-        <h1>{question.question}</h1>
-        <Slider className="likert-scale" min={q.minValue} max={q.maxValue} defaultValue={this.getDefaultValue(q)} marks={marks} dots={true} onChange={this.setAnswer} />
-        <Button onClick={this.next}>Next</Button>
-        <p>{this.state.saveError}</p>
-      </div>
+      <Grid container columns={1} id="meeting">
+        <Grid.Column>
+          <h1>{question.question}</h1>
+          <Slider className="likert-scale" min={q.minValue} max={q.maxValue} defaultValue={this.getDefaultValue(q)} marks={marks} dots={true} onChange={this.setAnswer} />
+          <Button onClick={this.next}>Next</Button>
+          <p>{this.state.saveError}</p>
+        </Grid.Column>
+      </Grid>
     );
   }
 }

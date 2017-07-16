@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Input } from 'semantic-ui-react';
+import { Button, Input, Grid } from 'semantic-ui-react';
 import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
@@ -35,13 +35,15 @@ class ReviewSelector extends React.Component<IURLConnector, IState> {
 
   public render() {
     return (
-      <div id="reviewselector">
-        <h1>Review</h1>
-        <h3 className="label">Beneficiary ID</h3>
-        <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID}/>
-        <Button className="submit" onClick={this.review}>Review</Button>
-        {this.props.children}
-      </div>
+      <Grid container columns={1} id="reviewselector">
+        <Grid.Column>
+          <h1>Review</h1>
+          <h3 className="label">Beneficiary ID</h3>
+          <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID}/>
+          <Button className="submit" onClick={this.review}>Review</Button>
+          {this.props.children}
+        </Grid.Column>
+      </Grid>
     );
   }
 }

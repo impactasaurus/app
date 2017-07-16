@@ -48,8 +48,8 @@ class MeetingViewInner extends React.Component<IProp, any> {
     return (
       <div className="meeting-view">
         <h2>{this.props.beneficiaryID}</h2>
-        <div id="wrapper" style={{position: 'relative',height: '50vh', width:'50vw', margin:'auto'}}>
-          <canvas id={this.canvasID} width={500} height={500} />
+        <div id="wrapper" style={{position: 'relative', margin:'auto'}}>
+          <canvas id={this.canvasID} />
         </div>
       </div>
     );
