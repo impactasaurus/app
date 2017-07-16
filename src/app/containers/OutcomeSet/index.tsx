@@ -21,6 +21,7 @@ interface IState {
   newDescription?: string;
   newQuestion?: string;
   newClicked?: boolean;
+  editClicked?: boolean;
 };
 
 class OutcomeSetInner extends React.Component<IProps, IState> {
@@ -42,6 +43,8 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     this.setNewDescription = this.setNewDescription.bind(this);
     this.setNewQuestion = this.setNewQuestion.bind(this);
     this.setNewClicked = this.setNewClicked.bind(this);
+    this.setEditClicked = this.setEditClicked.bind(this);
+    this.renderEditButton = this.renderEditButton.bind(this);
   }
 
   private editQS() {
@@ -53,6 +56,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     .then(() => {
       this.setState({
         editError: undefined,
+        editClicked: false,
       });
     })
     .catch((e: Error)=> {
@@ -118,9 +122,18 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     });
   }
 
+  private setEditClicked() {
+    this.setState({
+      editClicked: true,
+    });
+  }
+
   private renderEditControl(): JSX.Element {
+    if (this.state.editClicked !== true) {
+      return (<div />);
+    }
     return (
-      <div>
+      <div className="edit-control">
         <Input type="text" placeholder="Name" onChange={this.setNewName} defaultValue={this.props.data.getOutcomeSet.name}/>
         <Input type="text" placeholder="Description" onChange={this.setNewDescription} defaultValue={this.props.data.getOutcomeSet.description}/>
         <Button onClick={this.editQS}>Edit</Button>
@@ -133,8 +146,8 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     return (
       <List.Item className="question" key={q.id}>
         <List.Content floated="right">
-          <Button icon onClick={this.deleteQuestion(q.id)}>
-            <Icon name="delete" />
+          <Button icon size="mini" onClick={this.deleteQuestion(q.id)}>
+            <Icon name="delete"/>
           </Button>
           <p>{this.state.deleteError}</p>
         </List.Content>
@@ -165,6 +178,17 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     }
   }
 
+  private renderEditButton(): JSX.Element {
+    if (this.state.editClicked === true) {
+      return (<div />);
+    }
+    return (
+      <Button icon basic circular size="mini" onClick={this.setEditClicked}>
+        <Icon name="pencil"/>
+      </Button>
+    );
+  }
+
   public render() {
     const { data } = this.props;
     const os = data.getOutcomeSet;
@@ -174,8 +198,8 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     return (
       <Grid container columns={1} id="question-set">
         <Grid.Column>
-          <h1>{os.name}</h1>
-          <h3>{os.description}</h3>
+          <h1>{os.name}{this.renderEditButton()}</h1>
+          <h3>{os.description}{this.renderEditButton()}</h3>
           {this.renderEditControl()}
           <List divided relaxed verticalAlign="middle" className="list">
             {renderArray(this.renderQuestion, os.questions)}
