@@ -16,7 +16,7 @@ export const addLikertQuestion = graphql(gql`
             question,
             maxValue,
           },
-      }).then(mutationResultExtractor<IOutcomeSet>('newQuestionSet')),
+      }).then(mutationResultExtractor<IOutcomeSet>('addLikertQuestion')),
     }),
   });
 
@@ -33,7 +33,7 @@ export const deleteQuestion = graphql(gql`
             outcomeSetID,
             questionID,
           },
-      }).then(mutationResultExtractor<IOutcomeSet>('newQuestionSet')),
+      }).then(mutationResultExtractor<IOutcomeSet>('deleteQuestion')),
     }),
   });
 

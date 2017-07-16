@@ -3,8 +3,8 @@ import {IOutcomeResult, getOutcomeSet, IOutcomeMutation, editQuestionSet} from '
 import {IQuestionMutation, addLikertQuestion, deleteQuestion} from 'apollo/modules/questions';
 import {renderArray} from 'helpers/react';
 import {Question} from 'models/question';
-import { Button, Input } from 'semantic-ui-react';
-const style = require('./style.css');
+import { Button, Input, List, Icon, Grid} from 'semantic-ui-react';
+import './style.less';
 
 interface IProps extends IOutcomeMutation, IQuestionMutation {
   data: IOutcomeResult;
@@ -20,6 +20,7 @@ interface IState {
   newName?: string;
   newDescription?: string;
   newQuestion?: string;
+  newClicked?: boolean;
 };
 
 class OutcomeSetInner extends React.Component<IProps, IState> {
@@ -40,10 +41,15 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     this.setNewName = this.setNewName.bind(this);
     this.setNewDescription = this.setNewDescription.bind(this);
     this.setNewQuestion = this.setNewQuestion.bind(this);
+    this.setNewClicked = this.setNewClicked.bind(this);
   }
 
   private editQS() {
-    this.props.editQuestionSet(this.props.params.id, this.state.newName, this.state.newDescription)
+    this.props.editQuestionSet(
+      this.props.params.id,
+      this.state.newName || this.props.data.getOutcomeSet.name,
+      this.state.newDescription || this.props.data.getOutcomeSet.description,
+    )
     .then(() => {
       this.setState({
         editError: undefined,
@@ -75,8 +81,10 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
   private addQuestion() {
     this.props.addLikertQuestion(this.props.params.id, this.state.newQuestion, 10)
     .then(() => {
+      console.log('tere');
       this.setState({
         newQuestionError: undefined,
+        newClicked: false,
       });
     })
     .catch((e: Error)=> {
@@ -104,11 +112,17 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     });
   }
 
+  private setNewClicked() {
+    this.setState({
+      newClicked: true,
+    });
+  }
+
   private renderEditControl(): JSX.Element {
     return (
       <div>
-        <Input type="text" placeholder="Name" onChange={this.setNewName}/>
-        <Input type="text" placeholder="Description" onChange={this.setNewDescription}/>
+        <Input type="text" placeholder="Name" onChange={this.setNewName} defaultValue={this.props.data.getOutcomeSet.name}/>
+        <Input type="text" placeholder="Description" onChange={this.setNewDescription} defaultValue={this.props.data.getOutcomeSet.description}/>
         <Button onClick={this.editQS}>Edit</Button>
         <p>{this.state.editError}</p>
       </div>
@@ -117,22 +131,38 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
 
   private renderQuestion(q: Question): JSX.Element {
     return (
-      <div key={q.id} className={style.Question}>
-        <p>question: {q.question}</p>
-        <Button onClick={this.deleteQuestion(q.id)}>Delete</Button>
-        <p>{this.state.deleteError}</p>
-      </div>
+      <List.Item className="question" key={q.id}>
+        <List.Content floated="right">
+          <Button icon onClick={this.deleteQuestion(q.id)}>
+            <Icon name="delete" />
+          </Button>
+          <p>{this.state.deleteError}</p>
+        </List.Content>
+        <List.Content>{q.question}</List.Content>
+      </List.Item>
     );
   }
 
   private renderNewQuestionControl(): JSX.Element {
-    return (
-      <div>
-        <Input type="text" placeholder="Question" onChange={this.setNewQuestion}/>
-        <Button onClick={this.addQuestion}>Add</Button>
-        <p>{this.state.newQuestionError}</p>
-      </div>
-    );
+    if (this.state.newClicked === true) {
+      return (
+        <List.Item className="new-control">
+          <List.Content>
+            <Input type="text" placeholder="Question" onChange={this.setNewQuestion}/>
+            <Button onClick={this.addQuestion}>Add</Button>
+            <p>{this.state.newQuestionError}</p>
+          </List.Content>
+        </List.Item>
+      );
+    } else {
+      return (
+        <List.Item className="new-control">
+          <List.Content onClick={this.setNewClicked}>
+            <List.Header as="a">New Question</List.Header>
+          </List.Content>
+        </List.Item>
+      );
+    }
   }
 
   public render() {
@@ -142,17 +172,17 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
         return (<div />);
     }
     return (
-      <div className={style.Home}>
-        <p>name: {os.name}</p>
-        <p>description: {os.description}</p>
-        {this.renderEditControl()}
-        <hr />
-        <h2>Questions</h2>
-        <div>
-          {renderArray(this.renderQuestion, os.questions)}
-        </div>
-        {this.renderNewQuestionControl()}
-      </div>
+      <Grid container columns={1} id="question-set">
+        <Grid.Column>
+          <h1>{os.name}</h1>
+          <h3>{os.description}</h3>
+          {this.renderEditControl()}
+          <List divided relaxed verticalAlign="middle" className="list">
+            {renderArray(this.renderQuestion, os.questions)}
+            {this.renderNewQuestionControl()}
+          </List>
+        </Grid.Column>
+      </Grid>
     );
   }
 }
