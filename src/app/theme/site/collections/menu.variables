@@ -17,3 +17,8 @@
 @dropdownSelectedItemColor: @menuSelectedTextColor;
 @dropdownActiveItemColor: @menuSelectedTextColor;
 @subMenuActiveTextColor: @menuSelectedTextColor;
+
+@secondaryPointingActiveFontWeight: normal;
+@secondaryPointingActiveTextColor: @primary;
+@secondaryPointingActiveBorderColor: @primary;
+@secondaryPointingHoverTextColor: @primaryl;

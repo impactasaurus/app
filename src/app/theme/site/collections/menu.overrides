@@ -1,0 +1,5 @@
+@import (reference) './../../variables.less';
+
+.ui.secondary.menu .item {
+  color: @gray;
+}
