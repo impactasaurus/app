@@ -11,9 +11,8 @@ export default (
     </Route>
     <Route path="settings" component={Settings}>
       <Route path="questions" component={OutcomeSets} />
+      <Route path="questions/:id" component={OutcomeSet} />
     </Route>
-    <Route path="outcomeset" component={OutcomeSets} />
-    <Route path="outcomeset/:id" component={OutcomeSet} />
     <Route path="login" component={Login} />
     <Route path="meeting/:id" component={Meeting} />
   </Route>

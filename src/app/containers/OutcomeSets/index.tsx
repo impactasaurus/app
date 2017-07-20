@@ -42,7 +42,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
   }
 
   private navigateToOutcomeSet(id: string) {
-    return () => this.props.setURL(`/outcomeset/${id}`);
+    return () => this.props.setURL(`/settings/questions/${id}`);
   }
 
   private createQS() {
@@ -77,7 +77,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
 
   private renderOutcomeSet(os: IOutcomeSet): JSX.Element {
     return (
-      <List.Item className="question-set">
+      <List.Item className="question-set" key={os.id}>
         <List.Content floated="right">
           <Button icon onClick={this.deleteQS(os.id)}>
             <Icon name="delete" />
@@ -112,7 +112,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
   private renderNewControl(): JSX.Element {
     if (this.state.newClicked) {
       return (
-        <List.Item className="new-control">
+        <List.Item className="new-control" key="new">
           <List.Content>
             <Input type="text" placeholder="Name" onChange={this.setNewName}/>
             <Input type="text" placeholder="Description" onChange={this.setNewDescription}/>
@@ -123,7 +123,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
       );
     } else {
       return (
-        <List.Item className="new-control">
+        <List.Item className="new-control" key="new">
           <List.Content onClick={this.setNewClicked}>
             <List.Header as="a">New Question Set</List.Header>
           </List.Content>
