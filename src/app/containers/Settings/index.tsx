@@ -41,6 +41,7 @@ class Settings extends React.Component<IProps, any> {
       <div id="settings">
         <Menu pointing secondary>
           <Menu.Item name="Question Sets" active={this.isSelected('/settings/questions')} onClick={this.handleClick('/settings/questions')} />
+          <Menu.Item name="Organisation" active={this.isSelected('/settings/organisation')} onClick={this.handleClick('/settings/organisation')} />
         </Menu>
 
         {this.props.children}

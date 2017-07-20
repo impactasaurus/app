@@ -9,3 +9,4 @@ export { Settings } from './Settings';
 export { OutcomeSets } from './OutcomeSets';
 export { OutcomeSet } from './OutcomeSet';
 export { Meeting } from './Meeting';
+export { Organisation } from './Organisation';
