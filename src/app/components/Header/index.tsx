@@ -3,43 +3,50 @@ import { Menu } from 'semantic-ui-react';
 import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
+import {IStore} from 'redux/IStore';
 const { connect } = require('react-redux');
 
-interface IState {
-  active: string;
+interface IProps extends IURLConnector  {
+  currentURL?: string;
 }
 
-@connect(undefined, (dispatch) => ({
+@connect((state: IStore): IProps => {
+  return {
+    currentURL: state.routing.locationBeforeTransitions.pathname,
+  };
+}, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
-class Header extends React.Component<IURLConnector, IState> {
+class Header extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
-    this.state = {
-      active: 'home',
-    };
+    this.isActive = this.isActive.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  private isActive(url: string, exact: boolean = false): boolean {
+    if (exact) {
+      return this.props.currentURL === url;
+    }
+    return this.props.currentURL !== undefined && this.props.currentURL.includes(url);
   }
 
   private handleClick(url: string) {
-    return (_, { name }) => {
-      this.setState({
-        active: name,
-      });
+    return () => {
       this.props.setURL(url);
     };
   }
 
   public render() {
-    const activeItem = this.state.active;
     return (
       <Menu size="massive">
-        <Menu.Item name="home" active={activeItem === 'home'} onClick={this.handleClick('/')} />
-        <Menu.Item name="conduct" active={activeItem === 'conduct'} onClick={this.handleClick('/conduct')} />
-        <Menu.Item name="review" active={activeItem === 'review'} onClick={this.handleClick('/review')} />
+        <Menu.Item name="home" active={this.isActive('/', true)} onClick={this.handleClick('/')} />
+        <Menu.Item name="conduct" active={this.isActive('/conduct') || this.isActive('/meeting')} onClick={this.handleClick('/conduct')} />
+        <Menu.Item name="review" active={this.isActive('/review')} onClick={this.handleClick('/review')} />
 
         <Menu.Menu position="right">
-          <Menu.Item name="settings" active={activeItem === 'settings'} onClick={this.handleClick('/settings')} />
+          <Menu.Item name="settings" active={this.isActive('/settings')} onClick={this.handleClick('/settings')} />
         </Menu.Menu>
       </Menu>
     );
