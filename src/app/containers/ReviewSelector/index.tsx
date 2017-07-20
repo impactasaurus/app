@@ -4,7 +4,9 @@ import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import {IURLConnector} from 'redux/modules/url';
+import {Hint} from 'components/Hint';
 const { connect } = require('react-redux');
+const strings = require('./../../../strings.json');
 
 interface IState {
   enteredBenID?: string;
@@ -39,7 +41,7 @@ class ReviewSelector extends React.Component<IURLConnector, IState> {
         <Grid.Column>
           <div id="reviewselector">
             <h1>Review</h1>
-            <h3 className="label">Beneficiary ID</h3>
+            <span className="label"><Hint text={strings.beneficiaryIDExplanation} /><h3>Beneficiary ID</h3></span>
             <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID}/>
             <Button className="submit" onClick={this.review}>Review</Button>
           </div>

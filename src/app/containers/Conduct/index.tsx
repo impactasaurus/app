@@ -8,7 +8,9 @@ import { bindActionCreators } from 'redux';
 import * as moment from 'moment';
 import { Button, Select, Input, Grid } from 'semantic-ui-react';
 import {DateTimePicker} from 'components/DateTimePicker';
+import {Hint} from 'components/Hint';
 import './style.less';
+const strings = require('./../../../strings.json');
 const { connect } = require('react-redux');
 
 interface IProp extends IOutcomeMutation, IMeetingMutation, IURLConnector {
@@ -99,7 +101,7 @@ class ConductInner extends React.Component<IProp, IState> {
     const conductedCopy = this.state.conducted.clone();
     return (
       <div>
-        <h3 className="label">Beneficiary ID</h3>
+        <span className="label"><Hint text={strings.beneficiaryIDExplanation} /><h3 id="benID">Beneficiary ID</h3></span>
         <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID} />
         <h3 className="label">Question Set</h3>
         <Select placeholder="Outcome Set" onChange={this.setOS} options={this.getOptions(outcomeSets)} />

@@ -11,7 +11,9 @@ import { configureStore } from './app/redux/store';
 import { getToken } from 'helpers/auth';
 import 'isomorphic-fetch';
 import routes from './app/routes';
+
 import 'semantic-ui-less/semantic.less';
+import 'balloon-css/balloon.css';
 
 import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo';
 

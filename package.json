@@ -109,6 +109,7 @@
   "dependencies": {
     "@ald-life/outcome-graph": "1.0.1",
     "auth0-lock": "10.16.0",
+    "balloon-css": "0.4.0",
     "es6-promise": "4.0.5",
     "history": "4.5.1",
     "input-moment": "0.3.4",
