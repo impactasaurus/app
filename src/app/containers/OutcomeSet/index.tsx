@@ -119,6 +119,10 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
   }
 
   private renderQuestion(q: Question): JSX.Element {
+    let descripton = '';
+    if (q.minLabel || q.maxLabel) {
+      descripton = `${q.minLabel} > ${q.maxLabel}`;
+    }
     return (
       <List.Item className="question" key={q.id}>
         <List.Content floated="right">
@@ -127,7 +131,8 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
           </Button>
           <p>{this.state.deleteError}</p>
         </List.Content>
-        <List.Content>{q.question}</List.Content>
+        <List.Header>{q.question}</List.Header>
+        <List.Description>{descripton}</List.Description>
       </List.Item>
     );
   }

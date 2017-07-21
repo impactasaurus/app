@@ -1,0 +1,5 @@
+@import (reference) './../../variables.less';
+
+@itemHeaderFontFamily: inherit;
+@itemHeaderFontWeight: normal;
+@itemHeaderColor: @primary;

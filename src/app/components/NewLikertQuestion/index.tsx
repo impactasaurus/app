@@ -58,7 +58,9 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
   public render() {
     return (
       <div>
-        <Input type="text" placeholder="Question" onChange={this.setNewQuestion}/>
+        <Input type="text" placeholder="Question" onChange={this.setNewQuestion} />
+        <Input type="text" placeholder="Negative Label" onChange={this.setMinLabel}/>
+        <Input type="text" placeholder="Positive Label" onChange={this.setMaxLabel}/>
         <Button onClick={this.addQuestion}>Add</Button>
         <p>{this.state.newQuestionError}</p>
       </div>
