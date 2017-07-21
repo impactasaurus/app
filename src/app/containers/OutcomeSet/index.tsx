@@ -1,9 +1,10 @@
 import * as React from 'react';
 import {IOutcomeResult, getOutcomeSet, IOutcomeMutation, editQuestionSet} from 'apollo/modules/outcomeSets';
-import {IQuestionMutation, addLikertQuestion, deleteQuestion} from 'apollo/modules/questions';
+import {IQuestionMutation, deleteQuestion} from 'apollo/modules/questions';
 import {renderArray} from 'helpers/react';
 import {Question} from 'models/question';
 import { Button, Input, List, Icon, Grid} from 'semantic-ui-react';
+import {NewLikertQuestion} from 'components/NewLikertQuestion';
 import './style.less';
 
 interface IProps extends IOutcomeMutation, IQuestionMutation {
@@ -15,11 +16,9 @@ interface IProps extends IOutcomeMutation, IQuestionMutation {
 
 interface IState {
   editError?: string;
-  newQuestionError?: string;
   deleteError?: string;
   newName?: string;
   newDescription?: string;
-  newQuestion?: string;
   newClicked?: boolean;
   editClicked?: boolean;
 };
@@ -30,18 +29,15 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       editError: undefined,
-      newQuestionError: undefined,
       deleteError: undefined,
     };
     this.renderEditControl = this.renderEditControl.bind(this);
     this.editQS = this.editQS.bind(this);
     this.renderNewQuestionControl = this.renderNewQuestionControl.bind(this);
     this.renderQuestion = this.renderQuestion.bind(this);
-    this.addQuestion = this.addQuestion.bind(this);
     this.deleteQuestion = this.deleteQuestion.bind(this);
     this.setNewName = this.setNewName.bind(this);
     this.setNewDescription = this.setNewDescription.bind(this);
-    this.setNewQuestion = this.setNewQuestion.bind(this);
     this.setNewClicked = this.setNewClicked.bind(this);
     this.setEditClicked = this.setEditClicked.bind(this);
     this.renderEditButton = this.renderEditButton.bind(this);
@@ -82,22 +78,6 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     };
   }
 
-  private addQuestion() {
-    this.props.addLikertQuestion(this.props.params.id, this.state.newQuestion, 10)
-    .then(() => {
-      console.log('tere');
-      this.setState({
-        newQuestionError: undefined,
-        newClicked: false,
-      });
-    })
-    .catch((e: Error)=> {
-      this.setState({
-        newQuestionError: e.message,
-      });
-    });
-  }
-
   private setNewName(_, data) {
     this.setState({
       newName: data.value,
@@ -110,16 +90,12 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     });
   }
 
-  private setNewQuestion(_, data) {
-    this.setState({
-      newQuestion: data.value,
-    });
-  }
-
-  private setNewClicked() {
-    this.setState({
-      newClicked: true,
-    });
+  private setNewClicked(newValue: boolean): ()=>void {
+    return () => {
+      this.setState({
+        newClicked: newValue,
+      });
+    };
   }
 
   private setEditClicked() {
@@ -161,16 +137,14 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
       return (
         <List.Item className="new-control">
           <List.Content>
-            <Input type="text" placeholder="Question" onChange={this.setNewQuestion}/>
-            <Button onClick={this.addQuestion}>Add</Button>
-            <p>{this.state.newQuestionError}</p>
+            <NewLikertQuestion QuestionSetID={this.props.params.id} OnSuccess={this.setNewClicked(false)} />
           </List.Content>
         </List.Item>
       );
     } else {
       return (
         <List.Item className="new-control">
-          <List.Content onClick={this.setNewClicked}>
+          <List.Content onClick={this.setNewClicked(true)}>
             <List.Header as="a">New Question</List.Header>
           </List.Content>
         </List.Item>
@@ -210,5 +184,5 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     );
   }
 }
-const OutcomeSet = getOutcomeSet<IProps>((props) => props.params.id)(editQuestionSet(addLikertQuestion(deleteQuestion(OutcomeSetInner))));
+const OutcomeSet = getOutcomeSet<IProps>((props) => props.params.id)(editQuestionSet(deleteQuestion(OutcomeSetInner)));
 export { OutcomeSet }
