@@ -19,7 +19,7 @@ class Home extends React.Component<IURLConnector, any> {
 
   public render() {
     return (
-      <Grid container columns={1} id="conduct">
+      <Grid container columns={1} id="home">
         <Grid.Column>
           <FancyBox text="Define questions to quantify how much you are aiding your organisation's beneficiaries" title="Define" icon="edit" onClick={this.navigate('/settings/questions')}/>
           <FancyBox text="Conduct meetings during your involvement with a beneficiary" title="Capture" icon="checkmark box" onClick={this.navigate('/conduct')} />
