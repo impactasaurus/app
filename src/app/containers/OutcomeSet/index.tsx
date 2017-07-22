@@ -5,6 +5,7 @@ import {renderArray} from 'helpers/react';
 import {Question} from 'models/question';
 import { Button, Input, List, Icon, Grid} from 'semantic-ui-react';
 import {NewLikertQuestion} from 'components/NewLikertQuestion';
+import {ConfirmButton} from 'components/ConfirmButton';
 import './style.less';
 
 interface IProps extends IOutcomeMutation, IQuestionMutation {
@@ -126,9 +127,9 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     return (
       <List.Item className="question" key={q.id}>
         <List.Content floated="right">
-          <Button icon size="mini" onClick={this.deleteQuestion(q.id)}>
+          <ConfirmButton onConfirm={this.deleteQuestion(q.id)} promptText="Are you sure you want to delete this question?" buttonProps={{icon: true, size: 'mini'}}>
             <Icon name="delete"/>
-          </Button>
+          </ConfirmButton>
           <p>{this.state.deleteError}</p>
         </List.Content>
         <List.Header>{q.question}</List.Header>
