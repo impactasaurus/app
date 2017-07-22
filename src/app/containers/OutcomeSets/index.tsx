@@ -6,6 +6,7 @@ import {renderArray} from 'helpers/react';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import { Button, Input, List, Icon, Grid } from 'semantic-ui-react';
+import {ConfirmButton} from 'components/ConfirmButton';
 import './style.less';
 const { connect } = require('react-redux');
 
@@ -79,9 +80,9 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     return (
       <List.Item className="question-set" key={os.id}>
         <List.Content floated="right">
-          <Button icon onClick={this.deleteQS(os.id)}>
+          <ConfirmButton buttonProps={{icon:true}} promptText={`Are you sure you want to delete the '${os.name}' question set?`} onConfirm={this.deleteQS(os.id)}>
             <Icon name="delete" />
-          </Button>
+          </ConfirmButton>
         </List.Content>
         <List.Content onClick={this.navigateToOutcomeSet(os.id)}>
           <List.Header as="a">{os.name}</List.Header>
