@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { IndexRoute, Route } from 'react-router';
-import { App, Home, Login, Review, ReviewSelector, Conduct, Settings, OutcomeSets, OutcomeSet, Meeting, Organisation } from 'containers';
+import { App, Home, Login, Review, ReviewSelector, Conduct, Settings, OutcomeSets, OutcomeSet, Meeting, Organisation, Account } from 'containers';
 
 export default (
   <Route path="/" component={App}>
@@ -10,6 +10,7 @@ export default (
       <Route path=":id" component={Review} />
     </Route>
     <Route path="settings" component={Settings}>
+      <Route path="account" component={Account} />
       <Route path="organisation" component={Organisation} />
       <Route path="questions" component={OutcomeSets} />
       <Route path="questions/:id" component={OutcomeSet} />

@@ -40,8 +40,9 @@ class Settings extends React.Component<IProps, any> {
     return (
       <div id="settings">
         <Menu pointing secondary>
-          <Menu.Item name="Question Sets" active={this.isSelected('/settings/questions')} onClick={this.handleClick('/settings/questions')} />
+          <Menu.Item name="Account" active={this.isSelected('/settings/account')} onClick={this.handleClick('/settings/account')} />
           <Menu.Item name="Organisation" active={this.isSelected('/settings/organisation')} onClick={this.handleClick('/settings/organisation')} />
+          <Menu.Item name="Question Sets" active={this.isSelected('/settings/questions')} onClick={this.handleClick('/settings/questions')} />
         </Menu>
 
         {this.props.children}

@@ -3,6 +3,7 @@ const appConfig = require('../../../../config/main');
 import * as React from 'react';
 import auth0Lock from 'auth0-lock';
 import {saveAuth} from 'helpers/auth';
+import './style.less';
 
 let count = 0;
 
@@ -36,6 +37,9 @@ class Auth0Lock extends React.Component<IProps, {}> {
           scope: appConfig.app.auth.scope,
         },
       },
+      theme: {
+        primaryColor: '#935D8C',
+      },
     });
     this.lock = new auth0Lock(appConfig.app.auth.clientID, appConfig.app.auth.domain, options);
     this.lock.show();
@@ -57,7 +61,7 @@ class Auth0Lock extends React.Component<IProps, {}> {
 
   public render() {
     return (
-      <div id={this.divID} />
+      <div id={this.divID} className="impact-auth0-lock" />
     );
   }
 }
