@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {IMeetingResult, IMeetingMutation, getMeeting, addLikertAnswer} from 'apollo/modules/meetings';
 import {Question} from 'models/question';
-import Slider from 'rc-slider';
+import { Likert} from 'components/Likert';
 import 'rc-slider/assets/index.css';
 import { Button, Grid } from 'semantic-ui-react';
 import './style.less';
@@ -56,7 +56,6 @@ class MeetingInner extends React.Component<IProps, IState> {
       } else {
         this.setState({
           currentQuestion: nextQuestion.id,
-          currentValue: this.getDefaultValue(nextQuestion),
           finished: false,
         });
       }
@@ -81,10 +80,6 @@ class MeetingInner extends React.Component<IProps, IState> {
     this.setState({
       currentValue: value,
     });
-  }
-
-  private getDefaultValue(q: Question): number {
-    return Math.floor((q.maxValue-q.minValue)/2);
   }
 
   private next() {
@@ -135,17 +130,11 @@ class MeetingInner extends React.Component<IProps, IState> {
       );
     }
     const q = question as Question;
-    let marks;
-    if (q.maxLabel !== null || q.minLabel !== null) {
-      marks = {};
-      marks[q.maxValue] = q.maxLabel;
-      marks[q.minValue] = q.minLabel;
-    }
     return (
       <Grid container columns={1} id="meeting">
         <Grid.Column>
           <h1>{question.question}</h1>
-          <Slider className="likert-scale" min={q.minValue} max={q.maxValue} defaultValue={this.getDefaultValue(q)} marks={marks} dots={true} onChange={this.setAnswer} />
+            <Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} />
           <Button onClick={this.next}>Next</Button>
           <p>{this.state.saveError}</p>
         </Grid.Column>
