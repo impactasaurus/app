@@ -10,8 +10,8 @@ interface IProps extends IQuestionMutation {
 interface IState {
   newQuestionError?: string;
   newQuestion?: string;
-  minLabel?: string;
-  maxLabel?: string;
+  leftLabel?: string;
+  rightLabel?: string;
 }
 
 class NewLikertQuestionInner extends React.Component<IProps, IState> {
@@ -21,12 +21,12 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
     this.state = {};
     this.addQuestion = this.addQuestion.bind(this);
     this.setNewQuestion = this.setNewQuestion.bind(this);
-    this.setMinLabel = this.setMinLabel.bind(this);
-    this.setMaxLabel = this.setMaxLabel.bind(this);
+    this.setLeftLabel = this.setLeftLabel.bind(this);
+    this.setRightLabel = this.setRightLabel.bind(this);
   }
 
   private addQuestion() {
-    this.props.addLikertQuestion(this.props.QuestionSetID, this.state.newQuestion, 10, this.state.minLabel, this.state.maxLabel)
+    this.props.addLikertQuestion(this.props.QuestionSetID, this.state.newQuestion, 10, this.state.leftLabel, this.state.rightLabel)
     .then(() => {
       this.props.OnSuccess();
     })
@@ -43,15 +43,15 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
     });
   }
 
-  private setMinLabel(_, data) {
+  private setLeftLabel(_, data) {
     this.setState({
-      minLabel: data.value,
+      leftLabel: data.value,
     });
   }
 
-  private setMaxLabel(_, data) {
+  private setRightLabel(_, data) {
     this.setState({
-      maxLabel: data.value,
+      rightLabel: data.value,
     });
   }
 
@@ -59,8 +59,8 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
     return (
       <div>
         <Input type="text" placeholder="Question" onChange={this.setNewQuestion} />
-        <Input type="text" placeholder="Negative Label" onChange={this.setMinLabel}/>
-        <Input type="text" placeholder="Positive Label" onChange={this.setMaxLabel}/>
+        <Input type="text" placeholder="Left Label" onChange={this.setLeftLabel}/>
+        <Input type="text" placeholder="Right Label" onChange={this.setRightLabel}/>
         <Button onClick={this.addQuestion}>Add</Button>
         <p>{this.state.newQuestionError}</p>
       </div>
