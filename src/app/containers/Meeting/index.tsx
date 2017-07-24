@@ -3,7 +3,7 @@ import {IMeetingResult, IMeetingMutation, getMeeting, addLikertAnswer} from 'apo
 import {Question} from 'models/question';
 import { Likert} from 'components/Likert';
 import 'rc-slider/assets/index.css';
-import { Button, Grid } from 'semantic-ui-react';
+import { Button, Grid, ButtonProps } from 'semantic-ui-react';
 import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
@@ -20,8 +20,9 @@ interface IProps extends IMeetingMutation, IURLConnector {
 interface IState {
     currentQuestion?: string;
     finished?: boolean;
-    saveError?: string;
     currentValue?: number;
+    saveError?: string;
+    saving?: boolean;
 };
 
 @connect(undefined, (dispatch) => ({
@@ -35,6 +36,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       currentQuestion: undefined,
       finished: false,
       saveError: undefined,
+      saving: false,
     };
     this.setAnswer = this.setAnswer.bind(this);
     this.next = this.next.bind(this);
@@ -83,14 +85,19 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   private next() {
+    this.setState({
+      saving: true,
+    });
     this.props.addLikertAnswer(this.props.params.id, this.state.currentQuestion, this.state.currentValue)
     .then(() => {
       this.setState({
+        saving: false,
         currentQuestion: undefined,
       });
     })
     .catch((e: string) => {
       this.setState({
+        saving: false,
         saveError: e,
       });
     });
@@ -130,12 +137,17 @@ class MeetingInner extends React.Component<IProps, IState> {
       );
     }
     const q = question as Question;
+    const nextProps: ButtonProps = {};
+    if (this.state.saving) {
+      nextProps.loading = true;
+      nextProps.disabled = true;
+    }
     return (
       <Grid container columns={1} id="meeting">
         <Grid.Column>
           <h1>{question.question}</h1>
             <Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} />
-          <Button onClick={this.next}>Next</Button>
+          <Button {...nextProps} onClick={this.next}>Next</Button>
           <p>{this.state.saveError}</p>
         </Grid.Column>
       </Grid>
