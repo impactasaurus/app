@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {getMeetings, IMeetingResult} from 'apollo/modules/meetings';
 import {getOutcomeGraph} from '@ald-life/outcome-graph';
+import {Loader} from 'semantic-ui-react';
 import {Answer} from 'models/answer';
 import './style.less';
 
@@ -45,6 +46,17 @@ class MeetingViewInner extends React.Component<IProp, any> {
   }
 
   public render() {
+    if (this.props.data.loading) {
+      return (
+        <Loader active={true} inline="centered" />
+      );
+    }
+    if (!Array.isArray(this.props.data.getMeetings) ||
+      this.props.data.getMeetings.length === 0) {
+      return (
+        <p>No meetings found for beneficiary {this.props.beneficiaryID}</p>
+      );
+    }
     return (
       <div className="meeting-view">
         <h2>{this.props.beneficiaryID}</h2>
