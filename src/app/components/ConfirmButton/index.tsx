@@ -8,7 +8,7 @@ interface IProps {
   buttonProps?: ButtonProps;
   onConfirm: ()=>void;
   onCancel?: ()=>void;
-  iconName?: string;
+  tooltip?: string;
 }
 
 interface IState {
@@ -42,9 +42,16 @@ class ConfirmButton extends React.Component<IProps, IState> {
   }
 
   public render() {
+    let buttonProps = this.props.buttonProps || {};
+    if (this.props.tooltip) {
+      buttonProps = Object.assign({}, buttonProps, {
+        'data-balloon': this.props.tooltip,
+        'data-balloon-pos': 'up',
+      });
+    }
     return (
       <div>
-        <Button onClick={this.show} {...this.props.buttonProps}>
+        <Button onClick={this.show} {...buttonProps}>
           {this.props.children}
         </Button>
         <Confirm

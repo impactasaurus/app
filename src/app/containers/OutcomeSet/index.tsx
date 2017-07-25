@@ -127,8 +127,8 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     return (
       <List.Item className="question" key={q.id}>
         <List.Content floated="right">
-          <ConfirmButton onConfirm={this.deleteQuestion(q.id)} promptText="Are you sure you want to delete this question?" buttonProps={{icon: true, size: 'mini'}}>
-            <Icon name="delete"/>
+          <ConfirmButton onConfirm={this.deleteQuestion(q.id)} promptText="Are you sure you want to archive this question?" buttonProps={{icon: true, size: 'mini'}} tooltip="Archive">
+            <Icon name="archive"/>
           </ConfirmButton>
           <p>{this.state.deleteError}</p>
         </List.Content>
