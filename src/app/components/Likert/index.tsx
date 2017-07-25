@@ -38,7 +38,7 @@ class Likert extends React.Component<IProps, any> {
   }
 
   private defaultValue() {
-      return this.minValue();
+      return Math.floor((this.maxValue()-this.minValue())/2);
   }
 
   private setAnswer(value: number) {
