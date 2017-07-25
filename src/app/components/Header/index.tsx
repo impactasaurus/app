@@ -42,7 +42,7 @@ class Header extends React.Component<IProps, any> {
     return (
       <Menu size="massive">
         <Menu.Item name="home" active={this.isActive('/', true)} onClick={this.handleClick('/')} />
-        <Menu.Item name="conduct" active={this.isActive('/conduct') || this.isActive('/meeting')} onClick={this.handleClick('/conduct')} />
+        <Menu.Item name="record" active={this.isActive('/record') || this.isActive('/meeting')} onClick={this.handleClick('/record')} />
         <Menu.Item name="review" active={this.isActive('/review')} onClick={this.handleClick('/review')} />
 
         <Menu.Menu position="right">

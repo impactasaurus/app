@@ -5,7 +5,7 @@ import { App, Home, Login, Review, ReviewSelector, Conduct, Settings, OutcomeSet
 export default (
   <Route path="/" component={App}>
     <IndexRoute component={Home} />
-    <Route path="conduct" component={Conduct} />
+    <Route path="record" component={Conduct} />
     <Route path="review" component={ReviewSelector}>
       <Route path=":id" component={Review} />
     </Route>
