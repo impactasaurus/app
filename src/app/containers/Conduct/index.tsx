@@ -6,7 +6,7 @@ import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import * as moment from 'moment';
-import { Button, Select, Input, Grid } from 'semantic-ui-react';
+import { Button, Select, Input, Grid, ButtonProps, SelectProps } from 'semantic-ui-react';
 import {DateTimePicker} from 'components/DateTimePicker';
 import {Hint} from 'components/Hint';
 import './style.less';
@@ -23,6 +23,7 @@ interface IState {
   selectedBenID?: string;
   conducted?: moment.Moment;
   dateSelectionError?: string;
+  saving?: boolean;
 }
 
 @connect(undefined, (dispatch) => ({
@@ -35,6 +36,7 @@ class ConductInner extends React.Component<IProp, IState> {
     this.state = {
       startMeetingError: undefined,
       conducted: moment(),
+      saving: false,
     };
     this.renderNewMeetingControl = this.renderNewMeetingControl.bind(this);
     this.startMeeting = this.startMeeting.bind(this);
@@ -44,6 +46,9 @@ class ConductInner extends React.Component<IProp, IState> {
   }
 
   private startMeeting() {
+    this.setState({
+      saving: true,
+    });
     const benID = this.state.selectedBenID;
     const osID = this.state.selectedOS;
     const conducted = this.state.conducted;
@@ -54,6 +59,7 @@ class ConductInner extends React.Component<IProp, IState> {
     .catch((e: Error)=> {
       this.setState({
         startMeetingError: e.message,
+        saving: false,
       });
     });
   }
@@ -98,18 +104,28 @@ class ConductInner extends React.Component<IProp, IState> {
   }
 
   private renderNewMeetingControl(outcomeSets: IOutcomeSet[]|undefined): JSX.Element {
+    const startProps: ButtonProps = {};
+    if (this.state.saving) {
+      startProps.loading = true;
+      startProps.disabled = true;
+    }
+    const selectProps: SelectProps = {};
+    if (this.props.data.loading) {
+      selectProps.loading = true;
+      selectProps.disabled = true;
+    }
     const conductedCopy = this.state.conducted.clone();
     return (
       <div>
         <span className="label"><Hint text={strings.beneficiaryIDExplanation} /><h3 id="benID">Beneficiary ID</h3></span>
         <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID} />
         <h3 className="label">Question Set</h3>
-        <Select placeholder="Outcome Set" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
+        <Select {...selectProps} placeholder="Outcome Set" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
         <h3 className="label">Date Conducted</h3>
         <span className="conductedDate">{this.state.conducted.format('llll')}</span>
         <DateTimePicker moment={conductedCopy} onChange={this.setConductedDate}/>
         <p>{this.state.dateSelectionError}</p>
-        <Button className="submit" onClick={this.startMeeting}>Start</Button>
+        <Button {...startProps} className="submit" onClick={this.startMeeting}>Start</Button>
         <p>{this.state.startMeetingError}</p>
       </div>
     );
