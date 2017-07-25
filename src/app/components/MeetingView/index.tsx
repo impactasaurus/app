@@ -30,7 +30,11 @@ class MeetingViewInner extends React.Component<IProp, any> {
         const q = meeting.outcomeSet.questions.find((q) => q.id === answer.questionID);
         let question = 'Unknown Question';
         if (q !== undefined) {
-          question = q.question;
+          if (q.archived) {
+            question = `${q.question} (archived)`;
+          } else {
+            question = q.question;
+          }
         }
         return {
           outcome: question,
