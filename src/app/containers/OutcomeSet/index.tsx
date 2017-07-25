@@ -182,7 +182,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
           <h3>{os.description}{this.renderEditButton()}</h3>
           {this.renderEditControl()}
           <List divided relaxed verticalAlign="middle" className="list">
-            {renderArray(this.renderQuestion, os.questions)}
+            {renderArray(this.renderQuestion, os.questions.filter((q) => !q.archived))}
             {this.renderNewQuestionControl()}
           </List>
         </Grid.Column>
