@@ -3,6 +3,7 @@ import {gql} from 'react-apollo';
 export interface IQuestion {
   id: string;
   question: string;
+  archived?: boolean;
 }
 
 export interface ILikertScale extends IQuestion {
@@ -18,6 +19,7 @@ export const fragment = gql`
   fragment defaultQuestion on QuestionInterface {
     id,
     question,
+    archived,
     ... on LikertScale{
         minLabel,
         maxLabel,

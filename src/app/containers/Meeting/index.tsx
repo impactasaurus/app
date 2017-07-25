@@ -65,7 +65,9 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   private getNextQuestionToAnswer(): Question|null {
-    const questionsToAnswer = this.props.data.getMeeting.outcomeSet.questions.filter((question) => {
+    const questionsToAnswer = this.props.data.getMeeting.outcomeSet.questions
+    .filter((q) => !q.archived)
+    .filter((question) => {
       const found = this.props.data.getMeeting.answers.find((answer) => answer.questionID === question.id);
       if (found === undefined) {
         return true;
