@@ -45,13 +45,30 @@ class ConductInner extends React.Component<IProp, IState> {
     this.setConductedDate = this.setConductedDate.bind(this);
   }
 
+  private validateStartMeetingOptions(beneficiaryID?: string, outcomeSetID?: string): string|null {
+    if (!beneficiaryID || beneficiaryID === '') {
+      return 'Beneficiary ID is required';
+    }
+    if (!outcomeSetID || beneficiaryID === '') {
+      return 'Question set must be selected';
+    }
+    return null;
+  }
+
   private startMeeting() {
+    const benID = this.state.selectedBenID;
+    const osID = this.state.selectedOS;
+    const validation = this.validateStartMeetingOptions(benID, osID);
+    if (validation !== null) {
+      this.setState({
+        startMeetingError: validation,
+      });
+      return;
+    }
+    const conducted = this.state.conducted;
     this.setState({
       saving: true,
     });
-    const benID = this.state.selectedBenID;
-    const osID = this.state.selectedOS;
-    const conducted = this.state.conducted;
     this.props.newMeeting(benID, osID, conducted.toDate())
     .then((meeting) => {
       this.props.setURL(`/meeting/${meeting.id}`);
