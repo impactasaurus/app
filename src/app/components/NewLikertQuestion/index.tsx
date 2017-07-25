@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Input } from 'semantic-ui-react';
+import { Button, Input, ButtonProps } from 'semantic-ui-react';
 import {IQuestionMutation, addLikertQuestion} from 'apollo/modules/questions';
 
 interface IProps extends IQuestionMutation {
@@ -12,13 +12,16 @@ interface IState {
   newQuestion?: string;
   leftLabel?: string;
   rightLabel?: string;
+  saving?: boolean;
 }
 
 class NewLikertQuestionInner extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      saving: false,
+    };
     this.addQuestion = this.addQuestion.bind(this);
     this.setNewQuestion = this.setNewQuestion.bind(this);
     this.setLeftLabel = this.setLeftLabel.bind(this);
@@ -26,13 +29,20 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
   }
 
   private addQuestion() {
+    this.setState({
+      saving: true,
+    });
     this.props.addLikertQuestion(this.props.QuestionSetID, this.state.newQuestion, 10, this.state.leftLabel, this.state.rightLabel)
     .then(() => {
+      this.setState({
+        saving: false,
+      });
       this.props.OnSuccess();
     })
     .catch((e: Error)=> {
       this.setState({
         newQuestionError: e.message,
+        saving: false,
       });
     });
   }
@@ -56,12 +66,17 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
   }
 
   public render() {
+    const addProps: ButtonProps = {};
+    if (this.state.saving) {
+      addProps.loading = true;
+      addProps.disabled = true;
+    }
     return (
       <div>
         <Input type="text" placeholder="Question" onChange={this.setNewQuestion} />
         <Input type="text" placeholder="Left Label" onChange={this.setLeftLabel}/>
         <Input type="text" placeholder="Right Label" onChange={this.setRightLabel}/>
-        <Button onClick={this.addQuestion}>Add</Button>
+        <Button {...addProps} onClick={this.addQuestion}>Add</Button>
         <p>{this.state.newQuestionError}</p>
       </div>
     );
