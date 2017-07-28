@@ -5,7 +5,7 @@ import {IURLConnector} from 'redux/modules/url';
 import {renderArray} from 'helpers/react';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
-import { Button, Input, List, Icon, Grid } from 'semantic-ui-react';
+import { Button, Input, List, Icon, Grid, Loader } from 'semantic-ui-react';
 import {ConfirmButton} from 'components/ConfirmButton';
 import './style.less';
 const { connect } = require('react-redux');
@@ -134,15 +134,25 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
   }
 
   public render() {
-    const { data } = this.props;
+    let inner: JSX.Element;
+    if (this.props.data.loading) {
+      inner = (
+        <Loader active={true} inline="centered" />
+      );
+    } else {
+      const { data } = this.props;
+      inner = (
+        <List divided relaxed verticalAlign="middle" className="list">
+          {renderArray(this.renderOutcomeSet, data.allOutcomeSets)}
+          {this.renderNewControl()}
+        </List>
+      );
+    }
     return (
       <Grid container columns={1} id="question-sets">
         <Grid.Column>
           <h1>Question Sets</h1>
-          <List divided relaxed verticalAlign="middle" className="list">
-            {renderArray(this.renderOutcomeSet, data.allOutcomeSets)}
-            {this.renderNewControl()}
-          </List>
+          {inner}
         </Grid.Column>
       </Grid>
     );
