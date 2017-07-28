@@ -3,7 +3,7 @@ import {IOutcomeResult, getOutcomeSet, IOutcomeMutation, editQuestionSet} from '
 import {IQuestionMutation, deleteQuestion} from 'apollo/modules/questions';
 import {renderArray} from 'helpers/react';
 import {Question} from 'models/question';
-import { Button, Input, List, Icon, Grid} from 'semantic-ui-react';
+import { Button, Input, List, Icon, Grid, Loader } from 'semantic-ui-react';
 import {NewLikertQuestion} from 'components/NewLikertQuestion';
 import {ConfirmButton} from 'components/ConfirmButton';
 import './style.less';
@@ -170,6 +170,11 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
   }
 
   public render() {
+    if (this.props.data.loading) {
+      return (
+        <Loader active={true} inline="centered" />
+      );
+    }
     const { data } = this.props;
     const os = data.getOutcomeSet;
     if (os === undefined) {
