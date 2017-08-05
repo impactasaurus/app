@@ -1,7 +1,8 @@
 import * as React from 'react';
 import {getMeetings, IMeetingResult} from 'apollo/modules/meetings';
+import {IMeeting} from 'models/meeting';
 import {getOutcomeGraph} from '@ald-life/outcome-graph';
-import {Loader} from 'semantic-ui-react';
+import {Loader, Checkbox} from 'semantic-ui-react';
 import {Answer} from 'models/answer';
 import './style.less';
 
@@ -12,20 +13,26 @@ interface IProp {
   data?: IMeetingResult;
 }
 
-class MeetingViewInner extends React.Component<IProp, any> {
+interface IState {
+  categoryAg: boolean;
+}
+
+class MeetingViewInner extends React.Component<IProp, IState> {
 
   private canvasID: string;
 
   constructor(props) {
     super(props);
+    this.state = {
+      categoryAg: false,
+    };
     this.canvasID = `meeting-view-${count++}`;
+    this.toggleCategoryAggregation = this.toggleCategoryAggregation.bind(this);
+    this.renderControlPanel = this.renderControlPanel.bind(this);
   }
 
-  public componentDidUpdate() {
-    if (this.props.data.getMeetings === undefined) {
-      return;
-    }
-    const meeting = this.props.data.getMeetings.map((meeting) => {
+  private getQuestionLevelData(meetings: IMeeting[]) {
+    return meetings.map((meeting) => {
       const answers = meeting.answers.map((answer: Answer) => {
         const q = meeting.outcomeSet.questions.find((q) => q.id === answer.questionID);
         let question = 'Unknown Question';
@@ -46,7 +53,75 @@ class MeetingViewInner extends React.Component<IProp, any> {
         outcomes: answers,
       };
     });
-    getOutcomeGraph(this.canvasID, '', meeting);
+  }
+
+  private getCategoryLevelData(meetings: IMeeting[]) {
+    return meetings.map((meeting) => {
+      const answers = meeting.aggregates.category.map((categoryAg) => {
+        let category = 'Unknown Category';
+        const cat = meeting.outcomeSet.categories.find((c) => c.id === categoryAg.categoryID);
+        if (cat !== undefined) {
+          category = cat.name;
+        }
+        return {
+          outcome: category,
+          value: categoryAg.value,
+        };
+      });
+      return {
+        timestamp: meeting.conducted,
+        outcomes: answers,
+      };
+    });
+  }
+
+  public componentWillReceiveProps(nextProps) {
+    if (!this.isCategoryAggregationAvailable(nextProps) && this.state.categoryAg) {
+      this.setState({
+        categoryAg: false,
+      });
+    }
+  }
+
+  public componentDidUpdate() {
+    if (this.props.data.getMeetings === undefined) {
+      return;
+    }
+    const meetings = this.props.data.getMeetings;
+    const data = this.state.categoryAg ? this.getCategoryLevelData(meetings) : this.getQuestionLevelData(meetings);
+    getOutcomeGraph(this.canvasID, '', data);
+  }
+
+  private toggleCategoryAggregation() {
+    this.setState({
+      categoryAg: !this.state.categoryAg,
+    });
+  }
+
+  private isCategoryAggregationAvailable(props): boolean {
+    if (!Array.isArray(props.data.getMeetings) || props.data.getMeetings.length === 0) {
+      return false;
+    }
+    const meetingsWithCategories = props.data.getMeetings.filter((m) => {
+      return m.outcomeSet.categories.length > 0;
+    });
+    return meetingsWithCategories.length > 0;
+  }
+
+  private renderControlPanel(): JSX.Element {
+    const cpItems: JSX.Element[] = [];
+    if (this.isCategoryAggregationAvailable(this.props)) {
+      cpItems.push((
+        <span>
+          <Checkbox key="agtoggle" toggle label="Category Aggregation"  onChange={this.toggleCategoryAggregation}/>
+        </span>
+      ));
+    }
+    return (
+      <div id="cp">
+        {cpItems}
+      </div>
+    );
   }
 
   public render() {
@@ -64,7 +139,8 @@ class MeetingViewInner extends React.Component<IProp, any> {
     return (
       <div className="meeting-view">
         <h2>{this.props.beneficiaryID}</h2>
-        <div id="wrapper" style={{position: 'relative', margin:'auto'}}>
+        {this.renderControlPanel()}
+        <div id="wrapper">
           <canvas id={this.canvasID} />
         </div>
       </div>
