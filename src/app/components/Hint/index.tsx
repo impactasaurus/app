@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {Icon} from 'semantic-ui-react';
+import './style.less';
 
 interface IProps {
   text: string;

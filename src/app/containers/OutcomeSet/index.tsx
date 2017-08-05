@@ -3,9 +3,13 @@ import {IOutcomeResult, getOutcomeSet, IOutcomeMutation, editQuestionSet} from '
 import {IQuestionMutation, deleteQuestion} from 'apollo/modules/questions';
 import {renderArray} from 'helpers/react';
 import {Question} from 'models/question';
+import {ICategory} from 'models/category';
 import { Button, Input, List, Icon, Grid, Loader } from 'semantic-ui-react';
 import {NewLikertQuestion} from 'components/NewLikertQuestion';
+import {NewQuestionCategory} from 'components/NewQuestionCategory';
 import {ConfirmButton} from 'components/ConfirmButton';
+import {Hint} from 'components/Hint';
+const strings = require('./../../../strings.json');
 import './style.less';
 
 interface IProps extends IOutcomeMutation, IQuestionMutation {
@@ -17,10 +21,11 @@ interface IProps extends IOutcomeMutation, IQuestionMutation {
 
 interface IState {
   editError?: string;
-  deleteError?: string;
+  deleteQuestionError?: string;
   newName?: string;
   newDescription?: string;
-  newClicked?: boolean;
+  newQuestionClicked?: boolean;
+  newCategoryClicked?: boolean;
   editClicked?: boolean;
 };
 
@@ -30,16 +35,18 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       editError: undefined,
-      deleteError: undefined,
+      deleteQuestionError: undefined,
     };
     this.renderEditControl = this.renderEditControl.bind(this);
     this.editQS = this.editQS.bind(this);
     this.renderNewQuestionControl = this.renderNewQuestionControl.bind(this);
     this.renderQuestion = this.renderQuestion.bind(this);
+    this.renderCategory = this.renderCategory.bind(this);
     this.deleteQuestion = this.deleteQuestion.bind(this);
     this.setNewName = this.setNewName.bind(this);
     this.setNewDescription = this.setNewDescription.bind(this);
-    this.setNewClicked = this.setNewClicked.bind(this);
+    this.setNewQuestionClicked = this.setNewQuestionClicked.bind(this);
+    this.setNewCategoryClicked = this.setNewCategoryClicked.bind(this);
     this.setEditClicked = this.setEditClicked.bind(this);
     this.renderEditButton = this.renderEditButton.bind(this);
   }
@@ -68,12 +75,12 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
       this.props.deleteQuestion(this.props.params.id, questionID)
       .then(() => {
         this.setState({
-          deleteError: undefined,
+          deleteQuestionError: undefined,
         });
       })
       .catch((e: Error)=> {
         this.setState({
-          deleteError: e.message,
+          deleteQuestionError: e.message,
         });
       });
     };
@@ -91,10 +98,18 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     });
   }
 
-  private setNewClicked(newValue: boolean): ()=>void {
+  private setNewQuestionClicked(newValue: boolean): ()=>void {
     return () => {
       this.setState({
-        newClicked: newValue,
+        newQuestionClicked: newValue,
+      });
+    };
+  }
+
+  private setNewCategoryClicked(newValue: boolean): ()=>void {
+    return () => {
+      this.setState({
+        newCategoryClicked: newValue,
       });
     };
   }
@@ -130,7 +145,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
           <ConfirmButton onConfirm={this.deleteQuestion(q.id)} promptText="Are you sure you want to archive this question?" buttonProps={{icon: true, size: 'mini'}} tooltip="Archive">
             <Icon name="archive"/>
           </ConfirmButton>
-          <p>{this.state.deleteError}</p>
+          <p>{this.state.deleteQuestionError}</p>
         </List.Content>
         <List.Header>{q.question}</List.Header>
         <List.Description>{descripton}</List.Description>
@@ -138,20 +153,49 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     );
   }
 
+  private renderCategory(c: ICategory): JSX.Element {
+    return (
+      <List.Item className="category" key={c.id}>
+        <List.Header>{c.name}</List.Header>
+        <List.Description>{c.description}</List.Description>
+      </List.Item>
+    );
+  }
+
   private renderNewQuestionControl(): JSX.Element {
-    if (this.state.newClicked === true) {
+    if (this.state.newQuestionClicked === true) {
       return (
         <List.Item className="new-control">
           <List.Content>
-            <NewLikertQuestion QuestionSetID={this.props.params.id} OnSuccess={this.setNewClicked(false)} />
+            <NewLikertQuestion QuestionSetID={this.props.params.id} OnSuccess={this.setNewQuestionClicked(false)} />
           </List.Content>
         </List.Item>
       );
     } else {
       return (
         <List.Item className="new-control">
-          <List.Content onClick={this.setNewClicked(true)}>
+          <List.Content onClick={this.setNewQuestionClicked(true)}>
             <List.Header as="a">New Question</List.Header>
+          </List.Content>
+        </List.Item>
+      );
+    }
+  }
+
+  private renderNewCategoryControl(): JSX.Element {
+    if (this.state.newCategoryClicked === true) {
+      return (
+        <List.Item className="new-control">
+          <List.Content>
+            <NewQuestionCategory QuestionSetID={this.props.params.id} OnSuccess={this.setNewCategoryClicked(false)} />
+          </List.Content>
+        </List.Item>
+      );
+    } else {
+      return (
+        <List.Item className="new-control">
+          <List.Content onClick={this.setNewCategoryClicked(true)}>
+            <List.Header as="a">New Question Category</List.Header>
           </List.Content>
         </List.Item>
       );
@@ -184,11 +228,17 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
       <Grid container columns={1} id="question-set">
         <Grid.Column>
           <h1>{os.name}{this.renderEditButton()}</h1>
-          <h3>{os.description}{this.renderEditButton()}</h3>
+          <div>Description: {os.description || 'No description'}{this.renderEditButton()}</div>
           {this.renderEditControl()}
+          <h3>Questions</h3>
           <List divided relaxed verticalAlign="middle" className="list">
             {renderArray(this.renderQuestion, os.questions.filter((q) => !q.archived))}
             {this.renderNewQuestionControl()}
+          </List>
+          <h3>Question Categories <Hint text={strings.questionCategoryExplanation} /></h3>
+          <List divided relaxed verticalAlign="middle" className="list">
+            {renderArray(this.renderCategory, os.categories)}
+            {this.renderNewCategoryControl()}
           </List>
         </Grid.Column>
       </Grid>
