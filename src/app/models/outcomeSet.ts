@@ -1,4 +1,5 @@
 import {IQuestion, fragment as qFragment} from './question';
+import {ICategory, fragment as cFragment} from './category';
 import {gql} from 'react-apollo';
 
 export interface IOutcomeSet {
@@ -7,6 +8,7 @@ export interface IOutcomeSet {
   name: string;
   description: string;
   questions: IQuestion[];
+  categories: ICategory[];
 }
 
 export const fragment = gql`
@@ -17,5 +19,8 @@ export const fragment = gql`
     questions {
       ...defaultQuestion
     }
+    categories {
+      ...defaultCategory
+    }
   }
-  ${qFragment}`;
+  ${qFragment} ${cFragment}`;
