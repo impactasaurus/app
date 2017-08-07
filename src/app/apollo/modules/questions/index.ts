@@ -24,7 +24,8 @@ export function addLikertQuestion<T>(component) {
   })(component);
 }
 
-export const deleteQuestion = graphql(gql`
+export function deleteQuestion<T>(component) {
+  return graphql<any, T>(gql`
   mutation ($outcomeSetID: String!, $questionID: String!) {
     deleteQuestion: DeleteQuestion(outcomeSetID:$outcomeSetID, questionID: $questionID) {
       ...defaultOutcomeSet
@@ -39,7 +40,8 @@ export const deleteQuestion = graphql(gql`
           },
       }).then(mutationResultExtractor<IOutcomeSet>('deleteQuestion')),
     }),
-  });
+  })(component);
+}
 
 export interface IQuestionMutation {
     addLikertQuestion?(outcomeSetID: string, question: string, maxValue: number, minLabel?: string, maxLabel?: string): Promise<IOutcomeSet>;

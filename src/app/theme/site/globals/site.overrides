@@ -1,0 +1,7 @@
+@import (reference) './../../variables.less';
+
+#impactasaurus {
+  .ui.dropdown:not(.button) > .default.text {
+    color: @placeholder;
+  }
+}

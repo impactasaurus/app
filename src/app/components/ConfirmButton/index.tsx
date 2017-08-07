@@ -24,6 +24,7 @@ class ConfirmButton extends React.Component<IProps, IState> {
     };
     this.show = this.show.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.handleConfirm = this.handleConfirm.bind(this);
   }
 
   private show() {
@@ -39,6 +40,13 @@ class ConfirmButton extends React.Component<IProps, IState> {
     if (this.props.onCancel) {
       this.props.onCancel();
     }
+  }
+
+  private handleConfirm() {
+    this.setState({
+      show: false,
+    });
+    this.props.onConfirm();
   }
 
   public render() {
@@ -57,7 +65,7 @@ class ConfirmButton extends React.Component<IProps, IState> {
         <Confirm
           open={this.state.show}
           onCancel={this.handleCancel}
-          onConfirm={this.props.onConfirm}
+          onConfirm={this.handleConfirm}
           content={this.props.promptText}
           confirmButton={this.props.confirmText}
           cancelButton={this.props.cancelText}

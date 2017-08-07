@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Input, ButtonProps } from 'semantic-ui-react';
+import { Button, Input, ButtonProps, Select } from 'semantic-ui-react';
 import {ICategoryMutation, addQuestionCategory} from 'apollo/modules/categories';
 
 interface IProps extends ICategoryMutation {
@@ -65,6 +65,18 @@ class NewQuestionCategoryInner extends React.Component<IProps, IState> {
     });
   }
 
+  private getAggregationOptions() {
+    return [{
+      key: 'mean',
+      value: 'mean',
+      text: 'Mean',
+    }, {
+      key: 'sum',
+      value: 'sum',
+      text: 'Sum',
+    }];
+  }
+
   public render() {
     const addProps: ButtonProps = {};
     if (this.state.saving) {
@@ -75,7 +87,7 @@ class NewQuestionCategoryInner extends React.Component<IProps, IState> {
       <div>
         <Input type="text" placeholder="Name" onChange={this.setName} />
         <Input type="text" placeholder="Description" onChange={this.setDescription}/>
-        <Input type="text" placeholder="Aggregation" onChange={this.setAggregation}/>
+        <Select placeholder="Aggregation" options={this.getAggregationOptions()} onChange={this.setAggregation} />
         <Button {...addProps} onClick={this.addCategory}>Add</Button>
         <p>{this.state.error}</p>
       </div>

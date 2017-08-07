@@ -23,7 +23,8 @@ export function addQuestionCategory<T>(component) {
   })(component);
 }
 
-export const deleteQuestion = graphql(gql`
+export function deleteCategory<T>(component) {
+  return graphql<any, T>(gql`
   mutation ($outcomeSetID: String!, $categoryID: String!) {
     deleteCategory: DeleteCategory(outcomeSetID:$outcomeSetID, categoryID: $categoryID) {
       ...defaultOutcomeSet
@@ -38,7 +39,8 @@ export const deleteQuestion = graphql(gql`
           },
       }).then(mutationResultExtractor<IOutcomeSet>('deleteCategory')),
     }),
-  });
+  })(component);
+}
 
 export interface ICategoryMutation {
     addCategory?(outcomeSetID: string, name: string, aggregation: string, description?: string): Promise<IOutcomeSet>;
