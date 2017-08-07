@@ -4,7 +4,7 @@ import {mutationResultExtractor} from 'helpers/apollo';
 
 export function addQuestionCategory<T>(component) {
   return graphql<any, T>(gql`
-  mutation ($outcomeSetID: ID!, $aggregation: string!, $name: string!, $description: string) {
+  mutation ($outcomeSetID: ID!, $aggregation: Aggregation!, $name: String!, $description: String) {
     addCategory: AddCategory(aggregation:$aggregation, outcomeSetID:$outcomeSetID, name:$name, description:$description) {
       ...defaultOutcomeSet
     }
