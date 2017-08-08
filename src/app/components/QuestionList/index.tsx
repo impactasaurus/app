@@ -3,9 +3,10 @@ import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import {IQuestionMutation, deleteQuestion} from 'apollo/modules/questions';
 import {renderArray} from 'helpers/react';
 import {Question} from 'models/question';
-import { List, Icon, Loader } from 'semantic-ui-react';
+import { List, Icon, Loader, Label } from 'semantic-ui-react';
 import {NewLikertQuestion} from 'components/NewLikertQuestion';
 import {ConfirmButton} from 'components/ConfirmButton';
+import './style.less';
 
 interface IProps extends IQuestionMutation {
   data?: IOutcomeResult;
@@ -26,6 +27,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
     this.renderQuestion = this.renderQuestion.bind(this);
     this.deleteQuestion = this.deleteQuestion.bind(this);
     this.setNewQuestionClicked = this.setNewQuestionClicked.bind(this);
+    this.renderCategoryPill = this.renderCategoryPill.bind(this);
   }
 
   private deleteQuestion(questionID: string) {
@@ -52,6 +54,23 @@ class QuestionListInner extends React.Component<IProps, IState> {
     };
   }
 
+  private renderCategoryPill(q: Question): JSX.Element {
+    let catName = 'No Category';
+    let pillClass = 'empty';
+    if (q.categoryID) {
+      const cat = this.props.data.getOutcomeSet.categories.find((c) => c.id === q.categoryID);
+      if (cat) {
+        catName = cat.name;
+        pillClass = 'set';
+      } else {
+        catName = 'Unknown Category';
+      }
+    }
+    return (
+      <Label className={`category-pill ${pillClass}`} horizontal>{catName}</Label>
+    );
+  }
+
   private renderQuestion(q: Question): JSX.Element {
     let descripton = '';
     if (q.minLabel || q.maxLabel) {
@@ -60,13 +79,15 @@ class QuestionListInner extends React.Component<IProps, IState> {
     return (
       <List.Item className="question" key={q.id}>
         <List.Content floated="right">
+          {this.renderCategoryPill(q)}
           <ConfirmButton onConfirm={this.deleteQuestion(q.id)} promptText="Are you sure you want to archive this question?" buttonProps={{icon: true, size: 'mini'}} tooltip="Archive">
             <Icon name="archive"/>
           </ConfirmButton>
-          <p>{this.state.deleteQuestionError}</p>
         </List.Content>
-        <List.Header>{q.question}</List.Header>
-        <List.Description>{descripton}</List.Description>
+        <List.Content>
+          <List.Header>{q.question}</List.Header>
+          <List.Description>{descripton}</List.Description>
+        </List.Content>
       </List.Item>
     );
   }
@@ -103,7 +124,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
         return (<div />);
     }
     return (
-      <List divided relaxed verticalAlign="middle" className="list">
+      <List divided relaxed verticalAlign="middle" className="list question">
         {renderArray(this.renderQuestion, os.questions.filter((q) => !q.archived))}
         {this.renderNewQuestionControl()}
       </List>

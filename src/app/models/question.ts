@@ -4,6 +4,7 @@ export interface IQuestion {
   id: string;
   question: string;
   archived?: boolean;
+  categoryID: string;
 }
 
 export interface ILikertScale extends IQuestion {
@@ -20,6 +21,7 @@ export const fragment = gql`
     id,
     question,
     archived,
+    categoryID,
     ... on LikertScale{
         minLabel,
         maxLabel,
