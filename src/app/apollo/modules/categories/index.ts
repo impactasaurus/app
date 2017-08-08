@@ -42,7 +42,28 @@ export function deleteCategory<T>(component) {
   })(component);
 }
 
+export function setCategory<T>(component) {
+  return graphql<any, T>(gql`
+  mutation ($outcomeSetID: String!, $questionID: String!, $categoryID: String) {
+    setCategory: SetCategory(outcomeSetID: $outcomeSetID, questionID: $questionID, categoryID: $categoryID) {
+      ...defaultOutcomeSet
+    }
+  }
+  ${osFragment}`, {
+    props: ({ mutate }) => ({
+      setCategory: (outcomeSetID: string, questionID: string, categoryID?: string): Promise<IOutcomeSet> => mutate({
+          variables: {
+            outcomeSetID,
+            questionID,
+            categoryID,
+          },
+      }).then(mutationResultExtractor<IOutcomeSet>('setCategory')),
+    }),
+  })(component);
+}
+
 export interface ICategoryMutation {
     addCategory?(outcomeSetID: string, name: string, aggregation: string, description?: string): Promise<IOutcomeSet>;
     deleteCategory?(outcomeSetID: string, categoryID: string): Promise<IOutcomeSet>;
+    setCategory?(outcomeSetID: string, questionID: string, categoryID?: string): Promise<IOutcomeSet>;
 }
