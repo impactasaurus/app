@@ -3,7 +3,8 @@ import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import {IQuestionMutation, deleteQuestion} from 'apollo/modules/questions';
 import {renderArray} from 'helpers/react';
 import {Question} from 'models/question';
-import { List, Icon, Loader } from 'semantic-ui-react';
+import {IOutcomeSet} from 'models/outcomeSet';
+import { List, Loader } from 'semantic-ui-react';
 import {NewLikertQuestion} from 'components/NewLikertQuestion';
 import {ConfirmButton} from 'components/ConfirmButton';
 import {CategoryPill} from 'components/CategoryPill';
@@ -15,7 +16,6 @@ interface IProps extends IQuestionMutation {
 };
 
 interface IState {
-  deleteQuestionError?: string;
   newQuestionClicked?: boolean;
 };
 
@@ -31,18 +31,8 @@ class QuestionListInner extends React.Component<IProps, IState> {
   }
 
   private deleteQuestion(questionID: string) {
-    return () => {
-      this.props.deleteQuestion(this.props.outcomeSetID, questionID)
-      .then(() => {
-        this.setState({
-          deleteQuestionError: undefined,
-        });
-      })
-      .catch((e: Error)=> {
-        this.setState({
-          deleteQuestionError: e.message,
-        });
-      });
+    return (): Promise<IOutcomeSet> => {
+      return this.props.deleteQuestion(this.props.outcomeSetID, questionID);
     };
   }
 
@@ -61,13 +51,11 @@ class QuestionListInner extends React.Component<IProps, IState> {
     }
     return (
       <List.Item className="question" key={q.id}>
-        <List.Content floated="right">
+        <List.Content floated="right" verticalAlign="middle">
           <CategoryPill outcomeSetID={this.props.outcomeSetID} questionID={q.id} />
-          <ConfirmButton onConfirm={this.deleteQuestion(q.id)} promptText="Are you sure you want to archive this question?" buttonProps={{icon: true, size: 'mini'}} tooltip="Archive">
-            <Icon name="archive"/>
-          </ConfirmButton>
+          <ConfirmButton onConfirm={this.deleteQuestion(q.id)} promptText="Are you sure you want to archive this question?" buttonProps={{icon: 'archive', compact:true, size:'tiny'}} tooltip="Archive" />
         </List.Content>
-        <List.Content>
+        <List.Content verticalAlign="middle">
           <List.Header>{q.question}</List.Header>
           <List.Description>{descripton}</List.Description>
         </List.Content>

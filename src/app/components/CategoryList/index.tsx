@@ -3,7 +3,8 @@ import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import {ICategoryMutation, deleteCategory} from 'apollo/modules/categories';
 import {renderArray} from 'helpers/react';
 import {ICategory} from 'models/category';
-import { List, Icon, Loader } from 'semantic-ui-react';
+import {IOutcomeSet} from 'models/outcomeSet';
+import { List, Loader } from 'semantic-ui-react';
 import {NewQuestionCategory} from 'components/NewQuestionCategory';
 import {ConfirmButton} from 'components/ConfirmButton';
 
@@ -13,7 +14,6 @@ interface IProps extends ICategoryMutation {
 };
 
 interface IState {
-  deleteError?: string;
   newCategoryClicked?: boolean;
 };
 
@@ -28,17 +28,13 @@ class CategoryListInner extends React.Component<IProps, IState> {
   }
 
   private deleteCategory(categoryID: string) {
-    return () => {
-      this.props.deleteCategory(this.props.outcomeSetID, categoryID)
-      .then(() => {
-        this.setState({
-          deleteError: undefined,
-        });
-      })
-      .catch((e: Error)=> {
-        this.setState({
-          deleteError: e.message,
-        });
+    return (): Promise<IOutcomeSet> => {
+      return this.props.deleteCategory(this.props.outcomeSetID, categoryID)
+      .catch((e: Error) => {
+        if (e.message.indexOf('being used') !== -1) {
+          throw Error('Cannot delete a category which is in use');
+        }
+        throw e;
       });
     };
   }
@@ -54,14 +50,13 @@ class CategoryListInner extends React.Component<IProps, IState> {
   private renderCategory(c: ICategory): JSX.Element {
     return (
       <List.Item className="category" key={c.id}>
-        <List.Content floated="right">
-          <ConfirmButton onConfirm={this.deleteCategory(c.id)} promptText="Are you sure you want to delete this category?" buttonProps={{icon: true, size: 'mini'}} tooltip="Delete">
-            <Icon name="delete"/>
-          </ConfirmButton>
-          <p>{this.state.deleteError}</p>
+        <List.Content floated="right" verticalAlign="middle">
+          <ConfirmButton onConfirm={this.deleteCategory(c.id)} promptText="Are you sure you want to delete this category?" buttonProps={{icon: 'delete', compact:true, size:'tiny'}} tooltip="Delete" />
         </List.Content>
-        <List.Header>{c.name}</List.Header>
-        <List.Description>{c.description}</List.Description>
+        <List.Content verticalAlign="middle">
+          <List.Header>{c.name}</List.Header>
+          <List.Description>{c.description}</List.Description>
+        </List.Content>
       </List.Item>
     );
   }
