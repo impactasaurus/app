@@ -69,7 +69,7 @@ class NewQuestionCategoryInner extends React.Component<IProps, IState> {
     return [{
       key: 'mean',
       value: 'mean',
-      text: 'Mean',
+      text: 'Average',
     }, {
       key: 'sum',
       value: 'sum',

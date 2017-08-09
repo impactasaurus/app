@@ -1,4 +1,4 @@
 {
   "beneficiaryIDExplanation": "A unique identifier for the beneficiary. Ideally this would be the ID of the beneficiary within your CRM system. This should not contain personal information.",
-  "questionCategoryExplanation": "Question categories group questions into categories. This allows aggregation of multiple questions into a single value."
+  "questionCategoryExplanation": "Group related questions into categories. This allows aggregation of multiple questions into a single value."
 }
