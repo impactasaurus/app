@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Icon} from 'semantic-ui-react';
+import {Icon, Popup} from 'semantic-ui-react';
 import './style.less';
 
 interface IProps {
@@ -14,10 +14,12 @@ class Hint extends React.Component<IProps, any> {
   }
 
   public render() {
+    const inner = (<Icon className="Hint" name={this.props.icon || 'question circle outline'} />);
     return (
-      <span className="Hint" data-balloon={this.props.text} data-balloon-pos="up" data-balloon-length="large" >
-        <Icon name={this.props.icon || 'question circle outline'} />
-      </span>
+      <Popup
+        trigger={inner}
+        content={this.props.text}
+      />
     );
   }
 }
