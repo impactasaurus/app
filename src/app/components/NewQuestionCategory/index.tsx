@@ -21,6 +21,8 @@ class NewQuestionCategoryInner extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       saving: false,
+      name: null,
+      aggregation: null,
     };
     this.addCategory = this.addCategory.bind(this);
     this.setName = this.setName.bind(this);
@@ -29,6 +31,18 @@ class NewQuestionCategoryInner extends React.Component<IProps, IState> {
   }
 
   private addCategory() {
+    if (typeof this.state.name !== 'string' || this.state.name.length === 0) {
+      this.setState({
+        error: 'A name must be specified',
+      });
+      return;
+    }
+    if (typeof this.state.aggregation !== 'string') {
+      this.setState({
+        error: 'An aggregation must be selected',
+      });
+      return;
+    }
     this.setState({
       saving: true,
     });
