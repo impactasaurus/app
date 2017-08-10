@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Button, Input, ButtonProps, Select } from 'semantic-ui-react';
+import { Button, ButtonProps, Select } from 'semantic-ui-react';
+import {Input} from 'components/Input';
 import {ICategoryMutation, addQuestionCategory} from 'apollo/modules/categories';
 
 interface IProps extends ICategoryMutation {
@@ -99,7 +100,7 @@ class NewQuestionCategoryInner extends React.Component<IProps, IState> {
     }
     return (
       <div>
-        <Input type="text" placeholder="Name" onChange={this.setName} />
+        <Input autofocus type="text" placeholder="Name" onChange={this.setName} />
         <Input type="text" placeholder="Description" onChange={this.setDescription}/>
         <Select placeholder="Aggregation" options={this.getAggregationOptions()} onChange={this.setAggregation} />
         <Button {...addProps} onClick={this.addCategory}>Add</Button>
