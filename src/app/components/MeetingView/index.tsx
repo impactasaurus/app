@@ -113,7 +113,7 @@ class MeetingViewInner extends React.Component<IProp, IState> {
     if (this.isCategoryAggregationAvailable(this.props)) {
       cpItems.push((
         <span key="agtoggle">
-          <Checkbox toggle label="Category Aggregation"  onChange={this.toggleCategoryAggregation} />
+          <Checkbox toggle label="Category Aggregation" onChange={this.toggleCategoryAggregation} checked={this.state.categoryAg} />
         </span>
       ));
     }
