@@ -1,5 +1,6 @@
 import {IAnswer, fragment as aFragment} from './answer';
 import {fragment as osFragment, IOutcomeSet} from './outcomeSet';
+import {IAggregates, fragment as agFragment} from './aggregates';
 import {gql} from 'react-apollo';
 
 export interface IMeeting {
@@ -12,6 +13,7 @@ export interface IMeeting {
   conducted: string;
   created: string;
   modified: string;
+  aggregates?: IAggregates;
 }
 
 export const fragment = gql`
@@ -35,3 +37,11 @@ export const fragmentWithOutcomeSet = gql`
       ...defaultOutcomeSet
     }
   } ${fragment} ${osFragment}`;
+
+export const fragmentWithOutcomeSetAndAggregates = gql`
+  fragment meetingWithOutcomeSetAndAggregates on Meeting {
+    ...meetingWithOutcomeSet
+    aggregates{
+      ...defaultAggregates
+    }
+  } ${fragmentWithOutcomeSet} ${agFragment}`;

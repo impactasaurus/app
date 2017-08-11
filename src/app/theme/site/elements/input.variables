@@ -1,1 +1,3 @@
-@placeholderColor: lightgray;
+@import (reference) './../../variables.less';
+
+@placeholderColor: @placeholder;

@@ -2,8 +2,8 @@ import {gql, graphql, QueryProps} from 'react-apollo';
 import {IOutcomeSet, fragment} from 'models/outcomeSet';
 import {IDExtractor, mutationResultExtractor} from 'helpers/apollo';
 
-export const getOutcomeSet = <T>(idExtractor: IDExtractor<T>): any => {
-  return graphql<T>(gql`
+export const getOutcomeSet = <T>(idExtractor: IDExtractor<T>) => {
+  return graphql<any, T>(gql`
     query getOutcomeSet($id: String!) {
       getOutcomeSet: outcomeset(id:$id) {
         ...defaultOutcomeSet
@@ -49,7 +49,8 @@ export const newQuestionSet = graphql(gql`
     }),
   });
 
-export const editQuestionSet = graphql(gql`
+export function editQuestionSet<T>(component) {
+  return graphql<any, T>(gql`
   mutation ($id: ID!, $name: String!, $description: String) {
     editQuestionSet: EditOutcomeSet(outcomeSetID:$id, name:$name, description:$description) {
       ...defaultOutcomeSet
@@ -65,7 +66,8 @@ export const editQuestionSet = graphql(gql`
           },
       }).then(mutationResultExtractor<IOutcomeSet>('editQuestionSet')),
     }),
-  });
+  })(component);
+}
 
 export const deleteQuestionSet = graphql(gql`
   mutation ($id: ID!) {

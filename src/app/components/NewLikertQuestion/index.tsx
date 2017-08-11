@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Button, Input, ButtonProps } from 'semantic-ui-react';
+import { Button, ButtonProps } from 'semantic-ui-react';
+import {Input} from 'components/Input';
 import {IQuestionMutation, addLikertQuestion} from 'apollo/modules/questions';
 
 interface IProps extends IQuestionMutation {
@@ -29,6 +30,12 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
   }
 
   private addQuestion() {
+    if (typeof this.state.newQuestion !== 'string' || this.state.newQuestion.length === 0) {
+      this.setState({
+        newQuestionError: 'The question text must be provided',
+      });
+      return;
+    }
     this.setState({
       saving: true,
     });
@@ -73,9 +80,9 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
     }
     return (
       <div>
-        <Input type="text" placeholder="Question" onChange={this.setNewQuestion} />
-        <Input type="text" placeholder="Left Label" onChange={this.setLeftLabel}/>
-        <Input type="text" placeholder="Right Label" onChange={this.setRightLabel}/>
+        <Input autofocus type="text" placeholder="Question" onChange={this.setNewQuestion} />
+        <Input type="text" placeholder="Left Label" onChange={this.setLeftLabel} />
+        <Input type="text" placeholder="Right Label" onChange={this.setRightLabel} />
         <Button {...addProps} onClick={this.addQuestion}>Add</Button>
         <p>{this.state.newQuestionError}</p>
       </div>

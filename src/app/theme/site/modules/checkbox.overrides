@@ -1,0 +1,3 @@
+.ui.toggle.checkbox label {
+  font-weight: 300;
+}
