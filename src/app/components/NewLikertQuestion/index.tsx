@@ -30,6 +30,12 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
   }
 
   private addQuestion() {
+    if (typeof this.state.newQuestion !== 'string' || this.state.newQuestion.length === 0) {
+      this.setState({
+        newQuestionError: 'The question text must be provided',
+      });
+      return;
+    }
     this.setState({
       saving: true,
     });
