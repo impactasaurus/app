@@ -24,4 +24,4 @@ Then edit `config/main.js`, changing `config.app.api` to point at `http://localh
 
 ## Contributing
 
-Please read the [contribution guidelines](https://github.com/impactasaurus/server/blob/master/CONTRIBUTING.md) to find out how to contribute.
+Please read the [contribution guidelines](https://github.com/impactasaurus/app/blob/master/CONTRIBUTING.md) to find out how to contribute.
