@@ -119,6 +119,7 @@
     "react-apollo": "1.4.2",
     "react-css-modules": "4.1.0",
     "react-dom": "15.4.2",
+    "react-ga": "2.2.0",
     "react-helmet": "5.0.3",
     "react-redux": "5.0.2",
     "react-router": "3.0.2",

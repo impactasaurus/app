@@ -18,6 +18,15 @@ import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apol
 
 const appConfig = require('../config/main');
 
+const ReactGA = require('react-ga');
+ReactGA.initialize(appConfig.app.analytics.trackingID, {
+  debug: appConfig.app.analytics.debug,
+});
+const logPageView = () => {
+  ReactGA.set({ page: window.location.pathname + window.location.search });
+  ReactGA.pageview(window.location.pathname + window.location.search);
+};
+
 const networkInterface = createNetworkInterface({
   uri: appConfig.app.api,
 });
@@ -48,6 +57,7 @@ ReactDOM.render(
     <Router
       history={history}
       render={connectedCmp}
+      onUpdate={logPageView}
     >
       {routes}
     </Router>

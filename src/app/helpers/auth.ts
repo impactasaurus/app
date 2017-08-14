@@ -57,3 +57,12 @@ export function getExpiryDate(): Date|null {
   }
   return new Date(decoded.exp * 1000);
 }
+
+export function getUserID(): string|null {
+  const storedProfile = localStorage.getItem('profile');
+  if (storedProfile === null) {
+    return null;
+  }
+  const profile: auth0.Auth0UserProfile = JSON.parse(storedProfile);
+  return profile.user_id;
+}

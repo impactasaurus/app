@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getToken, getExpiryDate } from 'helpers/auth';
+import { getToken, getExpiryDate, getUserID } from 'helpers/auth';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import { RouterState } from '@types/react-router-redux';
@@ -11,19 +11,27 @@ interface IProps extends IURLConnector {
   routeState?: RouterState;
 }
 
+interface IState {
+  lastUserID: string|null;
+}
+
 @connect((state: IStore) => ({
   routeState: state.routing,
 }), (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
-export class IsLoggedIn extends React.Component<IProps, any> {
+export class IsLoggedIn extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
+    this.state = {
+      lastUserID: null,
+    };
     this.checkAuth = this.checkAuth.bind(this);
     this.sendToLogin = this.sendToLogin.bind(this);
     this.isStoredJWTValid = this.isStoredJWTValid.bind(this);
     this.setupRefreshTrigger = this.setupRefreshTrigger.bind(this);
+    this.trackUser = this.trackUser.bind(this);
   }
 
   public componentDidMount() {
@@ -69,7 +77,21 @@ export class IsLoggedIn extends React.Component<IProps, any> {
     setTimer('loginTimer', this.sendToLogin);
   }
 
+  private trackUser() {
+    const userID = getUserID();
+    if (userID !== this.state.lastUserID) {
+      const ReactGA = require('react-ga');
+      ReactGA.set({
+        userId: userID,
+      });
+      this.setState({
+        lastUserID: userID,
+      });
+    }
+  }
+
   private checkAuth() {
+    this.trackUser();
     if (this.isStoredJWTValid() === false) {
         this.sendToLogin();
         return;

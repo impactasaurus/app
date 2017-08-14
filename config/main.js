@@ -16,6 +16,10 @@ var config = {
       clientID: "pfKiAOUJh5r6jCxRn5vUYq7odQsjPUKf",
       domain: "impact.eu.auth0.com",
       scope : "openid app_metadata user_metadata"
+    },
+    analytics: {
+      debug: process.env.NODE_ENV !== "production",
+      trackingID: "UA-61133305-4"
     }
   }
 };
