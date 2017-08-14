@@ -1,28 +1,42 @@
 @import (reference) './../../theme/variables.less';
 
 .likert-scale {
-    margin: auto;
-    margin-top: 50px;
-    margin-bottom: 40px;
-    cursor: pointer;
+  margin: auto;
+  margin-top: 50px;
+  margin-bottom: 40px;
+  cursor: pointer;
+
+  .rc-slider-track {
+    background-color: @primary;
+  }
+
+  .rc-slider-handle {
+    border-color: @primary;
+
+    &:active {
+      box-shadow: 0 0 5px lighten(@primary, 10%);
+    }
+
+    &:hover {
+      border-color: @primary;
+    }
+  }
+
+  .rc-slider-dot-active {
+    border-color: @primary;
+  }
+
+  &.awaiting-input {
+    .rc-slider-handle {
+      display: none;
+    }
+
+    .rc-slider-dot {
+      border-color: @primary;
+    }
 
     .rc-slider-track {
-        background-color: @primary;
+      display: none;
     }
-
-    .rc-slider-handle {
-        border-color: @primary;
-
-        &:active {
-            box-shadow: 0 0 5px lighten(@primary, 10%);
-        }
-
-        &:hover {
-            border-color: @primary;
-        }
-    }
-
-    .rc-slider-dot-active {
-        border-color: @primary;
-    }
+  }
 }

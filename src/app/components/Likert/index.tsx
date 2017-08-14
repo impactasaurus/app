@@ -10,19 +10,23 @@ interface IProps {
   onChange: (value: number) => void;
 }
 
-class Likert extends React.Component<IProps, any> {
+interface IState {
+  awaitingAnswer: boolean;
+}
+
+class Likert extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
+    this.state = {
+      awaitingAnswer: true,
+    };
     this.isInverted = this.isInverted.bind(this);
     this.minValue = this.minValue.bind(this);
     this.maxValue = this.maxValue.bind(this);
     this.setAnswer = this.setAnswer.bind(this);
     this.defaultValue = this.defaultValue.bind(this);
-  }
-
-  public componentDidMount() {
-    this.setAnswer(this.defaultValue());
+    this.touched = this.touched.bind(this);
   }
 
   private isInverted() {
@@ -39,6 +43,15 @@ class Likert extends React.Component<IProps, any> {
 
   private defaultValue() {
       return Math.floor((this.maxValue()-this.minValue())/2);
+  }
+
+  private touched() {
+    if (this.state.awaitingAnswer) {
+      this.setAnswer(this.defaultValue());
+      this.setState({
+        awaitingAnswer: false,
+      });
+    }
   }
 
   private setAnswer(value: number) {
@@ -59,8 +72,21 @@ class Likert extends React.Component<IProps, any> {
       marks[leftValue] = this.props.leftLabel;
       marks[rightValue] = this.props.rightLabel;
     }
+    let className = 'likert-scale';
+    if (this.state.awaitingAnswer) {
+      className = `${className} awaiting-input`;
+    }
     return (
-      <Slider className="likert-scale" min={leftValue} max={rightValue} defaultValue={this.defaultValue()} marks={marks} dots={true} onChange={this.setAnswer} />
+      <Slider
+        className={className}
+        min={leftValue}
+        max={rightValue}
+        defaultValue={this.defaultValue()}
+        marks={marks}
+        dots={true}
+        onChange={this.setAnswer}
+        onBeforeChange={this.touched}
+      />
     );
   }
 }

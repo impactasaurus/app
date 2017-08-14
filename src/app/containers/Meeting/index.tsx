@@ -34,6 +34,7 @@ class MeetingInner extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       currentQuestion: undefined,
+      currentValue: undefined,
       finished: false,
       saveError: undefined,
       saving: false,
@@ -58,6 +59,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       } else {
         this.setState({
           currentQuestion: nextQuestion.id,
+          currentValue: undefined,
           finished: false,
         });
       }
@@ -142,6 +144,9 @@ class MeetingInner extends React.Component<IProps, IState> {
     const nextProps: ButtonProps = {};
     if (this.state.saving) {
       nextProps.loading = true;
+      nextProps.disabled = true;
+    }
+    if (this.state.currentValue === undefined) {
       nextProps.disabled = true;
     }
     return (
