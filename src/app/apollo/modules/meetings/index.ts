@@ -58,7 +58,7 @@ export const newMeeting = graphql(gql`
           query: getMeetingGQL,
           variables: { beneficiaryID },
         }],
-      } as any).then(mutationResultExtractor<IMeeting>('newMeeting')),
+      }).then(mutationResultExtractor<IMeeting>('newMeeting')),
     }),
   });
 

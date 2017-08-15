@@ -38,7 +38,7 @@ export const newQuestionSet = graphql(gql`
   ${fragment}`, {
     options: {
       refetchQueries: ['allOutcomeSets'],
-    } as any,
+    },
     props: ({ mutate }) => ({
       newQuestionSet: (name: string, description?: string): Promise<IOutcomeSet> => mutate({
           variables: {
@@ -76,7 +76,7 @@ export const deleteQuestionSet = graphql(gql`
   `, {
     options: {
       refetchQueries: ['allOutcomeSets'],
-    } as any,
+    },
     props: ({ mutate }) => ({
       deleteQuestionSet: (id: string): Promise<string> => mutate({
           variables: {
