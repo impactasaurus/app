@@ -29,7 +29,7 @@ export const getMeeting = <T>(idExtractor: IDExtractor<T>) => {
   });
 };
 
-const getMeetingGQL = gql`
+const getMeetingsGQL = gql`
   query ($beneficiaryID: String!) {
     getMeetings: meetings(beneficiary: $beneficiaryID) {
       ...meetingWithOutcomeSetAndAggregates
@@ -38,7 +38,7 @@ const getMeetingGQL = gql`
   ${fragmentWithOutcomeSetAndAggregates}`;
 
 export const getMeetings = <T>(idExtractor: IDExtractor<T>) => {
-  return graphql<any, T>(getMeetingGQL, {
+  return graphql<any, T>(getMeetingsGQL, {
     options: (props: T) => {
       return {
         variables: {
@@ -64,7 +64,7 @@ export const newMeeting = graphql(gql`
             conducted: conducted.toISOString(),
         },
         refetchQueries: [{
-          query: getMeetingGQL,
+          query: getMeetingsGQL,
           variables: { beneficiaryID },
         }],
       }).then(mutationResultExtractor<IMeeting>('newMeeting')),
