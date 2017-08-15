@@ -108,6 +108,7 @@
   },
   "dependencies": {
     "@ald-life/outcome-graph": "1.0.1",
+    "apollo-cache-invalidation": "0.0.3",
     "auth0-lock": "10.16.0",
     "es6-promise": "4.0.5",
     "history": "4.5.1",

@@ -1,6 +1,7 @@
 import {gql, graphql} from 'react-apollo';
 import {IOutcomeSet, fragment as osFragment} from 'models/outcomeSet';
 import {mutationResultExtractor} from 'helpers/apollo';
+import {clearCacheOfAllMeetings} from 'apollo/modules/meetings';
 
 export function addQuestionCategory<T>(component) {
   return graphql<any, T>(gql`
@@ -12,12 +13,13 @@ export function addQuestionCategory<T>(component) {
   ${osFragment}`, {
     props: ({ mutate }) => ({
       addCategory: (outcomeSetID: string, name: string, aggregation: string, description?: string): Promise<IOutcomeSet> => mutate({
-          variables: {
-            outcomeSetID,
-            name,
-            aggregation,
-            description,
-          },
+        variables: {
+          outcomeSetID,
+          name,
+          aggregation,
+          description,
+        },
+        update: clearCacheOfAllMeetings(),
       }).then(mutationResultExtractor<IOutcomeSet>('addCategory')),
     }),
   })(component);
@@ -33,10 +35,11 @@ export function deleteCategory<T>(component) {
   ${osFragment}`, {
     props: ({ mutate }) => ({
       deleteCategory: (outcomeSetID: string, categoryID: string): Promise<IOutcomeSet> => mutate({
-          variables: {
-            outcomeSetID,
-            categoryID,
-          },
+        variables: {
+          outcomeSetID,
+          categoryID,
+        },
+        update: clearCacheOfAllMeetings(),
       }).then(mutationResultExtractor<IOutcomeSet>('deleteCategory')),
     }),
   })(component);
@@ -52,11 +55,12 @@ export function setCategory<T>(component) {
   ${osFragment}`, {
     props: ({ mutate }) => ({
       setCategory: (outcomeSetID: string, questionID: string, categoryID?: string): Promise<IOutcomeSet> => mutate({
-          variables: {
-            outcomeSetID,
-            questionID,
-            categoryID,
-          },
+        variables: {
+          outcomeSetID,
+          questionID,
+          categoryID,
+        },
+        update: clearCacheOfAllMeetings(),
       }).then(mutationResultExtractor<IOutcomeSet>('setCategory')),
     }),
   })(component);

@@ -1,6 +1,15 @@
 import {gql, graphql, QueryProps} from 'react-apollo';
 import {IMeeting, fragment, fragmentWithOutcomeSetAndAggregates} from 'models/meeting';
 import {IDExtractor, mutationResultExtractor} from 'helpers/apollo';
+import { invalidateFields, ROOT } from 'apollo-cache-invalidation';
+
+// see impactasaurus/app#55, not an ideal fix
+// forces refetch of meeting related queries by deleting root query pointers for `meeting` and `meetings` queries
+export function clearCacheOfAllMeetings() {
+  return invalidateFields(() => [
+    [ROOT, /^meeting.*/],
+  ]);
+}
 
 export const getMeeting = <T>(idExtractor: IDExtractor<T>) => {
   return graphql<any, T>(gql`
