@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { IndexRoute, Route } from 'react-router';
-import { App, Home, Login, Review, ReviewSelector, Conduct, Settings, OutcomeSets, OutcomeSet, Meeting, Organisation, Account } from 'containers';
+import { App, Home, Login, Review, ReviewSelector, Conduct, Settings, OutcomeSets, OutcomeSet, Meeting, Organisation, Account, Report } from 'containers';
 
 export default (
   <Route path="/" component={App}>
@@ -17,5 +17,6 @@ export default (
     </Route>
     <Route path="login" component={Login} />
     <Route path="meeting/:id" component={Meeting} />
+    <Route path="report" component={Report} />
   </Route>
 );
