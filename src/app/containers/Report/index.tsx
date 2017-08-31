@@ -4,7 +4,6 @@ import {IOutcomeSet} from 'models/outcomeSet';
 import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
-import * as moment from 'moment';
 import { Button, Select, Grid, SelectProps } from 'semantic-ui-react';
 import {DateRangePicker} from 'components/DateRangePicker';
 const { connect } = require('react-redux');
@@ -75,10 +74,10 @@ class ReportInner extends React.Component<IProp, IState> {
     });
   }
 
-  private setDateRange(start: moment.Moment, end: moment.Moment) {
+  private setDateRange(start: Date, end: Date) {
     this.setState({
-      periodStart: start.toDate(),
-      periodEnd: end.toDate(),
+      periodStart: start,
+      periodEnd: end,
     });
   }
 
@@ -93,7 +92,7 @@ class ReportInner extends React.Component<IProp, IState> {
         <h3 className="label">Question Set</h3>
         <Select {...selectProps} placeholder="Question Set" onChange={this.setQuestionSetID} options={this.getOptions(outcomeSets)} />
         <h3 className="label">Date Range</h3>
-        <DateRangePicker />
+        <DateRangePicker onSelect={this.setDateRange} future={false}/>
         <Button className="submit" onClick={this.navigateToReport}>Generate</Button>
         <p>{this.state.error}</p>
       </div>

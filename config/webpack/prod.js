@@ -98,6 +98,16 @@ var config = {
         })
       },
       {
+        test: /\.scss$/,
+        loader: ExtractTextPlugin.extract({
+          loader: [
+            "css-loader",
+            "sass-loader"
+          ],
+          fallback: "style-loader"
+        })
+      },
+      {
         test: /\.eot(\?.*)?$/,
         loader: 'file-loader?name=fonts/[hash].[ext]'
       },
