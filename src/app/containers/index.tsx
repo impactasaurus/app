@@ -12,3 +12,4 @@ export { Meeting } from './Meeting';
 export { Organisation } from './Organisation';
 export {Account} from './Account';
 export {Report} from './Report';
+export {ServiceReport} from './ServiceReport';
