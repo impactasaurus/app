@@ -13,3 +13,8 @@ $react-dates-color-focus: #935D8C;
 
 @import '~react-dates/css/variables.scss';
 @import '~react-dates/css/styles.scss';
+
+#impactasaurus .DateRangePickerInput {
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  border-radius: 0.28571429rem;
+}
