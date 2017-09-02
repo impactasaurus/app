@@ -2,9 +2,11 @@ import * as React from 'react';
 import 'url-search-params-polyfill';
 import { Grid, Loader } from 'semantic-ui-react';
 import {getJOCServiceReport, IReportResult} from 'apollo/modules/reports';
+import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
+import {ServiceReportDetails} from 'components/ServiceReportDetails';
 
-interface IProp {
-  data: IReportResult;
+interface IProp extends IReportResult {
+  data: IOutcomeResult;
   params: {
       questionSetID: string,
   };
@@ -21,7 +23,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
   }
 
   public render() {
-    if (this.props.data.loading) {
+    if (this.props.data.loading || this.props.JOCServiceReport.loading) {
       return (
         <Loader active={true} inline="centered" />
       );
@@ -29,7 +31,8 @@ class ServiceReportInner extends React.Component<IProp, any> {
     return (
       <Grid container columns={1} id="service-report">
         <Grid.Column>
-          {JSON.stringify(this.props.data.getJOCServiceReport)}
+          <h1>Service Report</h1>
+          <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
         </Grid.Column>
       </Grid>
     );
@@ -50,5 +53,5 @@ function getEndDateFromProps(p: IProp): string {
   return params.get('end');
 }
 
-const ServiceReport = getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps)(ServiceReportInner);
+const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps)(ServiceReportInner));
 export {ServiceReport}

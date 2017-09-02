@@ -20,6 +20,7 @@ export interface IJOCAggregates<T> {
 export interface IExcluded {
   categoryIDs: string[];
   questionIDs: string[];
+  beneficiaryIDs: string[];
 }
 
 export interface IJOCServiceReport {
@@ -75,7 +76,8 @@ export const fragment = gql`
     },
     excluded{
       categoryIDs,
-      questionIDs
+      questionIDs,
+      beneficiaryIDs
     },
     warnings
   }`;

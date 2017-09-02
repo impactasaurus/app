@@ -1,4 +1,4 @@
-import {gql, graphql, QueryProps} from 'react-apollo';
+import {gql, graphql, QueryProps, QueryOpts} from 'react-apollo';
 import {IJOCServiceReport, fragment} from 'models/report';
 import {IDExtractor} from 'helpers/apollo';
 
@@ -11,18 +11,24 @@ export const getJOCServiceReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T
     }
     ${fragment}`,
   {
-    options: (props: T) => {
+    name: 'JOCServiceReport',
+    options: (props: T): QueryOpts => {
       return {
         variables: {
           questionSetID: qid(props),
           start: start(props),
           end: end(props),
         },
+        fetchPolicy: 'network-only',
       };
     },
   });
 };
 
-export interface IReportResult extends QueryProps {
+export interface IJOCResult extends QueryProps {
     getJOCServiceReport?: IJOCServiceReport;
+}
+
+export interface IReportResult {
+  JOCServiceReport: IJOCResult;
 }
