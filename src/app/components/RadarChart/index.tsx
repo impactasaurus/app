@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {getOutcomeGraph} from '@ald-life/outcome-graph';
+import {getOutcomeGraph} from './outcomeGraph';
 import {RadarData, IRadarSeries, IRadarPoint} from 'models/radar';
 import './style.less';
 
@@ -37,7 +37,7 @@ class RadarChart extends React.Component<IProp, any> {
     return data.map((s: IRadarSeries): IOutcomeGraphSeries => {
       return {
         notes: s.note,
-        timestamp: s.timestamp.toISOString(),
+        timestamp: (s.name) ? s.name : s.timestamp.toISOString(),
         outcomes: s.datapoints.map((d: IRadarPoint): IOutcomeGraphPoint => {
           return {
             notes: d.note,
