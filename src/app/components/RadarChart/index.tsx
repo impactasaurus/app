@@ -37,7 +37,7 @@ class RadarChart extends React.Component<IProp, any> {
     return data.map((s: IRadarSeries): IOutcomeGraphSeries => {
       return {
         notes: s.note,
-        timestamp: (s.name) ? s.name : s.timestamp.toISOString(),
+        timestamp: (s.name instanceof Date) ? s.name.toISOString() : s.name,
         outcomes: s.datapoints.map((d: IRadarPoint): IOutcomeGraphPoint => {
           return {
             notes: d.note,

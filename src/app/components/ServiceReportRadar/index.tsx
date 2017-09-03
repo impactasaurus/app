@@ -53,7 +53,7 @@ class ServiceReportRadar extends React.Component<IProp, any> {
         }),
       };
     };
-    return [getQRadarSeries(p.serviceReport.questionAggregates.first, 'initial'), getQRadarSeries(p.serviceReport.questionAggregates.last, 'latest')];
+    return [getQRadarSeries(p.serviceReport.questionAggregates.first, 'Initial'), getQRadarSeries(p.serviceReport.questionAggregates.last, 'Latest')];
   }
 
   private getRadarData(p: IProp): RadarData {
