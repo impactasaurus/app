@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Helmet } from 'react-helmet';
 import {IOutcomeResult, IOutcomeMutation, allOutcomeSets} from 'apollo/modules/outcomeSets';
 import {IMeetingMutation, newMeeting} from 'apollo/modules/meetings';
 import {IOutcomeSet} from 'models/outcomeSet';
@@ -151,12 +152,17 @@ class ConductInner extends React.Component<IProp, IState> {
   public render() {
     const { data } = this.props;
     return (
-      <Grid container columns={1} id="conduct">
-        <Grid.Column>
-          <h1>Conduct Meeting</h1>
-          {this.renderNewMeetingControl(data.allOutcomeSets)}
-        </Grid.Column>
-      </Grid>
+      <div>
+        <Helmet>
+          <title>Record</title>
+        </Helmet>
+        <Grid container columns={1} id="conduct">
+          <Grid.Column>
+            <h1>Conduct Meeting</h1>
+            {this.renderNewMeetingControl(data.allOutcomeSets)}
+          </Grid.Column>
+        </Grid>
+      </div>
     );
   }
 }
