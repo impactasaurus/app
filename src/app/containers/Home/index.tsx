@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Helmet } from 'react-helmet';
 import { FancyBox } from 'components/FancyBox';
 import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
@@ -19,6 +20,10 @@ class Home extends React.Component<IURLConnector, any> {
 
   public render() {
     return (
+      <div>
+      <Helmet>
+        <title>Home</title>
+      </Helmet>
       <Grid container columns={1} id="home">
         <Grid.Column>
           <FancyBox text="Define questions to quantify how much you are aiding your organisation's beneficiaries" title="Define" icon="edit" onClick={this.navigate('/settings/questions')}/>
@@ -26,6 +31,7 @@ class Home extends React.Component<IURLConnector, any> {
           <FancyBox text="Report on an individual's journey of change, providing a sense of achievement and progress" title="Review" icon="area chart" onClick={this.navigate('/review')} />
         </Grid.Column>
       </Grid>
+      </div>
     );
   }
 }
