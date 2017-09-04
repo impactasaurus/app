@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Helmet } from 'react-helmet';
 import {IMeetingResult, IMeetingMutation, getMeeting, addLikertAnswer} from 'apollo/modules/meetings';
 import {Question} from 'models/question';
 import { Likert} from 'components/Likert';
@@ -150,14 +151,19 @@ class MeetingInner extends React.Component<IProps, IState> {
       nextProps.disabled = true;
     }
     return (
-      <Grid container columns={1} id="meeting">
-        <Grid.Column>
-          <h1>{question.question}</h1>
-            <Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} />
-          <Button {...nextProps} onClick={this.next}>Next</Button>
-          <p>{this.state.saveError}</p>
-        </Grid.Column>
-      </Grid>
+      <div>
+        <Helmet>
+          <title>Conducting Meeting</title>
+        </Helmet>
+        <Grid container columns={1} id="meeting">
+          <Grid.Column>
+            <h1>{question.question}</h1>
+              <Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} />
+            <Button {...nextProps} onClick={this.next}>Next</Button>
+            <p>{this.state.saveError}</p>
+          </Grid.Column>
+        </Grid>
+      </div>
     );
   }
 }
