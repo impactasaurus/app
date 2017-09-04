@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Helmet } from 'react-helmet';
 import { Button, Input, Grid } from 'semantic-ui-react';
 import './style.less';
 import {setURL} from 'modules/url';
@@ -37,17 +38,22 @@ class ReviewSelector extends React.Component<IURLConnector, IState> {
 
   public render() {
     return (
-      <Grid container columns={1} >
-        <Grid.Column>
-          <div id="reviewselector">
-            <h1>Review</h1>
-            <span className="label"><Hint text={strings.beneficiaryIDExplanation} /><h3>Beneficiary ID</h3></span>
-            <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID}/>
-            <Button className="submit" onClick={this.review}>Review</Button>
-          </div>
-          {this.props.children}
-        </Grid.Column>
-      </Grid>
+      <div>
+        <Helmet>
+          <title>Review</title>
+        </Helmet>
+        <Grid container columns={1} >
+          <Grid.Column>
+            <div id="reviewselector">
+              <h1>Review</h1>
+              <span className="label"><Hint text={strings.beneficiaryIDExplanation} /><h3>Beneficiary ID</h3></span>
+              <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID}/>
+              <Button className="submit" onClick={this.review}>Review</Button>
+            </div>
+            {this.props.children}
+          </Grid.Column>
+        </Grid>
+      </div>
     );
   }
 }
