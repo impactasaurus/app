@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Helmet } from 'react-helmet';
 import {MeetingView} from 'components/MeetingView';
 
 interface IProps {
@@ -18,6 +19,9 @@ class Review extends React.Component<IProps, any> {
     return (
       <div id="review">
         {inner}
+        <Helmet>
+          <title>Review</title>
+        </Helmet>
       </div>
     );
   }
