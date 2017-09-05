@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Helmet } from 'react-helmet';
 import {IOutcomeResult, getOutcomeSet, IOutcomeMutation, editQuestionSet} from 'apollo/modules/outcomeSets';
 import {IQuestionMutation, deleteQuestion} from 'apollo/modules/questions';
 import { Button, Input, Icon, Grid, Loader } from 'semantic-ui-react';
@@ -111,6 +112,11 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     return (
       <Grid container columns={1} id="question-set">
         <Grid.Column>
+          <div>
+            <Helmet>
+              <title>Question Sets</title>
+            </Helmet>
+          </div>
           <h1>{os.name}{this.renderEditButton()}</h1>
           <div>Description: {os.description || 'No description'}{this.renderEditButton()}</div>
           {this.renderEditControl()}
