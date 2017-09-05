@@ -63,10 +63,20 @@ class ServiceReportRadar extends React.Component<IProp, any> {
     return this.getQuestionRadarData(p);
   }
 
+  private renderRadar(p: IProp): JSX.Element {
+    if (p.serviceReport.beneficiaryIDs.length === 0) {
+      return (<div />);
+    }
+    const data = this.getRadarData(p);
+    return (
+      <RadarChart data={data} />
+    );
+  }
+
   public render() {
     return (
       <div className="service-report-radar">
-        <RadarChart data={this.getRadarData(this.props)} />
+        {this.renderRadar(this.props)}
       </div>
     );
   }
