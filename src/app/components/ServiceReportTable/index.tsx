@@ -21,7 +21,7 @@ class ServiceReportTable extends React.Component<IProp, any> {
 
   private renderRow(r: IRow): JSX.Element {
     return (
-      <Table.Row>
+      <Table.Row key={r.name}>
         <Table.Cell>{r.name}</Table.Cell>
         <Table.Cell>{r.first}</Table.Cell>
         <Table.Cell>{r.last}</Table.Cell>
@@ -79,7 +79,7 @@ class ServiceReportTable extends React.Component<IProp, any> {
     }
     rows = this.sortByDelta(rows);
     return (
-      <Table striped={true} sortable={true} celled={true}>
+      <Table striped={true} celled={true}>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>{p.category ? 'Category' : 'Question'}</Table.HeaderCell>

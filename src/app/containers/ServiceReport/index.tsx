@@ -6,11 +6,14 @@ import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ServiceReportDetails} from 'components/ServiceReportDetails';
 import {ServiceReportRadar} from 'components/ServiceReportRadar';
 import {ServiceReportTable} from 'components/ServiceReportTable';
+import './style.less';
 
 interface IProp extends IReportResult {
   data: IOutcomeResult;
   params: {
       questionSetID: string,
+      start: string,
+      end: string,
   };
   location: {
     search: string,
@@ -48,13 +51,11 @@ function getQuestionSetIDFromProps(p: IProp): string {
 }
 
 function getStartDateFromProps(p: IProp): string {
-  const params = new URLSearchParams(p.location.search);
-  return params.get('start');
+  return p.params.start;
 }
 
 function getEndDateFromProps(p: IProp): string {
-  const params = new URLSearchParams(p.location.search);
-  return params.get('end');
+  return p.params.end;
 }
 
 const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps)(ServiceReportInner));

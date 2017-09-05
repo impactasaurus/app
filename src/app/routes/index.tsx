@@ -18,6 +18,6 @@ export default (
     <Route path="login" component={Login} />
     <Route path="meeting/:id" component={Meeting} />
     <Route path="report" component={Report} />
-    <Route path="report/service/:questionSetID" component={ServiceReport} />
+    <Route path="report/service/:questionSetID/:start/:end" component={ServiceReport} />
   </Route>
 );

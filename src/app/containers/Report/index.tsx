@@ -54,7 +54,13 @@ class ReportInner extends React.Component<IProp, IState> {
       });
       return;
     }
-    this.props.setURL(`/report/service/${this.state.questionSetID}?start=${this.state.periodStart.toISOString()}&end=${this.state.periodEnd.toISOString()}`);
+    const encodeDatePathParam = ((d: Date): string => {
+      // had lots of issues with full stops being present in path parameters...
+      return d.toISOString().replace(/\.[0-9]{3}/, '');
+    });
+    const s = encodeDatePathParam(this.state.periodStart);
+    const e = encodeDatePathParam(this.state.periodEnd);
+    this.props.setURL(`/report/service/${this.state.questionSetID}/${s}/${e}`);
   }
 
   private getOptions(oss: IOutcomeSet[]): any[] {

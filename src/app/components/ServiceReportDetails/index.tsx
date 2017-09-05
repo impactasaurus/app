@@ -40,7 +40,7 @@ class ServiceReportDetails extends React.Component<IProp, any> {
   }
 
   private renderWarning(str: string): JSX.Element {
-    return (<div>{str}</div>);
+    return (<div key={str}>{str}</div>);
   }
 
   private getCategoryWarnings(sr: IJOCServiceReport, qs: IOutcomeSet): string[] {
