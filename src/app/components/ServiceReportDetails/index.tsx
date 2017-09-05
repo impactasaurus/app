@@ -3,6 +3,7 @@ import {IJOCServiceReport, IQuestionAggregates, ICategoryAggregates} from 'model
 import {IOutcomeSet} from 'models/outcomeSet';
 import {Message} from 'semantic-ui-react';
 import {renderArray} from 'helpers/react';
+import './style.less';
 
 interface IProp {
   serviceReport: IJOCServiceReport;
@@ -19,16 +20,19 @@ class ServiceReportDetails extends React.Component<IProp, any> {
   }
 
   private renderOverview(sr: IJOCServiceReport): JSX.Element {
+    const noBens = sr.beneficiaryIDs.length;
+    const info = noBens > 0 ? true : false;
+    const title = info ? 'Overview of Report Content' : 'Report failed';
     return (
-      <Message info>
-        <Message.Header>Overview of Report Content</Message.Header>
-        <p>
-          {this.dealWithSingularOrMultiple(sr.beneficiaryIDs.length, 'beneficiary has', 'beneficiaries have')} been included in this report.
+      <Message info={info} error={!info} className="service-overview">
+        <Message.Header>{title}</Message.Header>
+        <p className="ben-count">
+          {this.dealWithSingularOrMultiple(noBens, 'beneficiary has', 'beneficiaries have')} been included in this report.
         </p>
-        <p>
+        <p className="ben-excluded">
           {this.dealWithSingularOrMultiple(sr.excluded.beneficiaryIDs.length, 'beneficiary has', 'beneficiaries have')} been excluded because they only have a single assessment.
         </p>
-        <p>
+        <p className="qc-excluded">
           {this.dealWithSingularOrMultiple(sr.excluded.categoryIDs.length, 'category', 'categories')} and {this.dealWithSingularOrMultiple(sr.excluded.questionIDs.length, 'question', 'questions')} have been excluded because they are not present within the assessments.
         </p>
       </Message>
