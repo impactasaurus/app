@@ -1,6 +1,6 @@
 import * as React from 'react';
 import 'url-search-params-polyfill';
-import { Grid, Loader } from 'semantic-ui-react';
+import { Grid, Loader, Checkbox } from 'semantic-ui-react';
 import {getJOCServiceReport, IReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ServiceReportDetails} from 'components/ServiceReportDetails';
@@ -20,11 +20,53 @@ interface IProp extends IReportResult {
   };
 }
 
-class ServiceReportInner extends React.Component<IProp, any> {
+interface IState {
+  categoryAg: boolean;
+}
+
+class ServiceReportInner extends React.Component<IProp, IState> {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      categoryAg: false,
+    };
+    this.toggleCategoryAggregation = this.toggleCategoryAggregation.bind(this);
+    this.renderControlPanel = this.renderControlPanel.bind(this);
+  }
+
+  public componentWillReceiveProps(nextProps) {
+    if (!this.isCategoryAggregationAvailable(nextProps) && this.state.categoryAg) {
+      this.setState({
+        categoryAg: false,
+      });
+    }
+  }
+
+  private isCategoryAggregationAvailable(props: IProp): boolean {
+    return props.JOCServiceReport.getJOCServiceReport.categoryAggregates.first.length > 0;
+  }
+
+  private toggleCategoryAggregation() {
+    this.setState({
+      categoryAg: !this.state.categoryAg,
+    });
+  }
+
+  private renderControlPanel(): JSX.Element {
+    const cpItems: JSX.Element[] = [];
+    if (this.isCategoryAggregationAvailable(this.props)) {
+      cpItems.push((
+        <span key="agtoggle">
+          <Checkbox toggle label="Category Aggregation" onChange={this.toggleCategoryAggregation} checked={this.state.categoryAg} />
+        </span>
+      ));
+    }
+    return (
+      <div id="cp">
+        {cpItems}
+      </div>
+    );
   }
 
   public render() {
@@ -38,8 +80,9 @@ class ServiceReportInner extends React.Component<IProp, any> {
         <Grid.Column>
           <h1>Service Report</h1>
           <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
-          <ServiceReportTable serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
-          <ServiceReportRadar serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
+          {this.renderControlPanel()}
+          <ServiceReportTable serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} category={this.state.categoryAg} />
+          <ServiceReportRadar serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} category={this.state.categoryAg} />
         </Grid.Column>
       </Grid>
     );
