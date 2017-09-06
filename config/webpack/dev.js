@@ -94,6 +94,14 @@ var config = {
           "less-loader"
         ]
       },
+      {
+        test: /\.scss$/,
+        loaders: [
+          "style-loader",
+          "css-loader",
+          "sass-loader"
+        ]
+      },
 
       {
         test: /\.eot(\?.*)?$/,

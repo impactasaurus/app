@@ -1,0 +1,20 @@
+$react-dates-color-primary: #935D8C;
+
+$react-dates-color-primary-shade-1: #AD85A9;
+$react-dates-color-primary-shade-2: #D0B8CD;
+
+$react-dates-color-primary-shade-3: #AD85A9;
+$react-dates-color-primary-shade-4: #D0B8CD;
+
+$react-dates-color-secondary: white;
+
+$react-dates-color-text-focus: white;
+$react-dates-color-focus: #935D8C;
+
+@import '~react-dates/css/variables.scss';
+@import '~react-dates/css/styles.scss';
+
+#impactasaurus .DateRangePickerInput {
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  border-radius: 0.28571429rem;
+}
