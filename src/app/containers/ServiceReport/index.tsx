@@ -1,11 +1,13 @@
 import * as React from 'react';
 import 'url-search-params-polyfill';
-import { Grid, Loader, Checkbox } from 'semantic-ui-react';
+import {GraphQLError} from '@types/graphql';
+import { Grid, Loader, Checkbox, Message } from 'semantic-ui-react';
 import {getJOCServiceReport, IReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ServiceReportDetails} from 'components/ServiceReportDetails';
 import {ServiceReportRadar} from 'components/ServiceReportRadar';
 import {ServiceReportTable} from 'components/ServiceReportTable';
+import {renderArray} from 'helpers/react';
 import './style.less';
 
 interface IProp extends IReportResult {
@@ -44,6 +46,9 @@ class ServiceReportInner extends React.Component<IProp, IState> {
   }
 
   private isCategoryAggregationAvailable(props: IProp): boolean {
+    if (props.JOCServiceReport.error || props.JOCServiceReport.loading) {
+      return false;
+    }
     return props.JOCServiceReport.getJOCServiceReport.categoryAggregates.first.length > 0;
   }
 
@@ -69,7 +74,27 @@ class ServiceReportInner extends React.Component<IProp, IState> {
     );
   }
 
+  private renderError(error: GraphQLError): JSX.Element {
+    return (
+      <p key={error.message}>
+        {error.message}
+      </p>
+    );
+  }
+
   public render() {
+    console.log(this.props.JOCServiceReport);
+    if (this.props.JOCServiceReport.error) {
+      return (
+        <Grid container columns={1} id="service-report">
+          <Grid.Column>
+            <Message error>
+              {renderArray(this.renderError, this.props.JOCServiceReport.error.graphQLErrors)}
+            </Message>
+          </Grid.Column>
+        </Grid>
+      );
+    }
     if (this.props.data.loading || this.props.JOCServiceReport.loading) {
       return (
         <Loader active={true} inline="centered" />

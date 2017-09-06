@@ -27,7 +27,7 @@ class ServiceReportDetails extends React.Component<IProp, any> {
       <Message info={info} error={!info} className="service-overview">
         <Message.Header>{title}</Message.Header>
         <p className="ben-count">
-          {this.dealWithSingularOrMultiple(noBens, 'beneficiary has', 'beneficiaries have')} been included in this report.
+          This report aggregates data covering {this.dealWithSingularOrMultiple(noBens, 'beneficiary', 'beneficiaries')}.
         </p>
         <p className="ben-excluded">
           {this.dealWithSingularOrMultiple(sr.excluded.beneficiaryIDs.length, 'beneficiary has', 'beneficiaries have')} been excluded because they only have a single assessment.
