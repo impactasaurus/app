@@ -150,7 +150,7 @@ var config = {
       'process.env': {
         BROWSER: JSON.stringify(true),
         NODE_ENV: JSON.stringify('production'),
-        VERSION: process.env.TRAVIS_COMMIT,
+        VERSION: JSON.stringify(process.env.TRAVIS_COMMIT),
       }
     }),
     new HtmlWebpackPlugin({

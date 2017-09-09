@@ -154,7 +154,7 @@ var config = {
       'process.env': {
         BROWSER: JSON.stringify(true),
         NODE_ENV: JSON.stringify('development'),
-        VERSION: 'dev',
+        VERSION: JSON.stringify('dev'),
       }
     }),
     new webpack.HotModuleReplacementPlugin(),
