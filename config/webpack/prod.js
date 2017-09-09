@@ -21,25 +21,15 @@ var config = {
   },
 
   entry: {
-    app: './src/client.tsx',
-    vendor: [
-      './src/vendor/main.ts',
-      'react',
-      'react-dom',
-      'react-router',
-      'react-helmet',
-      'react-redux',
-      'react-router-redux',
-      'redux',
-      'redux-connect',
-      'redux-thunk'
-    ]
+    app: './src/client.tsx'
   },
+
+  devtool: "source-map",
 
   output: {
     path: path.resolve('./build'),
     publicPath: '/',
-    filename: '[name].[chunkhash].js'
+    filename: '[name].[hash].js'
   },
 
   module: {
@@ -151,16 +141,7 @@ var config = {
       }
     }),
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      filename: '[name].[chunkhash].js',
-      minChunks: Infinity
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false
-      }
-    }),
+    new webpack.optimize.UglifyJsPlugin({sourceMap: true}),
     new ExtractTextPlugin('css/[name].[hash].css'),
     new ManifestPlugin({
       fileName: 'manifest.json'
