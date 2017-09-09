@@ -2,7 +2,7 @@
 
 var config = {
   env: process.env.NODE_ENV || 'development',
-  build: process.env.TRAVIS_COMMIT || 'dev',
+  build: process.env.VERSION || 'unknown',
   host: process.env.HOST || 'localhost',
   port: process.env.PORT || 8889,
   karmaPort: 9876,
