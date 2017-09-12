@@ -115,6 +115,9 @@ class MeetingInner extends React.Component<IProps, IState> {
   private renderFinished(): JSX.Element {
     return (
       <div id="meeting">
+        <Helmet>
+          <title>Meeting Finished</title>
+        </Helmet>
         <h1>Thanks!</h1>
         <Button onClick={this.review}>Review</Button>
       </div>
