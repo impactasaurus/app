@@ -112,11 +112,9 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     return (
       <Grid container columns={1} id="question-set">
         <Grid.Column>
-          <div>
-            <Helmet>
-              <title>Question Sets</title>
-            </Helmet>
-          </div>
+          <Helmet>
+            <title>Question Sets</title>
+          </Helmet>
           <h1>{os.name}{this.renderEditButton()}</h1>
           <div>Description: {os.description || 'No description'}{this.renderEditButton()}</div>
           {this.renderEditControl()}
