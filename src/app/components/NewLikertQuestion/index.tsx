@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Button, ButtonProps } from 'semantic-ui-react';
 import {Input} from 'components/Input';
 import {IQuestionMutation, addLikertQuestion} from 'apollo/modules/questions';
+const ReactGA = require('react-ga');
 
 interface IProps extends IQuestionMutation {
   QuestionSetID: string;
@@ -29,6 +30,14 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
     this.setRightLabel = this.setRightLabel.bind(this);
   }
 
+  private logQuestionCreatedGAEvent() {
+    ReactGA.event({
+      category: 'question',
+      action: 'created',
+      label: 'likert',
+    });
+  }
+
   private addQuestion() {
     if (typeof this.state.newQuestion !== 'string' || this.state.newQuestion.length === 0) {
       this.setState({
@@ -41,6 +50,7 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
     });
     this.props.addLikertQuestion(this.props.QuestionSetID, this.state.newQuestion, 10, this.state.leftLabel, this.state.rightLabel)
     .then(() => {
+      this.logQuestionCreatedGAEvent();
       this.setState({
         saving: false,
       });

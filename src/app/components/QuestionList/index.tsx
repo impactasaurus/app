@@ -8,6 +8,7 @@ import { List, Loader } from 'semantic-ui-react';
 import {NewLikertQuestion} from 'components/NewLikertQuestion';
 import {ConfirmButton} from 'components/ConfirmButton';
 import {CategoryPill} from 'components/CategoryPill';
+const ReactGA = require('react-ga');
 import './style.less';
 
 interface IProps extends IQuestionMutation {
@@ -30,8 +31,17 @@ class QuestionListInner extends React.Component<IProps, IState> {
     this.setNewQuestionClicked = this.setNewQuestionClicked.bind(this);
   }
 
+  private logQuestionDeletedGAEvent() {
+    ReactGA.event({
+        category: 'question',
+        action: 'deleted',
+        label: 'likert',
+    });
+  }
+
   private deleteQuestion(questionID: string) {
     return (): Promise<IOutcomeSet> => {
+      this.logQuestionDeletedGAEvent();
       return this.props.deleteQuestion(this.props.outcomeSetID, questionID);
     };
   }
