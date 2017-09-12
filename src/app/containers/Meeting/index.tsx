@@ -151,19 +151,17 @@ class MeetingInner extends React.Component<IProps, IState> {
       nextProps.disabled = true;
     }
     return (
-      <div>
-        <Helmet>
-          <title>Conducting Meeting</title>
-        </Helmet>
         <Grid container columns={1} id="meeting">
           <Grid.Column>
+            <Helmet>
+              <title>Conducting Meeting</title>
+            </Helmet>
             <h1>{question.question}</h1>
               <Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} />
             <Button {...nextProps} onClick={this.next}>Next</Button>
             <p>{this.state.saveError}</p>
           </Grid.Column>
         </Grid>
-      </div>
     );
   }
 }
