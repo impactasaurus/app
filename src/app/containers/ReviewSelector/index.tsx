@@ -38,13 +38,12 @@ class ReviewSelector extends React.Component<IURLConnector, IState> {
 
   public render() {
     return (
-      <div>
-        <Helmet>
-          <title>Review</title>
-        </Helmet>
         <Grid container columns={1} >
           <Grid.Column>
             <div id="reviewselector">
+              <Helmet>
+                <title>Review</title>
+              </Helmet>
               <h1>Review</h1>
               <span className="label"><Hint text={strings.beneficiaryIDExplanation} /><h3>Beneficiary ID</h3></span>
               <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID}/>
@@ -53,7 +52,6 @@ class ReviewSelector extends React.Component<IURLConnector, IState> {
             {this.props.children}
           </Grid.Column>
         </Grid>
-      </div>
     );
   }
 }
