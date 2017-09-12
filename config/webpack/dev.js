@@ -94,6 +94,14 @@ var config = {
           "less-loader"
         ]
       },
+      {
+        test: /\.scss$/,
+        loaders: [
+          "style-loader",
+          "css-loader",
+          "sass-loader"
+        ]
+      },
 
       {
         test: /\.eot(\?.*)?$/,
@@ -145,7 +153,8 @@ var config = {
     new webpack.DefinePlugin({
       'process.env': {
         BROWSER: JSON.stringify(true),
-        NODE_ENV: JSON.stringify('development')
+        NODE_ENV: JSON.stringify('development'),
+        VERSION: JSON.stringify('dev'),
       }
     }),
     new webpack.HotModuleReplacementPlugin(),

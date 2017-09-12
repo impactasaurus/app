@@ -1,0 +1,29 @@
+@import (reference) './variables.less';
+
+@marginBottom: 10px;
+
+#impactasaurus {
+  .impactform {
+    .submit {
+      background-color: @primary;
+      color: @primaryTextColor;
+      display: block;
+      margin: auto;
+      margin-top: 20px;
+    }
+    .label {
+      display: block;
+      margin-top: 20px;
+      margin-bottom: @marginBottom;
+      text-transform: capitalize;
+    }
+    .label:after {
+      content: ":";
+    }
+    h3 {
+      display: inline-block;
+      margin-bottom: 0px;
+      margin-top: 0px;
+    }
+  }
+}

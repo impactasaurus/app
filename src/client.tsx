@@ -11,8 +11,7 @@ import { configureStore } from './app/redux/store';
 import { getToken } from 'helpers/auth';
 import 'isomorphic-fetch';
 import routes from './app/routes';
-
-import 'semantic-ui-less/semantic.less';
+import Raven = require('raven-js');
 
 import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo';
 
@@ -26,6 +25,12 @@ const logPageView = () => {
   ReactGA.set({ page: window.location.pathname + window.location.search });
   ReactGA.pageview(window.location.pathname + window.location.search);
 };
+
+if (appConfig.env === 'production') {
+  Raven.config(appConfig.app.errorTracking.url, {
+    release: appConfig.build,
+  }).install();
+}
 
 const networkInterface = createNetworkInterface({
   uri: appConfig.app.api,

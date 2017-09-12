@@ -5,6 +5,8 @@ import { Helmet } from 'react-helmet';
 import { Header, IsLoggedIn } from 'components';
 import './style.less';
 import './../../theme/typo.less';
+import 'semantic-ui-less/semantic.less';
+import 'theme/form.less';
 
 class App extends React.Component<any, any> {
   public render() {
