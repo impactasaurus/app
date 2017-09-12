@@ -38,12 +38,11 @@ class Account extends React.Component<any, IState> {
 
   public render() {
     return (
-      <div>
-        <Helmet>
-          <title>Account</title>
-        </Helmet>
         <Grid container columns={1} id="Account">
           <Grid.Column>
+            <Helmet>
+              <title>Account</title>
+            </Helmet>
             <h1>Account</h1>
             <h3>Change Password</h3>
             {this.renderChangePassword()}
@@ -51,7 +50,6 @@ class Account extends React.Component<any, IState> {
             <p>To delete your account, please send an email to <a href="mailto:support@impactasaurus.org?Subject=DeleteAccount">support@impactasaurus.org</a></p>
           </Grid.Column>
         </Grid>
-      </div>
     );
   }
 }
