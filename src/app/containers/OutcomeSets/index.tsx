@@ -47,13 +47,17 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     return () => this.props.setURL(`/settings/questions/${id}`);
   }
 
+  private logQuestionSetGAEvent(action: string) {
+    ReactGA.event({
+        category: 'questionset',
+        action,
+    });
+  }
+
   private createQS() {
     this.props.newQuestionSet(this.state.newName, this.state.newDescription)
     .then(() => {
-      ReactGA.event({
-        category: 'questionset',
-        action: 'created',
-      });
+      this.logQuestionSetGAEvent('created');
       this.setState({
         createError: undefined,
         newClicked: false,
@@ -70,10 +74,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     return () =>
     this.props.deleteQuestionSet(id)
     .then(() => {
-      ReactGA.event({
-          category: 'questionset',
-          action: 'deleted',
-      });
+      this.logQuestionSetGAEvent('deleted');
       this.setState({
         deleteError: undefined,
       });
