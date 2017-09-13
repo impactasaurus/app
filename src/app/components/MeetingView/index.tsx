@@ -53,7 +53,7 @@ class MeetingViewInner extends React.Component<IProp, IState> {
         };
       });
       return {
-        timestamp: new Date(meeting.conducted),
+        name: new Date(meeting.conducted),
         datapoints: answers,
       };
     });
@@ -73,7 +73,7 @@ class MeetingViewInner extends React.Component<IProp, IState> {
         };
       });
       return {
-        timestamp: new Date(meeting.conducted),
+        name: new Date(meeting.conducted),
         datapoints: answers,
       };
     });

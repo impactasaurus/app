@@ -5,7 +5,7 @@ export interface IRadarPoint {
 }
 
 export interface IRadarSeries {
-  timestamp: Date;
+  name?: string | Date;
   note?: string;
   datapoints: IRadarPoint[];
 }

@@ -134,11 +134,11 @@ class ConductInner extends React.Component<IProp, IState> {
     }
     const conductedCopy = this.state.conducted.clone();
     return (
-      <div>
+      <div className="impactform">
         <span className="label"><Hint text={strings.beneficiaryIDExplanation} /><h3 id="benID">Beneficiary ID</h3></span>
         <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID} />
         <h3 className="label">Question Set</h3>
-        <Select {...selectProps} placeholder="Outcome Set" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
+        <Select {...selectProps} placeholder="Question Set" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
         <h3 className="label">Date Conducted</h3>
         <span className="conductedDate">{this.state.conducted.format('llll')}</span>
         <DateTimePicker moment={conductedCopy} onChange={this.setConductedDate}/>
