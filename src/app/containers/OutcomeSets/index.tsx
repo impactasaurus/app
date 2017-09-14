@@ -150,15 +150,15 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
       );
     }
     return (
-        <Grid container columns={1} id="question-sets">
-          <Grid.Column>
-            <Helmet>
-              <title>Question Sets</title>
-            </Helmet>
-            <h1>Question Sets</h1>
-            {inner}
-          </Grid.Column>
-        </Grid>
+      <Grid container columns={1} id="question-sets">
+        <Grid.Column>
+          <Helmet>
+            <title>Question Sets</title>
+          </Helmet>
+          <h1>Question Sets</h1>
+          {inner}
+        </Grid.Column>
+      </Grid>
     );
   }
 }

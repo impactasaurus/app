@@ -152,15 +152,15 @@ class ConductInner extends React.Component<IProp, IState> {
   public render() {
     const { data } = this.props;
     return (
-        <Grid container columns={1} id="conduct">
-          <Grid.Column>
-            <Helmet>
-              <title>Conduct Meeting</title>
-            </Helmet>
-            <h1>Conduct Meeting</h1>
-            {this.renderNewMeetingControl(data.allOutcomeSets)}
-          </Grid.Column>
-        </Grid>
+      <Grid container columns={1} id="conduct">
+        <Grid.Column>
+          <Helmet>
+            <title>Conduct Meeting</title>
+          </Helmet>
+          <h1>Conduct Meeting</h1>
+          {this.renderNewMeetingControl(data.allOutcomeSets)}
+        </Grid.Column>
+      </Grid>
     );
   }
 }

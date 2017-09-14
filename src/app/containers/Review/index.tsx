@@ -18,10 +18,10 @@ class Review extends React.Component<IProps, any> {
     }
     return (
       <div id="review">
-        {inner}
         <Helmet>
           <title>Review</title>
         </Helmet>
+        {inner}
       </div>
     );
   }
