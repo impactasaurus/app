@@ -50,7 +50,7 @@ class Auth0Lock extends React.Component<IProps, {}> {
           return;
         }
 
-        saveAuth(authResult, profile);
+        saveAuth(authResult.idToken, profile);
 
         if (this.props.onAuthenticated) {
           this.props.onAuthenticated();

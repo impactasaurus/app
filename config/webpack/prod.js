@@ -7,6 +7,7 @@ var stylelint = require('stylelint');
 var ManifestPlugin = require('webpack-manifest-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 var config = {
   bail: true,
@@ -155,17 +156,13 @@ var config = {
     }),
     new HtmlWebpackPlugin({
       template: './src/index.ejs'
-    })
+    }),
+    new CopyWebpackPlugin([
+      { from: './src/tokenrefresh.html', to:"tokenrefresh.html" },
+      { from: './src/favicon.ico', to:"favicon.ico" },
+    ])
   ]
 };
-
-const copySync = (src, dest, overwrite) => {
-  if (overwrite && fs.existsSync(dest)) {
-    fs.unlinkSync(dest);
-  }
-  const data = fs.readFileSync(src);
-  fs.writeFileSync(dest, data);
-}
 
 const createIfDoesntExist = dest => {
   if (!fs.existsSync(dest)) {
@@ -174,6 +171,5 @@ const createIfDoesntExist = dest => {
 }
 
 createIfDoesntExist('./build');
-copySync('./src/favicon.ico', './build/favicon.ico', true);
 
 module.exports = config;

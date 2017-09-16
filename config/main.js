@@ -16,7 +16,8 @@ var config = {
     auth: {
       clientID: "pfKiAOUJh5r6jCxRn5vUYq7odQsjPUKf",
       domain: "impact.eu.auth0.com",
-      scope : "openid app_metadata user_metadata"
+      scope : "openid app_metadata user_metadata",
+      connection: "Username-Password-Authentication"
     },
     analytics: {
       debug: process.env.NODE_ENV !== "production",
