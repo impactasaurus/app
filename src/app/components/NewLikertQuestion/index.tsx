@@ -49,11 +49,11 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
   private noop = () => {};
 
   private logQuestionCreatedGAEvent() {
-      ReactGA.event({
-          category: 'question',
-          action: 'created',
-          label: 'likert',
-      });
+    ReactGA.event({
+        category: 'question',
+        action: 'created',
+        label: 'likert',
+    });
   }
 
   private addQuestion() {
