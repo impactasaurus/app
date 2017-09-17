@@ -4,17 +4,18 @@ import {mutationResultExtractor} from 'helpers/apollo';
 
 export function addLikertQuestion<T>(component) {
   return graphql<any, T>(gql`
-  mutation ($outcomeSetID: ID!, $question: String!, $maxValue: Int!, $minLabel: String, $maxLabel: String) {
-    addLikertQuestion: AddLikertQuestion(outcomeSetID:$outcomeSetID, question: $question, maxValue: $maxValue, minLabel: $minLabel, maxLabel: $maxLabel) {
+  mutation ($outcomeSetID: ID!, $question: String!, $minValue: Int, $maxValue: Int!, $minLabel: String, $maxLabel: String) {
+    addLikertQuestion: AddLikertQuestion(outcomeSetID:$outcomeSetID, question: $question, minValue: $minValue, maxValue: $maxValue, minLabel: $minLabel, maxLabel: $maxLabel) {
       ...defaultOutcomeSet
     }
   }
   ${osFragment}`, {
     props: ({ mutate }) => ({
-      addLikertQuestion: (outcomeSetID: string, question: string, maxValue: number, minLabel?: string, maxLabel?: string): Promise<IOutcomeSet> => mutate({
+      addLikertQuestion: (outcomeSetID: string, question: string, minValue: number, maxValue: number, minLabel?: string, maxLabel?: string): Promise<IOutcomeSet> => mutate({
           variables: {
             outcomeSetID,
             question,
+            minValue,
             maxValue,
             minLabel,
             maxLabel,
@@ -44,6 +45,6 @@ export function deleteQuestion<T>(component) {
 }
 
 export interface IQuestionMutation {
-    addLikertQuestion?(outcomeSetID: string, question: string, maxValue: number, minLabel?: string, maxLabel?: string): Promise<IOutcomeSet>;
+    addLikertQuestion?(outcomeSetID: string, question: string, minValue: number, maxValue: number, minLabel?: string, maxLabel?: string): Promise<IOutcomeSet>;
     deleteQuestion?(outcomeSetID: string, questionID: string): Promise<IOutcomeSet>;
 }
