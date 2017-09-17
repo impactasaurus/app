@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Token Refresh</title>
+  </head>
+  <body>
+    <script>
+
+    var receiveMessage = function(event) {
+      if (event.origin !== parent.location.origin) {
+        return;
+      }
+      if (event.data.type === "refresh_token") {
+        var replaceRedirectURL = event.data.payload.replaceToken;
+        var refreshURL = event.data.payload.url.replace(replaceRedirectURL, encodeURIComponent(window.location.href));
+        window.location = refreshURL;
+        return;
+      }
+      console.error("Unknown message type");
+    }
+    window.addEventListener("message", receiveMessage, false);
+
+
+    function getParameterByName(name) {
+      var match = RegExp('[#&]' + name + '=([^&]*)').exec(window.location.hash);
+      return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
+    var token = getParameterByName("id_token");
+    var refresh = getParameterByName("refresh_token");
+    if(token !== null) {
+      parent.postMessage({
+        type: "token_refreshed",
+        payload: {
+          token: token,
+          refresh: refresh
+        }
+      }, parent.location.origin);
+      window.location = "";
+    }
+    </script>
+  </body>
+</html>

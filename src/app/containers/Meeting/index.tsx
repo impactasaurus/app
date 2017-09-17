@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Helmet } from 'react-helmet';
 import {IMeetingResult, IMeetingMutation, getMeeting, addLikertAnswer} from 'apollo/modules/meetings';
 import {Question} from 'models/question';
 import { Likert} from 'components/Likert';
@@ -114,6 +115,9 @@ class MeetingInner extends React.Component<IProps, IState> {
   private renderFinished(): JSX.Element {
     return (
       <div id="meeting">
+        <Helmet>
+          <title>Meeting Finished</title>
+        </Helmet>
         <h1>Thanks!</h1>
         <Button onClick={this.review}>Review</Button>
       </div>
@@ -152,8 +156,11 @@ class MeetingInner extends React.Component<IProps, IState> {
     return (
       <Grid container columns={1} id="meeting">
         <Grid.Column>
+          <Helmet>
+            <title>Conducting Meeting</title>
+          </Helmet>
           <h1>{question.question}</h1>
-            <Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} />
+          <Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} />
           <Button {...nextProps} onClick={this.next}>Next</Button>
           <p>{this.state.saveError}</p>
         </Grid.Column>

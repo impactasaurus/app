@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Helmet } from 'react-helmet';
 import { Menu } from 'semantic-ui-react';
 import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
@@ -39,6 +40,9 @@ class Settings extends React.Component<IProps, any> {
   public render() {
     return (
       <div id="settings">
+        <Helmet>
+          <title>Settings</title>
+        </Helmet>
         <Menu pointing secondary>
           <Menu.Item name="Account" active={this.isSelected('/settings/account')} onClick={this.handleClick('/settings/account')} />
           <Menu.Item name="Organisation" active={this.isSelected('/settings/organisation')} onClick={this.handleClick('/settings/organisation')} />

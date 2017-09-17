@@ -7,6 +7,7 @@ var stylelint = require('stylelint');
 var ManifestPlugin = require('webpack-manifest-plugin');
 var CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 var config = {
   // Enable sourcemaps for debugging webpack's output.
@@ -160,21 +161,17 @@ var config = {
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       template: './src/index.ejs'
-    })
+    }),
+    new CopyWebpackPlugin([
+      { from: './src/tokenrefresh.html', to:"tokenrefresh.html" },
+      { from: './src/favicon.ico', to:"favicon.ico" },
+    ])
   ],
   devServer: {
     hot: true,
     historyApiFallback: true,
   }
 };
-
-const copySync = (src, dest, overwrite) => {
-  if (overwrite && fs.existsSync(dest)) {
-    fs.unlinkSync(dest);
-  }
-  const data = fs.readFileSync(src);
-  fs.writeFileSync(dest, data);
-}
 
 const createIfDoesntExist = dest => {
   if (!fs.existsSync(dest)) {
@@ -183,6 +180,5 @@ const createIfDoesntExist = dest => {
 }
 
 createIfDoesntExist('./build');
-copySync('./src/favicon.ico', './build/favicon.ico', true);
 
 module.exports = config;

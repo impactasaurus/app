@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Helmet } from 'react-helmet';
 import { Grid } from 'semantic-ui-react';
 import {Auth0Lock} from 'components/Auth0Lock';
 
@@ -39,6 +40,9 @@ class Account extends React.Component<any, IState> {
     return (
       <Grid container columns={1} id="Account">
         <Grid.Column>
+          <Helmet>
+            <title>Account</title>
+          </Helmet>
           <h1>Account</h1>
           <h3>Change Password</h3>
           {this.renderChangePassword()}

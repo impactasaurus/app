@@ -1,6 +1,7 @@
 import * as React from 'react';
 import 'url-search-params-polyfill';
 import {GraphQLError} from '@types/graphql';
+import { Helmet } from 'react-helmet';
 import { Grid, Loader, Checkbox, Message } from 'semantic-ui-react';
 import {getJOCServiceReport, IReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
@@ -103,6 +104,9 @@ class ServiceReportInner extends React.Component<IProp, IState> {
     return (
       <Grid container columns={1} id="service-report">
         <Grid.Column>
+          <Helmet>
+            <title>Service Report</title>
+          </Helmet>
           <h1>Service Report</h1>
           <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
           {this.renderControlPanel()}

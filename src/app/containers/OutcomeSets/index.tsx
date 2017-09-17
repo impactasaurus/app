@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Helmet } from 'react-helmet';
 import {IOutcomeResult, IOutcomeMutation, allOutcomeSets, newQuestionSet, deleteQuestionSet} from 'apollo/modules/outcomeSets';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IURLConnector} from 'redux/modules/url';
@@ -161,6 +162,9 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     return (
       <Grid container columns={1} id="question-sets">
         <Grid.Column>
+          <Helmet>
+            <title>Question Sets</title>
+          </Helmet>
           <h1>Question Sets</h1>
           {inner}
         </Grid.Column>

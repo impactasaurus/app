@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Helmet } from 'react-helmet';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import {Auth0Lock} from 'components/Auth0Lock';
@@ -24,7 +25,12 @@ class Login extends React.Component<IProps, {}> {
 
   public render() {
     return (
-      <Auth0Lock onAuthenticated={this.loggedIn} />
+      <div>
+        <Helmet>
+          <title>Login</title>
+        </Helmet>
+        <Auth0Lock onAuthenticated={this.loggedIn} />
+      </div>
     );
   }
 }

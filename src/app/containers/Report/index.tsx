@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {IOutcomeResult, allOutcomeSets} from 'apollo/modules/outcomeSets';
 import {IOutcomeSet} from 'models/outcomeSet';
+import { Helmet } from 'react-helmet';
 import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
@@ -112,6 +113,9 @@ class ReportInner extends React.Component<IProp, IState> {
     return (
       <Grid container columns={1} id="report">
         <Grid.Column>
+          <Helmet>
+            <title>Service Report</title>
+          </Helmet>
           <h1>Service Report</h1>
           <Message info>
             <Message.Header>What does this report provide?</Message.Header>

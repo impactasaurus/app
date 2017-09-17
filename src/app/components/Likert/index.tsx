@@ -8,6 +8,7 @@ interface IProps {
   leftValue: number;
   rightValue: number;
   onChange: (value: number) => void;
+  disabled?: boolean;
 }
 
 interface IState {
@@ -86,6 +87,7 @@ class Likert extends React.Component<IProps, IState> {
         dots={true}
         onChange={this.setAnswer}
         onBeforeChange={this.touched}
+        disabled={this.props.disabled}
       />
     );
   }
