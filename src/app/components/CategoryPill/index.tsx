@@ -3,6 +3,7 @@ import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import {ICategoryMutation, setCategory} from 'apollo/modules/categories';
 import {ICategory} from 'models/category';
 import { Label, Select, Loader } from 'semantic-ui-react';
+const ReactGA = require('react-ga');
 import './style.less';
 
 interface IProps extends ICategoryMutation {
@@ -75,11 +76,53 @@ class CategoryPillInner extends React.Component<IProps, IState> {
     return categories;
   }
 
+  private logCategoryGAEvent(isCategorySet, newCategoryId) {
+    let action = '';
+
+    if (isCategorySet && newCategoryId !== null) {
+      action = 'changed';
+    } else if (!isCategorySet && newCategoryId !== null) {
+      action = 'categorised';
+    } else {
+      action = 'uncategorised';
+    }
+
+    ReactGA.event({
+      category: 'question',
+      action,
+      label: 'likert',
+    });
+  }
+
+  private isCategorySet() {
+    const os = this.props.data.getOutcomeSet;
+    const q = os.questions.find((q) => q.id === this.props.questionID);
+
+    if (q !== undefined && q.categoryID !== null && q.categoryID !== undefined) {
+
+      const cat = this.getCategory(q.categoryID);
+      return cat !== null && cat !== undefined;
+    }
+
+    return false;
+  }
+
   private setCategory(_, data) {
     let categoryName = 'No Category';
+    const isCategorySet = this.isCategorySet();
+
     if (data.value !== null) {
       const cat = this.getCategory(data.value);
       categoryName = cat.name;
+    }
+
+    if (!isCategorySet && data.value === null) {
+      this.setState({
+        editClicked: false,
+        settingCategory: null,
+        error: null,
+      });
+      return;
     }
 
     this.setState({
@@ -89,6 +132,7 @@ class CategoryPillInner extends React.Component<IProps, IState> {
     });
     this.props.setCategory(this.props.outcomeSetID, this.props.questionID, data.value)
     .then(() => {
+      this.logCategoryGAEvent(isCategorySet, data.value);
       this.setState({
         settingCategory: null,
         error: null,

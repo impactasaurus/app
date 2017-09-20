@@ -4,6 +4,7 @@ import {Input} from 'components/Input';
 import {IQuestionMutation, addLikertQuestion} from 'apollo/modules/questions';
 import { Likert} from 'components/Likert';
 import './style.less';
+const ReactGA = require('react-ga');
 
 interface IProps extends IQuestionMutation {
   QuestionSetID: string;
@@ -47,6 +48,14 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
   private rightValueInt = (s: IState) => parseInt(s.rightValue, 10);
   private noop = () => {};
 
+  private logQuestionCreatedGAEvent() {
+    ReactGA.event({
+        category: 'question',
+        action: 'created',
+        label: 'likert',
+    });
+  }
+
   private addQuestion() {
     if (typeof this.state.newQuestion !== 'string' || this.state.newQuestion.length === 0) {
       this.setState({
@@ -73,6 +82,7 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
     });
     this.props.addLikertQuestion(this.props.QuestionSetID, this.state.newQuestion, lv, rv, this.state.leftLabel, this.state.rightLabel)
     .then(() => {
+      this.logQuestionCreatedGAEvent();
       this.setState({
         saving: false,
       });

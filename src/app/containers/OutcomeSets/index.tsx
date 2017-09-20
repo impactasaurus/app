@@ -10,6 +10,7 @@ import { Button, Input, List, Icon, Grid, Loader } from 'semantic-ui-react';
 import {ConfirmButton} from 'components/ConfirmButton';
 import './style.less';
 const { connect } = require('react-redux');
+const ReactGA = require('react-ga');
 
 interface IProps extends IOutcomeMutation, IURLConnector {
   data: IOutcomeResult;
@@ -47,9 +48,17 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     return () => this.props.setURL(`/settings/questions/${id}`);
   }
 
+  private logQuestionSetGAEvent(action: string) {
+    ReactGA.event({
+        category: 'questionset',
+        action,
+    });
+  }
+
   private createQS() {
     this.props.newQuestionSet(this.state.newName, this.state.newDescription)
     .then(() => {
+      this.logQuestionSetGAEvent('created');
       this.setState({
         createError: undefined,
         newClicked: false,
@@ -66,6 +75,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     return () =>
     this.props.deleteQuestionSet(id)
     .then(() => {
+      this.logQuestionSetGAEvent('deleted');
       this.setState({
         deleteError: undefined,
       });
