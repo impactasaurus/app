@@ -76,7 +76,17 @@ class CategoryPillInner extends React.Component<IProps, IState> {
     return categories;
   }
 
-  private logCategoryGAEvent(action: string) {
+  private logCategoryGAEvent(isCategorySet, newCategoryId) {
+    let action = '';
+
+    if (isCategorySet && newCategoryId !== null) {
+      action = 'changed';
+    } else if (!isCategorySet && newCategoryId !== null) {
+      action = 'categorised';
+    } else {
+      action = 'uncategorised';
+    }
+
     ReactGA.event({
       category: 'question',
       action,
@@ -97,30 +107,16 @@ class CategoryPillInner extends React.Component<IProps, IState> {
     return false;
   }
 
-  private hasCategoryChanged(newCategory) {
-    const os = this.props.data.getOutcomeSet;
-    const q = os.questions.find((q) => q.id === this.props.questionID);
-
-    return this.getCategory(q.categoryID) !== newCategory;
-  }
-
   private setCategory(_, data) {
     let categoryName = 'No Category';
     const isCategorySet = this.isCategorySet();
-    let GAEventAction =  isCategorySet ?  'uncategorised' : null;
 
     if (data.value !== null) {
       const cat = this.getCategory(data.value);
       categoryName = cat.name;
-
-      if (isCategorySet) {
-        GAEventAction = this.hasCategoryChanged(cat) ? 'categoryChanged' : null;
-      } else {
-        GAEventAction = 'categorised';
-      }
     }
 
-    if (GAEventAction == null) {
+    if (!isCategorySet && data.value === null) {
       this.setState({
         editClicked: false,
         settingCategory: null,
@@ -136,7 +132,7 @@ class CategoryPillInner extends React.Component<IProps, IState> {
     });
     this.props.setCategory(this.props.outcomeSetID, this.props.questionID, data.value)
     .then(() => {
-      this.logCategoryGAEvent(GAEventAction);
+      this.logCategoryGAEvent(isCategorySet, data.value);
       this.setState({
         settingCategory: null,
         error: null,
