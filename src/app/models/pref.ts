@@ -18,7 +18,10 @@ export enum Aggregation {
   QUESTION,
   CATEGORY,
 }
-export function getAggregation(prefState: PrefState): Aggregation {
+export function getAggregation(prefState: PrefState, isCategoryAgPossible: boolean): Aggregation {
+  if (!isCategoryAgPossible) {
+    return Aggregation.QUESTION;
+  }
   const value: string|undefined = prefState[AggregationKey];
   if (value === undefined) {
     return Aggregation.QUESTION;

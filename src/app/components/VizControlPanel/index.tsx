@@ -14,10 +14,10 @@ interface IProps {
   setPref?: (key: string, value: string) => void;
 };
 
-@connect((state: IStore) => {
+@connect((state: IStore, ownProps: IProps) => {
   return {
     vis: getVisualisation(state.pref),
-    agg: getAggregation(state.pref),
+    agg: getAggregation(state.pref, ownProps.canCategoryAg),
   };
 }, (dispatch) => ({
   setPref: bindActionCreators(setPref, dispatch),

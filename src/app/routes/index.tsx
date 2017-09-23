@@ -6,9 +6,8 @@ export default (
   <Route path="/" component={App}>
     <IndexRoute component={Home} />
     <Route path="record" component={Conduct} />
-    <Route path="review" component={ReviewSelector}>
-      <Route path=":id" component={Review} />
-    </Route>
+    <Route path="review" component={ReviewSelector} />
+    <Route path="review/:id" component={Review} />
     <Route path="settings" component={Settings}>
       <Route path="account" component={Account} />
       <Route path="organisation" component={Organisation} />
