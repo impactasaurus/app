@@ -21,13 +21,15 @@ export const getOutcomeSet = <T>(idExtractor: IDExtractor<T>) => {
   });
 };
 
-export const allOutcomeSets = graphql(gql`
+export function allOutcomeSets<T>(component) {
+  return graphql<any, T>(gql`
   query allOutcomeSets {
     allOutcomeSets: outcomesets{
       ...defaultOutcomeSet
     }
   }
-  ${fragment}`);
+  ${fragment}`)(component);
+}
 
 export const newQuestionSet = graphql(gql`
   mutation ($name: String!, $description: String) {

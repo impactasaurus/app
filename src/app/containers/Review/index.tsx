@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { Grid, Loader, Select, DropdownItemProps } from 'semantic-ui-react';
+import { Grid, Loader } from 'semantic-ui-react';
+import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import {VizControlPanel} from 'components/VizControlPanel';
 const { connect } = require('react-redux');
 import {IStore} from 'redux/IStore';
-import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'models/pref';
+import {Aggregation, Visualisation, getAggregation, getVisualisation, getSelectedQuestionSetID} from 'models/pref';
 import {getMeetings, IMeetingResult} from 'apollo/modules/meetings';
 import {IMeeting} from 'models/meeting';
 import {MeetingRadar} from 'components/MeetingRadar';
@@ -17,13 +18,10 @@ interface IProps {
   };
   vis?: Visualisation;
   agg?: Aggregation;
+  selectedQuestionSetID?: string;
   data?: IMeetingResult;
   isCategoryAgPossible?: boolean;
 };
-
-interface IState {
-  selectedQuestionSetID: string;
-}
 
 function isCategoryAggregationAvailable(meetings: IMeeting[]): boolean {
   if (!Array.isArray(meetings) || meetings.length === 0) {
@@ -41,29 +39,15 @@ function isCategoryAggregationAvailable(meetings: IMeeting[]): boolean {
     vis: getVisualisation(state.pref),
     agg: getAggregation(state.pref, canCatAg),
     isCategoryAgPossible: canCatAg,
+    selectedQuestionSetID: getSelectedQuestionSetID(state.pref),
   };
 }, undefined)
-class ReviewInner extends React.Component<IProps, IState> {
+class ReviewInner extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
-    this.state = {
-      selectedQuestionSetID: null,
-    };
     this.renderInner = this.renderInner.bind(this);
     this.renderVis = this.renderVis.bind(this);
-    this.setQuestionSetID = this.setQuestionSetID.bind(this);
-  }
-
-  public componentWillReceiveProps(nextProps: IProps) {
-    const meetings = nextProps.data.getMeetings;
-    if(this.state.selectedQuestionSetID === null &&
-      Array.isArray(meetings) &&
-      meetings.length > 0) {
-        this.setState({
-          selectedQuestionSetID: meetings[0].outcomeSetID,
-        });
-      }
   }
 
   private filterMeetings(m: IMeeting[], questionSetID: string): IMeeting[] {
@@ -78,7 +62,7 @@ class ReviewInner extends React.Component<IProps, IState> {
       );
     }
 
-    const meetings = this.filterMeetings(p.data.getMeetings, this.state.selectedQuestionSetID);
+    const meetings = this.filterMeetings(p.data.getMeetings, this.props.selectedQuestionSetID);
 
     if (p.vis === Visualisation.RADAR) {
       return (
@@ -90,28 +74,11 @@ class ReviewInner extends React.Component<IProps, IState> {
     );
   }
 
-  private getQuestionSetOptions(ms: IMeeting[]): DropdownItemProps[] {
+  private getQuestionSetOptions(ms: IMeeting[]): string[] {
     if (!Array.isArray(ms)) {
       return [];
     }
-    const questionSetMap = ms.reduce((qs, m) => {
-      if (qs[m.outcomeSetID] !== undefined) {
-        return qs;
-      }
-      qs[m.outcomeSetID] = {
-        key: m.outcomeSetID,
-        value: m.outcomeSetID,
-        text: m.outcomeSet.name,
-      };
-      return qs;
-    }, {});
-    return Object.keys(questionSetMap).map((qsID) => questionSetMap[qsID]);
-  }
-
-  private setQuestionSetID(_, data) {
-    this.setState({
-      selectedQuestionSetID: data.value,
-    });
+    return ms.map((m) => m.outcomeSetID);
   }
 
   private renderInner(): JSX.Element {
@@ -123,10 +90,9 @@ class ReviewInner extends React.Component<IProps, IState> {
     return (
       <div>
         <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} />
-        <Select className="qs-selector"
-          value={this.state.selectedQuestionSetID}
-          onChange={this.setQuestionSetID}
-          options={this.getQuestionSetOptions(this.props.data.getMeetings)}
+        <QuestionSetSelect
+          allowedQuestionSetIDs={this.getQuestionSetOptions(this.props.data.getMeetings)}
+          autoSelectFirst={true}
         />
         {this.renderVis()}
       </div>

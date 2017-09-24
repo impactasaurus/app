@@ -28,3 +28,8 @@ export function getAggregation(prefState: PrefState, isCategoryAgPossible: boole
   }
   return Aggregation[value];
 }
+
+export const SelectedQuestionSetIDKey = 'selectedQSID';
+export function getSelectedQuestionSetID(prefState: PrefState): string {
+  return prefState[SelectedQuestionSetIDKey];
+}

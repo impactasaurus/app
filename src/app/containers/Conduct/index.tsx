@@ -165,5 +165,5 @@ class ConductInner extends React.Component<IProp, IState> {
   }
 }
 
-const Conduct = allOutcomeSets(newMeeting(ConductInner));
+const Conduct = allOutcomeSets<IProp>(newMeeting(ConductInner));
 export { Conduct }
