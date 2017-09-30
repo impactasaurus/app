@@ -48,7 +48,7 @@ class MeetingTable extends React.Component<IProp, any> {
     rows = l.aggregates.category.reduce((rows: any, c: ICategoryAggregate) => {
       const category = l.outcomeSet.categories.find((x) => x.id === c.categoryID);
       if (rows[category.name] === undefined) {
-        rows[c.categoryID] = {
+        rows[category.name] = {
           name: category.name,
         };
       }
