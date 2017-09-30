@@ -4,6 +4,7 @@ import {IMeeting} from 'models/meeting';
 import {Answer} from 'models/answer';
 import {ICategoryAggregate} from 'models/aggregates';
 import {ImpactTable, IRow} from 'components/ImpactTable';
+import {getHumanisedTimeSinceDate} from 'helpers/moment';
 
 interface IProp {
   meetings: IMeeting[];
@@ -86,6 +87,10 @@ class MeetingTable extends React.Component<IProp, any> {
     return Object.keys(rows).map((k) => rows[k]);
   }
 
+  private getColumnTitle(prefix: string, meeting: IMeeting): string {
+    return `${prefix} (${getHumanisedTimeSinceDate(new Date(meeting.conducted))})`;
+  }
+
   private renderTable(p: IProp): JSX.Element {
     const isCat = p.aggregation === Aggregation.CATEGORY;
     const rows = isCat ? this.getCategoryRows(p) : this.getQuestionRows(p);
@@ -94,6 +99,8 @@ class MeetingTable extends React.Component<IProp, any> {
       <ImpactTable
         data={rows}
         nameColName={isCat ? 'Category' : 'Question'}
+        firstColName={this.getColumnTitle('Initial', this.firstMeeting(p.meetings))}
+        lastColName={this.getColumnTitle('Latest', this.lastMeeting(p.meetings))}
       />
     );
   }

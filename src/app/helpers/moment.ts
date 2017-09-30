@@ -54,3 +54,11 @@ export function getEndOfDay(m: moment.Moment): moment.Moment {
   c.millisecond(999);
   return c;
 }
+
+export function getHumanisedTimeSince(m: moment.Moment): string {
+  return moment.duration(m.diff(moment())).humanize(true);
+}
+
+export function getHumanisedTimeSinceDate(d: Date): string {
+  return getHumanisedTimeSince(moment(d));
+}
