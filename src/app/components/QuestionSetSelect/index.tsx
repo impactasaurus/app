@@ -8,18 +8,48 @@ const { connect } = require('react-redux');
 import { bindActionCreators } from 'redux';
 import {SelectedQuestionSetIDKey, getSelectedQuestionSetID} from 'models/pref';
 
-interface IProp {
-  data?: IOutcomeResult;
-  selectedQuestionSetID?: string;
-  setPref?: SetPrefFunc;
-  onQuestionSetSelected?: (qsID: string) => void;
+interface IExternalProps {
   allowedQuestionSetIDs?: string[];
   autoSelectFirst?: boolean;
 }
 
-@connect((state: IStore) => {
+interface IProp extends IExternalProps {
+  data?: IOutcomeResult;
+  selectedQuestionSetID?: string;
+  setPref?: SetPrefFunc;
+  onQuestionSetSelected?: (qsID: string) => void;
+  allowedQuestionSets?: IOutcomeSet[];
+}
+
+const isQuestionSetAllowed = (qsID: string, props: IProp): boolean => {
+  return Array.isArray(props.allowedQuestionSetIDs) === false ||
+    props.allowedQuestionSetIDs.indexOf(qsID) !== -1;
+};
+
+const getSelectedAndAllowedQuestionSetID = (state: IStore, ownProps: IProp): string|undefined => {
+  const selectedQuestionSet = getSelectedQuestionSetID(state.pref);
+  if (selectedQuestionSet === undefined) {
+    return undefined;
+  }
+  if (isQuestionSetAllowed(selectedQuestionSet, ownProps) === false) {
+      return undefined;
+  }
+  return selectedQuestionSet;
+};
+
+const getAllowedQuestionSets = (ownProps: IProp): IOutcomeSet[]|undefined => {
+  if (Array.isArray(ownProps.data.allOutcomeSets) === false) {
+    return undefined;
+  }
+  return ownProps.data.allOutcomeSets.filter((os): boolean => {
+    return isQuestionSetAllowed(os.id, ownProps);
+  });
+};
+
+@connect((state: IStore, ownProps: IProp) => {
   return {
-    selectedQuestionSetID: getSelectedQuestionSetID(state.pref),
+    selectedQuestionSetID: getSelectedAndAllowedQuestionSetID(state, ownProps),
+    allowedQuestionSets: getAllowedQuestionSets(ownProps),
   };
 }, (dispatch) => ({
   setPref: bindActionCreators(setPref, dispatch),
@@ -36,12 +66,7 @@ class QuestionSetSelectInner extends React.Component<IProp, any> {
     if (!Array.isArray(oss)) {
       return [];
     }
-    return oss.filter((os) => {
-      if(Array.isArray(this.props.allowedQuestionSetIDs)) {
-        return this.props.allowedQuestionSetIDs.indexOf(os.id) !== -1;
-      }
-      return true;
-    }).map((os) => {
+    return oss.map((os) => {
       return {
         key: os.id,
         value: os.id,
@@ -53,10 +78,10 @@ class QuestionSetSelectInner extends React.Component<IProp, any> {
   public componentWillReceiveProps(nextProps: IProp) {
     if (nextProps.selectedQuestionSetID === undefined &&
       nextProps.autoSelectFirst === true &&
-      Array.isArray(nextProps.data.allOutcomeSets) &&
-      nextProps.data.allOutcomeSets.length > 0) {
+      Array.isArray(nextProps.allowedQuestionSets) &&
+      nextProps.allowedQuestionSets.length > 0) {
         this.setQuestionSetID({}, {
-          value: nextProps.data.allOutcomeSets[0].id,
+          value: nextProps.allowedQuestionSets[0].id,
         });
     }
     if (this.props.onQuestionSetSelected !== undefined) {
@@ -68,15 +93,9 @@ class QuestionSetSelectInner extends React.Component<IProp, any> {
     this.props.setPref(SelectedQuestionSetIDKey, data.value);
   }
 
-  private getSelectedQuestionSetID(p: IProp): string|undefined {
-    const questionSetIDs = this.getOptions(p.data.allOutcomeSets).map((di) => di.key);
-    return questionSetIDs.find((qs) => qs === p.selectedQuestionSetID);
-  }
-
   public render() {
-    const { data } = this.props;
     const selectProps: SelectProps = {};
-    if (data.loading) {
+    if (this.props.data.loading) {
       selectProps.loading = true;
       selectProps.disabled = true;
     }
@@ -84,10 +103,10 @@ class QuestionSetSelectInner extends React.Component<IProp, any> {
       <Select
         className="qs-selector"
         {...selectProps}
-        value={this.getSelectedQuestionSetID(this.props)}
+        value={this.props.selectedQuestionSetID}
         placeholder="Question Set"
         onChange={this.setQuestionSetID}
-        options={this.getOptions(data.allOutcomeSets)}
+        options={this.getOptions(this.props.allowedQuestionSets)}
       />
     );
   }
