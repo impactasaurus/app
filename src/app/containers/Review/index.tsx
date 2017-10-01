@@ -23,23 +23,27 @@ interface IProps {
   isCategoryAgPossible?: boolean;
 };
 
-function isCategoryAggregationAvailable(meetings: IMeeting[]): boolean {
+function isCategoryAggregationAvailable(meetings: IMeeting[], selectedQuestionSetID: string|undefined): boolean {
   if (!Array.isArray(meetings) || meetings.length === 0) {
     return false;
   }
-  const meetingsWithCategories = meetings.filter((m) => {
+  const meetingsBelongingToSelectedQS = meetings.filter((m) => {
+    return selectedQuestionSetID !== undefined && m.outcomeSetID === selectedQuestionSetID;
+  });
+  const meetingsWithCategories = meetingsBelongingToSelectedQS.filter((m) => {
     return m.outcomeSet.categories.length > 0;
   });
   return meetingsWithCategories.length > 0;
 }
 
 @connect((state: IStore, ownProps: IProps) => {
-  const canCatAg = isCategoryAggregationAvailable(ownProps.data.getMeetings);
+  const selectedQuestionSetID = getSelectedQuestionSetID(state.pref);
+  const canCatAg = isCategoryAggregationAvailable(ownProps.data.getMeetings, selectedQuestionSetID);
   return {
     vis: getVisualisation(state.pref),
     agg: getAggregation(state.pref, canCatAg),
     isCategoryAgPossible: canCatAg,
-    selectedQuestionSetID: getSelectedQuestionSetID(state.pref),
+    selectedQuestionSetID,
   };
 }, undefined)
 class ReviewInner extends React.Component<IProps, any> {
