@@ -1,19 +1,14 @@
 import * as React from 'react';
-import {IOutcomeResult, allOutcomeSets} from 'apollo/modules/outcomeSets';
-import {IOutcomeSet} from 'models/outcomeSet';
 import { Helmet } from 'react-helmet';
 import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
-import { bindActionCreators } from 'redux';
-import { Button, Select, Grid, SelectProps, Message } from 'semantic-ui-react';
+import { Button, Grid, Message } from 'semantic-ui-react';
 import {DateRangePicker} from 'components/DateRangePicker';
 import {Hint} from 'components/Hint';
+import {QuestionSetSelect} from 'components/QuestionSetSelect';
+import { bindActionCreators } from 'redux';
 const { connect } = require('react-redux');
 const strings = require('./../../../strings.json');
-
-interface IProp extends IURLConnector {
-  data: IOutcomeResult;
-}
 
 interface IState {
   periodStart?: Date;
@@ -25,7 +20,7 @@ interface IState {
 @connect(undefined, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
-class ReportInner extends React.Component<IProp, IState> {
+class Report extends React.Component<IURLConnector, IState> {
 
   constructor(props) {
     super(props);
@@ -64,22 +59,9 @@ class ReportInner extends React.Component<IProp, IState> {
     this.props.setURL(`/report/service/${this.state.questionSetID}/${s}/${e}`);
   }
 
-  private getOptions(oss: IOutcomeSet[]): any[] {
-    if (oss === undefined) {
-      return [];
-    }
-    return oss.map((os) => {
-      return {
-        key: os.id,
-        value: os.id,
-        text: os.name,
-      };
-    });
-  }
-
-  private setQuestionSetID(_, data) {
+  private setQuestionSetID(qsID) {
     this.setState({
-      questionSetID: data.value,
+      questionSetID: qsID,
     });
   }
 
@@ -90,16 +72,11 @@ class ReportInner extends React.Component<IProp, IState> {
     });
   }
 
-  private renderNewReportControl(outcomeSets: IOutcomeSet[]|undefined): JSX.Element {
-    const selectProps: SelectProps = {};
-    if (this.props.data.loading) {
-      selectProps.loading = true;
-      selectProps.disabled = true;
-    }
+  private renderNewReportControl(): JSX.Element {
     return (
       <div className="impactform">
         <h3 className="label">Question Set</h3>
-        <Select {...selectProps} placeholder="Question Set" onChange={this.setQuestionSetID} options={this.getOptions(outcomeSets)} />
+        <QuestionSetSelect onQuestionSetSelected={this.setQuestionSetID} />
         <h3 className="label"><Hint text={strings.JOCReportDateRange} />Date Range</h3>
         <DateRangePicker onSelect={this.setDateRange} future={false}/>
         <Button className="submit" onClick={this.navigateToReport}>Generate</Button>
@@ -109,7 +86,6 @@ class ReportInner extends React.Component<IProp, IState> {
   }
 
   public render() {
-    const { data } = this.props;
     return (
       <Grid container columns={1} id="report">
         <Grid.Column>
@@ -126,12 +102,11 @@ class ReportInner extends React.Component<IProp, IState> {
             </p>
             <p>This report will only include beneficiaries with more than one assessment, so that the amount of change can be understood.</p>
           </Message>
-          {this.renderNewReportControl(data.allOutcomeSets)}
+          {this.renderNewReportControl()}
         </Grid.Column>
       </Grid>
     );
   }
 }
 
-const Report = allOutcomeSets(ReportInner);
 export {Report}

@@ -4,8 +4,8 @@ import {renderArray} from 'helpers/react';
 
 interface IRow {
   name: string;
-  first: number;
-  last: number;
+  first: number|undefined;
+  last: number|undefined;
 }
 
 interface IProp {
@@ -15,19 +15,23 @@ interface IProp {
   lastColName?: string;
 }
 
-function delta(r: IRow): number {
+function delta(r: IRow): number|undefined {
+  if (r.last === undefined || r.first === undefined) {
+    return undefined;
+  }
   return r.last - r.first;
 }
 
 class ImpactTable extends React.Component<IProp, any> {
 
   private renderRow(r: IRow): JSX.Element {
+    const d = delta(r);
     return (
       <Table.Row key={r.name}>
         <Table.Cell>{r.name}</Table.Cell>
         <Table.Cell>{r.first}</Table.Cell>
         <Table.Cell>{r.last}</Table.Cell>
-        <Table.Cell>{delta(r)}</Table.Cell>
+        <Table.Cell>{d === undefined ? 'N/A' : d}</Table.Cell>
       </Table.Row>
     );
   }

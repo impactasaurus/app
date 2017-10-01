@@ -3,7 +3,7 @@ import { Button } from 'semantic-ui-react';
 import './style.less';
 const { connect } = require('react-redux');
 import { bindActionCreators } from 'redux';
-import {setPref} from 'modules/pref';
+import {setPref, SetPrefFunc} from 'modules/pref';
 import {IStore} from 'redux/IStore';
 import {Aggregation, AggregationKey, Visualisation, VisualisationKey, getAggregation, getVisualisation} from 'models/pref';
 
@@ -11,13 +11,13 @@ interface IProps {
   canCategoryAg: boolean;
   vis?: Visualisation;
   agg?: Aggregation;
-  setPref?: (key: string, value: string) => void;
+  setPref?: SetPrefFunc;
 };
 
-@connect((state: IStore) => {
+@connect((state: IStore, ownProps: IProps) => {
   return {
     vis: getVisualisation(state.pref),
-    agg: getAggregation(state.pref),
+    agg: getAggregation(state.pref, ownProps.canCategoryAg),
   };
 }, (dispatch) => ({
   setPref: bindActionCreators(setPref, dispatch),

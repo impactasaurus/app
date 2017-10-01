@@ -3,6 +3,7 @@
 import * as color from 'chartjs-color';
 import * as moment from 'moment';
 import * as distinctColors from 'distinct-colors';
+import {getHumanisedTimeSinceDate} from 'helpers/moment';
 
 // module pattern
 export function SessionsConverter() {
@@ -35,10 +36,7 @@ export function SessionsConverter() {
     const convertedSession: any = {};
 
     if (moment(session.timestamp).isValid()) {
-      const now = moment(); // current time
-      const momentTimestamp = moment(session.timestamp);
-      const humanisedTimestamp = moment.duration(momentTimestamp.diff(now)).humanize(true);
-      convertedSession.label = humanisedTimestamp;
+      convertedSession.label = getHumanisedTimeSinceDate(session.timestamp);
     } else {
       convertedSession.label = session.timestamp;
     }
