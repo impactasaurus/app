@@ -29,9 +29,9 @@ class ImpactTable extends React.Component<IProp, any> {
     return (
       <Table.Row key={r.name}>
         <Table.Cell>{r.name}</Table.Cell>
-        <Table.Cell>{r.first}</Table.Cell>
-        <Table.Cell>{r.last}</Table.Cell>
-        <Table.Cell>{d === undefined ? 'N/A' : d}</Table.Cell>
+        <Table.Cell>{r.first.toPrecision(3)}</Table.Cell>
+        <Table.Cell>{r.last.toPrecision(3)}</Table.Cell>
+        <Table.Cell>{d === undefined ? 'N/A' : d.toPrecision(3)}</Table.Cell>
       </Table.Row>
     );
   }
