@@ -4,9 +4,11 @@ import {ICategoryMutation, deleteCategory} from 'apollo/modules/categories';
 import {renderArray} from 'helpers/react';
 import {ICategory} from 'models/category';
 import {IOutcomeSet} from 'models/outcomeSet';
-import { List, Loader } from 'semantic-ui-react';
+import { List, Loader, Button, Popup } from 'semantic-ui-react';
 import {NewQuestionCategory} from 'components/NewQuestionCategory';
+import {EditQuestionCategory} from 'components/EditQuestionCategory';
 import {ConfirmButton} from 'components/ConfirmButton';
+import {isNullOrUndefined} from 'util';
 
 interface IProps extends ICategoryMutation {
   outcomeSetID: string;
@@ -15,6 +17,7 @@ interface IProps extends ICategoryMutation {
 
 interface IState {
   newCategoryClicked?: boolean;
+  editedCategoryId?: string;
 };
 
 class CategoryListInner extends React.Component<IProps, IState> {
@@ -25,6 +28,7 @@ class CategoryListInner extends React.Component<IProps, IState> {
     this.renderCategory = this.renderCategory.bind(this);
     this.deleteCategory = this.deleteCategory.bind(this);
     this.setNewCategoryClicked = this.setNewCategoryClicked.bind(this);
+    this.setEditedCategoryId = this.setEditedCategoryId.bind(this);
   }
 
   private deleteCategory(categoryID: string) {
@@ -47,10 +51,39 @@ class CategoryListInner extends React.Component<IProps, IState> {
     };
   }
 
+  private setEditedCategoryId(categoryId: string): ()=>void {
+    return () => {
+      this.setState({
+        editedCategoryId: categoryId,
+      });
+    };
+  }
+
   private renderCategory(c: ICategory): JSX.Element {
+    if (!isNullOrUndefined(this.state.editedCategoryId) && this.state.editedCategoryId === c.id) {
+      return (
+        <List.Item className="edit-control" key={c.id}>
+          <List.Content>
+            <EditQuestionCategory
+              category={c}
+              QuestionSetID={this.props.outcomeSetID}
+              OnSuccess={this.setEditedCategoryId(null)}
+            />
+          </List.Content>
+        </List.Item>
+      );
+    }
+
+    const editButton = (
+        <span>
+          <Button onClick={this.setEditedCategoryId(c.id)} icon="edit" tooltip="Edit" compact size="tiny" />
+        </span>
+    );
+
     return (
       <List.Item className="category" key={c.id}>
         <List.Content floated="right" verticalAlign="middle">
+          <Popup trigger={editButton} content="Edit" />
           <ConfirmButton onConfirm={this.deleteCategory(c.id)} promptText="Are you sure you want to delete this category?" buttonProps={{icon: 'delete', compact:true, size:'tiny'}} tooltip="Delete" />
         </List.Content>
         <List.Content verticalAlign="middle">

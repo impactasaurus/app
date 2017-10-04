@@ -1,10 +1,12 @@
 import * as React from 'react';
 import {QuestionCategoryForm} from '../QuestionCategoryForm';
 import {ICategoryMutation, addQuestionCategory} from 'apollo/modules/categories';
+import {ICategory} from 'models/category';
 import {IOutcomeSet} from 'models/outcomeSet';
 
 interface IProps extends ICategoryMutation {
   QuestionSetID: string;
+  category: ICategory;
   OnSuccess: ()=>void;
 }
 
@@ -16,16 +18,19 @@ interface IState {
   saving?: boolean;
 }
 
-class NewQuestionCategoryInner extends React.Component<IProps, IState> {
+class EditQuestionCategoryInner extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
+
+    const { category } = this.props;
     this.state = {
       saving: false,
-      name: '',
-      description: '',
-      aggregation: null,
+      name: category.name || '',
+      description: category.description || '',
+      aggregation: category.aggregation || null,
     };
+
     this.onSubmitButtonPress = this.onSubmitButtonPress.bind(this);
     this.setName = this.setName.bind(this);
     this.setDescription = this.setDescription.bind(this);
@@ -55,6 +60,7 @@ class NewQuestionCategoryInner extends React.Component<IProps, IState> {
   }
 
   public render() {
+
     return (
       <QuestionCategoryForm
         QuestionSetID={this.props.QuestionSetID}
@@ -63,7 +69,7 @@ class NewQuestionCategoryInner extends React.Component<IProps, IState> {
         setName={this.setName}
         setDescription={this.setDescription}
         setAggregation={this.setAggregation}
-        submitButtonText="Add"
+        submitButtonText="Save changes"
         name={this.state.name}
         description={this.state.description}
         aggregation={this.state.aggregation}
@@ -72,5 +78,5 @@ class NewQuestionCategoryInner extends React.Component<IProps, IState> {
   }
 }
 
-const NewQuestionCategory = addQuestionCategory<IProps>(NewQuestionCategoryInner);
-export { NewQuestionCategory };
+const EditQuestionCategory = addQuestionCategory<IProps>(EditQuestionCategoryInner);
+export { EditQuestionCategory };
