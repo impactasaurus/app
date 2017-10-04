@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {IJOCServiceReport, IQuestionAggregates, ICategoryAggregates} from 'models/report';
 import {IOutcomeSet} from 'models/outcomeSet';
-import {Message} from 'semantic-ui-react';
+import {Message, Accordion, Label} from 'semantic-ui-react';
 import {renderArray} from 'helpers/react';
 import './style.less';
 
@@ -19,22 +19,65 @@ class ServiceReportDetails extends React.Component<IProp, any> {
     return `${num} ${multiple}`;
   }
 
-  private renderOverview(sr: IJOCServiceReport): JSX.Element {
+  private getCategoryString(catID: string, qs: IOutcomeSet): string {
+    const cat = qs.categories.find((c) => c.id === catID);
+    if (cat === undefined) {
+      return catID;
+    } else {
+      return cat.name;
+    }
+  }
+
+  private getQuestionString(qID: string, qs: IOutcomeSet): string {
+    const question = qs.questions.find((q) => q.id === qID);
+    if (question === undefined) {
+      return qID;
+    } else {
+      return question.question;
+    }
+  }
+
+  private renderOverview(sr: IJOCServiceReport, qs: IOutcomeSet): JSX.Element {
     const noBens = sr.beneficiaryIDs.length;
     const info = noBens > 0 ? true : false;
     const title = info ? 'Overview of Report Content' : 'Report failed';
+    const panels = [];
+
+    if (noBens > 0) {
+      panels.push({
+        title: `This report aggregates data covering ${this.dealWithSingularOrMultiple(noBens, 'beneficiary', 'beneficiaries')}.`,
+        content: (
+          <div>
+            {sr.beneficiaryIDs.map((bID) => (<Label key={bID}>{bID}</Label>))}
+          </div>
+        ),
+      });
+    }
+    if (sr.excluded.beneficiaryIDs.length > 0) {
+      panels.push({
+        title: `${this.dealWithSingularOrMultiple(sr.excluded.beneficiaryIDs.length, 'beneficiary has', 'beneficiaries have')} been excluded because they only have a single assessment.`,
+        content: (
+          <div>
+            {sr.excluded.beneficiaryIDs.map((bID) => (<Label key={bID}>{bID}</Label>))}
+          </div>
+        ),
+      });
+    }
+    if (sr.excluded.categoryIDs.length > 0 || sr.excluded.questionIDs.length > 0) {
+      panels.push({
+        title: `${this.dealWithSingularOrMultiple(sr.excluded.categoryIDs.length, 'category', 'categories')} and ${this.dealWithSingularOrMultiple(sr.excluded.questionIDs.length, 'question', 'questions')} have been excluded because they are not present within the assessments.`,
+        content: (
+          <div>
+            {sr.excluded.categoryIDs.map((cID) => (<Label key={cID}>{this.getCategoryString(cID, qs)}</Label>))}
+            {sr.excluded.questionIDs.map((qID) => (<Label key={qID}>{this.getQuestionString(qID, qs)}</Label>))}
+          </div>
+        ),
+      });
+    }
     return (
       <Message info={info} error={!info} className="service-overview">
         <Message.Header>{title}</Message.Header>
-        <p className="ben-count">
-          This report aggregates data covering {this.dealWithSingularOrMultiple(noBens, 'beneficiary', 'beneficiaries')}.
-        </p>
-        <p className="ben-excluded">
-          {this.dealWithSingularOrMultiple(sr.excluded.beneficiaryIDs.length, 'beneficiary has', 'beneficiaries have')} been excluded because they only have a single assessment.
-        </p>
-        <p className="qc-excluded">
-          {this.dealWithSingularOrMultiple(sr.excluded.categoryIDs.length, 'category', 'categories')} and {this.dealWithSingularOrMultiple(sr.excluded.questionIDs.length, 'question', 'questions')} have been excluded because they are not present within the assessments.
-        </p>
+        <Accordion exclusive={false} panels={panels} />
       </Message>
     );
   }
@@ -46,14 +89,8 @@ class ServiceReportDetails extends React.Component<IProp, any> {
   private getCategoryWarnings(sr: IJOCServiceReport, qs: IOutcomeSet): string[] {
     const getAllCatWarningsPrefixedWithCatName = (warns: string[], v: ICategoryAggregates): string[] => {
       if (Array.isArray(v.warnings) && v.warnings.length > 0) {
-        const cat = qs.categories.find((c) => c.id === v.categoryID);
-        const newWarns = v.warnings.map((w) => {
-          if (cat === undefined) {
-            return `${v.categoryID}: ${w}`;
-          } else {
-            return `${cat.name}: ${w}`;
-          }
-        });
+        const catIdentifier = this.getCategoryString(v.categoryID, qs);
+        const newWarns = v.warnings.map((w) => `${catIdentifier}: ${w}`);
         return warns.concat(newWarns);
       }
       return warns;
@@ -71,14 +108,8 @@ class ServiceReportDetails extends React.Component<IProp, any> {
   private getQuestionWarnings(sr: IJOCServiceReport, qs: IOutcomeSet): string[] {
     const getAllQWarningsPrefixedWithQ = (warns: string[], v: IQuestionAggregates): string[] => {
       if (Array.isArray(v.warnings) && v.warnings.length > 0) {
-        const question = qs.questions.find((q) => q.id === v.questionID);
-        const newWarns = v.warnings.map((w) => {
-          if (question === undefined) {
-            return `${v.questionID}: ${w}`;
-          } else {
-            return `${question.question}: ${w}`;
-          }
-        });
+        const questionIdentifier = this.getQuestionString(v.questionID, qs);
+        const newWarns = v.warnings.map((w) => `${questionIdentifier}: ${w}`);
         return warns.concat(newWarns);
       }
       return warns;
@@ -111,7 +142,7 @@ class ServiceReportDetails extends React.Component<IProp, any> {
   public render() {
     return (
       <div className="service-report-details">
-        {this.renderOverview(this.props.serviceReport)}
+        {this.renderOverview(this.props.serviceReport, this.props.questionSet)}
         {this.renderWarnings(this.props.serviceReport, this.props.questionSet)}
       </div>
     );
