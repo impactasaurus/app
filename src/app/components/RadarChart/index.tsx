@@ -73,6 +73,7 @@ class RadarChart extends React.Component<IProp, IState> {
     }
     if(this.graph !== undefined) {
       this.graph.destroy();
+      this.graph = undefined;
     }
     const noAxis = this.getNumberOfAxis(this.props.data);
     let errored = true;
