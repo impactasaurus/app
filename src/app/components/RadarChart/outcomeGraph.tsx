@@ -11,7 +11,7 @@ export function getOutcomeGraph(canvasDiv, title, data) {
     throw new Error('The canvas element specified does not exist!');
   }
 
-  return new Chart(document.getElementById(canvasDiv), chartConfig);
+  return new Chart(canvasElement, chartConfig);
 }
 
 function getConfig(data, title) {
