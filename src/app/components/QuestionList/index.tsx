@@ -54,11 +54,21 @@ class QuestionListInner extends React.Component<IProps, IState> {
     };
   }
 
-  private renderQuestion(q: Question): JSX.Element {
-    let descripton = '';
+  private getQuestionDescription(q: Question): string {
+    const description = q.description || '';
+
     if (q.minLabel || q.maxLabel) {
-      descripton = `${q.minLabel} > ${q.maxLabel}`;
+      if (description) {
+        return `${description} (${q.minLabel} > ${q.maxLabel})`;
+      }
+      return `${q.minLabel} > ${q.maxLabel}`;
     }
+    return description;
+  }
+
+  private renderQuestion(q: Question): JSX.Element {
+    const description = this.getQuestionDescription(q);
+
     return (
       <List.Item className="question" key={q.id}>
         <List.Content floated="right" verticalAlign="middle">
@@ -67,7 +77,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
         </List.Content>
         <List.Content verticalAlign="middle">
           <List.Header>{q.question}</List.Header>
-          <List.Description>{descripton}</List.Description>
+          <List.Description>{description}</List.Description>
         </List.Content>
       </List.Item>
     );
@@ -101,6 +111,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
     }
     const { data } = this.props;
     const os = data.getOutcomeSet;
+    console.log(os);
     if (os === undefined) {
         return (<div />);
     }
