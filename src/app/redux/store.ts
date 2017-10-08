@@ -4,13 +4,22 @@ import { routerMiddleware } from 'react-router-redux';
 import thunk from 'redux-thunk';
 import getReducers from './reducers';
 import { IStore } from './IStore';
+import * as storage from 'redux-storage';
+import createEngine from 'redux-storage-engine-localstorage';
+import filter from 'redux-storage-decorator-filter';
 const createLogger = require('redux-logger');
 
 export function configureStore(history, clientReducers: Redux.ReducersMapObject, clientMiddlewares: Redux.Middleware[], initialState?: IStore): Redux.Store<IStore> {
 
+  let storeEngine = createEngine('state');
+  storeEngine = filter(storeEngine, ['pref']);
+  const storageMiddleware = storage.createMiddleware(storeEngine);
+  const reducer = storage.reducer(getReducers(clientReducers));
+
   const middlewares: Redux.Middleware[] = [
     routerMiddleware(history),
     thunk,
+    storageMiddleware,
     ...clientMiddlewares,
   ];
 
@@ -24,7 +33,7 @@ export function configureStore(history, clientReducers: Redux.ReducersMapObject,
     typeof window === 'object' &&
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
-  const store = createStore(getReducers(clientReducers), initialState, composeEnhancers(
+  const store = createStore(reducer, initialState, composeEnhancers(
     applyMiddleware(...middlewares),
   ));
 
@@ -33,6 +42,9 @@ export function configureStore(history, clientReducers: Redux.ReducersMapObject,
       store.replaceReducer((require('./reducers')));
     });
   }
+
+  const load = storage.createLoader(storeEngine);
+  load(store).catch(() => console.error('Failed to load previous state'));
 
   return store;
 }
