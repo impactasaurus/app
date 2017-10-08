@@ -4,6 +4,7 @@ import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import {IStore} from 'redux/IStore';
+import { clearAuth } from 'helpers/auth';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector  {
@@ -38,6 +39,14 @@ class Header extends React.Component<IProps, any> {
     };
   }
 
+  private logOut() {
+    return () => {
+      clearAuth();
+      this.props.setURL('/login');
+    };
+
+  }
+
   public render() {
     return (
       <Menu size="massive">
@@ -48,6 +57,7 @@ class Header extends React.Component<IProps, any> {
 
         <Menu.Menu position="right">
           <Menu.Item name="settings" active={this.isActive('/settings')} onClick={this.handleClick('/settings')} />
+          <Menu.Item name="log out" onClick={this.logOut()} />
         </Menu.Menu>
       </Menu>
     );

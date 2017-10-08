@@ -9,6 +9,10 @@ export function saveAuth(token: string, profile?: auth0.Auth0UserProfile) {
   }
 }
 
+export function clearAuth() {
+  localStorage.clear();
+}
+
 function getDecodedToken() {
   const token = getToken();
 
