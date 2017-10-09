@@ -35,3 +35,5 @@ export function setPref(key: string, value: string) {
     },
   };
 }
+
+export type SetPrefFunc = (key: string, value: string) => void;

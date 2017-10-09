@@ -2,13 +2,17 @@ import * as React from 'react';
 import 'url-search-params-polyfill';
 import {GraphQLError} from '@types/graphql';
 import { Helmet } from 'react-helmet';
-import { Grid, Loader, Checkbox, Message } from 'semantic-ui-react';
+import { Grid, Loader, Message } from 'semantic-ui-react';
 import {getJOCServiceReport, IReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ServiceReportDetails} from 'components/ServiceReportDetails';
 import {ServiceReportRadar} from 'components/ServiceReportRadar';
 import {ServiceReportTable} from 'components/ServiceReportTable';
+import {VizControlPanel} from 'components/VizControlPanel';
+const { connect } = require('react-redux');
+import {IStore} from 'redux/IStore';
 import {renderArray} from 'helpers/react';
+import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'models/pref';
 import './style.less';
 
 interface IProp extends IReportResult {
@@ -21,58 +25,31 @@ interface IProp extends IReportResult {
   location: {
     search: string,
   };
+  vis?: Visualisation;
+  agg?: Aggregation;
+  isCategoryAgPossible?: boolean;
 }
 
-interface IState {
-  categoryAg: boolean;
-}
+const isCategoryAggregationAvailable = (props: IProp): boolean => {
+  if (props.JOCServiceReport.error || props.JOCServiceReport.loading) {
+    return false;
+  }
+  return props.JOCServiceReport.getJOCServiceReport.categoryAggregates.first.length > 0;
+};
 
-class ServiceReportInner extends React.Component<IProp, IState> {
+@connect((state: IStore, ownProps: IProp) => {
+  const canCatAg = isCategoryAggregationAvailable(ownProps);
+  return {
+    vis: getVisualisation(state.pref),
+    agg: getAggregation(state.pref, canCatAg),
+    isCategoryAgPossible: canCatAg,
+  };
+}, undefined)
+class ServiceReportInner extends React.Component<IProp, any> {
 
   constructor(props) {
     super(props);
-    this.state = {
-      categoryAg: false,
-    };
-    this.toggleCategoryAggregation = this.toggleCategoryAggregation.bind(this);
-    this.renderControlPanel = this.renderControlPanel.bind(this);
-  }
-
-  public componentWillReceiveProps(nextProps) {
-    if (!this.isCategoryAggregationAvailable(nextProps) && this.state.categoryAg) {
-      this.setState({
-        categoryAg: false,
-      });
-    }
-  }
-
-  private isCategoryAggregationAvailable(props: IProp): boolean {
-    if (props.JOCServiceReport.error || props.JOCServiceReport.loading) {
-      return false;
-    }
-    return props.JOCServiceReport.getJOCServiceReport.categoryAggregates.first.length > 0;
-  }
-
-  private toggleCategoryAggregation() {
-    this.setState({
-      categoryAg: !this.state.categoryAg,
-    });
-  }
-
-  private renderControlPanel(): JSX.Element {
-    const cpItems: JSX.Element[] = [];
-    if (this.isCategoryAggregationAvailable(this.props)) {
-      cpItems.push((
-        <span key="agtoggle">
-          <Checkbox toggle label="Category Aggregation" onChange={this.toggleCategoryAggregation} checked={this.state.categoryAg} />
-        </span>
-      ));
-    }
-    return (
-      <div id="cp">
-        {cpItems}
-      </div>
-    );
+    this.renderVis = this.renderVis.bind(this);
   }
 
   private renderError(error: GraphQLError): JSX.Element {
@@ -83,8 +60,19 @@ class ServiceReportInner extends React.Component<IProp, IState> {
     );
   }
 
+  private renderVis(): JSX.Element {
+    const p = this.props;
+    if (p.vis === Visualisation.RADAR) {
+      return (
+        <ServiceReportRadar serviceReport={p.JOCServiceReport.getJOCServiceReport} questionSet={p.data.getOutcomeSet} category={p.agg === Aggregation.CATEGORY} />
+      );
+    }
+    return (
+      <ServiceReportTable serviceReport={p.JOCServiceReport.getJOCServiceReport} questionSet={p.data.getOutcomeSet} category={p.agg === Aggregation.CATEGORY} />
+    );
+  }
+
   public render() {
-    console.log(this.props.JOCServiceReport);
     if (this.props.JOCServiceReport.error) {
       return (
         <Grid container columns={1} id="service-report">
@@ -109,9 +97,8 @@ class ServiceReportInner extends React.Component<IProp, IState> {
           </Helmet>
           <h1>Service Report</h1>
           <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
-          {this.renderControlPanel()}
-          <ServiceReportTable serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} category={this.state.categoryAg} />
-          <ServiceReportRadar serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} category={this.state.categoryAg} />
+          <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} />
+          {this.renderVis()}
         </Grid.Column>
       </Grid>
     );
