@@ -67,6 +67,7 @@ class CategoryListInner extends React.Component<IProps, IState> {
             <EditQuestionCategory
               category={c}
               QuestionSetID={this.props.outcomeSetID}
+              CategoryID={c.id}
               OnSuccess={this.setEditedCategoryId(null)}
             />
           </List.Content>

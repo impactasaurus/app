@@ -1,11 +1,12 @@
 import * as React from 'react';
 import {QuestionCategoryForm} from '../QuestionCategoryForm';
-import {ICategoryMutation, addQuestionCategory} from 'apollo/modules/categories';
+import {ICategoryMutation, editQuestionCategory} from 'apollo/modules/categories';
 import {ICategory} from 'models/category';
 import {IOutcomeSet} from 'models/outcomeSet';
 
 interface IProps extends ICategoryMutation {
   QuestionSetID: string;
+  CategoryID: string;
   category: ICategory;
   OnSuccess: ()=>void;
 }
@@ -38,7 +39,7 @@ class EditQuestionCategoryInner extends React.Component<IProps, IState> {
   }
 
   private onSubmitButtonPress(): Promise<IOutcomeSet> {
-    return this.props.addCategory(this.props.QuestionSetID, this.state.name, this.state.aggregation, this.state.description);
+    return this.props.editCategory(this.props.QuestionSetID, this.props.CategoryID, this.state.name, this.state.aggregation, this.state.description);
   }
 
   private setName(_, data) {
@@ -78,5 +79,5 @@ class EditQuestionCategoryInner extends React.Component<IProps, IState> {
   }
 }
 
-const EditQuestionCategory = addQuestionCategory<IProps>(EditQuestionCategoryInner);
+const EditQuestionCategory = editQuestionCategory<IProps>(EditQuestionCategoryInner);
 export { EditQuestionCategory };

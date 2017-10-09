@@ -27,14 +27,14 @@ export function addQuestionCategory<T>(component) {
 
 export function editQuestionCategory<T>(component) {
   return graphql<any, T>(gql`
-  mutation ($categoryID: String!, $outcomeSetID: ID!, $aggregation: Aggregation!, $name: String!, $description: String) {
-    editCategory: EditCategory(categoryID: $categoryID, aggregation:$aggregation, outcomeSetID:$outcomeSetID, name:$name, description:$description) {
+  mutation ($outcomeSetID: ID!, $categoryID: String!, $aggregation: Aggregation!, $name: String!, $description: String) {
+    editCategory: EditCategory(aggregation:$aggregation, categoryID: $categoryID, outcomeSetID:$outcomeSetID, name:$name, description:$description) {
       ...defaultOutcomeSet
     }
   }
   ${osFragment}`, {
     props: ({ mutate }) => ({
-      editCategory: (categoryID: string, outcomeSetID: string, name: string, aggregation: string, description?: string): Promise<IOutcomeSet> => mutate({
+      editCategory: (outcomeSetID: string, categoryID: string, name: string, aggregation: string, description?: string): Promise<IOutcomeSet> => mutate({
         variables: {
           categoryID,
           outcomeSetID,
@@ -91,7 +91,7 @@ export function setCategory<T>(component) {
 
 export interface ICategoryMutation {
     addCategory?(outcomeSetID: string, name: string, aggregation: string, description?: string): Promise<IOutcomeSet>;
-    editCategory?(categoryID: string, outcomeSetID: string, name: string, aggregation: string, description?: string): Promise<IOutcomeSet>;
+    editCategory?(outcomeSetID: string, categoryID: string, name: string, aggregation: string, description?: string): Promise<IOutcomeSet>;
     deleteCategory?(outcomeSetID: string, categoryID: string): Promise<IOutcomeSet>;
     setCategory?(outcomeSetID: string, questionID: string, categoryID?: string): Promise<IOutcomeSet>;
 }
