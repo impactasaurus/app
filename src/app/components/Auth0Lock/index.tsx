@@ -32,6 +32,7 @@ class Auth0Lock extends React.Component<IProps, {}> {
       autofocus: true,
       container: this.divID,
       allowSignUp: false,
+      rememberLastLogin : false,
       auth: {
         params: {
           scope: appConfig.app.auth.scope,
