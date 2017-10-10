@@ -3,6 +3,7 @@ import {gql} from 'react-apollo';
 export interface IQuestion {
   id: string;
   question: string;
+  description?: string;
   archived?: boolean;
   categoryID: string;
 }
@@ -20,6 +21,7 @@ export const fragment = gql`
   fragment defaultQuestion on QuestionInterface {
     id,
     question,
+    description,
     archived,
     categoryID,
     ... on LikertScale{

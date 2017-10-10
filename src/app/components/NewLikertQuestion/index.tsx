@@ -14,6 +14,7 @@ interface IProps extends IQuestionMutation {
 interface IState {
   newQuestionError?: string;
   newQuestion?: string;
+  description?: string;
   leftLabel?: string;
   rightLabel?: string;
   leftValue?: string;
@@ -32,6 +33,7 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
     };
     this.addQuestion = this.addQuestion.bind(this);
     this.setNewQuestion = this.setNewQuestion.bind(this);
+    this.setDescription = this.setDescription.bind(this);
     this.setLeftLabel = this.setLeftLabel.bind(this);
     this.setRightLabel = this.setRightLabel.bind(this);
     this.setLeftValue = this.setLeftValue.bind(this);
@@ -80,7 +82,7 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
     this.setState({
       saving: true,
     });
-    this.props.addLikertQuestion(this.props.QuestionSetID, this.state.newQuestion, lv, rv, this.state.leftLabel, this.state.rightLabel)
+    this.props.addLikertQuestion(this.props.QuestionSetID, this.state.newQuestion, lv, rv, this.state.leftLabel, this.state.rightLabel, this.state.description)
     .then(() => {
       this.logQuestionCreatedGAEvent();
       this.setState({
@@ -99,6 +101,12 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
   private setNewQuestion(_, data) {
     this.setState({
       newQuestion: data.value,
+    });
+  }
+
+  private setDescription(_, data) {
+    this.setState({
+      description: data.value,
     });
   }
 
@@ -139,6 +147,9 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
           <div className="new-likert-form">
             <div className="section upper">
               <Input className="full" autofocus type="text" placeholder="Question" onChange={this.setNewQuestion} />
+            </div>
+            <div className="section upper">
+              <Input className="full" type="text" placeholder="Description (optional)" onChange={this.setDescription} />
             </div>
             <div className="section mid">
               <Input className="left" type="text" placeholder="Left Label (optional)" onChange={this.setLeftLabel} />
