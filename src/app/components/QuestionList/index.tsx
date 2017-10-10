@@ -111,7 +111,6 @@ class QuestionListInner extends React.Component<IProps, IState> {
     }
     const { data } = this.props;
     const os = data.getOutcomeSet;
-    console.log(os);
     if (os === undefined) {
         return (<div />);
     }
