@@ -57,7 +57,6 @@ class NewQuestionCategoryInner extends React.Component<IProps, IState> {
   public render() {
     return (
       <QuestionCategoryForm
-        QuestionSetID={this.props.QuestionSetID}
         OnSuccess={this.props.OnSuccess}
         onSubmitButtonPress={this.onSubmitButtonPress}
         setName={this.setName}

@@ -5,7 +5,6 @@ import {ICategoryMutation} from 'apollo/modules/categories';
 import {IOutcomeSet} from 'models/outcomeSet';
 
 interface IProps extends ICategoryMutation {
-  QuestionSetID: string;
   OnSuccess: ()=>void;
   onSubmitButtonPress: ()=>Promise<IOutcomeSet>;
   setName: (_, data)=>void;

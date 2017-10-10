@@ -8,7 +8,6 @@ import { List, Loader, Button, Popup } from 'semantic-ui-react';
 import {NewQuestionCategory} from 'components/NewQuestionCategory';
 import {EditQuestionCategory} from 'components/EditQuestionCategory';
 import {ConfirmButton} from 'components/ConfirmButton';
-import {isNullOrUndefined} from 'util';
 
 interface IProps extends ICategoryMutation {
   outcomeSetID: string;
@@ -60,7 +59,7 @@ class CategoryListInner extends React.Component<IProps, IState> {
   }
 
   private renderCategory(c: ICategory): JSX.Element {
-    if (!isNullOrUndefined(this.state.editedCategoryId) && this.state.editedCategoryId === c.id) {
+    if (this.state.editedCategoryId && this.state.editedCategoryId === c.id) {
       return (
         <List.Item className="edit-control" key={c.id}>
           <List.Content>

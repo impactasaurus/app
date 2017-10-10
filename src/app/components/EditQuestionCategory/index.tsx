@@ -64,7 +64,6 @@ class EditQuestionCategoryInner extends React.Component<IProps, IState> {
 
     return (
       <QuestionCategoryForm
-        QuestionSetID={this.props.QuestionSetID}
         OnSuccess={this.props.OnSuccess}
         onSubmitButtonPress={this.onSubmitButtonPress}
         setName={this.setName}
