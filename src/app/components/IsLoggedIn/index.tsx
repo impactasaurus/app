@@ -7,27 +7,35 @@ import {IURLConnector} from 'redux/modules/url';
 import { IStore } from 'redux/IStore';
 const { connect } = require('react-redux');
 const config = require('../../../../config/main').app.auth;
+const ReactGA = require('react-ga');
+import {setUserDetails, setLoggedInStatus, SetUserDetailsFunc, SetLoggedInStatusFunc, getUserID as getUserIDFromStore, isUserLoggedIn} from 'modules/user';
 
 interface IProps extends IURLConnector {
   routeState?: RouterState;
+  setUserDetails?: SetUserDetailsFunc;
+  setLoggedInStatus?: SetLoggedInStatusFunc;
+  lastUserID?: string;
+  isLoggedIn?: boolean;
 }
 
 interface IState {
-  lastUserID?: string|null;
   listening?: boolean;
 }
 
 @connect((state: IStore) => ({
   routeState: state.routing,
+  lastUserID: getUserIDFromStore(state.user),
+  isLoggedIn: isUserLoggedIn(state.user),
 }), (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
+  setUserDetails: bindActionCreators(setUserDetails, dispatch),
+  setLoggedInStatus: bindActionCreators(setLoggedInStatus, dispatch),
 }))
 export class IsLoggedIn extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
     this.state = {
-      lastUserID: null,
       listening: false,
     };
     this.setup = this.setup.bind(this);
@@ -115,23 +123,24 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
 
   private trackUser() {
     const userID = getUserID();
-    if (userID !== this.state.lastUserID) {
-      const ReactGA = require('react-ga');
+    if (userID !== this.props.lastUserID) {
       ReactGA.set({
         userId: userID,
       });
-      this.setState({
-        lastUserID: userID,
-      });
+      this.props.setUserDetails(userID);
     }
   }
 
   private setup() {
     this.listenForRefresh();
     this.trackUser();
-    if (this.isStoredJWTValid() === false) {
-        this.sendToLogin();
-        return;
+    const isLoggedIn = this.isStoredJWTValid();
+    if (this.props.isLoggedIn !== isLoggedIn) {
+      this.props.setLoggedInStatus(isLoggedIn);
+    }
+    if (isLoggedIn === false) {
+      this.sendToLogin();
+      return;
     }
     this.setupRefreshTrigger();
   }
