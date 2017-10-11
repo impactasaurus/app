@@ -3,19 +3,18 @@ import { Menu } from 'semantic-ui-react';
 import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
-import {IStore} from 'redux/IStore';
+import { IStore } from 'redux/IStore';
 import { clearAuth } from 'helpers/auth';
 const { connect } = require('react-redux');
-
+import {isUserLoggedIn} from 'modules/user';
 interface IProps extends IURLConnector  {
   currentURL?: string;
+  isLoggedIn?: boolean;
 }
 
-@connect((state: IStore): IProps => {
-  return {
-    currentURL: state.routing.locationBeforeTransitions.pathname,
-  };
-}, (dispatch) => ({
+@connect((state: IStore) => ({
+  isLoggedIn: isUserLoggedIn(state.user),
+}), (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
 class Header extends React.Component<IProps, any> {
@@ -48,7 +47,7 @@ class Header extends React.Component<IProps, any> {
   }
 
   public render() {
-    return (
+    return (this.props.isLoggedIn?
       <Menu size="massive">
         <Menu.Item name="home" active={this.isActive('/', true)} onClick={this.handleClick('/')} />
         <Menu.Item name="record" active={this.isActive('/record') || this.isActive('/meeting')} onClick={this.handleClick('/record')} />
@@ -59,6 +58,9 @@ class Header extends React.Component<IProps, any> {
           <Menu.Item name="settings" active={this.isActive('/settings')} onClick={this.handleClick('/settings')} />
           <Menu.Item name="log out" onClick={this.logOut()} />
         </Menu.Menu>
+      </Menu>:
+      <Menu size="massive">
+        <Menu.Item name="Impactasaurus" active={this.isActive('/', true)} onClick={this.handleClick('/')} />
       </Menu>
     );
   }
