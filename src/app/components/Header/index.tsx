@@ -14,6 +14,7 @@ interface IProps extends IURLConnector  {
 
 @connect((state: IStore) => ({
   isLoggedIn: isUserLoggedIn(state.user),
+  currentURL: state.routing.locationBeforeTransitions.pathname,
 }), (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
@@ -47,22 +48,27 @@ class Header extends React.Component<IProps, any> {
   }
 
   public render() {
-    return (this.props.isLoggedIn?
-      <Menu size="massive">
-        <Menu.Item name="home" active={this.isActive('/', true)} onClick={this.handleClick('/')} />
-        <Menu.Item name="record" active={this.isActive('/record') || this.isActive('/meeting')} onClick={this.handleClick('/record')} />
-        <Menu.Item name="review" active={this.isActive('/review')} onClick={this.handleClick('/review')} />
-        <Menu.Item name="report" active={this.isActive('/report')} onClick={this.handleClick('/report')} />
+      if(this.props.isLoggedIn) {
+        return(
+          <Menu size="massive">
+          <Menu.Item name="home" active={this.isActive('/', true)} onClick={this.handleClick('/')} />
+          <Menu.Item name="record" active={this.isActive('/record') || this.isActive('/meeting')} onClick={this.handleClick('/record')} />
+          <Menu.Item name="review" active={this.isActive('/review')} onClick={this.handleClick('/review')} />
+          <Menu.Item name="report" active={this.isActive('/report')} onClick={this.handleClick('/report')} />
 
-        <Menu.Menu position="right">
-          <Menu.Item name="settings" active={this.isActive('/settings')} onClick={this.handleClick('/settings')} />
-          <Menu.Item name="log out" onClick={this.logOut()} />
-        </Menu.Menu>
-      </Menu>:
-      <Menu size="massive">
-        <Menu.Item name="Impactasaurus" active={this.isActive('/', true)} onClick={this.handleClick('/')} />
-      </Menu>
-    );
+           <Menu.Menu position="right">
+            <Menu.Item name="settings" active={this.isActive('/settings')} onClick={this.handleClick('/settings')} />
+            <Menu.Item name="log out" onClick={this.logOut()} />
+          </Menu.Menu>
+        </Menu>
+      );
+      }else {
+        return(
+          <Menu size="massive">
+            <Menu.Item name="Impactasaurus" active={this.isActive('/', true)} onClick={this.handleClick('/')} />
+          </Menu>
+        );
+    }
   }
 }
 
