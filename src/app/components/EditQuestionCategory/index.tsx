@@ -1,14 +1,16 @@
 import * as React from 'react';
 import {QuestionCategoryForm} from '../QuestionCategoryForm';
-import {ICategoryMutation, addQuestionCategory} from 'apollo/modules/categories';
+import {ICategoryMutation, editQuestionCategory} from 'apollo/modules/categories';
+import {ICategory} from 'models/category';
 import {IOutcomeSet} from 'models/outcomeSet';
 
 interface IProps extends ICategoryMutation {
   QuestionSetID: string;
+  category: ICategory;
   OnSuccess: ()=>void;
 }
 
-class NewQuestionCategoryInner extends React.Component<IProps, any> {
+class EditQuestionCategoryInner extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
@@ -17,7 +19,7 @@ class NewQuestionCategoryInner extends React.Component<IProps, any> {
   }
 
   private onSubmitButtonPress(QuestionSetID: string, name: string, aggregation: string, description: string): Promise<IOutcomeSet> {
-    return this.props.addCategory(QuestionSetID, name, aggregation, description);
+    return this.props.editCategory(QuestionSetID, this.props.category.id, name, aggregation, description);
   }
 
   public render() {
@@ -26,11 +28,14 @@ class NewQuestionCategoryInner extends React.Component<IProps, any> {
         OnSuccess={this.props.OnSuccess}
         onSubmitButtonPress={this.onSubmitButtonPress}
         QuestionSetID={this.props.QuestionSetID}
-        submitButtonText="Add"
+        submitButtonText="Save changes"
+        name={this.props.category.name}
+        description={this.props.category.description}
+        aggregation={this.props.category.aggregation}
       />
     );
   }
 }
 
-const NewQuestionCategory = addQuestionCategory<IProps>(NewQuestionCategoryInner);
-export { NewQuestionCategory };
+const EditQuestionCategory = editQuestionCategory<IProps>(EditQuestionCategoryInner);
+export { EditQuestionCategory };
