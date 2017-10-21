@@ -1,10 +1,13 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { Grid, Loader } from 'semantic-ui-react';
+import { Grid, Loader, Button } from 'semantic-ui-react';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import {VizControlPanel} from 'components/VizControlPanel';
+import {setURL} from 'modules/url';
 const { connect } = require('react-redux');
+import { bindActionCreators } from 'redux';
 import {IStore} from 'redux/IStore';
+import {IURLConnector} from 'redux/modules/url';
 import {Aggregation, Visualisation, getAggregation, getVisualisation, getSelectedQuestionSetID} from 'models/pref';
 import {getMeetings, IMeetingResult} from 'apollo/modules/meetings';
 import {IMeeting} from 'models/meeting';
@@ -12,7 +15,7 @@ import {MeetingRadar} from 'components/MeetingRadar';
 import {MeetingTable} from 'components/MeetingTable';
 import './style.less';
 
-interface IProps {
+interface IProps extends IURLConnector {
   params: {
       id: string,
   };
@@ -45,15 +48,22 @@ function isCategoryAggregationAvailable(meetings: IMeeting[], selectedQuestionSe
     isCategoryAgPossible: canCatAg,
     selectedQuestionSetID,
   };
-}, undefined)
+}, (dispatch) => ({
+  setURL: bindActionCreators(setURL, dispatch),
+}))
 class ReviewInner extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
     this.renderInner = this.renderInner.bind(this);
     this.renderVis = this.renderVis.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
-
+  private handleClick(url: string) {
+    return () => {
+      this.props.setURL(url);
+    };
+  }
   private filterMeetings(m: IMeeting[], questionSetID: string): IMeeting[] {
     return m.filter((m) => m.outcomeSetID === questionSetID);
   }
@@ -111,6 +121,7 @@ class ReviewInner extends React.Component<IProps, any> {
     return (
       <Grid container columns={1}>
         <Grid.Column>
+            <Button onClick={this.handleClick('/review')} content="Back" icon="left arrow" labelPosition="left" primary id="back-button"/>
           <div id="review">
             <Helmet>
               <title>{this.props.params.id + ' Review'}</title>
