@@ -146,7 +146,7 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
           <Message.Header>New Likert Question</Message.Header>
           <div className="new-likert-form">
             <div className="section upper">
-              <Input className="full" autofocus type="text" placeholder="Question" onChange={this.setNewQuestion} />
+              <Input className="full" autoFocus type="text" placeholder="Question" onChange={this.setNewQuestion} />
             </div>
             <div className="section upper">
               <Input className="full" type="text" placeholder="Description (optional)" onChange={this.setDescription} />
