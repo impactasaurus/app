@@ -12,6 +12,23 @@
   }
   .section:first-of-type {
     margin-top: 2em;
+    display: table;
+
+    .question-name {
+      display: table-cell;
+      width: 100%;
+
+      input {
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        width: 100%;
+      }
+    }
+
+    .category {
+      padding-left: 14px;
+      margin-right: 8px;
+    }
   }
   .section.likert {
     margin-left: 5em;
