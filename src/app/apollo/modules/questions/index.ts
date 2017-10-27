@@ -26,6 +26,29 @@ export function addLikertQuestion<T>(component) {
   })(component);
 }
 
+export function editLikertQuestion<T>(component) {
+  return graphql<any, T>(gql`
+  mutation ($outcomeSetID: ID!, $questionID: String!, $question: String!, $description: String, $minLabel: String, $maxLabel: String) {
+    editLikertQuestion: EditLikertQuestion(outcomeSetID:$outcomeSetID, questionID: $questionID, question: $question, description: $description, minLabel: $minLabel, maxLabel: $maxLabel) {
+      ...defaultOutcomeSet
+    }
+  }
+  ${osFragment}`, {
+    props: ({ mutate }) => ({
+      editLikertQuestion: (outcomeSetID: string, questionID: string, question: string, minLabel?: string, maxLabel?: string, description?: string): Promise<IOutcomeSet> => mutate({
+        variables: {
+          outcomeSetID,
+          questionID,
+          question,
+          description,
+          minLabel,
+          maxLabel,
+        },
+      }).then(mutationResultExtractor<IOutcomeSet>('editLikertQuestion')),
+    }),
+  })(component);
+}
+
 export function deleteQuestion<T>(component) {
   return graphql<any, T>(gql`
   mutation ($outcomeSetID: String!, $questionID: String!) {
@@ -47,5 +70,6 @@ export function deleteQuestion<T>(component) {
 
 export interface IQuestionMutation {
     addLikertQuestion?(outcomeSetID: string, question: string, minValue: number, maxValue: number, minLabel?: string, maxLabel?: string, description?: string): Promise<IOutcomeSet>;
+    editLikertQuestion?(outcomeSetID: string, questionID: string, question: string, minLabel?: string, maxLabel?: string, description?: string): Promise<IOutcomeSet>;
     deleteQuestion?(outcomeSetID: string, questionID: string): Promise<IOutcomeSet>;
 }
