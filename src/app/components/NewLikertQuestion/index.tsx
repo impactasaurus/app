@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Button, ButtonProps, Message } from 'semantic-ui-react';
-import {Input} from 'components/Input';
+import { Button, ButtonProps, Message, Input } from 'semantic-ui-react';
 import {IQuestionMutation, addLikertQuestion} from 'apollo/modules/questions';
 import { Likert} from 'components/Likert';
 import './style.less';
