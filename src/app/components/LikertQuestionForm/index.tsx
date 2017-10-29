@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Button, ButtonProps, Message } from 'semantic-ui-react';
-import {Input} from 'components/Input';
+import { Button, ButtonProps, Message, Input } from 'semantic-ui-react';
 import { Likert} from 'components/Likert';
 import {IOutcomeSet} from 'models/outcomeSet';
 import './style.less';
