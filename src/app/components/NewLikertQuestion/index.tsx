@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Button, ButtonProps, Message, Select } from 'semantic-ui-react';
-import {Input} from 'components/Input';
+import { Button, ButtonProps, Message, Select, Input } from 'semantic-ui-react';
 import {IQuestionMutation, addLikertQuestion} from 'apollo/modules/questions';
 import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import {ICategoryMutation, setCategory} from 'apollo/modules/categories';

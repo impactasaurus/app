@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Button, ButtonProps, Select } from 'semantic-ui-react';
-import {Input} from 'components/Input';
+import { Button, ButtonProps, Select, Input } from 'semantic-ui-react';
 import {ICategoryMutation} from 'apollo/modules/categories';
 import {IOutcomeSet} from 'models/outcomeSet';
 
