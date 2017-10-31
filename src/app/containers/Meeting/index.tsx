@@ -107,6 +107,7 @@ class MeetingInner extends React.Component<IProps, IState> {
         saving: false,
         currentQuestion: undefined,
       });
+      this.logGAEvent('answered');
     })
     .catch((e: string) => {
       this.setState({
@@ -114,7 +115,6 @@ class MeetingInner extends React.Component<IProps, IState> {
         saveError: e,
       });
     });
-    this.logGAEvent('answered');
   }
 
   private review() {
