@@ -6,7 +6,7 @@ import {IURLConnector} from 'redux/modules/url';
 import {renderArray} from 'helpers/react';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
-import { Button, Input, List, Icon, Grid, Loader } from 'semantic-ui-react';
+import { Button, Input, List, Icon, Grid, Loader, ButtonProps } from 'semantic-ui-react';
 import {ConfirmButton} from 'components/ConfirmButton';
 import './style.less';
 const { connect } = require('react-redux');
@@ -22,6 +22,7 @@ interface IState {
   newName?: string;
   newDescription?: string;
   newClicked?: boolean;
+  savingNewQuestion?: boolean;
 }
 
 @connect(undefined, (dispatch) => ({
@@ -33,6 +34,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       newClicked: false,
+      savingNewQuestion: false,
     };
     this.createQS = this.createQS.bind(this);
     this.deleteQS = this.deleteQS.bind(this);
@@ -56,17 +58,22 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
   }
 
   private createQS() {
+    this.setState({
+      savingNewQuestion: true,
+    });
     this.props.newQuestionSet(this.state.newName, this.state.newDescription)
     .then(() => {
       this.logQuestionSetGAEvent('created');
       this.setState({
         createError: undefined,
         newClicked: false,
+        savingNewQuestion: false,
       });
     })
     .catch((e: Error)=> {
       this.setState({
         createError: e.message,
+        savingNewQuestion: false,
       });
     });
   }
@@ -123,12 +130,17 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
 
   private renderNewControl(): JSX.Element {
     if (this.state.newClicked) {
+      const addProps: ButtonProps = {};
+      if (this.state.savingNewQuestion) {
+        addProps.loading = true;
+        addProps.disabled = true;
+       }
       return (
         <List.Item className="new-control" key="new">
           <List.Content>
             <Input type="text" placeholder="Name" onChange={this.setNewName}/>
             <Input type="text" placeholder="Description" onChange={this.setNewDescription}/>
-            <Button onClick={this.createQS}>Create</Button>
+            <Button {...addProps} onClick={this.createQS}>Create</Button>
             <p>{this.state.createError}</p>
           </List.Content>
         </List.Item>
