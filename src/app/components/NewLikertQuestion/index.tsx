@@ -86,13 +86,9 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
     this.setState({
       saving: true,
     });
-    this.props.addLikertQuestion(this.props.QuestionSetID, this.state.newQuestion, lv, rv, this.state.leftLabel, this.state.rightLabel, this.state.description)
-    .then((QuestionSet) => {
+    this.props.addLikertQuestion(this.props.QuestionSetID, this.state.newQuestion, lv, rv, this.state.leftLabel, this.state.rightLabel, this.state.description, this.state.category)
+    .then(() => {
       this.logQuestionCreatedGAEvent();
-      if (this.state.category) {
-        const QuestionID = QuestionSet.questions.pop().id;
-        this.props.setCategory(this.props.QuestionSetID, QuestionID, this.state.category);
-      }
       this.setState({
         saving: false,
       });
