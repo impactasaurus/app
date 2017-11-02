@@ -10,6 +10,7 @@ import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import {IURLConnector} from 'redux/modules/url';
 const { connect } = require('react-redux');
+const ReactGA = require('react-ga');
 
 interface IProps extends IMeetingMutation, IURLConnector {
   data: IMeetingResult;
@@ -88,6 +89,13 @@ class MeetingInner extends React.Component<IProps, IState> {
       currentValue: value,
     });
   }
+  private logGAEvent(action: string) {
+    ReactGA.event({
+      category : 'assessment',
+      label : 'likert',
+      action,
+    });
+  }
 
   private next() {
     this.setState({
@@ -99,6 +107,7 @@ class MeetingInner extends React.Component<IProps, IState> {
         saving: false,
         currentQuestion: undefined,
       });
+      this.logGAEvent('answered');
     })
     .catch((e: string) => {
       this.setState({
