@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Button, ButtonProps, Select } from 'semantic-ui-react';
-import {Input} from 'components/Input';
+import { Button, ButtonProps, Select, Input } from 'semantic-ui-react';
 import {ICategoryMutation} from 'apollo/modules/categories';
 import {IOutcomeSet} from 'models/outcomeSet';
 
@@ -108,7 +107,7 @@ class QuestionCategoryForm extends React.Component<IProps, IState> {
     }
     return (
       <div>
-        <Input autofocus type="text" placeholder="Name" onChange={this.setName} value={this.state.name} />
+        <Input autoFocus type="text" placeholder="Name" onChange={this.setName} value={this.state.name} />
         <Input type="text" placeholder="Description" onChange={this.setDescription} value={this.state.description} />
         <Select placeholder="Aggregation" options={this.getAggregationOptions()} value={this.state.aggregation} onChange={this.setAggregation} />
         <Button {...submitProps} onClick={this.onSubmitButtonClick}>{this.props.submitButtonText}</Button>
