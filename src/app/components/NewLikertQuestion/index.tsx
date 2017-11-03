@@ -2,12 +2,11 @@ import * as React from 'react';
 import { Button, ButtonProps, Message, Select, Input } from 'semantic-ui-react';
 import {IQuestionMutation, addLikertQuestion} from 'apollo/modules/questions';
 import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
-import {ICategoryMutation, setCategory} from 'apollo/modules/categories';
 import { Likert} from 'components/Likert';
 import './style.less';
 const ReactGA = require('react-ga');
 
-interface IProps extends IQuestionMutation, ICategoryMutation {
+interface IProps extends IQuestionMutation {
   QuestionSetID: string;
   OnSuccess: ()=>void;
   data?: IOutcomeResult;
