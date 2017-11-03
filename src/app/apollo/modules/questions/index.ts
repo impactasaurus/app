@@ -4,14 +4,14 @@ import {mutationResultExtractor} from 'helpers/apollo';
 
 export function addLikertQuestion<T>(component) {
   return graphql<any, T>(gql`
-  mutation ($outcomeSetID: ID!, $question: String!, $description: String, $minValue: Int, $maxValue: Int!, $minLabel: String, $maxLabel: String) {
-    addLikertQuestion: AddLikertQuestion(outcomeSetID:$outcomeSetID, question: $question, description: $description, minValue: $minValue, maxValue: $maxValue, minLabel: $minLabel, maxLabel: $maxLabel) {
+  mutation ($outcomeSetID: ID!, $question: String!, $description: String, $minValue: Int, $maxValue: Int!, $minLabel: String, $maxLabel: String, $categoryID: String) {
+    addLikertQuestion: AddLikertQuestion(outcomeSetID:$outcomeSetID, question: $question, description: $description, minValue: $minValue, maxValue: $maxValue, minLabel: $minLabel, maxLabel: $maxLabel, categoryID: $categoryID) {
       ...defaultOutcomeSet
     }
   }
   ${osFragment}`, {
     props: ({ mutate }) => ({
-      addLikertQuestion: (outcomeSetID: string, question: string, minValue: number, maxValue: number, minLabel?: string, maxLabel?: string, description?: string): Promise<IOutcomeSet> => mutate({
+      addLikertQuestion: (outcomeSetID: string, question: string, minValue: number, maxValue: number, minLabel?: string, maxLabel?: string, description?: string, categoryID?: string): Promise<IOutcomeSet> => mutate({
           variables: {
             outcomeSetID,
             question,
@@ -20,6 +20,7 @@ export function addLikertQuestion<T>(component) {
             maxValue,
             minLabel,
             maxLabel,
+            categoryID,
           },
       }).then(mutationResultExtractor<IOutcomeSet>('addLikertQuestion')),
     }),
@@ -46,6 +47,6 @@ export function deleteQuestion<T>(component) {
 }
 
 export interface IQuestionMutation {
-    addLikertQuestion?(outcomeSetID: string, question: string, minValue: number, maxValue: number, minLabel?: string, maxLabel?: string, description?: string): Promise<IOutcomeSet>;
+    addLikertQuestion?(outcomeSetID: string, question: string, minValue: number, maxValue: number, minLabel?: string, maxLabel?: string, description?: string, categoryID?: string): Promise<IOutcomeSet>;
     deleteQuestion?(outcomeSetID: string, questionID: string): Promise<IOutcomeSet>;
 }

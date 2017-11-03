@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Button, ButtonProps, Message, Input } from 'semantic-ui-react';
+import { Button, ButtonProps, Message, Select, Input } from 'semantic-ui-react';
 import {IQuestionMutation, addLikertQuestion} from 'apollo/modules/questions';
+import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import { Likert} from 'components/Likert';
 import './style.less';
 const ReactGA = require('react-ga');
@@ -8,12 +9,14 @@ const ReactGA = require('react-ga');
 interface IProps extends IQuestionMutation {
   QuestionSetID: string;
   OnSuccess: ()=>void;
+  data?: IOutcomeResult;
 }
 
 interface IState {
   newQuestionError?: string;
   newQuestion?: string;
   description?: string;
+  category?: string;
   leftLabel?: string;
   rightLabel?: string;
   leftValue?: string;
@@ -32,6 +35,7 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
     };
     this.addQuestion = this.addQuestion.bind(this);
     this.setNewQuestion = this.setNewQuestion.bind(this);
+    this.setCategory = this.setCategory.bind(this);
     this.setDescription = this.setDescription.bind(this);
     this.setLeftLabel = this.setLeftLabel.bind(this);
     this.setRightLabel = this.setRightLabel.bind(this);
@@ -81,7 +85,7 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
     this.setState({
       saving: true,
     });
-    this.props.addLikertQuestion(this.props.QuestionSetID, this.state.newQuestion, lv, rv, this.state.leftLabel, this.state.rightLabel, this.state.description)
+    this.props.addLikertQuestion(this.props.QuestionSetID, this.state.newQuestion, lv, rv, this.state.leftLabel, this.state.rightLabel, this.state.description, this.state.category)
     .then(() => {
       this.logQuestionCreatedGAEvent();
       this.setState({
@@ -100,6 +104,12 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
   private setNewQuestion(_, data) {
     this.setState({
       newQuestion: data.value,
+    });
+  }
+
+  private setCategory(_, data) {
+    this.setState({
+      category: data.value,
     });
   }
 
@@ -133,6 +143,22 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
     });
   }
 
+  private getCategoryOptions() {
+    const categories = this.props.data.getOutcomeSet.categories.map((os) => {
+      return {
+        key: os.id,
+        value: os.id,
+        text: os.name,
+      };
+    });
+    categories.unshift({
+      key: null,
+      value: null,
+      text: 'No Category',
+    });
+    return categories;
+  }
+
   public render() {
     const addProps: ButtonProps = {};
     if (this.state.saving) {
@@ -145,7 +171,10 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
           <Message.Header>New Likert Question</Message.Header>
           <div className="new-likert-form">
             <div className="section upper">
-              <Input className="full" autoFocus type="text" placeholder="Question" onChange={this.setNewQuestion} />
+              <Input className="full question-name" autoFocus type="text" placeholder="Question" onChange={this.setNewQuestion} />
+              <div className="category">
+                <Select placeholder="Category (optional)" options={this.getCategoryOptions()} onChange={this.setCategory} />
+              </div>
             </div>
             <div className="section upper">
               <Input className="full" type="text" placeholder="Description (optional)" onChange={this.setDescription} />
@@ -176,5 +205,5 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
   }
 }
 
-const NewLikertQuestion = addLikertQuestion<IProps>(NewLikertQuestionInner);
+const NewLikertQuestion = getOutcomeSet<IProps>((props) => props.QuestionSetID)(setCategory<IProps>(addLikertQuestion<IProps>(NewLikertQuestionInner)));
 export { NewLikertQuestion };
