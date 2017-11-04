@@ -2,11 +2,8 @@ export function getToken(): string|null {
   return localStorage.getItem('token');
 }
 
-export function saveAuth(token: string, profile?: auth0.Auth0UserProfile) {
+export function saveAuth(token: string) {
   localStorage.setItem('token', token);
-  if (profile) {
-    localStorage.setItem('profile', JSON.stringify(profile));
-  }
 }
 
 export function clearAuth() {
@@ -64,10 +61,9 @@ export function getExpiryDate(): Date|null {
 }
 
 export function getUserID(): string|null {
-  const storedProfile = localStorage.getItem('profile');
-  if (storedProfile === null) {
+  const decoded = getDecodedToken();
+  if (decoded === null || decoded.sub === undefined) {
     return null;
   }
-  const profile: auth0.Auth0UserProfile = JSON.parse(storedProfile);
-  return profile.user_id;
+  return decoded.sub;
 }
