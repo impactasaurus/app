@@ -205,5 +205,5 @@ class NewLikertQuestionInner extends React.Component<IProps, IState> {
   }
 }
 
-const NewLikertQuestion = getOutcomeSet<IProps>((props) => props.QuestionSetID)(setCategory<IProps>(addLikertQuestion<IProps>(NewLikertQuestionInner)));
+const NewLikertQuestion = getOutcomeSet<IProps>((props) => props.QuestionSetID)(addLikertQuestion<IProps>(NewLikertQuestionInner));
 export { NewLikertQuestion };
