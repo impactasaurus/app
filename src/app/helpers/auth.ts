@@ -67,3 +67,11 @@ export function getUserID(): string|null {
   }
   return decoded.sub;
 }
+
+export function isBeneficiaryUser(): boolean {
+  const decoded = getDecodedToken();
+  if (decoded === null || decoded.app_metadata === undefined || decoded.app_metadata.beneficiary === undefined) {
+    return false;
+  }
+  return decoded.app_metadata.beneficiary;
+}

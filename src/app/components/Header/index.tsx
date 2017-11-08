@@ -6,14 +6,17 @@ import { bindActionCreators } from 'redux';
 import { IStore } from 'redux/IStore';
 import { clearAuth } from 'helpers/auth';
 const { connect } = require('react-redux');
-import {isUserLoggedIn} from 'modules/user';
+import {isUserLoggedIn, isBeneficiaryUser} from 'modules/user';
+
 interface IProps extends IURLConnector  {
   currentURL?: string;
   isLoggedIn?: boolean;
+  isBeneficiary?: boolean;
 }
 
 @connect((state: IStore) => ({
   isLoggedIn: isUserLoggedIn(state.user),
+  isBeneficiary: isBeneficiaryUser(state.user),
   currentURL: state.routing.locationBeforeTransitions.pathname,
 }), (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
@@ -48,7 +51,7 @@ class Header extends React.Component<IProps, any> {
   }
 
   public render() {
-      if(this.props.isLoggedIn) {
+      if(this.props.isLoggedIn && this.props.isBeneficiary !== true) {
         return(
           <Menu size="massive">
           <Menu.Item name="home" active={this.isActive('/', true)} onClick={this.handleClick('/')} />
@@ -62,7 +65,15 @@ class Header extends React.Component<IProps, any> {
           </Menu.Menu>
         </Menu>
       );
-      }else {
+    } else if (this.props.isLoggedIn && this.props.isBeneficiary) {
+        return(
+          <Menu size="massive">
+            <Menu.Menu position="right">
+              <Menu.Item name="log out" onClick={this.logOut()} />
+            </Menu.Menu>
+          </Menu>
+        );
+    } else {
         return(
           <Menu size="massive">
             <Menu.Item name="Impactasaurus" active={this.isActive('/', true)} onClick={this.handleClick('/')} />

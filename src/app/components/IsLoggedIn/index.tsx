@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getToken, getExpiryDate, getUserID, saveAuth } from 'helpers/auth';
+import { getToken, getExpiryDate, getUserID, saveAuth, isBeneficiaryUser } from 'helpers/auth';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import { RouterState } from '@types/react-router-redux';
@@ -127,7 +127,7 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
       ReactGA.set({
         userId: userID,
       });
-      this.props.setUserDetails(userID);
+      this.props.setUserDetails(userID, isBeneficiaryUser());
     }
   }
 
