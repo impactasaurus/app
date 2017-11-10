@@ -70,7 +70,7 @@ export function deleteCategory<T>(component) {
 
 export function setCategory<T>(component) {
   return graphql<any, T>(gql`
-  mutation ($outcomeSetID: String!, $questionID: String!, $categoryID: String) {
+  mutation ($outcomeSetID: ID!, $questionID: ID!, $categoryID: ID) {
     setCategory: SetCategory(outcomeSetID: $outcomeSetID, questionID: $questionID, categoryID: $categoryID) {
       ...defaultOutcomeSet
     }

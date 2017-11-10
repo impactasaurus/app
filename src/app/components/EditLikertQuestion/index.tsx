@@ -18,7 +18,7 @@ class EditLikertQuestionInner extends React.Component<IProps, any> {
   }
 
   private editQuestion(q: ILikertQuestionForm): Promise<IOutcomeSet> {
-    return this.props.editLikertQuestion(this.props.QuestionSetID, this.props.question.id, q.question, q.minLabel, q.maxLabel, q.description);
+    return this.props.editLikertQuestion(this.props.QuestionSetID, this.props.question.id, q.question, q.minLabel, q.maxLabel, q.description, q.categoryID);
   }
 
   public render() {
@@ -28,6 +28,7 @@ class EditLikertQuestionInner extends React.Component<IProps, any> {
       <LikertQuestionForm
         edit
         newQuestion={q.question}
+        categoryID={q.categoryID}
         description={q.description}
         leftLabel={q.minLabel}
         rightLabel={q.maxLabel}

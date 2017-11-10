@@ -1,8 +1,8 @@
 import * as React from 'react';
-import {IQuestionMutation, addLikertQuestion} from 'apollo/modules/questions';
 import {IOutcomeSet} from 'models/outcomeSet';
-import {LikertQuestionForm} from '../LikertQuestionForm/index';
+import {LikertQuestionForm} from 'components/LikertQuestionForm';
 import {ILikertQuestionForm} from 'models/question';
+import {IQuestionMutation, addLikertQuestion} from 'apollo/modules/questions';
 
 interface IProps extends IQuestionMutation {
   QuestionSetID: string;
@@ -17,7 +17,7 @@ class NewLikertQuestionInner extends React.Component<IProps, any> {
   }
 
   private addQuestion(q: ILikertQuestionForm): Promise<IOutcomeSet> {
-    return this.props.addLikertQuestion(this.props.QuestionSetID, q.question, q.minValue, q.maxValue, q.minLabel, q.maxLabel, q.description);
+    return this.props.addLikertQuestion(this.props.QuestionSetID, q.question, q.minValue, q.maxValue, q.minLabel, q.maxLabel, q.description, q.categoryID);
   }
 
   public render() {
@@ -32,4 +32,5 @@ class NewLikertQuestionInner extends React.Component<IProps, any> {
 }
 
 const NewLikertQuestion = addLikertQuestion<IProps>(NewLikertQuestionInner);
+
 export { NewLikertQuestion };

@@ -1,17 +1,20 @@
 import * as React from 'react';
-import { Button, ButtonProps, Message, Input } from 'semantic-ui-react';
-import { Likert} from 'components/Likert';
+import { Button, ButtonProps, Message, Input, Select } from 'semantic-ui-react';
+import { Likert } from 'components/Likert';
 import {IOutcomeSet} from 'models/outcomeSet';
+import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import './style.less';
 import {ILikertQuestionForm} from 'models/question';
 const ReactGA = require('react-ga');
 
 interface IProps  {
   QuestionSetID: string;
+  data?: IOutcomeResult;
   OnSuccess: ()=>void;
   onSubmitButtonClick: (question: ILikertQuestionForm)=>Promise<IOutcomeSet>;
   edit?: boolean;
   newQuestion?: string;
+  categoryID?: string;
   description?: string;
   leftLabel?: string;
   rightLabel?: string;
@@ -23,6 +26,7 @@ interface IProps  {
 interface IState {
   newQuestionError?: string;
   newQuestion?: string;
+  categoryID?: string;
   description?: string;
   leftLabel?: string;
   rightLabel?: string;
@@ -31,13 +35,14 @@ interface IState {
   saving?: boolean;
 }
 
-class LikertQuestionForm extends React.Component<IProps, IState> {
+class LikertQuestionFormInner extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
     this.state = {
       saving: false,
       newQuestion: this.props.newQuestion || '',
+      categoryID: this.props.categoryID || null,
       description: this.props.description || '',
       leftLabel: this.props.leftLabel || '',
       rightLabel: this.props.rightLabel || '',
@@ -46,6 +51,7 @@ class LikertQuestionForm extends React.Component<IProps, IState> {
     };
     this.onSubmitButtonClick = this.onSubmitButtonClick.bind(this);
     this.setNewQuestion = this.setNewQuestion.bind(this);
+    this.setCategory = this.setCategory.bind(this);
     this.setDescription = this.setDescription.bind(this);
     this.setLeftLabel = this.setLeftLabel.bind(this);
     this.setRightLabel = this.setRightLabel.bind(this);
@@ -98,6 +104,7 @@ class LikertQuestionForm extends React.Component<IProps, IState> {
 
     this.props.onSubmitButtonClick({
       question: this.state.newQuestion,
+      categoryID: this.state.categoryID,
       minValue: lv,
       maxValue: rv,
       minLabel: this.state.leftLabel,
@@ -122,6 +129,12 @@ class LikertQuestionForm extends React.Component<IProps, IState> {
   private setNewQuestion(_, data) {
     this.setState({
       newQuestion: data.value,
+    });
+  }
+
+  private setCategory(_, data) {
+    this.setState({
+      categoryID: data.value,
     });
   }
 
@@ -155,6 +168,22 @@ class LikertQuestionForm extends React.Component<IProps, IState> {
     });
   }
 
+  private getCategoryOptions() {
+    const categories = this.props.data.getOutcomeSet.categories.map((os) => {
+      return {
+        key: os.id,
+        value: os.id,
+        text: os.name,
+      };
+    });
+    categories.unshift({
+      key: null,
+      value: null,
+      text: 'No Category',
+    });
+    return categories;
+  }
+
   public render() {
     const addProps: ButtonProps = {};
     if (this.state.saving) {
@@ -167,7 +196,10 @@ class LikertQuestionForm extends React.Component<IProps, IState> {
           <Message.Header>New Likert Question</Message.Header>
           <div className="new-likert-form">
             <div className="section upper">
-              <Input className="full" autoFocus type="text" placeholder="Question" onChange={this.setNewQuestion} value={this.state.newQuestion} />
+              <Input className="full question-name" autoFocus type="text" placeholder="Question" onChange={this.setNewQuestion} value={this.state.newQuestion} />
+              <div className="category">
+                <Select placeholder="Category (optional)" options={this.getCategoryOptions()} onChange={this.setCategory} defaultValue={this.state.categoryID} />
+              </div>
             </div>
             <div className="section upper">
               <Input className="full" type="text" placeholder="Description (optional)" onChange={this.setDescription} value={this.state.description} />
@@ -197,5 +229,7 @@ class LikertQuestionForm extends React.Component<IProps, IState> {
     );
   }
 }
+
+const LikertQuestionForm = getOutcomeSet<IProps>((props) => props.QuestionSetID)(LikertQuestionFormInner);
 
 export { LikertQuestionForm };
