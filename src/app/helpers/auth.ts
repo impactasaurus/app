@@ -75,3 +75,11 @@ export function isBeneficiaryUser(): boolean {
   }
   return decoded.app_metadata.beneficiary;
 }
+
+export function getBeneficiaryScope(): string|null {
+  const decoded = getDecodedToken();
+  if (decoded === null || decoded.app_metadata === undefined || decoded.app_metadata.scope === undefined) {
+    return null;
+  }
+  return decoded.app_metadata.scope;
+}
