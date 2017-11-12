@@ -3,13 +3,15 @@ import { saveAuth, isBeneficiaryUser, getBeneficiaryScope } from 'helpers/auth';
 import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
+import {getJWT, IJWTResult} from 'apollo/modules/jwt';
 import { Message, Loader, Grid } from 'semantic-ui-react';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
   params: {
-      jwt: string,
+      jti: string,
   };
+  data: IJWTResult;
 };
 
 interface IState {
@@ -19,7 +21,7 @@ interface IState {
 @connect(undefined, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
-class BeneficiaryRedirect extends React.Component<IProps, IState> {
+class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
@@ -28,8 +30,12 @@ class BeneficiaryRedirect extends React.Component<IProps, IState> {
     };
   }
 
-  public componentDidMount() {
-    saveAuth(this.props.params.jwt);
+  public componentWillReceiveProps(nextProps: IProps) {
+    if (nextProps.data.getJWT === this.props.data.getJWT ||
+      nextProps.data.getJWT === undefined || nextProps.data.getJWT === null) {
+      return;
+    }
+    saveAuth(nextProps.data.getJWT);
     if (isBeneficiaryUser() === false) {
       this.setState({
         error: true,
@@ -47,7 +53,7 @@ class BeneficiaryRedirect extends React.Component<IProps, IState> {
   }
 
   public render() {
-    if (this.state.error === false) {
+    if (this.props.data.loading || (this.props.data.error === undefined && this.state.error === false)) {
       return (
         <Loader active={true} inline="centered" />
       );
@@ -57,7 +63,7 @@ class BeneficiaryRedirect extends React.Component<IProps, IState> {
         <Grid.Column>
           <Message error={true}>
             <Message.Header>Error</Message.Header>
-            <div>This link is not valid. Please request a new link</div>
+            <div>This link is not valid. Please try refreshing, if it continues to fail, please request a new link</div>
           </Message>
         </Grid.Column>
       </Grid>
@@ -65,4 +71,5 @@ class BeneficiaryRedirect extends React.Component<IProps, IState> {
   }
 }
 
-export {BeneficiaryRedirect}
+const BeneficiaryRedirect = getJWT<IProps>((props) => props.params.jti)(BeneficiaryRedirectInner);
+export { BeneficiaryRedirect }
