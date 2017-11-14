@@ -13,3 +13,4 @@ export { Organisation } from './Organisation';
 export {Account} from './Account';
 export {Report} from './Report';
 export {ServiceReport} from './ServiceReport';
+export {BeneficiaryRedirect} from './BeneficiaryRedirect';

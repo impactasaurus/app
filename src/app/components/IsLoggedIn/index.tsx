@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getToken, getExpiryDate, getUserID, saveAuth } from 'helpers/auth';
+import { getToken, getExpiryDate, getUserID, saveAuth, isBeneficiaryUser } from 'helpers/auth';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import { RouterState } from '@types/react-router-redux';
@@ -44,6 +44,7 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
     this.setupRefreshTrigger = this.setupRefreshTrigger.bind(this);
     this.trackUser = this.trackUser.bind(this);
     this.listenForRefresh = this.listenForRefresh.bind(this);
+    this.isPublicPage = this.isPublicPage.bind(this);
   }
 
   public componentDidMount() {
@@ -52,6 +53,15 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
 
   public componentDidUpdate() {
     this.setup();
+  }
+
+  private isPublicPage(): boolean {
+    for (const p of config.publicPages) {
+      if (p.test(this.props.routeState.locationBeforeTransitions.pathname)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private sendToLogin() {
@@ -127,7 +137,7 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
       ReactGA.set({
         userId: userID,
       });
-      this.props.setUserDetails(userID);
+      this.props.setUserDetails(userID, isBeneficiaryUser());
     }
   }
 
@@ -139,7 +149,9 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
       this.props.setLoggedInStatus(isLoggedIn);
     }
     if (isLoggedIn === false) {
-      this.sendToLogin();
+      if (this.isPublicPage() === false) {
+        this.sendToLogin();
+      }
       return;
     }
     this.setupRefreshTrigger();

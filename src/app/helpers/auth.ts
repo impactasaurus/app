@@ -2,11 +2,8 @@ export function getToken(): string|null {
   return localStorage.getItem('token');
 }
 
-export function saveAuth(token: string, profile?: auth0.Auth0UserProfile) {
+export function saveAuth(token: string) {
   localStorage.setItem('token', token);
-  if (profile) {
-    localStorage.setItem('profile', JSON.stringify(profile));
-  }
 }
 
 export function clearAuth() {
@@ -64,10 +61,25 @@ export function getExpiryDate(): Date|null {
 }
 
 export function getUserID(): string|null {
-  const storedProfile = localStorage.getItem('profile');
-  if (storedProfile === null) {
+  const decoded = getDecodedToken();
+  if (decoded === null || decoded.sub === undefined) {
     return null;
   }
-  const profile: auth0.Auth0UserProfile = JSON.parse(storedProfile);
-  return profile.user_id;
+  return decoded.sub;
+}
+
+export function isBeneficiaryUser(): boolean {
+  const decoded = getDecodedToken();
+  if (decoded === null || decoded.app_metadata === undefined || decoded.app_metadata.beneficiary === undefined) {
+    return false;
+  }
+  return decoded.app_metadata.beneficiary;
+}
+
+export function getBeneficiaryScope(): string|null {
+  const decoded = getDecodedToken();
+  if (decoded === null || decoded.app_metadata === undefined || decoded.app_metadata.scope === undefined) {
+    return null;
+  }
+  return decoded.app_metadata.scope;
 }
