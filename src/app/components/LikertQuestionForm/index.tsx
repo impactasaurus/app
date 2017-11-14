@@ -69,10 +69,10 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
   private rightValueInt = (s: IState) => parseInt(s.rightValue, 10);
   private noop = () => {};
 
-  private logQuestionCreatedGAEvent() {
+  private logQuestionGAEvent(action) {
     ReactGA.event({
       category: 'question',
-      action: 'created',
+      action,
       label: 'likert',
     });
   }
@@ -112,7 +112,7 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
       description: this.state.description,
     })
       .then(() => {
-        this.logQuestionCreatedGAEvent();
+        this.logQuestionGAEvent(`${this.props.edit ? 'edited' : 'created'}`);
         this.setState({
           saving: false,
         });
@@ -192,9 +192,9 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
     }
     return (
       <Message>
-        <Message.Content>
-          <Message.Header>New Likert Question</Message.Header>
-          <div className="new-likert-form">
+        <Message.Content className="likert-form-container">
+          <Message.Header>{this.props.edit ? 'Edit Likert Question' : 'New Likert Question'}</Message.Header>
+          <div className="likert-form">
             <div className="section upper">
               <Input className="full question-name" autoFocus type="text" placeholder="Question" onChange={this.setNewQuestion} value={this.state.newQuestion} />
               <div className="category">

@@ -31,7 +31,6 @@ export const fragment = gql`
   fragment defaultQuestion on QuestionInterface {
     id,
     question,
-    categoryID,
     description,
     archived,
     categoryID,
