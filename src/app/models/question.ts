@@ -17,6 +17,16 @@ export interface ILikertScale extends IQuestion {
 
 export type Question = ILikertScale;
 
+export interface ILikertQuestionForm {
+  question?: string;
+  categoryID?: string;
+  description?: string;
+  minLabel?: string;
+  maxLabel?: string;
+  minValue?: number;
+  maxValue?: number;
+}
+
 export const fragment = gql`
   fragment defaultQuestion on QuestionInterface {
     id,
