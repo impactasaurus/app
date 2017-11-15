@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { saveAuth, isBeneficiaryUser, getBeneficiaryScope } from 'helpers/auth';
+import { saveAuth, isBeneficiaryUser, getBeneficiaryScope, getExpiryDateOfToken } from 'helpers/auth';
 import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
@@ -16,6 +16,7 @@ interface IProps extends IURLConnector {
 
 interface IState {
   error: boolean;
+  expired: boolean;
 }
 
 @connect(undefined, (dispatch) => ({
@@ -27,6 +28,7 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       error: false,
+      expired: false,
     };
   }
 
@@ -35,10 +37,20 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
       nextProps.data.getJWT === undefined || nextProps.data.getJWT === null) {
       return;
     }
+    const token = nextProps.data.getJWT;
+    const expires = getExpiryDateOfToken(token);
+    if (expires === null || expires < new Date()) {
+      this.setState({
+        error: true,
+        expired: true,
+      });
+      return;
+    }
     saveAuth(nextProps.data.getJWT);
     if (isBeneficiaryUser() === false) {
       this.setState({
         error: true,
+      expired: false,
       });
       return;
     }
@@ -46,10 +58,24 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
     if (scope === null) {
       this.setState({
         error: true,
+      expired: false,
       });
       return;
     }
-    this.props.setURL(`meeting/${scope}`);
+    this.props.setURL(`/meeting/${scope}`);
+  }
+
+  private renderError(message: string): JSX.Element {
+    return (
+      <Grid container columns={1} id="home">
+        <Grid.Column>
+          <Message error={true}>
+            <Message.Header>Error</Message.Header>
+            <div>{message}</div>
+          </Message>
+        </Grid.Column>
+      </Grid>
+    );
   }
 
   public render() {
@@ -58,16 +84,10 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
         <Loader active={true} inline="centered" />
       );
     }
-    return (
-      <Grid container columns={1} id="home">
-        <Grid.Column>
-          <Message error={true}>
-            <Message.Header>Error</Message.Header>
-            <div>This link is not valid. Please try refreshing, if it continues to fail, please request a new link</div>
-          </Message>
-        </Grid.Column>
-      </Grid>
-    );
+    if (this.state.expired) {
+      return this.renderError('This link has expired. Please request a new link');
+    }
+    return this.renderError('This link is not valid. Please try refreshing, if it continues to fail, please request a new link');
   }
 }
 

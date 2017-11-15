@@ -10,8 +10,8 @@ export function clearAuth() {
   localStorage.clear();
 }
 
-function getDecodedToken() {
-  const token = getToken();
+function getDecodedToken(inputToken?: string) {
+  const token = inputToken || getToken();
 
   const urlBase64Decode = (str) => {
     let output = str.replace(/-/g, '+').replace(/_/g, '/');
@@ -52,12 +52,16 @@ function getDecodedToken() {
   }
 }
 
-export function getExpiryDate(): Date|null {
-  const decoded = getDecodedToken();
+export function getExpiryDateOfToken(token: string): Date|null {
+  const decoded = getDecodedToken(token);
   if (decoded === null || decoded.exp === undefined) {
     return null;
   }
   return new Date(decoded.exp * 1000);
+}
+
+export function getExpiryDate(): Date|null {
+  return getExpiryDateOfToken(getToken());
 }
 
 export function getUserID(): string|null {
