@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import {getJWT, IJWTResult} from 'apollo/modules/jwt';
 import { Message, Loader, Grid } from 'semantic-ui-react';
 const { connect } = require('react-redux');
+const ReactGA = require('react-ga');
 
 interface IProps extends IURLConnector {
   params: {
@@ -32,6 +33,14 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
     };
   }
 
+  private logSuccessfulBenLogin() {
+    ReactGA.event({
+      category: 'beneficiary',
+      action: 'login',
+      label: 'jti',
+    });
+  }
+
   public componentWillReceiveProps(nextProps: IProps) {
     if (nextProps.data.getJWT === this.props.data.getJWT ||
       nextProps.data.getJWT === undefined || nextProps.data.getJWT === null) {
@@ -50,7 +59,7 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
     if (isBeneficiaryUser() === false) {
       this.setState({
         error: true,
-      expired: false,
+        expired: false,
       });
       return;
     }
@@ -58,10 +67,11 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
     if (scope === null) {
       this.setState({
         error: true,
-      expired: false,
+        expired: false,
       });
       return;
     }
+    this.logSuccessfulBenLogin();
     this.props.setURL(`/meeting/${scope}`);
   }
 
