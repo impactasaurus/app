@@ -1,6 +1,7 @@
 import {gql, graphql} from 'react-apollo';
 import {IOutcomeSet, fragment as osFragment} from 'models/outcomeSet';
 import {mutationResultExtractor} from 'helpers/apollo';
+import {clearCacheOfAllMeetings} from 'apollo/modules/meetings';
 
 export function addLikertQuestion<T>(component) {
   return graphql<any, T>(gql`
@@ -52,6 +53,7 @@ export function editLikertQuestion<T>(component) {
           maxLabel,
           categoryID,
         },
+        update: clearCacheOfAllMeetings(),
       }).then(mutationResultExtractor<IOutcomeSet>('setCategory')),
     }),
   })(component);
