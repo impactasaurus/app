@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { saveAuth, isBeneficiaryUser, getBeneficiaryScope, getExpiryDateOfToken } from 'helpers/auth';
+import {isUserLoggedIn, isBeneficiaryUser as isCurrentUserABeneficiary} from 'modules/user';
+import { IStore } from 'redux/IStore';
 import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import {getJWT, IJWTResult} from 'apollo/modules/jwt';
-import { Message, Loader, Grid } from 'semantic-ui-react';
+import { Message, Loader, Grid, Button } from 'semantic-ui-react';
 const { connect } = require('react-redux');
 const ReactGA = require('react-ga');
 
@@ -12,15 +14,21 @@ interface IProps extends IURLConnector {
   params: {
       jti: string,
   };
+  isLoggedIn?: boolean;
+  isBeneficiary?: boolean;
   data: IJWTResult;
 };
 
 interface IState {
   error: boolean;
   expired: boolean;
+  confirmed?: boolean;
 }
 
-@connect(undefined, (dispatch) => ({
+@connect((state: IStore) => ({
+  isLoggedIn: isUserLoggedIn(state.user),
+  isBeneficiary: isCurrentUserABeneficiary(state.user),
+}), (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
 class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
@@ -31,6 +39,7 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
       error: false,
       expired: false,
     };
+    this.confirmed = this.confirmed.bind(this);
   }
 
   private logSuccessfulBenLogin() {
@@ -41,12 +50,14 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
     });
   }
 
-  public componentWillReceiveProps(nextProps: IProps) {
-    if (nextProps.data.getJWT === this.props.data.getJWT ||
-      nextProps.data.getJWT === undefined || nextProps.data.getJWT === null) {
+  private performLoginProcess(props: IProps) {
+    if (props.data.getJWT === undefined || props.data.getJWT === null) {
       return;
     }
-    const token = nextProps.data.getJWT;
+    if (this.props.isLoggedIn && !this.props.isBeneficiary && !this.state.confirmed) {
+      return;
+    }
+    const token = props.data.getJWT;
     const expires = getExpiryDateOfToken(token);
     if (expires === null || expires < new Date()) {
       this.setState({
@@ -55,7 +66,7 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
       });
       return;
     }
-    saveAuth(nextProps.data.getJWT);
+    saveAuth(token);
     if (isBeneficiaryUser() === false) {
       this.setState({
         error: true,
@@ -75,9 +86,25 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
     this.props.setURL(`/meeting/${scope}`);
   }
 
+  public componentDidUpdate(prevProps: IProps, prevState: IState) {
+    // looking for the trigger state where either data is received or confirmation is received
+    if (prevProps.data.getJWT === this.props.data.getJWT && prevState.confirmed === this.state.confirmed) {
+      return;
+    }
+    this.performLoginProcess(this.props);
+  }
+
+  private confirmed() {
+    this.setState({
+      error: this.state.error,
+      expired: this.state.expired,
+      confirmed: true,
+    });
+  }
+
   private renderError(message: string): JSX.Element {
     return (
-      <Grid container columns={1} id="home">
+      <Grid container columns={1} id="benRedirect">
         <Grid.Column>
           <Message error={true}>
             <Message.Header>Error</Message.Header>
@@ -88,7 +115,25 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
     );
   }
 
+  private confirmUserWantsToContinue(): JSX.Element {
+    return (
+      <Grid container columns={1} id="benRedirect">
+        <Grid.Column>
+          <Message warning={true}>
+            <Message.Header>Warning</Message.Header>
+            <div>Using this link will log you out of Impactasaurus</div>
+            <br />
+            <Button onClick={this.confirmed}>Continue</Button>
+          </Message>
+        </Grid.Column>
+      </Grid>
+    );
+  }
+
   public render() {
+    if (this.props.isLoggedIn && !this.props.isBeneficiary && !this.state.confirmed) {
+      return this.confirmUserWantsToContinue();
+    }
     if (this.props.data.loading || (this.props.data.error === undefined && this.state.error === false)) {
       return (
         <Loader active={true} inline="centered" />

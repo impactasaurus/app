@@ -121,7 +121,7 @@ class ReviewInner extends React.Component<IProps, any> {
     return (
       <Grid container columns={1}>
         <Grid.Column>
-            <Button onClick={this.handleClick('/review')} content="Back" icon="left arrow" labelPosition="left" primary id="back-button"/>
+          <Button onClick={this.handleClick('/review')} content="Back" icon="left arrow" labelPosition="left" primary id="back-button"/>
           <div id="review">
             <Helmet>
               <title>{this.props.params.id + ' Review'}</title>
