@@ -18,6 +18,6 @@ export default (
     <Route path="meeting/:id" component={Meeting} />
     <Route path="report" component={Report} />
     <Route path="report/service/:questionSetID/:start/:end" component={ServiceReport} />
-    <Route path ="jwt/:jwt" component={BeneficiaryRedirect} />
+    <Route path ="jti/:jti" component={BeneficiaryRedirect} />
   </Route>
 );
