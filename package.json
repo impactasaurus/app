@@ -124,7 +124,7 @@
     "rc-slider": "8.2.0",
     "react": "15.6.1",
     "react-addons-shallow-compare": "15.6.0",
-    "react-apollo": "1.4.14",
+    "react-apollo": "1.4.15",
     "react-css-modules": "4.1.0",
     "react-dates": "12.5.1",
     "react-dom": "15.6.1",

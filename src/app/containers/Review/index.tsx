@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { Grid, Loader, Button } from 'semantic-ui-react';
+import { Grid, Loader, Button, Message } from 'semantic-ui-react';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import {VizControlPanel} from 'components/VizControlPanel';
 import {setURL} from 'modules/url';
@@ -99,6 +99,14 @@ class ReviewInner extends React.Component<IProps, any> {
     if (this.props.data.loading) {
       return (
         <Loader active={true} inline="centered" />
+      );
+    }
+    if (this.props.data.error !== undefined) {
+      return (
+        <Message error={true}>
+          <Message.Header>Error</Message.Header>
+          <div>Failed to load assessments</div>
+        </Message>
       );
     }
     return (
