@@ -13,6 +13,7 @@ import {getMeetings, IMeetingResult} from 'apollo/modules/meetings';
 import {IMeeting} from 'models/meeting';
 import {MeetingRadar} from 'components/MeetingRadar';
 import {MeetingTable} from 'components/MeetingTable';
+import {isBeneficiaryUser} from 'modules/user';
 import './style.less';
 
 interface IProps extends IURLConnector {
@@ -24,6 +25,7 @@ interface IProps extends IURLConnector {
   selectedQuestionSetID?: string;
   data?: IMeetingResult;
   isCategoryAgPossible?: boolean;
+  isBeneficiary: boolean;
 };
 
 function isCategoryAggregationAvailable(meetings: IMeeting[], selectedQuestionSetID: string|undefined): boolean {
@@ -47,6 +49,7 @@ function isCategoryAggregationAvailable(meetings: IMeeting[], selectedQuestionSe
     agg: getAggregation(state.pref, canCatAg),
     isCategoryAgPossible: canCatAg,
     selectedQuestionSetID,
+    isBeneficiary: isBeneficiaryUser(state.user),
   };
 }, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
@@ -126,10 +129,15 @@ class ReviewInner extends React.Component<IProps, any> {
       return (<div />);
     }
 
+    let backButton: JSX.Element = (<div />);
+    if (this.props.isBeneficiary === false) {
+      backButton = (<Button onClick={this.handleClick('/review')} content="Back" icon="left arrow" labelPosition="left" primary id="back-button"/>);
+    }
+
     return (
       <Grid container columns={1}>
         <Grid.Column>
-          <Button onClick={this.handleClick('/review')} content="Back" icon="left arrow" labelPosition="left" primary id="back-button"/>
+          {backButton}
           <div id="review">
             <Helmet>
               <title>{this.props.params.id + ' Review'}</title>
