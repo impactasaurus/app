@@ -9,6 +9,7 @@ import { bindActionCreators } from 'redux';
 import * as moment from 'moment';
 import { Button, Select, Input, Grid, ButtonProps, SelectProps } from 'semantic-ui-react';
 import {DateTimePicker} from 'components/DateTimePicker';
+import {AssessmentTypeSelector} from 'components/AssessmentTypeSelector';
 import {Hint} from 'components/Hint';
 import './style.less';
 const strings = require('./../../../strings.json');
@@ -149,15 +150,18 @@ class ConductInner extends React.Component<IProp, IState> {
     );
   }
 
+  private printer(x) {
+    console.log(x);
+  }
+
   public render() {
     const { data } = this.props;
     return (
       <Grid container columns={1} id="conduct">
         <Grid.Column>
-          <Helmet>
-            <title>Conduct Meeting</title>
-          </Helmet>
-          <h1>Conduct Meeting</h1>
+          <Helmet title="Assessment"/>
+          <h1>Assessment</h1>
+          <AssessmentTypeSelector typeSelector={this.printer}/>
           {this.renderNewMeetingControl(data.allOutcomeSets)}
         </Grid.Column>
       </Grid>

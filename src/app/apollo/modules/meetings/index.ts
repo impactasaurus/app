@@ -83,7 +83,7 @@ export const newRemoteMeeting = graphql(gql`
         variables: {
             beneficiaryID,
             outcomeSetID,
-            daysToComplete,
+            daysToComplete: Math.ceil(daysToComplete),
         },
         refetchQueries: [{
           query: getMeetingsGQL,
