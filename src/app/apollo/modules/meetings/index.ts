@@ -71,6 +71,31 @@ export const newMeeting = graphql(gql`
     }),
   });
 
+export const newRemoteMeeting = graphql(gql`
+  mutation($beneficiaryID: String!, $outcomeSetID: String!, $daysToComplete: Int!) {
+    newRemoteMeeting: AddRemoteMeeting(beneficiaryID:$beneficiaryID, outcomeSetID:$outcomeSetID, daysToComplete:$daysToComplete){
+      JTI
+    }
+  }
+`, {
+    props: ({ mutate }) => ({
+      newRemoteMeeting: (beneficiaryID: string, outcomeSetID: string, daysToComplete: number): Promise<string> => mutate({
+        variables: {
+            beneficiaryID,
+            outcomeSetID,
+            daysToComplete: Math.ceil(daysToComplete),
+        },
+        refetchQueries: [{
+          query: getMeetingsGQL,
+          variables: { beneficiaryID },
+        }],
+      }).then(mutationResultExtractor<{
+        JTI: string,
+      }>('newRemoteMeeting'))
+      .then((x) => x.JTI),
+    }),
+  });
+
 export function addLikertAnswer<T>(component) {
   return graphql<any, T>(gql`
   mutation ($meetingID: String!, $questionID: String!, $value: Int!) {
@@ -98,5 +123,6 @@ export interface IMeetingResult extends QueryProps {
 
 export interface IMeetingMutation {
     newMeeting(beneficiaryID: string, outcomeSetID: string, conducted: Date): Promise<IMeeting>;
+    newRemoteMeeting(beneficiaryID: string, outcomeSetID: string, daysToComplete: number): Promise<string>;
     addLikertAnswer(meetingID: string, questionID: string, value: number): Promise<IMeeting>;
 }
