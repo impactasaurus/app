@@ -9,6 +9,7 @@ var config = {
 
   app: {
     api: "https://impact-server.herokuapp.com/v1/graphql",
+    root: "https://app.impactasaurus.org",
     head: {
       title: 'Impactasaurus',
       titleTemplate: '%s | Impactasaurus',

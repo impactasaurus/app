@@ -1,22 +1,17 @@
 import * as React from 'react';
-import { Helmet } from 'react-helmet';
-import {IOutcomeResult, IOutcomeMutation, allOutcomeSets} from 'apollo/modules/outcomeSets';
-import {IMeetingMutation, newMeeting} from 'apollo/modules/meetings';
-import {IOutcomeSet} from 'models/outcomeSet';
-import {IURLConnector} from 'redux/modules/url';
-import {setURL} from 'modules/url';
-import { bindActionCreators } from 'redux';
-import * as moment from 'moment';
-import { Button, Select, Input, Grid, ButtonProps, SelectProps } from 'semantic-ui-react';
+import { Button, Select, Input, ButtonProps, SelectProps } from 'semantic-ui-react';
 import {DateTimePicker} from 'components/DateTimePicker';
-import {AssessmentTypeSelector} from 'components/AssessmentTypeSelector';
 import {Hint} from 'components/Hint';
-import './style.less';
+import {IOutcomeResult, allOutcomeSets} from 'apollo/modules/outcomeSets';
+import {IOutcomeSet} from 'models/outcomeSet';
+import {IAssessmentConfig} from 'models/assessment';
+import * as moment from 'moment';
 const strings = require('./../../../strings.json');
-const { connect } = require('react-redux');
 
-interface IProp extends IOutcomeMutation, IMeetingMutation, IURLConnector {
-  data: IOutcomeResult;
+interface IProps  {
+  showDatePicker: boolean;
+  onSubmit: (config: IAssessmentConfig) => Promise<void>;
+  data?: IOutcomeResult;
 }
 
 interface IState {
@@ -28,23 +23,21 @@ interface IState {
   saving?: boolean;
 }
 
-@connect(undefined, (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-}))
-class ConductInner extends React.Component<IProp, IState> {
+class AssessmentConfigInner extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
     this.state = {
       startMeetingError: undefined,
+      dateSelectionError: undefined,
       conducted: moment(),
       saving: false,
     };
-    this.renderNewMeetingControl = this.renderNewMeetingControl.bind(this);
     this.startMeeting = this.startMeeting.bind(this);
     this.setOS = this.setOS.bind(this);
     this.setBenID = this.setBenID.bind(this);
     this.setConductedDate = this.setConductedDate.bind(this);
+    this.renderDatePicker = this.renderDatePicker.bind(this);
   }
 
   private validateStartMeetingOptions(beneficiaryID?: string, outcomeSetID?: string): string|null {
@@ -71,13 +64,14 @@ class ConductInner extends React.Component<IProp, IState> {
     this.setState({
       saving: true,
     });
-    this.props.newMeeting(benID, osID, conducted.toDate())
-    .then((meeting) => {
-      this.props.setURL(`/meeting/${meeting.id}`);
+    this.props.onSubmit({
+      beneficiaryID: benID,
+      outcomeSetID: osID,
+      date: this.props.showDatePicker ? conducted.toDate() : null,
     })
-    .catch((e: Error)=> {
+    .catch((e: Error|string)=> {
       this.setState({
-        startMeetingError: e.message,
+        startMeetingError: (e instanceof Error) ? e.message : e,
         saving: false,
       });
     });
@@ -122,7 +116,23 @@ class ConductInner extends React.Component<IProp, IState> {
     });
   }
 
-  private renderNewMeetingControl(outcomeSets: IOutcomeSet[]|undefined): JSX.Element {
+  private renderDatePicker(): JSX.Element {
+    if (this.props.showDatePicker === false) {
+      return (<div />);
+    }
+    const conductedCopy = this.state.conducted.clone();
+    return (
+      <div>
+        <h3 className="label">Date Conducted</h3>
+        <span className="conductedDate">{this.state.conducted.format('llll')}</span>
+        <DateTimePicker moment={conductedCopy} onChange={this.setConductedDate}/>
+        <p>{this.state.dateSelectionError}</p>
+      </div>
+    );
+  }
+
+  public render(): JSX.Element {
+    const outcomeSets = this.props.data.allOutcomeSets;
     const startProps: ButtonProps = {};
     if (this.state.saving) {
       startProps.loading = true;
@@ -133,41 +143,22 @@ class ConductInner extends React.Component<IProp, IState> {
       selectProps.loading = true;
       selectProps.disabled = true;
     }
-    const conductedCopy = this.state.conducted.clone();
     return (
       <div className="impactform">
-        <span className="label"><Hint text={strings.beneficiaryIDExplanation} /><h3 id="benID">Beneficiary ID</h3></span>
+        <span className="label">
+          <Hint text={strings.beneficiaryIDExplanation} />
+          <h3 id="benID">Beneficiary ID</h3>
+        </span>
         <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID} />
         <h3 className="label">Question Set</h3>
         <Select {...selectProps} placeholder="Question Set" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
-        <h3 className="label">Date Conducted</h3>
-        <span className="conductedDate">{this.state.conducted.format('llll')}</span>
-        <DateTimePicker moment={conductedCopy} onChange={this.setConductedDate}/>
-        <p>{this.state.dateSelectionError}</p>
+        {this.renderDatePicker()}
         <Button {...startProps} className="submit" onClick={this.startMeeting}>Start</Button>
         <p>{this.state.startMeetingError}</p>
       </div>
     );
   }
-
-  private printer(x) {
-    console.log(x);
-  }
-
-  public render() {
-    const { data } = this.props;
-    return (
-      <Grid container columns={1} id="conduct">
-        <Grid.Column>
-          <Helmet title="Assessment"/>
-          <h1>Assessment</h1>
-          <AssessmentTypeSelector typeSelector={this.printer}/>
-          {this.renderNewMeetingControl(data.allOutcomeSets)}
-        </Grid.Column>
-      </Grid>
-    );
-  }
 }
 
-const Conduct = allOutcomeSets<IProp>(newMeeting(ConductInner));
-export { Conduct }
+const AssessmentConfig = allOutcomeSets<IProps>(AssessmentConfigInner);
+export {AssessmentConfig}

@@ -34,7 +34,6 @@ class AssessmentTypeSelector extends React.Component<IProps, any> {
             <Icon name="comments outline" size="big" />
           </div>
           <Card.Content>
-
             <Card.Header>
               Live
             </Card.Header>
@@ -46,7 +45,7 @@ class AssessmentTypeSelector extends React.Component<IProps, any> {
             </Card.Description>
           </Card.Content>
           <Card.Content extra>
-            <Button onClick={this.typeClickFn(AssessmentType.LIVE)}>Select</Button>
+            <Button primary onClick={this.typeClickFn(AssessmentType.live)}>Select</Button>
           </Card.Content>
         </Card>
         <Card>
@@ -65,7 +64,7 @@ class AssessmentTypeSelector extends React.Component<IProps, any> {
             </Card.Description>
           </Card.Content>
           <Card.Content extra>
-            <Button onClick={this.typeClickFn(AssessmentType.REMOTE)}>Select</Button>
+            <Button primary onClick={this.typeClickFn(AssessmentType.remote)}>Select</Button>
           </Card.Content>
         </Card>
         <Card>
@@ -84,7 +83,7 @@ class AssessmentTypeSelector extends React.Component<IProps, any> {
             </Card.Description>
           </Card.Content>
           <Card.Content extra>
-            <Button onClick={this.typeClickFn(AssessmentType.HISTORIC)}>Select</Button>
+            <Button primary onClick={this.typeClickFn(AssessmentType.historic)}>Select</Button>
           </Card.Content>
         </Card>
       </Card.Group>

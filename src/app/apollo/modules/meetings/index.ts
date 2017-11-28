@@ -73,7 +73,7 @@ export const newMeeting = graphql(gql`
 
 export const newRemoteMeeting = graphql(gql`
   mutation($beneficiaryID: String!, $outcomeSetID: String!, $daysToComplete: Int!) {
-    AddRemoteMeeting(beneficiaryID:$beneficiaryID, outcomeSetID:$outcomeSetID, daysToComplete:$daysToComplete){
+    newRemoteMeeting: AddRemoteMeeting(beneficiaryID:$beneficiaryID, outcomeSetID:$outcomeSetID, daysToComplete:$daysToComplete){
       JTI
     }
   }
