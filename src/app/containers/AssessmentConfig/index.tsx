@@ -45,7 +45,7 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
     ReactGA.event({
       category: 'assessment',
       action: 'started',
-      label: this.getType(),
+      label: this.props.params.type,
     });
   }
 
