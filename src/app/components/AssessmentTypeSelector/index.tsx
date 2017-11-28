@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Card, Button, Icon } from 'semantic-ui-react';
-import {AssessmentType} from 'models/assessment';
+import {AssessmentType, defaultRemoteMeetingLimit} from 'models/assessment';
 const ReactGA = require('react-ga');
 import './style.less';
 
@@ -41,7 +41,7 @@ class AssessmentTypeSelector extends React.Component<IProps, any> {
               Complete together
             </Card.Meta>
             <Card.Description>
-              Complete the assessment on screen together
+              Complete the assessment together
             </Card.Description>
           </Card.Content>
           <Card.Content extra>
@@ -60,7 +60,7 @@ class AssessmentTypeSelector extends React.Component<IProps, any> {
               Send a link
             </Card.Meta>
             <Card.Description>
-              Generates a link that you can send to the beneficiary to complete on their own
+              Generates a link that you can send to the beneficiary to complete on their own. The link will be valid for {defaultRemoteMeetingLimit} days
             </Card.Description>
           </Card.Content>
           <Card.Content extra>

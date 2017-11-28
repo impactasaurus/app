@@ -3,12 +3,13 @@ import { Helmet } from 'react-helmet';
 import {IMeetingMutation, newMeeting, newRemoteMeeting} from 'apollo/modules/meetings';
 import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
-import { AssessmentType, IAssessmentConfig } from 'models/assessment';
+import { AssessmentType, IAssessmentConfig, defaultRemoteMeetingLimit } from 'models/assessment';
 import { bindActionCreators } from 'redux';
 import { Grid, Message } from 'semantic-ui-react';
 import {AssessmentConfig as ConfigComponent} from 'components/AssessmentConfig';
 const { connect } = require('react-redux');
 const config = require('../../../../config/main');
+const ReactGA = require('react-ga');
 
 interface IProp extends IMeetingMutation, IURLConnector {
   params: {
@@ -33,16 +34,26 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
     this.renderInner = this.renderInner.bind(this);
     this.isUnknownType = this.isUnknownType.bind(this);
     this.getType = this.getType.bind(this);
+    this.recordMeetingStarted = this.recordMeetingStarted.bind(this);
   }
 
   private getType(): AssessmentType {
     return AssessmentType[this.props.params.type];
   }
 
+  private recordMeetingStarted() {
+    ReactGA.event({
+      category: 'assessment',
+      action: 'started',
+      label: this.getType(),
+    });
+  }
+
   private startMeeting(config: IAssessmentConfig): Promise<void> {
     if (this.getType() === AssessmentType.remote) {
-      return this.props.newRemoteMeeting(config.beneficiaryID, config.outcomeSetID, 30)
+      return this.props.newRemoteMeeting(config.beneficiaryID, config.outcomeSetID, defaultRemoteMeetingLimit)
       .then((jti) => {
+        this.recordMeetingStarted();
         this.setState({
           jti,
         });
@@ -54,6 +65,7 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
       }
       return this.props.newMeeting(config.beneficiaryID, config.outcomeSetID, date)
       .then((meeting) => {
+        this.recordMeetingStarted();
         this.props.setURL(`/meeting/${meeting.id}`);
       });
     }
@@ -72,7 +84,7 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
     return (
       <Message success={true}>
         <Message.Header>Success</Message.Header>
-        <div>Please provide the following link to your beneficiary. <b>They have 30 days to complete the questionnaire</b></div>
+        <div>Please provide the following link to your beneficiary. <b>They have {defaultRemoteMeetingLimit} days to complete the questionnaire</b></div>
         <a href={jtiURL}>{jtiURL}</a>
       </Message>
     );

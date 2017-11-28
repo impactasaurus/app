@@ -9,3 +9,5 @@ export interface IAssessmentConfig {
   outcomeSetID: string;
   date?: Date;
 }
+
+export const defaultRemoteMeetingLimit = 30;
