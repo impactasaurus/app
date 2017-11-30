@@ -41,5 +41,6 @@ typings
 # JetBrains
 .idea
 .awcache
--
--# Package-lock
+
+# Package-lock
+package-lock.json
