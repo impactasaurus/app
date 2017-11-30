@@ -9,6 +9,7 @@ import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import { bindActionCreators } from 'redux';
 const { connect } = require('react-redux');
 const strings = require('./../../../strings.json');
+const ReactGA = require('react-ga');
 
 interface IState {
   periodStart?: Date;
@@ -56,12 +57,31 @@ class Report extends React.Component<IURLConnector, IState> {
     });
     const s = encodeDatePathParam(this.state.periodStart);
     const e = encodeDatePathParam(this.state.periodEnd);
+    this.logGAEvent(this.dateDiff(this.state.periodStart,this.state.periodEnd));
     this.props.setURL(`/report/service/${this.state.questionSetID}/${s}/${e}`);
   }
+  private dateDiff(date1, date2) {
+    const oneDay = 1000*60*60*24;
+    // converting both dates to milliseconds
+    const firstMs = date1.getTime();
+    const secondMs = date2.getTime();
+    // calculate the difference
+    const diff = secondMs - firstMs;
+    // returning the number of weeks
+    return(Math.round(diff/(oneDay*7)));
 
+  }
   private setQuestionSetID(qsID) {
     this.setState({
       questionSetID: qsID,
+    });
+  }
+
+  private logGAEvent(value: number) {
+    ReactGA.event({
+      category : 'servicereport',
+      action : 'range',
+      value,
     });
   }
 
