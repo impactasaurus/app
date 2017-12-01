@@ -51,11 +51,7 @@ class VizControlPanel extends React.Component<IProps, any> {
   }
 
   private setVisPref(value: Visualisation): () => void {
-    if(this.props.vis === 0) {
-      this.reactGAVis('radar');
-    }else {
-      this.reactGAVis('table');
-    }
+    this.reactGAVis(Visualisation[this.props.vis]);
     return () => {
       this.props.setPref(VisualisationKey, Visualisation[value]);
     };
@@ -65,11 +61,7 @@ class VizControlPanel extends React.Component<IProps, any> {
     if (agg === Aggregation.CATEGORY && this.props.canCategoryAg === false) {
       return false;
     }
-    if(this.props.agg === 0) {
-      this.reactGAAgg('questions');
-    }else {
-      this.reactGAAgg('categories');
-    }
+    this.reactGAAgg(Aggregation[this.props.agg]);
     return this.props.agg === agg;
   }
 
