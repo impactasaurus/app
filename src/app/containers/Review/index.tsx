@@ -94,7 +94,6 @@ class ReviewInner extends React.Component<IProps, any> {
     }
     return ms.map((m) => m.outcomeSetID);
   }
-
   private renderInner(): JSX.Element {
     if (this.props.data.loading) {
       return (
