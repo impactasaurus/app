@@ -9,6 +9,7 @@ var config = {
 
   app: {
     api: "https://impact-server.herokuapp.com/v1/graphql",
+    root: "https://app.impactasaurus.org",
     head: {
       title: 'Impactasaurus',
       titleTemplate: '%s | Impactasaurus',
@@ -17,7 +18,8 @@ var config = {
       clientID: "pfKiAOUJh5r6jCxRn5vUYq7odQsjPUKf",
       domain: "impact.eu.auth0.com",
       scope : "openid app_metadata user_metadata",
-      connection: "Username-Password-Authentication"
+      connection: "Username-Password-Authentication",
+      publicPages: [/login/, /jti\/.*/]
     },
     analytics: {
       debug: process.env.NODE_ENV !== "production",

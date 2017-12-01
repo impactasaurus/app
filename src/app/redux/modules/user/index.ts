@@ -5,6 +5,7 @@ export interface IAction extends Redux.Action {
   type: string;
   payload: {
     userID?: string;
+    beneficiaryUser?: boolean;
     loggedIn?: boolean;
   };
 }
@@ -12,6 +13,7 @@ export interface IAction extends Redux.Action {
 export interface IState {
   userID?: string;
   loggedIn: boolean;
+  beneficiaryUser?: boolean;
 }
 
 const initialState: IState = {
@@ -23,6 +25,7 @@ export function reducer(state: IState = initialState, action: IAction) {
     case SET_USER_DETAILS:
       return Object.assign({}, state, {
         userID: action.payload.userID,
+        beneficiaryUser: action.payload.beneficiaryUser,
       });
 
     case SET_LOGIN_STATUS:
@@ -35,12 +38,13 @@ export function reducer(state: IState = initialState, action: IAction) {
   }
 }
 
-export type SetUserDetailsFunc = (userID: string) => void;
-export function setUserDetails(userID: string): IAction {
+export type SetUserDetailsFunc = (userID: string, beneficiaryUser: boolean) => void;
+export function setUserDetails(userID: string, beneficiaryUser: boolean): IAction {
   return {
     type: SET_USER_DETAILS,
     payload: {
       userID,
+      beneficiaryUser,
     },
   };
 }
@@ -61,4 +65,8 @@ export function getUserID(state: IState): string|undefined {
 
 export function isUserLoggedIn(state: IState): boolean {
   return state.loggedIn;
+}
+
+export function isBeneficiaryUser(state: IState): boolean|undefined {
+  return state.beneficiaryUser;
 }

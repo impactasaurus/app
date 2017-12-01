@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { Grid, Loader, Button } from 'semantic-ui-react';
+import { Grid, Loader, Button, Message } from 'semantic-ui-react';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import {VizControlPanel} from 'components/VizControlPanel';
 import {setURL} from 'modules/url';
@@ -13,6 +13,7 @@ import {getMeetings, IMeetingResult} from 'apollo/modules/meetings';
 import {IMeeting} from 'models/meeting';
 import {MeetingRadar} from 'components/MeetingRadar';
 import {MeetingTable} from 'components/MeetingTable';
+import {isBeneficiaryUser} from 'modules/user';
 import './style.less';
 
 interface IProps extends IURLConnector {
@@ -24,6 +25,7 @@ interface IProps extends IURLConnector {
   selectedQuestionSetID?: string;
   data?: IMeetingResult;
   isCategoryAgPossible?: boolean;
+  isBeneficiary: boolean;
 };
 
 function isCategoryAggregationAvailable(meetings: IMeeting[], selectedQuestionSetID: string|undefined): boolean {
@@ -47,6 +49,7 @@ function isCategoryAggregationAvailable(meetings: IMeeting[], selectedQuestionSe
     agg: getAggregation(state.pref, canCatAg),
     isCategoryAgPossible: canCatAg,
     selectedQuestionSetID,
+    isBeneficiary: isBeneficiaryUser(state.user),
   };
 }, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
@@ -100,6 +103,14 @@ class ReviewInner extends React.Component<IProps, any> {
         <Loader active={true} inline="centered" />
       );
     }
+    if (this.props.data.error !== undefined) {
+      return (
+        <Message error={true}>
+          <Message.Header>Error</Message.Header>
+          <div>Failed to load assessments</div>
+        </Message>
+      );
+    }
     return (
       <div>
         <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} />
@@ -117,10 +128,15 @@ class ReviewInner extends React.Component<IProps, any> {
       return (<div />);
     }
 
+    let backButton: JSX.Element = (<div />);
+    if (this.props.isBeneficiary === false) {
+      backButton = (<Button onClick={this.handleClick('/review')} content="Back" icon="left arrow" labelPosition="left" primary id="back-button"/>);
+    }
+
     return (
       <Grid container columns={1}>
         <Grid.Column>
-            <Button onClick={this.handleClick('/review')} content="Back" icon="left arrow" labelPosition="left" primary id="back-button"/>
+          {backButton}
           <div id="review">
             <Helmet>
               <title>{this.props.params.id + ' Review'}</title>

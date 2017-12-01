@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { IndexRoute, Route } from 'react-router';
-import { App, Home, Login, Review, ReviewSelector, Conduct, Settings, OutcomeSets, OutcomeSet, Meeting, Organisation, Account, Report, ServiceReport } from 'containers';
+import { App, Home, Login, Review, ReviewSelector, AssessmentTypeSelect, AssessmentConfig, Settings, OutcomeSets, OutcomeSet, Meeting, Organisation, Account, Report, ServiceReport, BeneficiaryRedirect } from 'containers';
 
 export default (
   <Route path="/" component={App}>
     <IndexRoute component={Home} />
-    <Route path="record" component={Conduct} />
+    <Route path="record" component={AssessmentTypeSelect} />
+    <Route path="record/:type" component={AssessmentConfig} />
     <Route path="review" component={ReviewSelector} />
     <Route path="review/:id" component={Review} />
     <Route path="settings" component={Settings}>
@@ -18,5 +19,6 @@ export default (
     <Route path="meeting/:id" component={Meeting} />
     <Route path="report" component={Report} />
     <Route path="report/service/:questionSetID/:start/:end" component={ServiceReport} />
+    <Route path ="jti/:jti" component={BeneficiaryRedirect} />
   </Route>
 );
