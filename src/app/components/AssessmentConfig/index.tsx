@@ -7,9 +7,11 @@ import {IOutcomeSet} from 'models/outcomeSet';
 import {IAssessmentConfig} from 'models/assessment';
 import * as moment from 'moment';
 const strings = require('./../../../strings.json');
+import './style.less';
 
 interface IProps  {
   showDatePicker: boolean;
+  buttonText: string;
   onSubmit: (config: IAssessmentConfig) => Promise<void>;
   data?: IOutcomeResult;
 }
@@ -144,16 +146,16 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
       selectProps.disabled = true;
     }
     return (
-      <div className="impactform">
+      <div className="impactform assessment-config">
         <span className="label">
           <Hint text={strings.beneficiaryIDExplanation} />
           <h3 id="benID">Beneficiary ID</h3>
         </span>
         <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID} />
-        <h3 className="label">Question Set</h3>
-        <Select {...selectProps} placeholder="Question Set" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
+        <h3 className="label">Questionnaire</h3>
+        <Select {...selectProps} placeholder="Questionnaire" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
         {this.renderDatePicker()}
-        <Button {...startProps} className="submit" onClick={this.startMeeting}>Start</Button>
+        <Button {...startProps} className="submit" onClick={this.startMeeting}>{this.props.buttonText}</Button>
         <p>{this.state.startMeetingError}</p>
       </div>
     );

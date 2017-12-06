@@ -25,10 +25,9 @@ class Home extends React.Component<IURLConnector, any> {
           <Helmet>
             <title>Home</title>
           </Helmet>
-          <FancyBox text="Define questions to quantify how much you are aiding your organisation's beneficiaries" title="Define" icon="edit" onClick={this.navigate('/settings/questions')}/>
-          <FancyBox text="Conduct meetings during your involvement with a beneficiary" title="Record" icon="checkmark box" onClick={this.navigate('/record')} />
-          <FancyBox text="Report on an individual's journey of change, providing a sense of achievement and progress" title="Review" icon="area chart" onClick={this.navigate('/review')} />
-          <FancyBox text="Get a report that quantifies your organisation's impact on your beneficiaries" title="Report" icon="bar chart" onClick={this.navigate('/report')} />
+          <FancyBox text="Capture answers to a questionnaire" title="Create Record" icon="edit" onClick={this.navigate('/record')} />
+          <FancyBox text="View an individual's records over time" title="Review Beneficiary" icon="user" onClick={this.navigate('/review')} />
+          <FancyBox text="Get a report that quantifies your organisation's impact" title="Generate Report" icon="bar chart" onClick={this.navigate('/report')} />
         </Grid.Column>
       </Grid>
     );

@@ -27,8 +27,8 @@ class AssessmentTypeSelect extends React.Component<IURLConnector, any> {
     return (
       <Grid container columns={1} id="conduct">
         <Grid.Column>
-          <Helmet title="Assessment"/>
-          <h1>Assessment</h1>
+          <Helmet title="Record"/>
+          <h1>Create Record</h1>
           <AssessmentTypeSelector typeSelector={this.typeSelected}/>
         </Grid.Column>
       </Grid>

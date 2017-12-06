@@ -104,7 +104,7 @@ class QuestionSetSelectInner extends React.Component<IProp, any> {
         className="qs-selector"
         {...selectProps}
         value={this.props.selectedQuestionSetID}
-        placeholder="Question Set"
+        placeholder="Questionnaire"
         onChange={this.setQuestionSetID}
         options={this.getOptions(this.props.allowedQuestionSets)}
       />

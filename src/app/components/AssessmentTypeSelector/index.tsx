@@ -41,7 +41,7 @@ class AssessmentTypeSelector extends React.Component<IProps, any> {
               Complete together
             </Card.Meta>
             <Card.Description>
-              Complete the assessment together
+              Complete the questionnaire together
             </Card.Description>
           </Card.Content>
           <Card.Content extra>
@@ -79,7 +79,7 @@ class AssessmentTypeSelector extends React.Component<IProps, any> {
               Enter historic data
             </Card.Meta>
             <Card.Description>
-              Enter data gathered historically into the system. This is ideal if you completed the questionnaire on paper with the beneficiary
+              Enter data gathered historically into the system. For example, if you completed the questionnaire on paper with the beneficiary
             </Card.Description>
           </Card.Content>
           <Card.Content extra>

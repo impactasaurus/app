@@ -95,7 +95,7 @@ class Report extends React.Component<IURLConnector, IState> {
   private renderNewReportControl(): JSX.Element {
     return (
       <div className="impactform">
-        <h3 className="label">Question Set</h3>
+        <h3 className="label">Questionnaire</h3>
         <QuestionSetSelect onQuestionSetSelected={this.setQuestionSetID} />
         <h3 className="label"><Hint text={strings.JOCReportDateRange} />Date Range</h3>
         <DateRangePicker onSelect={this.setDateRange} future={false}/>
