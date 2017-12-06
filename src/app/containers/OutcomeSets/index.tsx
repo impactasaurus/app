@@ -149,7 +149,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
       return (
         <List.Item className="new-control" key="new">
           <List.Content onClick={this.setNewClicked}>
-            <List.Header as="a">New Question Set</List.Header>
+            <List.Header as="a">New Questionnaire</List.Header>
           </List.Content>
         </List.Item>
       );
@@ -175,9 +175,9 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
       <Grid container columns={1} id="question-sets">
         <Grid.Column>
           <Helmet>
-            <title>Question Sets</title>
+            <title>Questionnaires</title>
           </Helmet>
-          <h1>Question Sets</h1>
+          <h1>Questionnaires</h1>
           {inner}
         </Grid.Column>
       </Grid>

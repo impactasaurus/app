@@ -35,6 +35,7 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
     this.isUnknownType = this.isUnknownType.bind(this);
     this.getType = this.getType.bind(this);
     this.recordMeetingStarted = this.recordMeetingStarted.bind(this);
+    this.getButtonText = this.getButtonText.bind(this);
   }
 
   private getType(): AssessmentType {
@@ -90,6 +91,10 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
     );
   }
 
+  private getButtonText(): string {
+    return this.getType() === AssessmentType.remote ? 'Generate Link' : 'Start';
+  }
+
   private renderInner(): JSX.Element {
     if (this.isUnknownType()) {
       return (
@@ -106,6 +111,7 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
       <ConfigComponent
         showDatePicker={this.shouldGetDate()}
         onSubmit={this.startMeeting}
+        buttonText={this.getButtonText()}
       />
     );
   }
@@ -114,8 +120,8 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
     return (
       <Grid container columns={1} id="conduct">
         <Grid.Column>
-          <Helmet title="Assessment"/>
-          <h1>Assessment</h1>
+          <Helmet title="Record"/>
+          <h1>Create Record</h1>
           {this.renderInner()}
         </Grid.Column>
       </Grid>
