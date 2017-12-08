@@ -45,13 +45,14 @@ class VizControlPanel extends React.Component<IProps, any> {
     });
   }
   private setAggPref(value: Aggregation): () => void {
+    this.reactGAAgg(Aggregation[value]);
     return () => {
       this.props.setPref(AggregationKey, Aggregation[value]);
     };
   }
 
   private setVisPref(value: Visualisation): () => void {
-    this.reactGAVis(Visualisation[this.props.vis]);
+    this.reactGAVis(Visualisation[value]);
     return () => {
       this.props.setPref(VisualisationKey, Visualisation[value]);
     };
@@ -61,7 +62,6 @@ class VizControlPanel extends React.Component<IProps, any> {
     if (agg === Aggregation.CATEGORY && this.props.canCategoryAg === false) {
       return false;
     }
-    this.reactGAAgg(Aggregation[this.props.agg]);
     return this.props.agg === agg;
   }
 
