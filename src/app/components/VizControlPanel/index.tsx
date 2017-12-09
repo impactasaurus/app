@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux';
 import {setPref, SetPrefFunc} from 'modules/pref';
 import {IStore} from 'redux/IStore';
 import {Aggregation, AggregationKey, Visualisation, VisualisationKey, getAggregation, getVisualisation} from 'models/pref';
-
+const ReactGA = require('react-ga');
 interface IProps {
   canCategoryAg: boolean;
   vis?: Visualisation;
@@ -30,13 +30,29 @@ class VizControlPanel extends React.Component<IProps, any> {
     this.isAggActive = this.isAggActive.bind(this);
   }
 
+  private reactGAVis(label: string) {
+    ReactGA.event({
+      category : 'visualisation',
+      action : 'changed',
+      label,
+    });
+  }
+  private reactGAAgg(label: string) {
+    ReactGA.event({
+      category : 'aggregation',
+      action : 'changed',
+      label,
+    });
+  }
   private setAggPref(value: Aggregation): () => void {
+    this.reactGAAgg(Aggregation[value]);
     return () => {
       this.props.setPref(AggregationKey, Aggregation[value]);
     };
   }
 
   private setVisPref(value: Visualisation): () => void {
+    this.reactGAVis(Visualisation[value]);
     return () => {
       this.props.setPref(VisualisationKey, Visualisation[value]);
     };
