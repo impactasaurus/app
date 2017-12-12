@@ -35,9 +35,11 @@ class MeetingTable extends React.Component<IProp, any> {
     }, meetings[0]);
   }
 
-  private getCategoryRows(p: IProp): IRow[] {
-    const f = this.firstMeeting(p.meetings);
-    const l = this.lastMeeting(p.meetings);
+  private getCategoryRows(): IRow[] {
+    const { meetings } = this.props;
+
+    const f = this.firstMeeting(meetings);
+    const l = this.lastMeeting(meetings);
     let rows = f.aggregates.category.reduce((rows: any, c: ICategoryAggregate) => {
       const category = f.outcomeSet.categories.find((x) => x.id === c.categoryID);
       rows[category.name] = {
@@ -53,17 +55,17 @@ class MeetingTable extends React.Component<IProp, any> {
           name: category.name,
         };
       }
-      rows[category.name] = Object.assign({}, rows[category.name], {
-        last: c.value,
-      });
+      rows[category.name] = { ...rows[category.name], last: c.value };
       return rows;
     }, rows);
     return Object.keys(rows).map((k) => rows[k]);
   }
 
-  private getQuestionRows(p: IProp): IRow[] {
-    const f = this.firstMeeting(p.meetings);
-    const l = this.lastMeeting(p.meetings);
+  private getQuestionRows(): IRow[] {
+    const { meetings } = this.props;
+
+    const f = this.firstMeeting(meetings);
+    const l = this.lastMeeting(meetings);
     let rows = f.answers.reduce((rows: any, a: Answer) => {
       const q = f.outcomeSet.questions.find((x) => x.id === a.questionID);
       rows[q.question] = {
@@ -79,9 +81,7 @@ class MeetingTable extends React.Component<IProp, any> {
           name: q.question,
         };
       }
-      rows[q.question] = Object.assign({}, rows[q.question], {
-        last: a.answer,
-      });
+      rows[q.question] = { ...rows[q.question], last: a.answer };
       return rows;
     }, rows);
     return Object.keys(rows).map((k) => rows[k]);
@@ -91,16 +91,18 @@ class MeetingTable extends React.Component<IProp, any> {
     return `${prefix} (${getHumanisedTimeSinceDate(new Date(meeting.conducted))})`;
   }
 
-  private renderTable(p: IProp): JSX.Element {
-    const isCat = p.aggregation === Aggregation.CATEGORY;
-    const rows = isCat ? this.getCategoryRows(p) : this.getQuestionRows(p);
+  private renderTable(): JSX.Element {
+    const { aggregation, meetings } = this.props;
+
+    const isCat = aggregation === Aggregation.CATEGORY;
+    const rows = isCat ? this.getCategoryRows() : this.getQuestionRows();
 
     return (
       <ImpactTable
         data={rows}
         nameColName={isCat ? 'Category' : 'Question'}
-        firstColName={this.getColumnTitle('Initial', this.firstMeeting(p.meetings))}
-        lastColName={this.getColumnTitle('Latest', this.lastMeeting(p.meetings))}
+        firstColName={this.getColumnTitle('Initial', this.firstMeeting(meetings))}
+        lastColName={this.getColumnTitle('Latest', this.lastMeeting(meetings))}
       />
     );
   }
@@ -112,7 +114,7 @@ class MeetingTable extends React.Component<IProp, any> {
 
     return (
       <div className="meeting-table">
-        {this.renderTable(this.props)}
+        {this.renderTable()}
       </div>
     );
   }

@@ -72,22 +72,22 @@ class ReviewInner extends React.Component<IProps, any> {
   }
 
   private renderVis(): JSX.Element {
-    const p = this.props;
-    if (!Array.isArray(p.data.getMeetings) || p.data.getMeetings.length === 0) {
+    const { data: { getMeetings }, params: { id }, vis, selectedQuestionSetID, agg } = this.props;
+    if (!Array.isArray(getMeetings) || getMeetings.length === 0) {
       return (
-        <p>No meetings found for beneficiary {p.params.id}</p>
+        <p>No meetings found for beneficiary {id}</p>
       );
     }
 
-    const meetings = this.filterMeetings(p.data.getMeetings, this.props.selectedQuestionSetID);
+    const meetings = this.filterMeetings(getMeetings, selectedQuestionSetID);
 
-    if (p.vis === Visualisation.RADAR) {
+    if (vis === Visualisation.RADAR) {
       return (
-        <MeetingRadar aggregation={p.agg} meetings={meetings} />
+        <MeetingRadar aggregation={agg} meetings={meetings} />
       );
     }
     return (
-      <MeetingTable aggregation={p.agg} meetings={meetings} />
+      <MeetingTable aggregation={agg} meetings={meetings} />
     );
   }
 
