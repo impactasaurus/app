@@ -4,8 +4,8 @@ import {IMeeting} from 'models/meeting';
 import {Answer} from 'models/answer';
 import {ICategoryAggregate} from 'models/aggregates';
 import {ImpactTable, IRow} from 'components/ImpactTable';
-import {getHumanisedTimeSinceDate} from 'helpers/moment';
-import {Select, DropdownItemProps} from 'semantic-ui-react';
+import {getHumanisedDate} from 'helpers/moment';
+import {Select, DropdownItemProps, Message} from 'semantic-ui-react';
 import './style.less';
 
 interface IProp {
@@ -109,7 +109,7 @@ class MeetingTable extends React.Component<IProp, IState> {
   }
 
   private getColumnTitle(prefix: string, meeting: IMeeting): string {
-    return `${prefix} (${getHumanisedTimeSinceDate(new Date(meeting.conducted))})`;
+    return `${prefix} (${getHumanisedDate(new Date(meeting.conducted))})`;
   }
 
   private onFirstMeetingSelectChange(_, { value }): void {
@@ -135,11 +135,10 @@ class MeetingTable extends React.Component<IProp, IState> {
       return {
         value: meeting.id,
         key: meeting.id,
-        text: getHumanisedTimeSinceDate(new Date(meeting.conducted)),
+        text: getHumanisedDate(new Date(meeting.conducted)),
       };
     });
   }
-
   private renderMeetingSelectionFrom(): JSX.Element {
     return (
       <div id="selectMeetingsContainer">
@@ -165,17 +164,16 @@ class MeetingTable extends React.Component<IProp, IState> {
     const isCat = aggregation === Aggregation.CATEGORY;
     const rows = isCat ? this.getCategoryRows() : this.getQuestionRows();
 
-    if (this.state.firstMeeting.id === this.state.secondMeeting.id) {
-      return <div>You can't compare two same meetings.</div>;
-    }
+    const areMeetingsSame = this.state.firstMeeting.id === this.state.secondMeeting.id;
 
     return (
       <div>
+        {areMeetingsSame && <Message info>You are currently comparing the same record.</Message>}
         <ImpactTable
           data={rows}
           nameColName={isCat ? 'Category' : 'Question'}
-          firstColName={this.getColumnTitle('First meeting', this.initialMeeting())}
-          lastColName={this.getColumnTitle('Second meeting', this.lastMeeting())}
+          firstColName={this.getColumnTitle('First meeting', this.state.firstMeeting)}
+          lastColName={this.getColumnTitle('Second meeting', this.state.secondMeeting)}
         />
       </div>
     );

@@ -62,3 +62,7 @@ export function getHumanisedTimeSince(m: moment.Moment): string {
 export function getHumanisedTimeSinceDate(d: Date): string {
   return getHumanisedTimeSince(moment(d));
 }
+
+export function getHumanisedDate(d: Date): string {
+  return moment(d).format('MMMM Do YYYY');
+}
