@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import {IMeetingResult, IMeetingMutation, getMeeting, addLikertAnswer} from 'apollo/modules/meetings';
+import {IMeetingResult, IMeetingMutation, getMeeting, addLikertAnswer, completeMeeting} from 'apollo/modules/meetings';
 import {Question} from 'models/question';
 import { Likert} from 'components/Likert';
 import 'rc-slider/assets/index.css';
@@ -25,6 +25,8 @@ interface IState {
     currentValue?: number;
     saveError?: string;
     saving?: boolean;
+    completing?: boolean;
+    completeError?: string;
 };
 
 @connect(undefined, (dispatch) => ({
@@ -106,6 +108,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       this.setState({
         saving: false,
         currentQuestion: undefined,
+        saveError: undefined,
       });
       this.logGAEvent('answered');
     })
@@ -118,17 +121,40 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   private review() {
-    this.props.setURL(`/review/${this.props.data.getMeeting.beneficiary}`);
+    this.setState({
+      completing: true,
+    });
+    this.props.completeMeeting(this.props.params.id, this.props.data.getMeeting.beneficiary)
+      .then(() => {
+        this.setState({
+          completing: false,
+          completeError: undefined,
+        });
+        this.props.setURL(`/review/${this.props.data.getMeeting.beneficiary}`);
+      })
+      .catch((e: string) => {
+        this.setState({
+          completing: false,
+          completeError: e,
+        });
+      });
   }
 
   private renderFinished(): JSX.Element {
+    const props: ButtonProps = {};
+    if (this.state.completing) {
+      props.loading = true;
+      props.disabled = true;
+    }
     return (
       <div id="meeting">
         <Helmet>
-          <title>Meeting Finished</title>
+          <title>Questionnaire Finished</title>
         </Helmet>
         <h1>Thanks!</h1>
-        <Button onClick={this.review}>Review</Button>
+        <p>The questionnaire is complete. Thanks for your time!</p>
+        <Button {...props} onClick={this.review}>Save</Button>
+        <p>{this.state.completeError}</p>
       </div>
     );
   }
@@ -178,5 +204,5 @@ class MeetingInner extends React.Component<IProps, IState> {
     );
   }
 }
-const Meeting = getMeeting<IProps>((props) => props.params.id)(addLikertAnswer<IProps>(MeetingInner));
+const Meeting = completeMeeting<IProps>(getMeeting<IProps>((props) => props.params.id)(addLikertAnswer<IProps>(MeetingInner)));
 export { Meeting }
