@@ -116,13 +116,36 @@ export function addLikertAnswer<T>(component) {
   })(component);
 }
 
+export function completeMeeting<T>(component) {
+  return graphql<any, T>(gql`
+  mutation ($meetingID: String!) {
+    completeMeeting: CompleteMeeting(meetingID: $meetingID) {
+      ...meetingWithOutcomeSetAndAggregates
+    }
+  }
+  ${fragmentWithOutcomeSetAndAggregates}`, {
+    props: ({ mutate }) => ({
+      completeMeeting: (meetingID: string, beneficiaryID: string): Promise<IMeeting> => mutate({
+        variables: {
+          meetingID,
+        },
+        refetchQueries: [{
+          query: getMeetingsGQL,
+          variables: { beneficiaryID },
+        }],
+      }).then(mutationResultExtractor<IMeeting>('completeMeeting')),
+    }),
+  })(component);
+}
+
 export interface IMeetingResult extends QueryProps {
-    getMeeting?: IMeeting;
-    getMeetings?: IMeeting[];
+  getMeeting?: IMeeting;
+  getMeetings?: IMeeting[];
 }
 
 export interface IMeetingMutation {
-    newMeeting(beneficiaryID: string, outcomeSetID: string, conducted: Date): Promise<IMeeting>;
-    newRemoteMeeting(beneficiaryID: string, outcomeSetID: string, daysToComplete: number): Promise<string>;
-    addLikertAnswer(meetingID: string, questionID: string, value: number): Promise<IMeeting>;
+  newMeeting(beneficiaryID: string, outcomeSetID: string, conducted: Date): Promise<IMeeting>;
+  newRemoteMeeting(beneficiaryID: string, outcomeSetID: string, daysToComplete: number): Promise<string>;
+  addLikertAnswer(meetingID: string, questionID: string, value: number): Promise<IMeeting>;
+  completeMeeting(meetingID: string, beneficiaryID: string): Promise<IMeeting>;
 }
