@@ -45,3 +45,12 @@ export const fragmentWithOutcomeSetAndAggregates = gql`
       ...defaultAggregates
     }
   } ${fragmentWithOutcomeSet} ${agFragment}`;
+
+export function sortMeetingsByConducted(meetings: IMeeting[], asc = true): IMeeting[] {
+  return meetings.concat().sort((a,b): number => {
+    if (asc) {
+      return Date.parse(a.conducted) - Date.parse(b.conducted);
+    }
+    return Date.parse(b.conducted) - Date.parse(a.conducted);
+  });
+}
