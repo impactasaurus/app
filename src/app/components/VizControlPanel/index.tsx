@@ -1,22 +1,24 @@
 import * as React from 'react';
 import { Button } from 'semantic-ui-react';
 import './style.less';
-const { connect } = require('react-redux');
 import { bindActionCreators } from 'redux';
 import {setPref, SetPrefFunc} from 'modules/pref';
 import {IStore} from 'redux/IStore';
 import {Aggregation, AggregationKey, Visualisation, VisualisationKey, getAggregation, getVisualisation} from 'models/pref';
 const ReactGA = require('react-ga');
+const { connect } = require('react-redux');
+
 interface IProps {
   canCategoryAg: boolean;
   vis?: Visualisation;
   agg?: Aggregation;
   setPref?: SetPrefFunc;
-};
+  allowGraph: boolean;
+}
 
 @connect((state: IStore, ownProps: IProps) => {
   return {
-    vis: getVisualisation(state.pref),
+    vis: getVisualisation(state.pref, ownProps.allowGraph),
     agg: getAggregation(state.pref, ownProps.canCategoryAg),
   };
 }, (dispatch) => ({
@@ -65,6 +67,21 @@ class VizControlPanel extends React.Component<IProps, any> {
     return this.props.agg === agg;
   }
 
+  private getVisButtons(): JSX.Element[] {
+    const buttons = [
+      (<Button active={this.props.vis === Visualisation.RADAR} onClick={this.setVisPref(Visualisation.RADAR)}>Radar</Button>),
+      (<Button.Or />),
+      (<Button active={this.props.vis === Visualisation.TABLE} onClick={this.setVisPref(Visualisation.TABLE)}>Table</Button>),
+    ];
+    if (this.props.allowGraph) {
+      buttons.push(
+        (<Button.Or />),
+        (<Button active={this.props.vis === Visualisation.GRAPH} onClick={this.setVisPref(Visualisation.GRAPH)}>Graph</Button>),
+      );
+    }
+    return buttons;
+  }
+
   public render() {
     const cpItems: JSX.Element[] = [];
     cpItems.push((
@@ -76,9 +93,7 @@ class VizControlPanel extends React.Component<IProps, any> {
     ));
     cpItems.push((
       <Button.Group key="vis">
-        <Button active={this.props.vis === Visualisation.RADAR} onClick={this.setVisPref(Visualisation.RADAR)}>Radar</Button>
-        <Button.Or />
-        <Button active={this.props.vis === Visualisation.TABLE} onClick={this.setVisPref(Visualisation.TABLE)}>Table</Button>
+        {this.getVisButtons()}
       </Button.Group>
     ));
     return (

@@ -4,7 +4,6 @@ import { Grid, Loader, Button, Message } from 'semantic-ui-react';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import {VizControlPanel} from 'components/VizControlPanel';
 import {setURL} from 'modules/url';
-const { connect } = require('react-redux');
 import { bindActionCreators } from 'redux';
 import {IStore} from 'redux/IStore';
 import {IURLConnector} from 'redux/modules/url';
@@ -15,6 +14,8 @@ import {MeetingRadar} from 'components/MeetingRadar';
 import {MeetingTable} from 'components/MeetingTable';
 import {isBeneficiaryUser} from 'modules/user';
 import './style.less';
+import {MeetingGraph} from '../../components/MeetingGraph';
+const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
   params: {
@@ -45,7 +46,7 @@ function isCategoryAggregationAvailable(meetings: IMeeting[], selectedQuestionSe
   const selectedQuestionSetID = getSelectedQuestionSetID(state.pref);
   const canCatAg = isCategoryAggregationAvailable(ownProps.data.getMeetings, selectedQuestionSetID);
   return {
-    vis: getVisualisation(state.pref),
+    vis: getVisualisation(state.pref, true),
     agg: getAggregation(state.pref, canCatAg),
     isCategoryAgPossible: canCatAg,
     selectedQuestionSetID,
@@ -86,6 +87,11 @@ class ReviewInner extends React.Component<IProps, any> {
         <MeetingRadar aggregation={agg} meetings={meetings} />
       );
     }
+    if (vis === Visualisation.GRAPH) {
+      return (
+        <MeetingGraph meetings={meetings} aggregation={agg}/>
+      );
+    }
     return (
       <MeetingTable aggregation={agg} meetings={meetings} />
     );
@@ -113,7 +119,7 @@ class ReviewInner extends React.Component<IProps, any> {
     }
     return (
       <div>
-        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} />
+        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={true}/>
         <QuestionSetSelect
           allowedQuestionSetIDs={this.getQuestionSetOptions(this.props.data.getMeetings)}
           autoSelectFirst={true}
