@@ -40,7 +40,7 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
 @connect((state: IStore, ownProps: IProp) => {
   const canCatAg = isCategoryAggregationAvailable(ownProps);
   return {
-    vis: getVisualisation(state.pref),
+    vis: getVisualisation(state.pref, false),
     agg: getAggregation(state.pref, canCatAg),
     isCategoryAgPossible: canCatAg,
   };
@@ -97,7 +97,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
           </Helmet>
           <h1>Service Report</h1>
           <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
-          <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} />
+          <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} />
           {this.renderVis()}
         </Grid.Column>
       </Grid>
