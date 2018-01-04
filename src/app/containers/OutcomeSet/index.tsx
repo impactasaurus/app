@@ -17,26 +17,59 @@ interface IProps extends IOutcomeMutation, IQuestionMutation {
 };
 
 interface IState {
-  editError?: string;
+  editNameError?: string;
+  editDescriptionError?: string;
   newName?: string;
   newDescription?: string;
-  editClicked?: boolean;
+  displayEditNameControl?: boolean;
+  displayEditDescriptionControl?: boolean;
 };
 
 class OutcomeSetInner extends React.Component<IProps, IState> {
+  private editDescriptionInput: HTMLInputElement;
+  private editNameInput: HTMLInputElement;
 
   constructor(props) {
     super(props);
     this.state = {};
-    this.renderEditControl = this.renderEditControl.bind(this);
+    this.handleEditNameInputRef = this.handleEditNameInputRef.bind(this);
+    this.handleEditDescriptionInputRef = this.handleEditDescriptionInputRef.bind(this);
     this.editQS = this.editQS.bind(this);
+    this.editName = this.editName.bind(this);
+    this.editDescription = this.editDescription.bind(this);
     this.setNewName = this.setNewName.bind(this);
     this.setNewDescription = this.setNewDescription.bind(this);
-    this.setEditClicked = this.setEditClicked.bind(this);
-    this.renderEditButton = this.renderEditButton.bind(this);
+    this.displayEditNameControl = this.displayEditNameControl.bind(this);
+    this.displayEditDescriptionControl = this.displayEditDescriptionControl.bind(this);
+    this.renderEditNameButton = this.renderEditNameButton.bind(this);
+    this.renderEditDescriptionButton = this.renderEditDescriptionButton.bind(this);
   }
 
-  private editQS() {
+  public componentDidUpdate(prevProps: IProps, prevState: IState) {
+    const { displayEditNameControl, displayEditDescriptionControl } = this.state;
+
+    // if the editNameControl was newly displayed during this update
+    if (displayEditNameControl && (!displayEditDescriptionControl || prevState.displayEditDescriptionControl)) {
+      this.editNameInput.focus();
+    }
+
+    // if the editDescriptionControl was newly displayed during this update
+    if (displayEditDescriptionControl && (!displayEditNameControl || prevState.displayEditNameControl)) {
+      this.editDescriptionInput.focus();
+    }
+  }
+
+  private editQS(editedValueType: 'name' | 'description') {
+    let editedControlDisplayState, editedControlErrorState;
+
+    if (editedValueType === 'name') {
+      editedControlDisplayState = 'displayEditNameControl';
+      editedControlErrorState = 'editNameError';
+    } else if (editedValueType === 'description') {
+      editedControlDisplayState = 'displayEditDescriptionControl';
+      editedControlErrorState = 'editDescriptionError';
+    }
+
     this.props.editQuestionSet(
       this.props.params.id,
       this.state.newName || this.props.data.getOutcomeSet.name,
@@ -44,15 +77,37 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     )
     .then(() => {
       this.setState({
-        editError: undefined,
-        editClicked: false,
+        [editedControlDisplayState]: false,
+        [editedControlErrorState]: undefined,
       });
     })
     .catch((e: Error)=> {
       this.setState({
-        editError: e.message,
+        [editedControlErrorState]: e.message,
       });
     });
+  }
+
+  private editName() {
+    this.editQS('name');
+  }
+
+  private editDescription() {
+    this.editQS('description');
+  }
+
+  private moveCaretAtEnd(e) {
+    const tempValue = e.target.value;
+    e.target.value = '';
+    e.target.value = tempValue;
+  }
+
+  private handleEditNameInputRef(input) {
+    this.editNameInput = input;
+  }
+
+  private handleEditDescriptionInputRef(input) {
+    this.editDescriptionInput = input;
   }
 
   private setNewName(_, data) {
@@ -67,44 +122,76 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     });
   }
 
-  private setEditClicked() {
+  private displayEditNameControl() {
     this.setState({
-      editClicked: true,
+      displayEditNameControl: true,
     });
   }
 
-  private renderEditControl(): JSX.Element {
-    if (this.state.editClicked !== true) {
-      return (<div />);
-    }
+  private displayEditDescriptionControl() {
+    this.setState({
+      displayEditDescriptionControl: true,
+    });
+  }
+
+  private renderEditNameControl(): JSX.Element {
     return (
       <div className="edit-control">
-        <Input type="text" placeholder="Name" onChange={this.setNewName} defaultValue={this.props.data.getOutcomeSet.name}/>
-        <Input type="text" placeholder="Description" onChange={this.setNewDescription} defaultValue={this.props.data.getOutcomeSet.description}/>
-        <Button onClick={this.editQS}>Edit</Button>
-        <p>{this.state.editError}</p>
+        <Input
+          type="text"
+          placeholder="Name"
+          onChange={this.setNewName}
+          defaultValue={this.props.data.getOutcomeSet.name}
+          ref={this.handleEditNameInputRef}
+          onFocus={this.moveCaretAtEnd}
+        />
+        <Button onClick={this.editName}>Edit name</Button>
+        <p>{this.state.editNameError}</p>
       </div>
     );
   }
 
-  private renderEditButton(): JSX.Element {
-    if (this.state.editClicked === true) {
-      return (<div />);
-    }
+  private renderEditNameButton(): JSX.Element {
     return (
-      <Button icon basic circular size="mini" onClick={this.setEditClicked}>
+      <Button icon basic circular size="mini" onClick={this.displayEditNameControl}>
+        <Icon name="pencil"/>
+      </Button>
+    );
+  }
+
+  private renderEditDescriptionControl(): JSX.Element {
+    return (
+      <div className="edit-control">
+        <Input
+          type="text"
+          placeholder="Description"
+          onChange={this.setNewDescription}
+          defaultValue={this.props.data.getOutcomeSet.description}
+          ref={this.handleEditDescriptionInputRef}
+          onFocus={this.moveCaretAtEnd}
+        />
+        <Button onClick={this.editDescription}>Edit description</Button>
+        <p>{this.state.editDescriptionError}</p>
+      </div>
+    );
+  }
+
+  private renderEditDescriptionButton(): JSX.Element {
+    return (
+      <Button icon basic circular size="mini" onClick={this.displayEditDescriptionControl}>
         <Icon name="pencil"/>
       </Button>
     );
   }
 
   public render() {
-    if (this.props.data.loading) {
+    const { data } = this.props;
+    const { displayEditNameControl, displayEditDescriptionControl } = this.state;
+    if (data.loading) {
       return (
         <Loader active={true} inline="centered" />
       );
     }
-    const { data } = this.props;
     const os = data.getOutcomeSet;
     if (os === undefined) {
         return (<div />);
@@ -115,9 +202,16 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
           <Helmet>
             <title>Question Sets</title>
           </Helmet>
-          <h1>{os.name}{this.renderEditButton()}</h1>
-          <div>Description: {os.description || 'No description'}{this.renderEditButton()}</div>
-          {this.renderEditControl()}
+          {displayEditNameControl ?
+            this.renderEditNameControl()
+            :
+            <h1>{os.name}{this.renderEditNameButton()}</h1>
+          }
+          {displayEditDescriptionControl ?
+            this.renderEditDescriptionControl()
+            :
+            <div>Description: {os.description || 'No description'}{this.renderEditDescriptionButton()}</div>
+          }
           <h3>Questions</h3>
           <QuestionList outcomeSetID={this.props.params.id} />
           <h3>Question Categories <Hint text={strings.questionCategoryExplanation} /></h3>

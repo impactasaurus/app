@@ -30,6 +30,8 @@
     "max-line-length": [
       false
     ],
-    "whitespace": [false]
+    "whitespace": [false],
+    "jsx-no-multiline-js": false,
+    "one-variable-per-declaration": false
   }
 }
