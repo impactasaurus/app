@@ -140,12 +140,16 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
         <Input
           type="text"
           placeholder="Name"
+          size="huge"
           onChange={this.setNewName}
           defaultValue={this.props.data.getOutcomeSet.name}
           ref={this.handleEditNameInputRef}
           onFocus={this.moveCaretAtEnd}
         />
-        <Button onClick={this.editName}>Edit name</Button>
+        <Button onClick={this.editName} size="huge" icon labelPosition="right">
+          Edit name
+          <Icon name="pencil"/>
+        </Button>
         <p>{this.state.editNameError}</p>
       </div>
     );
@@ -170,7 +174,10 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
           ref={this.handleEditDescriptionInputRef}
           onFocus={this.moveCaretAtEnd}
         />
-        <Button onClick={this.editDescription}>Edit description</Button>
+        <Button onClick={this.editDescription} icon labelPosition="right">
+          Edit description
+          <Icon name="pencil"/>
+        </Button>
         <p>{this.state.editDescriptionError}</p>
       </div>
     );
