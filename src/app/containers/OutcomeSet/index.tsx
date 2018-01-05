@@ -23,6 +23,8 @@ interface IState {
   newDescription?: string;
   displayEditNameControl?: boolean;
   displayEditDescriptionControl?: boolean;
+  isNewNameBeingSubmitted?: boolean;
+  isNewDescriptionBeingSubmitted?: boolean;
 };
 
 class OutcomeSetInner extends React.Component<IProps, IState> {
@@ -60,15 +62,19 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
   }
 
   private editQS(editedValueType: 'name' | 'description') {
-    let editedControlDisplayState, editedControlErrorState;
+    let editedControlDisplayState, editedControlErrorState, editedControlLoadingState;
 
     if (editedValueType === 'name') {
       editedControlDisplayState = 'displayEditNameControl';
       editedControlErrorState = 'editNameError';
+      editedControlLoadingState = 'isNewNameBeingSubmitted';
     } else if (editedValueType === 'description') {
       editedControlDisplayState = 'displayEditDescriptionControl';
       editedControlErrorState = 'editDescriptionError';
+      editedControlLoadingState = 'isNewDescriptionBeingSubmitted';
     }
+
+    this.setState({ [editedControlLoadingState: true });
 
     this.props.editQuestionSet(
       this.props.params.id,
@@ -79,11 +85,13 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
       this.setState({
         [editedControlDisplayState]: false,
         [editedControlErrorState]: undefined,
+        [editedControlLoadingState]: false,
       });
     })
     .catch((e: Error)=> {
       this.setState({
         [editedControlErrorState]: e.message,
+        [editedControlLoadingState]: false,
       });
     });
   }
@@ -146,7 +154,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
           ref={this.handleEditNameInputRef}
           onFocus={this.moveCaretAtEnd}
         />
-        <Button onClick={this.editName} size="huge" icon labelPosition="right">
+        <Button onClick={this.editName} size="huge" icon labelPosition="right" loading={this.state.isNewNameBeingSubmitted}>
           Edit name
           <Icon name="pencil"/>
         </Button>
@@ -174,7 +182,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
           ref={this.handleEditDescriptionInputRef}
           onFocus={this.moveCaretAtEnd}
         />
-        <Button onClick={this.editDescription} icon labelPosition="right">
+        <Button onClick={this.editDescription} icon labelPosition="right" loading={this.state.isNewDescriptionBeingSubmitted}>
           Edit description
           <Icon name="pencil"/>
         </Button>
