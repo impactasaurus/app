@@ -41,6 +41,8 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     this.editDescription = this.editDescription.bind(this);
     this.setNewName = this.setNewName.bind(this);
     this.setNewDescription = this.setNewDescription.bind(this);
+    this.onNewNameInputKeyPress = this.onNewNameInputKeyPress.bind(this);
+    this.onNewDescriptionInputKeyPress = this.onNewDescriptionInputKeyPress.bind(this);
     this.displayEditNameControl = this.displayEditNameControl.bind(this);
     this.displayEditDescriptionControl = this.displayEditDescriptionControl.bind(this);
     this.renderEditNameButton = this.renderEditNameButton.bind(this);
@@ -74,7 +76,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
       editedControlLoadingState = 'isNewDescriptionBeingSubmitted';
     }
 
-    this.setState({ [editedControlLoadingState: true });
+    this.setState({ [editedControlLoadingState]: true });
 
     this.props.editQuestionSet(
       this.props.params.id,
@@ -130,6 +132,18 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     });
   }
 
+  private onNewNameInputKeyPress(e) {
+    if (e.charCode === 13) {
+      this.editName();
+    }
+  }
+
+  private onNewDescriptionInputKeyPress(e) {
+    if (e.charCode === 13) {
+      this.editDescription();
+    }
+  }
+
   private displayEditNameControl() {
     this.setState({
       displayEditNameControl: true,
@@ -150,6 +164,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
           placeholder="Name"
           size="huge"
           onChange={this.setNewName}
+          onKeyPress={this.onNewNameInputKeyPress}
           defaultValue={this.props.data.getOutcomeSet.name}
           ref={this.handleEditNameInputRef}
           onFocus={this.moveCaretAtEnd}
@@ -178,6 +193,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
           type="text"
           placeholder="Description"
           onChange={this.setNewDescription}
+          onKeyPress={this.onNewDescriptionInputKeyPress}
           defaultValue={this.props.data.getOutcomeSet.description}
           ref={this.handleEditDescriptionInputRef}
           onFocus={this.moveCaretAtEnd}
