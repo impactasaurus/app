@@ -49,20 +49,6 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     this.renderEditDescriptionButton = this.renderEditDescriptionButton.bind(this);
   }
 
-  public componentDidUpdate(prevProps: IProps, prevState: IState) {
-    const { displayEditNameControl, displayEditDescriptionControl } = this.state;
-
-    // if the editNameControl was newly displayed during this update
-    if (displayEditNameControl && (!displayEditDescriptionControl || prevState.displayEditDescriptionControl)) {
-      this.editNameInput.focus();
-    }
-
-    // if the editDescriptionControl was newly displayed during this update
-    if (displayEditDescriptionControl && (!displayEditNameControl || prevState.displayEditNameControl)) {
-      this.editDescriptionInput.focus();
-    }
-  }
-
   private editQS(editedValueType: 'name' | 'description') {
     let editedControlDisplayState, editedControlErrorState, editedControlLoadingState;
 
@@ -168,6 +154,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
           defaultValue={this.props.data.getOutcomeSet.name}
           ref={this.handleEditNameInputRef}
           onFocus={this.moveCaretAtEnd}
+          autoFocus
         />
         <Button onClick={this.editName} size="huge" icon labelPosition="right" loading={this.state.isNewNameBeingSubmitted}>
           Edit name
@@ -197,6 +184,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
           defaultValue={this.props.data.getOutcomeSet.description}
           ref={this.handleEditDescriptionInputRef}
           onFocus={this.moveCaretAtEnd}
+          autoFocus
         />
         <Button onClick={this.editDescription} icon labelPosition="right" loading={this.state.isNewDescriptionBeingSubmitted}>
           Edit description
