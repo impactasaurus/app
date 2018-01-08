@@ -94,7 +94,7 @@ export interface IOutcomeResult extends QueryProps {
 }
 
 export interface IOutcomeMutation {
-    newQuestionSet(name: string, description?: string): Promise<IOutcomeSet>;
-    deleteQuestionSet(id: string): Promise<string>;
-    editQuestionSet(id: string, name: string, description?: string): Promise<IOutcomeSet>;
+    newQuestionSet?(name: string, description?: string): Promise<IOutcomeSet>;
+    deleteQuestionSet?(id: string): Promise<string>;
+    editQuestionSet?(id: string, name: string, description?: string): Promise<IOutcomeSet>;
 }

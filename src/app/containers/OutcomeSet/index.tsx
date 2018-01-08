@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import {IOutcomeResult, getOutcomeSet, IOutcomeMutation, editQuestionSet} from 'apollo/modules/outcomeSets';
+import {EditQuestionnaireName} from 'components/EditQuestionnaireName';
+import {EditQuestionnaireDescription} from 'components/EditQuestionnaireDescription';
+import {IOutcomeResult, getOutcomeSet, IOutcomeMutation} from 'apollo/modules/outcomeSets';
 import {IQuestionMutation, deleteQuestion} from 'apollo/modules/questions';
-import { Button, Input, Icon, Grid, Loader } from 'semantic-ui-react';
+import { Button, Icon, Grid, Loader } from 'semantic-ui-react';
 import {CategoryList} from 'components/CategoryList';
 import {QuestionList} from 'components/QuestionList';
 import {Hint} from 'components/Hint';
@@ -17,94 +19,70 @@ interface IProps extends IOutcomeMutation, IQuestionMutation {
 };
 
 interface IState {
-  editError?: string;
-  newName?: string;
-  newDescription?: string;
-  editClicked?: boolean;
+  displayEditNameControl?: boolean;
+  displayEditDescriptionControl?: boolean;
 };
 
 class OutcomeSetInner extends React.Component<IProps, IState> {
-
   constructor(props) {
     super(props);
     this.state = {};
-    this.renderEditControl = this.renderEditControl.bind(this);
-    this.editQS = this.editQS.bind(this);
-    this.setNewName = this.setNewName.bind(this);
-    this.setNewDescription = this.setNewDescription.bind(this);
-    this.setEditClicked = this.setEditClicked.bind(this);
-    this.renderEditButton = this.renderEditButton.bind(this);
+    this.displayEditNameControl = this.displayEditNameControl.bind(this);
+    this.displayEditDescriptionControl = this.displayEditDescriptionControl.bind(this);
+    this.renderEditNameButton = this.renderEditNameButton.bind(this);
+    this.renderEditDescriptionButton = this.renderEditDescriptionButton.bind(this);
+    this.hideEditNameControl = this.hideEditNameControl.bind(this);
+    this.hideEditDescriptionControl = this.hideEditDescriptionControl.bind(this);
   }
 
-  private editQS() {
-    this.props.editQuestionSet(
-      this.props.params.id,
-      this.state.newName || this.props.data.getOutcomeSet.name,
-      this.state.newDescription || this.props.data.getOutcomeSet.description,
-    )
-    .then(() => {
-      this.setState({
-        editError: undefined,
-        editClicked: false,
-      });
-    })
-    .catch((e: Error)=> {
-      this.setState({
-        editError: e.message,
-      });
-    });
-  }
-
-  private setNewName(_, data) {
+  private displayEditNameControl() {
     this.setState({
-      newName: data.value,
+      displayEditNameControl: true,
     });
   }
 
-  private setNewDescription(_, data) {
+  private displayEditDescriptionControl() {
     this.setState({
-      newDescription: data.value,
+      displayEditDescriptionControl: true,
     });
   }
 
-  private setEditClicked() {
+  private hideEditNameControl() {
     this.setState({
-      editClicked: true,
+      displayEditNameControl: false,
     });
   }
 
-  private renderEditControl(): JSX.Element {
-    if (this.state.editClicked !== true) {
-      return (<div />);
-    }
+  private hideEditDescriptionControl() {
+    this.setState({
+      displayEditDescriptionControl: false,
+    });
+  }
+
+  private renderEditNameButton(): JSX.Element {
     return (
-      <div className="edit-control">
-        <Input type="text" placeholder="Name" onChange={this.setNewName} defaultValue={this.props.data.getOutcomeSet.name}/>
-        <Input type="text" placeholder="Description" onChange={this.setNewDescription} defaultValue={this.props.data.getOutcomeSet.description}/>
-        <Button onClick={this.editQS}>Edit</Button>
-        <p>{this.state.editError}</p>
-      </div>
+      <Button icon basic circular size="mini" onClick={this.displayEditNameControl}>
+        <Icon name="pencil"/>
+      </Button>
     );
   }
 
-  private renderEditButton(): JSX.Element {
-    if (this.state.editClicked === true) {
-      return (<div />);
-    }
+  private renderEditDescriptionButton(): JSX.Element {
     return (
-      <Button icon basic circular size="mini" onClick={this.setEditClicked}>
+      <Button icon basic circular size="mini" onClick={this.displayEditDescriptionControl}>
         <Icon name="pencil"/>
       </Button>
     );
   }
 
   public render() {
-    if (this.props.data.loading) {
+    const { data, params } = this.props;
+    const { displayEditNameControl, displayEditDescriptionControl } = this.state;
+    if (data.loading) {
       return (
         <Loader active={true} inline="centered" />
       );
     }
-    const { data } = this.props;
     const os = data.getOutcomeSet;
     if (os === undefined) {
         return (<div />);
@@ -115,17 +93,25 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
           <Helmet>
             <title>Question Sets</title>
           </Helmet>
-          <h1>{os.name}{this.renderEditButton()}</h1>
-          <div>Description: {os.description || 'No description'}{this.renderEditButton()}</div>
-          {this.renderEditControl()}
+          {displayEditNameControl ?
+            <EditQuestionnaireName data={data} outcomeSetID={params.id} afterSubmit={this.hideEditNameControl} />
+            :
+            <h1>{os.name}{this.renderEditNameButton()}</h1>
+          }
+          {displayEditDescriptionControl ?
+            <EditQuestionnaireDescription data={data} outcomeSetID={params.id} afterSubmit={this.hideEditDescriptionControl} />
+            :
+            <div>Description: {os.description || 'No description'}{this.renderEditDescriptionButton()}</div>
+          }
           <h3>Questions</h3>
-          <QuestionList outcomeSetID={this.props.params.id} />
+          <QuestionList outcomeSetID={params.id} />
           <h3>Question Categories <Hint text={strings.questionCategoryExplanation} /></h3>
-          <CategoryList outcomeSetID={this.props.params.id} />
+          <CategoryList outcomeSetID={params.id} />
         </Grid.Column>
       </Grid>
     );
   }
 }
-const OutcomeSet = getOutcomeSet<IProps>((props) => props.params.id)(editQuestionSet<IProps>(deleteQuestion(OutcomeSetInner)));
+
+const OutcomeSet = getOutcomeSet<IProps>((props) => props.params.id)(deleteQuestion<IProps>(OutcomeSetInner));
 export { OutcomeSet }
