@@ -2,12 +2,13 @@ import * as React from 'react';
 import { Button, Select, Input, ButtonProps, SelectProps } from 'semantic-ui-react';
 import {DateTimePicker} from 'components/DateTimePicker';
 import {Hint} from 'components/Hint';
+import {TagInput} from 'components/TagInput';
 import {IOutcomeResult, allOutcomeSets} from 'apollo/modules/outcomeSets';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IAssessmentConfig} from 'models/assessment';
 import * as moment from 'moment';
-const strings = require('./../../../strings.json');
 import './style.less';
+const strings = require('./../../../strings.json');
 
 interface IProps  {
   showDatePicker: boolean;
@@ -23,6 +24,7 @@ interface IState {
   conducted?: moment.Moment;
   dateSelectionError?: string;
   saving?: boolean;
+  tags: string[];
 }
 
 class AssessmentConfigInner extends React.Component<IProps, IState> {
@@ -34,12 +36,14 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
       dateSelectionError: undefined,
       conducted: moment(),
       saving: false,
+      tags: [],
     };
     this.startMeeting = this.startMeeting.bind(this);
     this.setOS = this.setOS.bind(this);
     this.setBenID = this.setBenID.bind(this);
     this.setConductedDate = this.setConductedDate.bind(this);
     this.renderDatePicker = this.renderDatePicker.bind(this);
+    this.setTags = this.setTags.bind(this);
   }
 
   private validateStartMeetingOptions(beneficiaryID?: string, outcomeSetID?: string): string|null {
@@ -58,12 +62,14 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     const validation = this.validateStartMeetingOptions(benID, osID);
     if (validation !== null) {
       this.setState({
+        ...this.state,
         startMeetingError: validation,
       });
       return;
     }
     const conducted = this.state.conducted;
     this.setState({
+      ...this.state,
       saving: true,
     });
     this.props.onSubmit({
@@ -73,6 +79,7 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     })
     .catch((e: Error|string)=> {
       this.setState({
+        ...this.state,
         startMeetingError: (e instanceof Error) ? e.message : e,
         saving: false,
       });
@@ -94,12 +101,14 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
 
   private setOS(_, data) {
     this.setState({
+      ...this.state,
       selectedOS: data.value,
     });
   }
 
   private setBenID(_, data) {
     this.setState({
+      ...this.state,
       selectedBenID: data.value,
     });
   }
@@ -107,14 +116,23 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
   private setConductedDate(date: moment.Moment) {
     if (date > moment()) {
       this.setState({
+        ...this.state,
         dateSelectionError: 'Conducted date must be in the past',
         conducted: this.state.conducted,
       });
       return;
     }
     this.setState({
+      ...this.state,
       conducted: date,
       dateSelectionError: undefined,
+    });
+  }
+
+  private setTags(tags: string[]): void {
+    this.setState({
+      tags,
+      ...this.state,
     });
   }
 
@@ -154,6 +172,11 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
         <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID} />
         <h3 className="label">Questionnaire</h3>
         <Select {...selectProps} placeholder="Questionnaire" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
+        <span className="label">
+          <Hint text={strings.tagExplanation} />
+          <h3 id="tags">Tags</h3>
+        </span>
+        <TagInput onChange={this.setTags} />
         {this.renderDatePicker()}
         <Button {...startProps} className="submit" onClick={this.startMeeting}>{this.props.buttonText}</Button>
         <p>{this.state.startMeetingError}</p>
