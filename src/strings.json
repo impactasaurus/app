@@ -2,5 +2,5 @@
   "beneficiaryIDExplanation": "A unique identifier for the beneficiary. Ideally this would be the ID of the beneficiary within your CRM system. This should not contain personal information.",
   "questionCategoryExplanation": "Group related questions into categories. This allows aggregation of multiple questions into a single value.",
   "JOCReportDateRange": "Any beneficiaries, who have been assessed within this time period, will be considered for inclusion in the report.",
-  "tagExplanation": "Tags are arbitrary labels which are applied to records. They can be used to filter your records when reporting. Common uses of tags include demographic or intervention information."
+  "tagExplanation": "Tags are words which can be saved against records. They can be used to filter your records when reporting. Common uses of tags include demographic or intervention information."
 }
