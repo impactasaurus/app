@@ -9,11 +9,11 @@ import {ServiceReportDetails} from 'components/ServiceReportDetails';
 import {ServiceReportRadar} from 'components/ServiceReportRadar';
 import {ServiceReportTable} from 'components/ServiceReportTable';
 import {VizControlPanel} from 'components/VizControlPanel';
-const { connect } = require('react-redux');
 import {IStore} from 'redux/IStore';
 import {renderArray} from 'helpers/react';
 import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'models/pref';
 import './style.less';
+const { connect } = require('react-redux');
 
 interface IProp extends IReportResult {
   data: IOutcomeResult;
@@ -117,5 +117,15 @@ function getEndDateFromProps(p: IProp): string {
   return p.params.end;
 }
 
-const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps)(ServiceReportInner));
+function getTagsFromProps(p: IProp): string[] {
+  const urlParams = new URLSearchParams(p.location.search);
+  if (urlParams.has('tags') === false) {
+    return [];
+  }
+  const tags = urlParams.get('tags');
+  const parsedTags = JSON.parse(tags);
+  return parsedTags;
+}
+
+const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps)(ServiceReportInner));
 export {ServiceReport}

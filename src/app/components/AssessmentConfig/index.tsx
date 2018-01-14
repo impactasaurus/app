@@ -158,17 +158,11 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     }
     return (
       <div className="impactform assessment-config">
-        <span className="label">
-          <Hint text={strings.beneficiaryIDExplanation} />
-          <h3 id="benID">Beneficiary ID</h3>
-        </span>
+        <h3 className="label"><Hint text={strings.beneficiaryIDExplanation} />Beneficiary ID</h3>
         <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID} />
         <h3 className="label">Questionnaire</h3>
         <Select {...selectProps} placeholder="Questionnaire" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
-        <span className="label">
-          <Hint text={strings.tagExplanation} />
-          <h3 id="tags">Tags</h3>
-        </span>
+        <h3 className="label optional"><Hint text={strings.tagExplanation} />Tags</h3>
         <TagInput onChange={this.setTags} />
         {this.renderDatePicker()}
         <Button {...startProps} className="submit" onClick={this.startMeeting}>{this.props.buttonText}</Button>
