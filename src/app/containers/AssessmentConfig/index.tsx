@@ -52,7 +52,7 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
 
   private startMeeting(config: IAssessmentConfig): Promise<void> {
     if (this.getType() === AssessmentType.remote) {
-      return this.props.newRemoteMeeting(config.beneficiaryID, config.outcomeSetID, defaultRemoteMeetingLimit)
+      return this.props.newRemoteMeeting(config, defaultRemoteMeetingLimit)
       .then((jti) => {
         this.recordMeetingStarted();
         this.setState({
@@ -60,11 +60,10 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
         });
       });
     } else {
-      let date = new Date();
-      if (this.shouldGetDate()) {
-        date = config.date;
+      if (this.shouldGetDate() === false) {
+        config.date = new Date();
       }
-      return this.props.newMeeting(config.beneficiaryID, config.outcomeSetID, date)
+      return this.props.newMeeting(config)
       .then((meeting) => {
         this.recordMeetingStarted();
         this.props.setURL(`/meeting/${meeting.id}`);

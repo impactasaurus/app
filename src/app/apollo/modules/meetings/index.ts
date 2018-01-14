@@ -2,6 +2,7 @@ import {gql, graphql, QueryProps} from 'react-apollo';
 import {IMeeting, fragment, fragmentWithOutcomeSetAndAggregates} from 'models/meeting';
 import {IDExtractor, mutationResultExtractor} from 'helpers/apollo';
 import { invalidateFields, ROOT } from 'apollo-cache-invalidation';
+import {IAssessmentConfig} from 'models/assessment';
 
 // see impactasaurus/app#55, not an ideal fix
 // forces refetch of meeting related queries by deleting root query pointers for `meeting` and `meetings` queries
@@ -50,44 +51,50 @@ export const getMeetings = <T>(idExtractor: IDExtractor<T>) => {
 };
 
 export const newMeeting = graphql(gql`
-  mutation ($beneficiaryID: String!, $outcomeSetID: String!, $conducted: String!) {
-    newMeeting: AddMeeting(beneficiaryID:$beneficiaryID, outcomeSetID:$outcomeSetID, conducted:$conducted) {
+  mutation ($beneficiaryID: String!, $outcomeSetID: String!, $conducted: String!, $tags: [String]) {
+    newMeeting: AddMeeting(beneficiaryID:$beneficiaryID, outcomeSetID:$outcomeSetID, conducted:$conducted, tags:$tags) {
       ...defaultMeeting
     }
   }
   ${fragment}`, {
     props: ({ mutate }) => ({
-      newMeeting: (beneficiaryID: string, outcomeSetID: string, conducted: Date): Promise<IMeeting> => mutate({
+      newMeeting: (config: IAssessmentConfig): Promise<IMeeting> => mutate({
         variables: {
-            beneficiaryID,
-            outcomeSetID,
-            conducted: conducted.toISOString(),
+          beneficiaryID: config.beneficiaryID,
+          outcomeSetID: config.outcomeSetID,
+          conducted: config.date ? config.date.toISOString() : new Date().toISOString(),
+          tags: config.tags || [],
         },
         refetchQueries: [{
           query: getMeetingsGQL,
-          variables: { beneficiaryID },
+          variables: {
+            beneficiaryID: config.beneficiaryID,
+          },
         }],
       }).then(mutationResultExtractor<IMeeting>('newMeeting')),
     }),
   });
 
 export const newRemoteMeeting = graphql(gql`
-  mutation($beneficiaryID: String!, $outcomeSetID: String!, $daysToComplete: Int!) {
-    newRemoteMeeting: AddRemoteMeeting(beneficiaryID:$beneficiaryID, outcomeSetID:$outcomeSetID, daysToComplete:$daysToComplete){
+  mutation($beneficiaryID: String!, $outcomeSetID: String!, $daysToComplete: Int!, $tags: [String]) {
+    newRemoteMeeting: AddRemoteMeeting(beneficiaryID:$beneficiaryID, outcomeSetID:$outcomeSetID, daysToComplete:$daysToComplete, tags:$tags){
       JTI
     }
   }
 `, {
     props: ({ mutate }) => ({
-      newRemoteMeeting: (beneficiaryID: string, outcomeSetID: string, daysToComplete: number): Promise<string> => mutate({
+      newRemoteMeeting: (config: IAssessmentConfig, daysToComplete: number): Promise<string> => mutate({
         variables: {
-            beneficiaryID,
-            outcomeSetID,
-            daysToComplete: Math.ceil(daysToComplete),
+          beneficiaryID: config.beneficiaryID,
+          outcomeSetID: config.outcomeSetID,
+          daysToComplete: Math.ceil(daysToComplete),
+          tags: config.tags || [],
         },
         refetchQueries: [{
           query: getMeetingsGQL,
-          variables: { beneficiaryID },
+          variables: {
+            beneficiaryID: config.beneficiaryID,
+          },
         }],
       }).then(mutationResultExtractor<{
         JTI: string,
@@ -144,8 +151,8 @@ export interface IMeetingResult extends QueryProps {
 }
 
 export interface IMeetingMutation {
-  newMeeting(beneficiaryID: string, outcomeSetID: string, conducted: Date): Promise<IMeeting>;
-  newRemoteMeeting(beneficiaryID: string, outcomeSetID: string, daysToComplete: number): Promise<string>;
+  newMeeting(config: IAssessmentConfig): Promise<IMeeting>;
+  newRemoteMeeting(config: IAssessmentConfig, daysToComplete: number): Promise<string>;
   addLikertAnswer(meetingID: string, questionID: string, value: number): Promise<IMeeting>;
   completeMeeting(meetingID: string, beneficiaryID: string): Promise<IMeeting>;
 }

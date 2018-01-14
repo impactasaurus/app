@@ -11,14 +11,14 @@
       margin: auto;
       margin-top: 25px;
     }
-    .label {
+    .label:not(.ui) {
       display: block;
       margin-top: 25px;
       margin-bottom: @marginBottom;
       text-transform: capitalize;
-    }
-    .label:after {
-      content: ":";
+      &:after {
+        content: ":";
+      }
     }
     h3 {
       display: inline-block;
