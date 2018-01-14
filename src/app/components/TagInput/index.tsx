@@ -27,6 +27,7 @@ class TagInput extends React.Component<IProps, IState> {
     this.setState({
       tags,
     });
+    this.props.onChange(tags);
   }
 
   private renderTag(props) {

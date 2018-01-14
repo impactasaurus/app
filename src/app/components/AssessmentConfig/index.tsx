@@ -24,7 +24,7 @@ interface IState {
   conducted?: moment.Moment;
   dateSelectionError?: string;
   saving?: boolean;
-  tags: string[];
+  tags?: string[];
 }
 
 class AssessmentConfigInner extends React.Component<IProps, IState> {
@@ -62,24 +62,22 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     const validation = this.validateStartMeetingOptions(benID, osID);
     if (validation !== null) {
       this.setState({
-        ...this.state,
         startMeetingError: validation,
       });
       return;
     }
-    const conducted = this.state.conducted;
+    const {conducted, tags} = this.state;
     this.setState({
-      ...this.state,
       saving: true,
     });
     this.props.onSubmit({
       beneficiaryID: benID,
       outcomeSetID: osID,
       date: this.props.showDatePicker ? conducted.toDate() : null,
+      tags,
     })
     .catch((e: Error|string)=> {
       this.setState({
-        ...this.state,
         startMeetingError: (e instanceof Error) ? e.message : e,
         saving: false,
       });
@@ -101,14 +99,12 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
 
   private setOS(_, data) {
     this.setState({
-      ...this.state,
       selectedOS: data.value,
     });
   }
 
   private setBenID(_, data) {
     this.setState({
-      ...this.state,
       selectedBenID: data.value,
     });
   }
@@ -116,14 +112,12 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
   private setConductedDate(date: moment.Moment) {
     if (date > moment()) {
       this.setState({
-        ...this.state,
         dateSelectionError: 'Conducted date must be in the past',
         conducted: this.state.conducted,
       });
       return;
     }
     this.setState({
-      ...this.state,
       conducted: date,
       dateSelectionError: undefined,
     });
@@ -132,7 +126,6 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
   private setTags(tags: string[]): void {
     this.setState({
       tags,
-      ...this.state,
     });
   }
 
