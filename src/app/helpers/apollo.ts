@@ -3,6 +3,7 @@ export type VariableExtractor<T> = (props: T) => {
 };
 
 export type IDExtractor<T> = (props: T) => string;
+export type Extractor<T, R> = (props: T) => R;
 
 export function mutationResultExtractor<T>(mutationName: string): (response: {data: {}}) => Promise<T> {
   return (response) => {

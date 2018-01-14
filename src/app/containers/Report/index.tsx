@@ -7,6 +7,7 @@ import {DateRangePicker} from 'components/DateRangePicker';
 import {Hint} from 'components/Hint';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import { bindActionCreators } from 'redux';
+import {TagInput} from 'components/TagInput';
 const { connect } = require('react-redux');
 const strings = require('./../../../strings.json');
 const ReactGA = require('react-ga');
@@ -16,6 +17,7 @@ interface IState {
   periodEnd?: Date;
   questionSetID?: string;
   error?: string;
+  tags?: string[];
 }
 
 @connect(undefined, (dispatch) => ({
@@ -25,12 +27,15 @@ class Report extends React.Component<IURLConnector, IState> {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      tags: [],
+    };
     this.setDateRange = this.setDateRange.bind(this);
     this.setQuestionSetID = this.setQuestionSetID.bind(this);
     this.validateInput = this.validateInput.bind(this);
     this.navigateToReport = this.navigateToReport.bind(this);
     this.renderNewReportControl = this.renderNewReportControl.bind(this);
+    this.setTags = this.setTags.bind(this);
   }
 
   private validateInput(): string|null {
@@ -58,7 +63,11 @@ class Report extends React.Component<IURLConnector, IState> {
     const s = encodeDatePathParam(this.state.periodStart);
     const e = encodeDatePathParam(this.state.periodEnd);
     this.logGAEvent(this.dateDiff(this.state.periodStart,this.state.periodEnd));
-    this.props.setURL(`/report/service/${this.state.questionSetID}/${s}/${e}`);
+    let queryParams;
+    if (Array.isArray(this.state.tags) && this.state.tags.length > 0) {
+      queryParams = `?tags=${JSON.stringify(this.state.tags)}`;
+    }
+    this.props.setURL(`/report/service/${this.state.questionSetID}/${s}/${e}`, queryParams);
   }
   private dateDiff(date1, date2) {
     const oneDay = 1000*60*60*24;
@@ -92,6 +101,12 @@ class Report extends React.Component<IURLConnector, IState> {
     });
   }
 
+  private setTags(tags: string[]): void {
+    this.setState({
+      tags,
+    });
+  }
+
   private renderNewReportControl(): JSX.Element {
     return (
       <div className="impactform">
@@ -99,6 +114,8 @@ class Report extends React.Component<IURLConnector, IState> {
         <QuestionSetSelect onQuestionSetSelected={this.setQuestionSetID} />
         <h3 className="label"><Hint text={strings.JOCReportDateRange} />Date Range</h3>
         <DateRangePicker onSelect={this.setDateRange} future={false}/>
+        <h3 className="label optional"><Hint text={strings.tagUsage} />Tags</h3>
+        <TagInput onChange={this.setTags} />
         <Button className="submit" onClick={this.navigateToReport}>Generate</Button>
         <p>{this.state.error}</p>
       </div>
