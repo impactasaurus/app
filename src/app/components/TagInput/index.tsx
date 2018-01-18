@@ -5,6 +5,9 @@ import './style.less';
 
 interface IProps {
   onChange: (tags: string[]) => void;
+  renderInput?: (props) => JSX.Element;
+  addOnBlur?: boolean;
+  addOnKeyboard?: boolean;
 }
 
 interface IState {
@@ -72,15 +75,20 @@ class TagInput extends React.Component<IProps, IState> {
   }
 
   public render() {
+    const input = this.props.renderInput || this.renderInput;
+    const addOnBlur = this.props.addOnBlur !== false;
+    const addKeys = this.props.addOnKeyboard === false ? [] : [13]; // enter
     return (
       <TagsInput
         className="tag-input"
         value={this.state.tags}
         onChange={this.onChange}
         renderTag={this.renderTag}
-        renderInput={this.renderInput}
+        renderInput={input}
         renderLayout={this.renderLayout}
-        addOnBlur={true}
+        addOnBlur={addOnBlur}
+        removeKeys={[]}
+        addKeys={addKeys}
       />
     );
   }

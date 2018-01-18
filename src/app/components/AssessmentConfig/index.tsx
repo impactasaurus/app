@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button, Select, Input, ButtonProps, SelectProps } from 'semantic-ui-react';
 import {DateTimePicker} from 'components/DateTimePicker';
 import {Hint} from 'components/Hint';
-import {TagInput} from 'components/TagInput';
+import {RecordTagInput} from 'components/RecordTagInput';
 import {IOutcomeResult, allOutcomeSets} from 'apollo/modules/outcomeSets';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IAssessmentConfig} from 'models/assessment';
@@ -163,7 +163,7 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
         <h3 className="label">Questionnaire</h3>
         <Select {...selectProps} placeholder="Questionnaire" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
         <h3 className="label optional"><Hint text={strings.tagExplanation} />Tags</h3>
-        <TagInput onChange={this.setTags} />
+        <RecordTagInput onChange={this.setTags} />
         {this.renderDatePicker()}
         <Button {...startProps} className="submit" onClick={this.startMeeting}>{this.props.buttonText}</Button>
         <p>{this.state.startMeetingError}</p>
