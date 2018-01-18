@@ -7,7 +7,7 @@ import {DateRangePicker} from 'components/DateRangePicker';
 import {Hint} from 'components/Hint';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import { bindActionCreators } from 'redux';
-import {TagInput} from 'components/TagInput';
+import {RecordTagInput} from 'components/RecordTagInput';
 const { connect } = require('react-redux');
 const strings = require('./../../../strings.json');
 const ReactGA = require('react-ga');
@@ -115,7 +115,7 @@ class Report extends React.Component<IURLConnector, IState> {
         <h3 className="label"><Hint text={strings.JOCReportDateRange} />Date Range</h3>
         <DateRangePicker onSelect={this.setDateRange} future={false}/>
         <h3 className="label optional"><Hint text={strings.tagUsage} />Tags</h3>
-        <TagInput onChange={this.setTags} />
+        <RecordTagInput onChange={this.setTags} allowNewTags={false} />
         <Button className="submit" onClick={this.navigateToReport}>Generate</Button>
         <p>{this.state.error}</p>
       </div>

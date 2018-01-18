@@ -7,10 +7,17 @@ import {ITagResult, getTags} from 'apollo/modules/tags';
 interface IProps {
   onChange: (tags: string[]) => void;
   data?: ITagResult;
+  allowNewTags?: boolean;
 }
 
 interface IState {
   tags: string[];
+}
+
+function getMatchingTags(systemTags: string[], selectedTags: string[], q: string) {
+  return systemTags
+    .filter((t) => selectedTags.indexOf(t) === -1) // don't show tags that have already been selected
+    .filter((t) => t.toLowerCase().includes(q.toLowerCase()));
 }
 
 class RecordTagInputInner extends React.Component<IProps, IState> {
@@ -31,12 +38,24 @@ class RecordTagInputInner extends React.Component<IProps, IState> {
 
   private renderInput(props) {
     const {onChange, value, addTag, ...other} = props;
-    const handleResultSelect = (_, { result }) => addTag(result.title);
     const addTagWithVal = () => addTag(value);
-    const results = (this.props.data.getTags || [])
-      .filter((t) => this.state.tags.indexOf(t) === -1)
-      .filter((t) => t.toLowerCase().includes(value.toLowerCase()))
+    const handleResultSelect = (_, { result }) => {
+      if (result.addValue === true) {
+        return addTagWithVal();
+      }
+      addTag(result.title);
+    };
+    const results: any[] = getMatchingTags(this.props.data.getTags || [], this.state.tags, value)
       .map((t) => ({title: t}));
+    let icon;
+    if (this.props.allowNewTags !== false) {
+      results.push({
+        title: 'Create a new tag',
+        description: 'Click here or the plus icon',
+        addValue: true,
+      });
+      icon = (<Icon name="add" link onClick={addTagWithVal} />);
+    }
 
     return (
       <Search
@@ -45,10 +64,10 @@ class RecordTagInputInner extends React.Component<IProps, IState> {
         onSearchChange={onChange}
         results={results}
         open={value.length > 0}
+        fluid={true}
         value={value}
-        icon={(<Icon name="add" link onClick={addTagWithVal} />)}
+        icon={icon}
         noResultsMessage={'No matching tags found'}
-        noResultsDescription={'Press enter to add a new tag'}
         {...other}
       />
     );
@@ -61,6 +80,7 @@ class RecordTagInputInner extends React.Component<IProps, IState> {
           onChange={this.onChange}
           renderInput={this.renderInput}
           addOnBlur={false}
+          addOnKeyboard={false}
       />
       </div>
     );
