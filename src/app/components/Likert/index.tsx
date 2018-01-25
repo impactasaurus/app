@@ -9,6 +9,7 @@ interface IProps {
   rightValue: number;
   onChange: (value: number) => void;
   disabled?: boolean;
+  value?: number;
 }
 
 interface IState {
@@ -30,6 +31,18 @@ class Likert extends React.Component<IProps, IState> {
     this.touched = this.touched.bind(this);
   }
 
+  public componentWillReceiveProps(nextProps) {
+    if (this.props.value !== undefined && nextProps.value === undefined && !this.state.awaitingAnswer) {
+      this.setState({
+        awaitingAnswer: true,
+      });
+    }
+    if (this.props.value === undefined && nextProps.value !== undefined && this.state.awaitingAnswer) {
+      this.setState({
+        awaitingAnswer: false,
+      });
+    }
+  }
   private isInverted() {
     return this.props.leftValue > this.props.rightValue;
   }
@@ -48,10 +61,16 @@ class Likert extends React.Component<IProps, IState> {
 
   private touched() {
     if (this.state.awaitingAnswer) {
-      this.setAnswer(this.defaultValue());
       this.setState({
         awaitingAnswer: false,
       });
+      if (this.props.value === undefined) {
+        // This is here because the Slider is set up with a defaultValue.
+        // If we are awaiting an answer and the user clicks the default value,
+        // the Slider will not raise an on change event.
+        // For other value presses this will be called before on change.
+        this.setAnswer(this.defaultValue());
+      }
     }
   }
 
@@ -88,6 +107,7 @@ class Likert extends React.Component<IProps, IState> {
         onChange={this.setAnswer}
         onBeforeChange={this.touched}
         disabled={this.props.disabled}
+        value={this.props.value}
       />
     );
   }

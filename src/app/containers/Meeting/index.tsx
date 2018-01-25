@@ -9,6 +9,8 @@ import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import {IURLConnector} from 'redux/modules/url';
+import {IIntAnswer, IAnswer} from 'models/answer';
+import {IQuestion} from 'models/question';
 const { connect } = require('react-redux');
 const ReactGA = require('react-ga');
 
@@ -17,6 +19,8 @@ interface IProps extends IMeetingMutation, IURLConnector {
   params: {
       id: string,
   };
+  questions?: IQuestion[];
+  answers?: IAnswer[];
 };
 
 interface IState {
@@ -29,7 +33,15 @@ interface IState {
     completeError?: string;
 };
 
-@connect(undefined, (dispatch) => ({
+@connect((_, ownProps: IProps) => {
+  const out: any = {};
+  if (ownProps.data.getMeeting !== undefined) {
+    out.questions = (ownProps.data.getMeeting.outcomeSet.questions || [])
+      .filter((q) => !q.archived);
+    out.answers = ownProps.data.getMeeting.answers;
+  }
+  return out;
+}, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
 class MeetingInner extends React.Component<IProps, IState> {
@@ -45,52 +57,78 @@ class MeetingInner extends React.Component<IProps, IState> {
     };
     this.setAnswer = this.setAnswer.bind(this);
     this.next = this.next.bind(this);
-    this.getNextQuestionToAnswer = this.getNextQuestionToAnswer.bind(this);
     this.renderFinished = this.renderFinished.bind(this);
     this.review = this.review.bind(this);
+    this.goToQuestion = this.goToQuestion.bind(this);
+    this.goToReview = this.goToReview.bind(this);
+    this.goToNextQuestionOrReview = this.goToNextQuestionOrReview.bind(this);
+    this.canGoToPreviousQuestion = this.canGoToPreviousQuestion.bind(this);
+    this.goToPreviousQuestion = this.goToPreviousQuestion.bind(this);
   }
 
-  public componentDidUpdate() {
-    if (this.state.currentQuestion === undefined &&
-      this.state.finished === false &&
-      this.props.data.getMeeting !== undefined ) {
-      const nextQuestion = this.getNextQuestionToAnswer();
-      if (nextQuestion === null) {
-        this.setState({
-          currentQuestion: undefined,
-          finished: true,
-        });
+  public componentDidUpdate(prevProps: IProps) {
+    if (prevProps.questions === undefined &&
+      this.props.questions !== undefined) {
+      if (this.props.questions.length <= 0) {
+        this.goToReview();
       } else {
-        this.setState({
-          currentQuestion: nextQuestion.id,
-          currentValue: undefined,
-          finished: false,
-        });
+        this.goToQuestion(0);
       }
     }
   }
 
-  private getNextQuestionToAnswer(): Question|null {
-    const questionsToAnswer = this.props.data.getMeeting.outcomeSet.questions
-    .filter((q) => !q.archived)
-    .filter((question) => {
-      const found = this.props.data.getMeeting.answers.find((answer) => answer.questionID === question.id);
-      if (found === undefined) {
-        return true;
-      }
-      return false;
-    });
-    if (questionsToAnswer.length > 0) {
-      return questionsToAnswer[0] as Question;
+  private goToQuestion(idx: number) {
+    let idxx = idx;
+    if (idx < 0) {
+      idxx = 0;
     }
-    return null;
+    if (idx >= this.props.questions.length) {
+      idxx = this.props.questions.length - 1;
+    }
+    const question = this.props.questions[idxx];
+    const answer = this.props.answers.find((answer) => answer.questionID === question.id);
+    this.setState({
+      currentQuestion: question.id,
+      currentValue: (answer ? (answer as IIntAnswer).answer : undefined),
+      finished: false,
+    });
+  }
+
+  private goToReview() {
+    this.setState({
+      finished: true,
+    });
+  }
+
+  private goToNextQuestionOrReview() {
+    const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
+    if (this.props.questions.length > currentIdx + 1) {
+      this.goToQuestion(currentIdx+1);
+    } else {
+      this.goToReview();
+    }
+  }
+
+  private goToPreviousQuestion() {
+    const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
+    if (currentIdx === -1 || currentIdx === 0) {
+      return;
+    }
+    this.goToQuestion(currentIdx-1);
+  }
+
+  private canGoToPreviousQuestion(): boolean {
+    const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
+    return currentIdx !== -1 && currentIdx !== 0;
   }
 
   private setAnswer(value: number) {
+    console.log(value);
     this.setState({
       currentValue: value,
     });
   }
+
   private logGAEvent(action: string) {
     ReactGA.event({
       category : 'assessment',
@@ -107,10 +145,10 @@ class MeetingInner extends React.Component<IProps, IState> {
     .then(() => {
       this.setState({
         saving: false,
-        currentQuestion: undefined,
         saveError: undefined,
       });
       this.logGAEvent('answered');
+      this.goToNextQuestionOrReview();
     })
     .catch((e: string) => {
       this.setState({
@@ -196,7 +234,8 @@ class MeetingInner extends React.Component<IProps, IState> {
           </Helmet>
           <h1>{question.question}</h1>
           <h3>{question.description}</h3>
-          <Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} />
+          <Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} value={this.state.currentValue} />
+          {this.canGoToPreviousQuestion() && <Button onClick={this.goToPreviousQuestion}>Back</Button>}
           <Button {...nextProps} onClick={this.next}>Next</Button>
           <p>{this.state.saveError}</p>
         </Grid.Column>
