@@ -9,6 +9,7 @@ interface IProps {
   rightValue: number;
   onChange: (value: number) => void;
   disabled?: boolean;
+  value?: number;
 }
 
 interface IState {
@@ -20,16 +21,23 @@ class Likert extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      awaitingAnswer: true,
+      awaitingAnswer: this.props.value === undefined,
     };
     this.isInverted = this.isInverted.bind(this);
     this.minValue = this.minValue.bind(this);
     this.maxValue = this.maxValue.bind(this);
     this.setAnswer = this.setAnswer.bind(this);
-    this.defaultValue = this.defaultValue.bind(this);
     this.touched = this.touched.bind(this);
+    this.invertValue = this.invertValue.bind(this);
   }
 
+  public componentWillReceiveProps(nextProps) {
+    if (this.props.value === undefined && nextProps.value !== undefined && this.state.awaitingAnswer) {
+      this.setState({
+        awaitingAnswer: false,
+      });
+    }
+  }
   private isInverted() {
     return this.props.leftValue > this.props.rightValue;
   }
@@ -42,26 +50,26 @@ class Likert extends React.Component<IProps, IState> {
     return this.isInverted() ? this.props.leftValue : this.props.rightValue;
   }
 
-  private defaultValue() {
-      return Math.floor((this.maxValue()-this.minValue())/2);
+  private touched(value) {
+    if (this.props.value === undefined) {
+      // This is here because the Slider is set up with a defaultValue.
+      // If we are awaiting an answer and the user clicks the default value,
+      // the Slider will not raise an on change event.
+      // For other value presses this will be called before on change.
+      this.setAnswer(value);
+    }
   }
 
-  private touched() {
-    if (this.state.awaitingAnswer) {
-      this.setAnswer(this.defaultValue());
-      this.setState({
-        awaitingAnswer: false,
-      });
+  private invertValue(value: number) {
+    if (this.isInverted() === false || value === undefined) {
+      return value;
     }
+    const diff = this.maxValue() - this.minValue();
+    return (diff - (value - this.minValue())) + this.minValue();
   }
 
   private setAnswer(value: number) {
-    let v = value;
-    if (this.isInverted()) {
-        const diff = this.maxValue() - this.minValue();
-        v = (diff - (value - this.minValue())) + this.minValue();
-    }
-    this.props.onChange(v);
+    this.props.onChange(this.invertValue(value));
   }
 
   public render() {
@@ -82,12 +90,12 @@ class Likert extends React.Component<IProps, IState> {
         className={className}
         min={leftValue}
         max={rightValue}
-        defaultValue={this.defaultValue()}
         marks={marks}
         dots={true}
         onChange={this.setAnswer}
         onBeforeChange={this.touched}
         disabled={this.props.disabled}
+        value={this.invertValue(this.props.value)}
       />
     );
   }

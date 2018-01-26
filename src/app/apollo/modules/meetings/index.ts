@@ -106,7 +106,7 @@ export const newRemoteMeeting = graphql(gql`
 export function addLikertAnswer<T>(component) {
   return graphql<any, T>(gql`
   mutation ($meetingID: String!, $questionID: String!, $value: Int!) {
-    addLikertAnswer: AddLikertAnswer(meetingID: $meetingID, questionID: $questionID, value: $value) {
+    addLikertAnswer: AddLikertAnswer(meetingID: $meetingID, questionID: $questionID, value: $value, allowOverwrite:true) {
       ...meetingWithOutcomeSetAndAggregates
     }
   }
