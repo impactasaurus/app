@@ -9,7 +9,7 @@ import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import {IURLConnector} from 'redux/modules/url';
-import {IIntAnswer, IAnswer} from 'models/answer';
+import {IIntAnswer, IAnswer, Answer} from 'models/answer';
 import {IQuestion} from 'models/question';
 const { connect } = require('react-redux');
 const ReactGA = require('react-ga');
@@ -110,6 +110,11 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   private goToPreviousQuestion() {
+    if (this.state.finished) {
+      return this.setState({
+        finished: false,
+      });
+    }
     const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
     if (currentIdx === -1 || currentIdx === 0) {
       return;
@@ -123,7 +128,6 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   private setAnswer(value: number) {
-    console.log(value);
     this.setState({
       currentValue: value,
     });
@@ -138,6 +142,11 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   private next() {
+    const answer = this.props.answers.find((answer) => answer.questionID === this.state.currentQuestion);
+    if (answer !== undefined && this.state.currentValue === (answer as Answer).answer) {
+      this.goToNextQuestionOrReview();
+      return;
+    }
     this.setState({
       saving: true,
     });
@@ -191,6 +200,7 @@ class MeetingInner extends React.Component<IProps, IState> {
         </Helmet>
         <h1>Thanks!</h1>
         <p>The questionnaire is complete. Thanks for your time!</p>
+        <Button onClick={this.goToPreviousQuestion}>Back</Button>
         <Button {...props} onClick={this.review}>Save</Button>
         <p>{this.state.completeError}</p>
       </div>
@@ -234,7 +244,7 @@ class MeetingInner extends React.Component<IProps, IState> {
           </Helmet>
           <h1>{question.question}</h1>
           <h3>{question.description}</h3>
-          <Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} value={this.state.currentValue} />
+          <Likert key={this.state.currentQuestion} leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} value={this.state.currentValue} />
           {this.canGoToPreviousQuestion() && <Button onClick={this.goToPreviousQuestion}>Back</Button>}
           <Button {...nextProps} onClick={this.next}>Next</Button>
           <p>{this.state.saveError}</p>
