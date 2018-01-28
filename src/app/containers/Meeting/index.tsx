@@ -64,6 +64,7 @@ class MeetingInner extends React.Component<IProps, IState> {
     this.goToNextQuestionOrReview = this.goToNextQuestionOrReview.bind(this);
     this.canGoToPreviousQuestion = this.canGoToPreviousQuestion.bind(this);
     this.goToPreviousQuestion = this.goToPreviousQuestion.bind(this);
+    this.renderAnswerReview = this.renderAnswerReview.bind(this);
   }
 
   public componentDidUpdate(prevProps: IProps) {
@@ -187,6 +188,29 @@ class MeetingInner extends React.Component<IProps, IState> {
       });
   }
 
+  private renderAnswerReview(): JSX.Element {
+    const navigateToQuestion = (idx: number) => {
+      return () => this.goToQuestion(idx);
+    };
+    const children: JSX.Element[] = this.props.questions.map((q: Question, idx: number) => {
+      const answer = this.props.answers.find((a) => a.questionID === q.id);
+      const inner = answer === undefined ?
+        (<div>Unknown Answer</div>) :
+        (<Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={navigateToQuestion(idx)} value={(answer as Answer).answer} />);
+      return (
+        <div key={q.id}>
+          <h3>{q.question}</h3>
+          {inner}
+        </div>
+      );
+    });
+    return(
+      <div className="answer-review">
+        {children}
+      </div>
+    );
+  }
+
   private renderFinished(): JSX.Element {
     const props: ButtonProps = {};
     if (this.state.completing) {
@@ -194,13 +218,10 @@ class MeetingInner extends React.Component<IProps, IState> {
       props.disabled = true;
     }
     return (
-      <div id="meeting">
-        <Helmet>
-          <title>Questionnaire Finished</title>
-        </Helmet>
-        <h1>Thanks!</h1>
-        <p>The questionnaire is complete. Thanks for your time!</p>
-        <Button onClick={this.goToPreviousQuestion}>Back</Button>
+      <div>
+        <h1>Review</h1>
+        <p>Please review your answers below. Once you are happy, click save, to mark the record as complete.</p>
+        {this.renderAnswerReview()}
         <Button {...props} onClick={this.review}>Save</Button>
         <p>{this.state.completeError}</p>
       </div>
@@ -208,24 +229,35 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   public render() {
+    const wrapper = (inner: JSX.Element): JSX.Element => {
+      return (
+        <Grid container columns={1} id="meeting">
+          <Grid.Column>
+            <Helmet>
+              <title>Questionnaire</title>
+            </Helmet>
+            <div id="meeting">
+              {inner}
+            </div>
+          </Grid.Column>
+        </Grid>
+      );
+    };
+
     const meeting = this.props.data.getMeeting;
     if (meeting === undefined) {
-        return (<div />);
+        return wrapper(<div />);
     }
     if (this.state.finished) {
-      return this.renderFinished();
+      return wrapper(this.renderFinished());
     }
     const currentQuestionID = this.state.currentQuestion;
     if (currentQuestionID === undefined) {
-      return (<div />);
+      return wrapper(<div />);
     }
     const question = meeting.outcomeSet.questions.find((q) => q.id === currentQuestionID);
     if (question === undefined) {
-      return (
-        <div>
-          Unknown question
-        </div>
-      );
+      return wrapper(<div>Unknown question</div>);
     }
     const q = question as Question;
     const nextProps: ButtonProps = {};
@@ -236,21 +268,16 @@ class MeetingInner extends React.Component<IProps, IState> {
     if (this.state.currentValue === undefined) {
       nextProps.disabled = true;
     }
-    return (
-      <Grid container columns={1} id="meeting">
-        <Grid.Column>
-          <Helmet>
-            <title>Conducting Meeting</title>
-          </Helmet>
-          <h1>{question.question}</h1>
-          <h3>{question.description}</h3>
-          <Likert key={this.state.currentQuestion} leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} value={this.state.currentValue} />
-          {this.canGoToPreviousQuestion() && <Button onClick={this.goToPreviousQuestion}>Back</Button>}
-          <Button {...nextProps} onClick={this.next}>Next</Button>
-          <p>{this.state.saveError}</p>
-        </Grid.Column>
-      </Grid>
-    );
+    return wrapper((
+      <div>
+        <h1>{question.question}</h1>
+        <h3>{question.description}</h3>
+        <Likert key={this.state.currentQuestion} leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} value={this.state.currentValue} />
+        {this.canGoToPreviousQuestion() && <Button onClick={this.goToPreviousQuestion}>Back</Button>}
+        <Button {...nextProps} onClick={this.next}>Next</Button>
+        <p>{this.state.saveError}</p>
+      </div>
+    ));
   }
 }
 const Meeting = completeMeeting<IProps>(getMeeting<IProps>((props) => props.params.id)(addLikertAnswer<IProps>(MeetingInner)));
