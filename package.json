@@ -24,7 +24,7 @@
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
-    "@types/auth0-lock": "10.10.1",
+    "@types/auth0-lock": "10.16.3",
     "@types/base16": "1.0.1",
     "@types/chai": "3.4.34",
     "@types/classnames": "0.0.32",
@@ -111,7 +111,7 @@
   },
   "dependencies": {
     "apollo-cache-invalidation": "0.0.3",
-    "auth0-lock": "10.24.2",
+    "auth0-lock": "11.2.3",
     "chart.js": "2.6.0",
     "chartjs-color": "2.1.0",
     "distinct-colors": "1.0.4",
