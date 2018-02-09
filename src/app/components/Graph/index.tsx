@@ -88,6 +88,9 @@ class Graph extends React.Component<IProps, IState> {
         datasets: this.prepareDataset(data),
       },
       options: {
+        tooltips: {
+          mode: 'point',
+        },
         legend: {
           position: 'top',
         },

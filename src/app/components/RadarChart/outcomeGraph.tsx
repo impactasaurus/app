@@ -32,14 +32,8 @@ function getConfig(data, title) {
         },
       },
       tooltips: {
+        mode: 'point',
         enabled: true,
-        callbacks: {
-          label: function label(tooltipItem, chartData) {
-            const datasetLabel = chartData.datasets[tooltipItem.datasetIndex].label || '';
-            // This will be the tooltip.body
-            return datasetLabel + ' : ' + tooltipItem.yLabel + ' : ' + chartData.datasets[tooltipItem.datasetIndex].notes[tooltipItem.index];
-          },
-        },
       },
     },
   };
