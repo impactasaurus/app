@@ -38,7 +38,7 @@ class Graph extends React.Component<IProps, IState> {
   }
 
   private renderDOM() {
-    if (Array.isArray(this.props.data) === false) {
+    if (Array.isArray(this.props.data.series) === false) {
       return;
     }
     if(this.graph !== undefined) {
@@ -61,8 +61,8 @@ class Graph extends React.Component<IProps, IState> {
   }
 
   private prepareDataset(data: GraphData): any {
-    const colours = distinctColors({count: data.length});
-    return data.map((x, idx) => {
+    const colours = distinctColors({count: data.series.length});
+    return data.series.map((x, idx) => {
       const colour = color().rgb(colours[idx].rgba()).rgbString();
       return {
         label: x.label,
@@ -100,6 +100,12 @@ class Graph extends React.Component<IProps, IState> {
         scales: {
           xAxes: [{
             type: 'time',
+          }],
+          yAxes: [{
+            ticks: {
+              min: data.scaleMin,
+              max: data.scaleMax,
+            },
           }],
         },
       },

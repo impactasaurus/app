@@ -4,6 +4,7 @@ import {GraphData, IGraphSeries, IGraphDataPoint} from 'models/graph';
 import {Answer} from 'models/answer';
 import {Graph} from 'components/Graph';
 import {Aggregation} from 'models/pref';
+import {getMinQuestionValue, getMaxQuestionValue, getMinCategoryValue, getMaxCategoryValue} from 'helpers/questionnaire';
 
 interface IProp {
   meetings: IMeeting[];
@@ -16,15 +17,15 @@ interface ISeriesToDataMap {
 
 class MeetingGraph extends React.Component<IProp, any> {
 
-  private combineGraphSeries(data: GraphData): GraphData {
-    const seriesMap = data.reduce((m: ISeriesToDataMap, d: IGraphSeries): ISeriesToDataMap => {
+  private combineGraphSeries(series: IGraphSeries[]): IGraphSeries[] {
+    const seriesMap = series.reduce((m: ISeriesToDataMap, d: IGraphSeries): ISeriesToDataMap => {
       if (m[d.label] === undefined) {
         m[d.label] = [];
       }
       m[d.label].push(...d.data);
       return m;
     }, {});
-    const result: GraphData = [];
+    const result: IGraphSeries[] = [];
     for (const series in seriesMap) {
       if (seriesMap.hasOwnProperty(series)) {
         result.push({
@@ -37,7 +38,7 @@ class MeetingGraph extends React.Component<IProp, any> {
   }
 
   private getQuestionLevelData(meetings: IMeeting[]): GraphData {
-    const seriesPerDP =  meetings.reduce((prevData: GraphData, meeting): GraphData => {
+    const seriesPerDP =  meetings.reduce((prevData: IGraphSeries[], meeting): IGraphSeries[] => {
       return prevData.concat(meeting.answers.map((answer: Answer): IGraphSeries => {
         const q = meeting.outcomeSet.questions.find((q) => q.id === answer.questionID);
         let question = 'Unknown Question';
@@ -57,11 +58,15 @@ class MeetingGraph extends React.Component<IProp, any> {
         };
       }));
     }, []);
-    return this.combineGraphSeries(seriesPerDP);
+    return {
+      series: this.combineGraphSeries(seriesPerDP),
+      scaleMax: getMaxQuestionValue(meetings[0].outcomeSet),
+      scaleMin: getMinQuestionValue(meetings[0].outcomeSet),
+    };
   }
 
   private getCategoryLevelData(meetings: IMeeting[]): GraphData {
-    const seriesPerDP = meetings.reduce((prevData: GraphData, meeting): GraphData => {
+    const seriesPerDP = meetings.reduce((prevData: IGraphSeries[] , meeting): IGraphSeries[]  => {
       return prevData.concat(meeting.aggregates.category.map((categoryAg): IGraphSeries => {
         let category = 'Unknown Category';
         const cat = meeting.outcomeSet.categories.find((c) => c.id === categoryAg.categoryID);
@@ -77,7 +82,11 @@ class MeetingGraph extends React.Component<IProp, any> {
         };
       }));
     }, []);
-    return this.combineGraphSeries(seriesPerDP);
+    return {
+      series: this.combineGraphSeries(seriesPerDP),
+      scaleMax: getMaxCategoryValue(meetings[0].outcomeSet),
+      scaleMin: getMinCategoryValue(meetings[0].outcomeSet),
+    };
   }
 
   public render() {
