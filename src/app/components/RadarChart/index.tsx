@@ -42,7 +42,7 @@ class RadarChart extends React.Component<IProp, IState> {
     this.renderDOM = this.renderDOM.bind(this);
   }
 
-  private convertData(data: RadarData): OutcomeGraphData {
+  private convertData(data: IRadarSeries[]): OutcomeGraphData {
     return data.map((s: IRadarSeries): IOutcomeGraphSeries => {
       return {
         notes: s.note,
@@ -58,7 +58,7 @@ class RadarChart extends React.Component<IProp, IState> {
     });
   }
 
-  private getNumberOfAxis(data: RadarData): number {
+  private getNumberOfAxis(data: IRadarSeries[]): number {
     return data.reduce((maxAxis, series) => {
       if (series.datapoints.length > maxAxis) {
         return series.datapoints.length;
@@ -68,17 +68,17 @@ class RadarChart extends React.Component<IProp, IState> {
   }
 
   private renderDOM() {
-    if (Array.isArray(this.props.data) === false) {
+    if (Array.isArray(this.props.data.series) === false) {
       return;
     }
     if(this.graph !== undefined) {
       this.graph.destroy();
       this.graph = undefined;
     }
-    const noAxis = this.getNumberOfAxis(this.props.data);
+    const noAxis = this.getNumberOfAxis(this.props.data.series);
     let errored = true;
     if (noAxis >= 3) {
-      this.graph = getOutcomeGraph(this.canvasID, '', this.convertData(this.props.data));
+      this.graph = getOutcomeGraph(this.canvasID, this.convertData(this.props.data.series), this.props.data.scaleMin, this.props.data.scaleMax);
       errored = false;
     }
     if (errored !== this.state.err) {
