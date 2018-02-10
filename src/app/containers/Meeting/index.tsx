@@ -222,6 +222,7 @@ class MeetingInner extends React.Component<IProps, IState> {
         <h1>Review</h1>
         <p>Please review your answers below. Once you are happy, click save, to mark the record as complete.</p>
         {this.renderAnswerReview()}
+        <Button onClick={this.goToPreviousQuestion}>Back</Button>
         <Button {...props} onClick={this.review}>Save</Button>
         <p>{this.state.completeError}</p>
       </div>
