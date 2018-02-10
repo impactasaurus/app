@@ -69,14 +69,14 @@ class VizControlPanel extends React.Component<IProps, any> {
 
   private getVisButtons(): JSX.Element[] {
     const buttons = [
-      (<Button active={this.props.vis === Visualisation.RADAR} onClick={this.setVisPref(Visualisation.RADAR)}>Radar</Button>),
-      (<Button.Or />),
-      (<Button active={this.props.vis === Visualisation.TABLE} onClick={this.setVisPref(Visualisation.TABLE)}>Table</Button>),
+      (<Button key="radar" active={this.props.vis === Visualisation.RADAR} onClick={this.setVisPref(Visualisation.RADAR)}>Radar</Button>),
+      (<Button.Or key="vizOr"/>),
+      (<Button key="table" active={this.props.vis === Visualisation.TABLE} onClick={this.setVisPref(Visualisation.TABLE)}>Table</Button>),
     ];
     if (this.props.allowGraph) {
       buttons.push(
-        (<Button.Or />),
-        (<Button active={this.props.vis === Visualisation.GRAPH} onClick={this.setVisPref(Visualisation.GRAPH)}>Graph</Button>),
+        (<Button.Or key="vizOr2" />),
+        (<Button key="graph" active={this.props.vis === Visualisation.GRAPH} onClick={this.setVisPref(Visualisation.GRAPH)}>Graph</Button>),
       );
     }
     return buttons;
