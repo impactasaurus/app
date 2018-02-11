@@ -39,24 +39,20 @@ class MeetingGraph extends React.Component<IProp, any> {
 
   private getQuestionLevelData(meetings: IMeeting[]): GraphData {
     const seriesPerDP =  meetings.reduce((prevData: IGraphSeries[], meeting): IGraphSeries[] => {
-      return prevData.concat(meeting.answers.map((answer: Answer): IGraphSeries => {
+      const series = meeting.answers.reduce<IGraphSeries[]>((series: IGraphSeries[], answer: Answer): IGraphSeries[] => {
         const q = meeting.outcomeSet.questions.find((q) => q.id === answer.questionID);
-        let question = 'Unknown Question';
-        if (q !== undefined) {
-          if (q.archived) {
-            question = `${q.question} (archived)`;
-          } else {
-            question = q.question;
-          }
+        if (q === undefined || q.archived) {
+          return series;
         }
-        return {
-          label: question,
+        return series.concat({
+          label: q.question,
           data: [{
             x: new Date(meeting.conducted),
             y: answer.answer,
           }],
-        };
-      }));
+        });
+      }, []);
+      return prevData.concat(series);
     }, []);
     return {
       series: this.combineGraphSeries(seriesPerDP),

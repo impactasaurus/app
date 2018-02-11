@@ -15,21 +15,16 @@ class MeetingRadar extends React.Component<IProp, any> {
 
   private getQuestionLevelData(meetings: IMeeting[]): RadarData {
     const series = meetings.map((meeting): IRadarSeries => {
-      const answers = meeting.answers.map((answer: Answer): IRadarPoint => {
+      const answers = meeting.answers.reduce<IRadarPoint[]>((answers: IRadarPoint[], answer: Answer): IRadarPoint[] => {
         const q = meeting.outcomeSet.questions.find((q) => q.id === answer.questionID);
-        let question = 'Unknown Question';
-        if (q !== undefined) {
-          if (q.archived) {
-            question = `${q.question} (archived)`;
-          } else {
-            question = q.question;
-          }
+        if (q === undefined || q.archived) {
+          return answers;
         }
-        return {
-          axis: question,
+        return answers.concat({
+          axis: q.question,
           value: answer.answer,
-        };
-      });
+        });
+      }, []);
       return {
         name: new Date(meeting.conducted),
         datapoints: answers,

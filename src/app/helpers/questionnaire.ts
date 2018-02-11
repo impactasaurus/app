@@ -13,13 +13,13 @@ function aggregate(values: number[], aggregation: string): number {
 }
 
 export function getMinQuestionValue(os: IOutcomeSet): number|undefined {
-  return os.questions.reduce<number>((prev, q: Question) => {
+  return getQuestions(os).reduce<number>((prev, q: Question) => {
     return prev ? Math.min(q.minValue, q.maxValue, prev) : Math.min(q.minValue, q.maxValue);
   }, undefined);
 }
 
 export function getMaxQuestionValue(os: IOutcomeSet): number|undefined {
-  return os.questions.reduce<number>((prev, q: Question) => {
+  return getQuestions(os).reduce<number>((prev, q: Question) => {
     return prev ? Math.max(q.minValue, q.maxValue, prev) : Math.max(q.minValue, q.maxValue);
   }, undefined);
 }
@@ -48,6 +48,10 @@ export function getMaxCategoryValue(os: IOutcomeSet): number|undefined {
   }, undefined);
 }
 
-function getCategoryQuestions(os: IOutcomeSet, cID: string): IQuestion[] {
-  return os.questions.filter((q) => q.categoryID === cID);
+function getQuestions(os: IOutcomeSet, includeArchived = false): IQuestion[] {
+  return os.questions.filter((q) => includeArchived || !q.archived);
+}
+
+function getCategoryQuestions(os: IOutcomeSet, cID: string, includeArchived = false): IQuestion[] {
+  return getQuestions(os, includeArchived).filter((q) => q.categoryID === cID);
 }

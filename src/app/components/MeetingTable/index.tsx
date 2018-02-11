@@ -95,6 +95,9 @@ class MeetingTable extends React.Component<IProp, IState> {
     const l = this.state.secondMeeting;
     let rows = f.answers.reduce((rows: any, a: Answer) => {
       const q = f.outcomeSet.questions.find((x) => x.id === a.questionID);
+      if (q === undefined || q.archived) {
+        return rows;
+      }
       rows[q.question] = {
         first: a.answer,
         name: q.question,
@@ -103,6 +106,9 @@ class MeetingTable extends React.Component<IProp, IState> {
     }, {});
     rows = l.answers.reduce((rows: any, a: Answer) => {
       const q = l.outcomeSet.questions.find((x) => x.id === a.questionID);
+      if (q === undefined || q.archived) {
+        return rows;
+      }
       if (rows[q.question] === undefined) {
         rows[q.question] = {
           name: q.question,
