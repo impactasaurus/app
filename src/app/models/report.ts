@@ -31,7 +31,34 @@ export interface IJOCServiceReport {
   warnings?: string[];
 }
 
-export const fragment = gql`
+export interface IQuestionROC {
+  questionID: string;
+  value: number;
+  noRecords: number;
+  reportCoverage: number;
+}
+
+export interface ICategoryROC {
+  categoryID: string;
+  value: number;
+  noRecords: number;
+  reportCoverage: number;
+}
+
+export interface beneficiaryROC {
+  beneficiary: string;
+  questionROCs: IQuestionROC[];
+  categoryROCs: ICategoryROC[];
+}
+
+export interface IROCReport {
+  beneficiaries: beneficiaryROC[];
+  excluded: IExcluded;
+  warnings: string[];
+  tags: string[];
+}
+
+export const jocFragment = gql`
   fragment defaultJOCReport on JOCServiceReport {
     beneficiaryIDs,
     questionAggregates {
@@ -80,4 +107,30 @@ export const fragment = gql`
       beneficiaryIDs
     },
     warnings
+  }`;
+
+export const rocFragment  = gql`
+  fragment defaultROCReport on ROCReport {
+    beneficiaries{
+      beneficiary,
+      questionROCs {
+        noRecords,
+        reportCoverage,
+        questionID,
+        value
+      },
+      categoryROCs {
+        noRecords,
+        reportCoverage,
+        categoryID,
+        value
+      },
+    }
+    warnings,
+    excluded{
+      questionIDs,
+      beneficiaryIDs,
+      categoryIDs
+    },
+    tags
   }`;
