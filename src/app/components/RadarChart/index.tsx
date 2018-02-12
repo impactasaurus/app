@@ -26,6 +26,13 @@ interface IState {
   err: boolean;
 }
 
+function getAxisTitle(original: string): string {
+  if (original.length > 40) {
+    return original.substring(0,40) + '...';
+  }
+  return original;
+}
+
 type OutcomeGraphData = IOutcomeGraphSeries[];
 
 class RadarChart extends React.Component<IProp, IState> {
@@ -51,7 +58,7 @@ class RadarChart extends React.Component<IProp, IState> {
           return {
             notes: d.note,
             value: d.value,
-            outcome: d.axis,
+            outcome: getAxisTitle(d.axis),
           };
         }),
       };
