@@ -15,3 +15,4 @@ export {Account} from './Account';
 export {Report} from './Report';
 export {ServiceReport} from './ServiceReport';
 export {BeneficiaryRedirect} from './BeneficiaryRedirect';
+export {RateOfChangeReport} from './RateOfChangeReport';

@@ -45,14 +45,14 @@ export interface ICategoryROC {
   reportCoverage: number;
 }
 
-export interface beneficiaryROC {
+export interface IBeneficiaryROC {
   beneficiary: string;
   questionROCs: IQuestionROC[];
   categoryROCs: ICategoryROC[];
 }
 
 export interface IROCReport {
-  beneficiaries: beneficiaryROC[];
+  beneficiaries: IBeneficiaryROC[];
   excluded: IExcluded;
   warnings: string[];
   tags: string[];
