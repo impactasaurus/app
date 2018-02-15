@@ -8,6 +8,7 @@ import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {IStore} from 'redux/IStore';
 import {renderArray} from 'helpers/react';
 import {Aggregation, getAggregation} from 'models/pref';
+import {RocReportBarChart} from 'components/RocReportBarChart';
 const { connect } = require('react-redux');
 
 interface IProp extends IROCReportResult {
@@ -68,7 +69,10 @@ class RateOfChangeReportInner extends React.Component<IProp, any> {
       );
     }
     return (
-      <p>{JSON.stringify(this.props.ROCReport)}</p>
+      <div>
+        <RocReportBarChart report={this.props.ROCReport.getROCReport} questionSet={this.props.data.getOutcomeSet}/>
+        <p>{JSON.stringify(this.props.ROCReport)}</p>
+      </div>
     );
   }
 
