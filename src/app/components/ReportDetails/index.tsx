@@ -10,6 +10,8 @@ interface IProp {
   excluded: IExcluded;
   warnings: string[];
   questionSet: IOutcomeSet;
+  // N beneficiaries have been excluded because :excludedReason
+  excludedReason?: string;
 }
 
 class ReportDetails extends React.Component<IProp, any> {
@@ -39,7 +41,7 @@ class ReportDetails extends React.Component<IProp, any> {
     }
   }
 
-  private renderOverview(includedBens: string[], excluded: IExcluded, qs: IOutcomeSet): JSX.Element {
+  private renderOverview(includedBens: string[], excluded: IExcluded, qs: IOutcomeSet, excludedReason = 'they only have a single assessment'): JSX.Element {
     const noBens = includedBens.length;
     const info = noBens > 0;
     const title = info ? 'Overview of Report Content' : 'Report failed';
@@ -57,7 +59,7 @@ class ReportDetails extends React.Component<IProp, any> {
     }
     if (excluded.beneficiaryIDs.length > 0) {
       panels.push({
-        title: `${this.dealWithSingularOrMultiple(excluded.beneficiaryIDs.length, 'beneficiary has', 'beneficiaries have')} been excluded because they only have a single assessment.`,
+        title: `${this.dealWithSingularOrMultiple(excluded.beneficiaryIDs.length, 'beneficiary has', 'beneficiaries have')} been excluded because ${excludedReason}.`,
         content: (
           <div>
             {excluded.beneficiaryIDs.map((bID) => (<Label key={bID}>{bID}</Label>))}
@@ -103,7 +105,7 @@ class ReportDetails extends React.Component<IProp, any> {
   public render() {
     return (
       <div className="report-details">
-        {this.renderOverview(this.props.includedBeneficiaries, this.props.excluded, this.props.questionSet)}
+        {this.renderOverview(this.props.includedBeneficiaries, this.props.excluded, this.props.questionSet, this.props.excludedReason)}
         {this.renderWarnings(this.props.warnings)}
       </div>
     );
