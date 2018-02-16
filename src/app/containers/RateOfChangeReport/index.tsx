@@ -75,8 +75,8 @@ class RateOfChangeReportInner extends React.Component<IProp, any> {
     const qs = this.props.data.getOutcomeSet;
     return (
       <div>
-        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} showVizOptions={false} />
         <RocReportDetails report={report} questionSet={qs} />
+        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} showVizOptions={false} />
         <RocReportBarChart report={report} questionSet={qs} category={this.props.agg === Aggregation.CATEGORY} />
         <p>{JSON.stringify(report)}</p>
       </div>
