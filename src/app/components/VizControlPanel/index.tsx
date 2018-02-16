@@ -13,12 +13,13 @@ interface IProps {
   vis?: Visualisation;
   agg?: Aggregation;
   setPref?: SetPrefFunc;
-  allowGraph: boolean;
+  showVizOptions?: boolean; // defaults to true
+  allowGraph?: boolean; // defaults to true
 }
 
 @connect((state: IStore, ownProps: IProps) => {
   return {
-    vis: getVisualisation(state.pref, ownProps.allowGraph),
+    vis: getVisualisation(state.pref, ownProps.allowGraph !== false),
     agg: getAggregation(state.pref, ownProps.canCategoryAg),
   };
 }, (dispatch) => ({
@@ -73,7 +74,7 @@ class VizControlPanel extends React.Component<IProps, any> {
       (<Button.Or key="vizOr"/>),
       (<Button key="table" active={this.props.vis === Visualisation.TABLE} onClick={this.setVisPref(Visualisation.TABLE)}>Table</Button>),
     ];
-    if (this.props.allowGraph) {
+    if (this.props.allowGraph !== false) {
       buttons.push(
         (<Button.Or key="vizOr2" />),
         (<Button key="graph" active={this.props.vis === Visualisation.GRAPH} onClick={this.setVisPref(Visualisation.GRAPH)}>Graph</Button>),
@@ -91,11 +92,13 @@ class VizControlPanel extends React.Component<IProps, any> {
         <Button disabled={!this.props.canCategoryAg} active={this.isAggActive(Aggregation.CATEGORY)} onClick={this.setAggPref(Aggregation.CATEGORY)}>Categories</Button>
       </Button.Group>
     ));
-    cpItems.push((
-      <Button.Group key="vis">
-        {this.getVisButtons()}
-      </Button.Group>
-    ));
+    if (this.props.showVizOptions !== false) {
+      cpItems.push((
+        <Button.Group key="vis">
+          {this.getVisButtons()}
+        </Button.Group>
+      ));
+    }
     return (
       <div className="viz-cp">
         {cpItems}

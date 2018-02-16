@@ -10,6 +10,7 @@ import {renderArray} from 'helpers/react';
 import {Aggregation, getAggregation} from 'models/pref';
 import {RocReportBarChart} from 'components/RocReportBarChart';
 import {RocReportDetails} from 'components/RocReportDetails';
+import {VizControlPanel} from 'components/VizControlPanel';
 const { connect } = require('react-redux');
 
 interface IProp extends IROCReportResult {
@@ -74,8 +75,9 @@ class RateOfChangeReportInner extends React.Component<IProp, any> {
     const qs = this.props.data.getOutcomeSet;
     return (
       <div>
-        <RocReportDetails report={report} questionSet={qs}/>
-        <RocReportBarChart report={report} questionSet={qs}/>
+        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} showVizOptions={false} />
+        <RocReportDetails report={report} questionSet={qs} />
+        <RocReportBarChart report={report} questionSet={qs} category={this.props.agg === Aggregation.CATEGORY} />
         <p>{JSON.stringify(report)}</p>
       </div>
     );
