@@ -9,6 +9,7 @@ import {IStore} from 'redux/IStore';
 import {renderArray} from 'helpers/react';
 import {Aggregation, getAggregation} from 'models/pref';
 import {RocReportBarChart} from 'components/RocReportBarChart';
+import {RocReportDetails} from 'components/RocReportDetails';
 const { connect } = require('react-redux');
 
 interface IProp extends IROCReportResult {
@@ -56,22 +57,26 @@ class RateOfChangeReportInner extends React.Component<IProp, any> {
   }
 
   public renderPage(): JSX.Element {
-    if (this.props.ROCReport.error) {
+    const reportReq = this.props.ROCReport;
+    if (reportReq.error) {
       return (
         <Message error>
-          {renderArray(renderError, this.props.ROCReport.error.graphQLErrors)}
+          {renderArray(renderError, reportReq.error.graphQLErrors)}
         </Message>
       );
     }
-    if (this.props.data.loading || this.props.ROCReport.loading) {
+    if (this.props.data.loading || reportReq.loading) {
       return (
         <Loader active={true} inline="centered" />
       );
     }
+    const report = reportReq.getROCReport;
+    const qs = this.props.data.getOutcomeSet;
     return (
       <div>
-        <RocReportBarChart report={this.props.ROCReport.getROCReport} questionSet={this.props.data.getOutcomeSet}/>
-        <p>{JSON.stringify(this.props.ROCReport)}</p>
+        <RocReportDetails report={report} questionSet={qs}/>
+        <RocReportBarChart report={report} questionSet={qs}/>
+        <p>{JSON.stringify(report)}</p>
       </div>
     );
   }
