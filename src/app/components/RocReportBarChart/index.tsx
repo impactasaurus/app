@@ -9,19 +9,20 @@ import {ICategory} from 'models/category';
 interface IProp {
   report: IROCReport;
   questionSet: IOutcomeSet;
+  excludedBeneficiaries: string[];
   category?: boolean;
 }
 
 class RocReportBarChart extends React.Component<IProp, any> {
 
-  private getCategoryBarData(p: IProp): BarChartData {
+  private getCategoryBarData(beneficiaries: IBeneficiaryROC[], qs: IOutcomeSet): BarChartData {
     const getCategoryForBeneficiary = (cID: string, bd: IBeneficiaryROC): ICategoryROC|undefined => {
       return bd.categoryROCs.find((cRoc) => cRoc.categoryID === cID);
     };
 
     const aggregateCategoryROC = (c: ICategory): number|null => {
       let sum = 0, count = 0;
-      p.report.beneficiaries.forEach((b) => {
+      beneficiaries.forEach((b) => {
         const benCatRoc = getCategoryForBeneficiary(c.id, b);
         if (benCatRoc !== undefined) {
           sum += benCatRoc.value;
@@ -34,7 +35,7 @@ class RocReportBarChart extends React.Component<IProp, any> {
       return sum / count;
     };
 
-    const barData = p.questionSet.categories.reduce<any>((bcd, c) => {
+    const barData = qs.categories.reduce<any>((bcd, c) => {
       const qMeanROC = aggregateCategoryROC(c);
       if (qMeanROC !== null) {
         bcd.data.push(qMeanROC);
@@ -55,14 +56,14 @@ class RocReportBarChart extends React.Component<IProp, any> {
     };
   }
 
-  private getQuestionBarData(p: IProp): BarChartData {
+  private getQuestionBarData(beneficiaries: IBeneficiaryROC[], qs: IOutcomeSet): BarChartData {
     const getQuestionForBeneficiary = (qID: string, bd: IBeneficiaryROC): IQuestionROC|undefined => {
       return bd.questionROCs.find((qRoc) => qRoc.questionID === qID);
     };
 
     const aggregateQuestionROC = (q: IQuestion): number|null => {
       let sum = 0, count = 0;
-      p.report.beneficiaries.forEach((b) => {
+      beneficiaries.forEach((b) => {
         const benQRoc = getQuestionForBeneficiary(q.id, b);
         if (benQRoc !== undefined) {
           sum += benQRoc.value;
@@ -75,7 +76,7 @@ class RocReportBarChart extends React.Component<IProp, any> {
       return sum / count;
     };
 
-    const barData = p.questionSet.questions.reduce<any>((bcd, q) => {
+    const barData = qs.questions.reduce<any>((bcd, q) => {
       const qMeanROC = aggregateQuestionROC(q);
       if (qMeanROC !== null) {
         bcd.data.push(qMeanROC);
@@ -97,10 +98,11 @@ class RocReportBarChart extends React.Component<IProp, any> {
   }
 
   private getBarData(p: IProp): BarChartData {
+    const beneficiaryData = p.report.beneficiaries.filter((b) => p.excludedBeneficiaries.indexOf(b.beneficiary) === -1);
     if (p.category) {
-      return this.getCategoryBarData(p);
+      return this.getCategoryBarData(beneficiaryData, p.questionSet);
     }
-    return this.getQuestionBarData(p);
+    return this.getQuestionBarData(beneficiaryData, p.questionSet);
   }
 
   private renderBar(p: IProp): JSX.Element {

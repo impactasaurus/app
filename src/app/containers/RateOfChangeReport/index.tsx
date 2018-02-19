@@ -11,6 +11,7 @@ import {Aggregation, getAggregation} from 'models/pref';
 import {RocReportBarChart} from 'components/RocReportBarChart';
 import {RocReportDetails} from 'components/RocReportDetails';
 import {VizControlPanel} from 'components/VizControlPanel';
+import {RocReportBenTable} from 'components/RocReportBenTable';
 const { connect } = require('react-redux');
 
 interface IProp extends IROCReportResult {
@@ -25,6 +26,7 @@ interface IProp extends IROCReportResult {
   };
   agg?: Aggregation;
   isCategoryAgPossible?: boolean;
+  excludedBens?: string[];
 }
 
 const isCategoryAggregationAvailable = (props: IProp): boolean => {
@@ -48,6 +50,7 @@ function renderError(error: GraphQLError): JSX.Element {
   return {
     agg: getAggregation(state.pref, canCatAg),
     isCategoryAgPossible: canCatAg,
+    excludedBens: state.rocReport.excludedBens,
   };
 }, undefined)
 class RateOfChangeReportInner extends React.Component<IProp, any> {
@@ -77,7 +80,8 @@ class RateOfChangeReportInner extends React.Component<IProp, any> {
       <div>
         <RocReportDetails report={report} questionSet={qs} />
         <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} showVizOptions={false} />
-        <RocReportBarChart report={report} questionSet={qs} category={this.props.agg === Aggregation.CATEGORY} />
+        <RocReportBarChart report={report} questionSet={qs} excludedBeneficiaries={this.props.excludedBens} category={this.props.agg === Aggregation.CATEGORY} />
+        <RocReportBenTable report={report} questionSet={qs} excludedBeneficiaries={this.props.excludedBens} category={this.props.agg === Aggregation.CATEGORY}/>
         <p>{JSON.stringify(report)}</p>
       </div>
     );

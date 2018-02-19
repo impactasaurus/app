@@ -31,18 +31,18 @@ export interface IJOCServiceReport {
   warnings?: string[];
 }
 
-export interface IQuestionROC {
-  questionID: string;
+export interface ICommonROC {
   value: number;
   noRecords: number;
   reportCoverage: number;
 }
 
-export interface ICategoryROC {
+export interface IQuestionROC extends ICommonROC {
+  questionID: string;
+}
+
+export interface ICategoryROC extends ICommonROC {
   categoryID: string;
-  value: number;
-  noRecords: number;
-  reportCoverage: number;
 }
 
 export interface IBeneficiaryROC {
