@@ -3,11 +3,14 @@ import * as Chart from 'chart.js';
 import * as color from 'chartjs-color';
 import * as distinctColors from 'distinct-colors';
 import {BarChartData} from 'models/bar';
+import {precisionRound} from 'helpers/numbers';
 
 let barCount = 0;
 
 interface IProps {
   data: BarChartData;
+  xAxisLabel: string;
+  valueSuffixLabel?: string;
 }
 
 interface IState {
@@ -45,7 +48,7 @@ class BarChart extends React.Component<IProps, IState> {
       this.graph = undefined;
     }
 
-    this.graph = this.drawChart(this.canvasID, this.props.data);
+    this.graph = this.drawChart(this.canvasID, this.props);
   }
 
   private prepareDataset(data: BarChartData): any {
@@ -67,23 +70,40 @@ class BarChart extends React.Component<IProps, IState> {
     };
   }
 
-  private drawChart(canvasID: string, data: BarChartData) {
+  private drawChart(canvasID: string, p: IProps) {
     const canvasElement = (document.getElementById(canvasID) as HTMLCanvasElement).getContext('2d');
     if (canvasElement === null) {
       throw new Error('The canvas element specified does not exist!');
     }
     return new Chart(canvasElement, {
       type: 'horizontalBar',
-      data: this.prepareDataset(data),
+      data: this.prepareDataset(p.data),
       options: {
         tooltips: {
           mode: 'point',
+          callbacks: {
+            label: (tooltipItem) => {
+              return precisionRound(tooltipItem.xLabel,2) + (p.valueSuffixLabel || '');
+            },
+          },
         },
         legend: {
-          position: 'top',
+          display: false,
         },
         title: {
           display: false,
+        },
+        scales: {
+          xAxes: [{
+            beginAtZero: true,
+            scaleLabel: {
+              display: true,
+              labelString: p.xAxisLabel,
+            },
+            ticks: {
+              callback: (value) => value + (p.valueSuffixLabel || ''),
+            },
+          }],
         },
       },
     });

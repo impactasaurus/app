@@ -18,7 +18,7 @@ class RocReportDetails extends React.Component<IProp, any> {
         excluded={this.props.report.excluded}
         warnings={this.props.report.warnings}
         questionSet={this.props.questionSet}
-        excludedReason={'they only have a single assessment within the selected report range'}
+        excludedReason={'they do not have records covering enough of the report date range'}
       />
     );
   }

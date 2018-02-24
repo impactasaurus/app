@@ -4,7 +4,6 @@ import { IStore } from './IStore';
 
 import {reducer as pref} from 'redux/modules/pref';
 import {reducer as user} from 'redux/modules/user';
-import {reducer as rocReport} from 'redux/modules/rocReport';
 
 const { reducer } = require('redux-connect');
 
@@ -14,7 +13,6 @@ export default function getReducers(clientReducers: Redux.ReducersMapObject): Re
     reduxAsyncConnect: reducer,
     pref,
     user,
-    rocReport,
   };
   return combineReducers<IStore>({...internalReducers, ...clientReducers});
 }
