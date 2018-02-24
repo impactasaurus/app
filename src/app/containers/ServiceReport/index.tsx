@@ -3,7 +3,7 @@ import 'url-search-params-polyfill';
 import {GraphQLError} from '@types/graphql';
 import { Helmet } from 'react-helmet';
 import { Grid, Loader, Message } from 'semantic-ui-react';
-import {getJOCServiceReport, IReportResult} from 'apollo/modules/reports';
+import {getJOCServiceReport, IJOCReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ServiceReportDetails} from 'components/ServiceReportDetails';
 import {ServiceReportRadar} from 'components/ServiceReportRadar';
@@ -15,7 +15,7 @@ import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'mode
 import './style.less';
 const { connect } = require('react-redux');
 
-interface IProp extends IReportResult {
+interface IProp extends IJOCReportResult {
   data: IOutcomeResult;
   params: {
       questionSetID: string,

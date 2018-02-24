@@ -8,7 +8,7 @@ var config = {
   karmaPort: 9876,
 
   app: {
-    api: "https://impact-server.herokuapp.com/v1/graphql",
+    api: "https://api.impactasaurus.org/v1/graphql",
     root: "https://app.impactasaurus.org",
     head: {
       title: 'Impactasaurus',
