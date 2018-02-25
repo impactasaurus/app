@@ -46,7 +46,7 @@ class ReviewSelector extends React.Component<IURLConnector, IState> {
           </Helmet>
           <h1>Review</h1>
           <Form onSubmit={this.review}>
-            <span className="label"><Hint text={strings.beneficiaryIDExplanation} /><h3>Beneficiary ID</h3></span>
+            <h3 className="label"><Hint text={strings.beneficiaryIDExplanation} />Beneficiary ID</h3>
             <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID}/>
             <Button className="submit" type="submit">Review</Button>
           </Form>

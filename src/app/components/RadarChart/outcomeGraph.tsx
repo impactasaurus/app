@@ -4,8 +4,8 @@ import * as Chart from 'chart.js';
 import {SessionsConverter} from './sessionsConverter';
 const sessionsConverter = SessionsConverter();
 
-export function getOutcomeGraph(canvasDiv, title, data) {
-  const chartConfig = getConfig(data, title);
+export function getOutcomeGraph(canvasDiv, data, min, max) {
+  const chartConfig = getConfig(data, min, max);
   const canvasElement = document.getElementById(canvasDiv);
   if (canvasElement === null) {
     throw new Error('The canvas element specified does not exist!');
@@ -14,7 +14,7 @@ export function getOutcomeGraph(canvasDiv, title, data) {
   return new Chart(canvasElement, chartConfig);
 }
 
-function getConfig(data, title) {
+function getConfig(data, min, max) {
   return {
     type: 'radar',
     data: sessionsConverter.getChartJSConvertedData(data),
@@ -22,24 +22,15 @@ function getConfig(data, title) {
       legend: {
         position: 'top',
       },
-      title: {
-        display: true,
-        text: title,
-      },
       scale: {
         ticks: {
-          beginAtZero: true,
+          min,
+          max,
         },
       },
       tooltips: {
+        mode: 'point',
         enabled: true,
-        callbacks: {
-          label: function label(tooltipItem, chartData) {
-            const datasetLabel = chartData.datasets[tooltipItem.datasetIndex].label || '';
-            // This will be the tooltip.body
-            return datasetLabel + ' : ' + tooltipItem.yLabel + ' : ' + chartData.datasets[tooltipItem.datasetIndex].notes[tooltipItem.index];
-          },
-        },
       },
     },
   };

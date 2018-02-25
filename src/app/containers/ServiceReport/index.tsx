@@ -3,19 +3,19 @@ import 'url-search-params-polyfill';
 import {GraphQLError} from '@types/graphql';
 import { Helmet } from 'react-helmet';
 import { Grid, Loader, Message } from 'semantic-ui-react';
-import {getJOCServiceReport, IReportResult} from 'apollo/modules/reports';
+import {getJOCServiceReport, IJOCReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ServiceReportDetails} from 'components/ServiceReportDetails';
 import {ServiceReportRadar} from 'components/ServiceReportRadar';
 import {ServiceReportTable} from 'components/ServiceReportTable';
 import {VizControlPanel} from 'components/VizControlPanel';
-const { connect } = require('react-redux');
 import {IStore} from 'redux/IStore';
 import {renderArray} from 'helpers/react';
 import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'models/pref';
 import './style.less';
+const { connect } = require('react-redux');
 
-interface IProp extends IReportResult {
+interface IProp extends IJOCReportResult {
   data: IOutcomeResult;
   params: {
       questionSetID: string,
@@ -40,7 +40,7 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
 @connect((state: IStore, ownProps: IProp) => {
   const canCatAg = isCategoryAggregationAvailable(ownProps);
   return {
-    vis: getVisualisation(state.pref),
+    vis: getVisualisation(state.pref, false),
     agg: getAggregation(state.pref, canCatAg),
     isCategoryAgPossible: canCatAg,
   };
@@ -97,7 +97,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
           </Helmet>
           <h1>Service Report</h1>
           <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
-          <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} />
+          <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} />
           {this.renderVis()}
         </Grid.Column>
       </Grid>
@@ -117,5 +117,15 @@ function getEndDateFromProps(p: IProp): string {
   return p.params.end;
 }
 
-const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps)(ServiceReportInner));
+function getTagsFromProps(p: IProp): string[] {
+  const urlParams = new URLSearchParams(p.location.search);
+  if (urlParams.has('tags') === false) {
+    return [];
+  }
+  const tags = urlParams.get('tags');
+  const parsedTags = JSON.parse(tags);
+  return parsedTags;
+}
+
+const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps)(ServiceReportInner));
 export {ServiceReport}

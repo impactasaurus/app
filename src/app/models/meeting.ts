@@ -14,6 +14,8 @@ export interface IMeeting {
   created: string;
   modified: string;
   aggregates?: IAggregates;
+  tags?: string[];
+  incomplete: boolean;
 }
 
 export const fragment = gql`
@@ -27,7 +29,9 @@ export const fragment = gql`
     },
     conducted,
     created,
-    modified
+    modified,
+    incomplete,
+    tags
   } ${aFragment}`;
 
 export const fragmentWithOutcomeSet = gql`

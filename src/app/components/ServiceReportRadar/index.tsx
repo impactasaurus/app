@@ -3,6 +3,7 @@ import {IJOCServiceReport, IQuestionAggregates, ICategoryAggregates} from 'model
 import {IOutcomeSet} from 'models/outcomeSet';
 import {RadarChart} from 'components/RadarChart';
 import {RadarData, IRadarSeries, IRadarPoint} from 'models/radar';
+import {getMinQuestionValue, getMaxQuestionValue, getMinCategoryValue, getMaxCategoryValue} from 'helpers/questionnaire';
 
 interface IProp {
   serviceReport: IJOCServiceReport;
@@ -29,7 +30,11 @@ class ServiceReportRadar extends React.Component<IProp, any> {
         }),
       };
     };
-    return [getCatRadarSeries(p.serviceReport.categoryAggregates.first, 'initial'), getCatRadarSeries(p.serviceReport.categoryAggregates.last, 'latest')];
+    return {
+      series: [getCatRadarSeries(p.serviceReport.categoryAggregates.first, 'initial'), getCatRadarSeries(p.serviceReport.categoryAggregates.last, 'latest')],
+      scaleMin: getMinCategoryValue(p.questionSet),
+      scaleMax: getMaxCategoryValue(p.questionSet),
+    };
   }
 
   private getQuestionRadarData(p: IProp): RadarData {
@@ -53,7 +58,11 @@ class ServiceReportRadar extends React.Component<IProp, any> {
         }),
       };
     };
-    return [getQRadarSeries(p.serviceReport.questionAggregates.first, 'Initial'), getQRadarSeries(p.serviceReport.questionAggregates.last, 'Latest')];
+    return {
+      series: [getQRadarSeries(p.serviceReport.questionAggregates.first, 'Initial'), getQRadarSeries(p.serviceReport.questionAggregates.last, 'Latest')],
+      scaleMin: getMinQuestionValue(p.questionSet),
+      scaleMax: getMaxQuestionValue(p.questionSet),
+    };
   }
 
   private getRadarData(p: IProp): RadarData {

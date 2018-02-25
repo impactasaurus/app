@@ -4,13 +4,18 @@ export const VisualisationKey = 'vis';
 export enum Visualisation {
   RADAR,
   TABLE,
+  GRAPH,
 }
-export function getVisualisation(prefState: PrefState): Visualisation {
+export function getVisualisation(prefState: PrefState, allowGraph: boolean): Visualisation {
   const value: string|undefined = prefState[VisualisationKey];
   if (value === undefined) {
     return Visualisation.RADAR;
   }
-  return Visualisation[value];
+  const viz = Visualisation[value];
+  if (viz === Visualisation.GRAPH && allowGraph === false) {
+    return Visualisation.TABLE;
+  }
+  return viz;
 }
 
 export const AggregationKey = 'agg';

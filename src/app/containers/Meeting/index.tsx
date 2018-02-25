@@ -9,6 +9,8 @@ import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import {IURLConnector} from 'redux/modules/url';
+import {IIntAnswer, IAnswer, Answer} from 'models/answer';
+import {IQuestion} from 'models/question';
 const { connect } = require('react-redux');
 const ReactGA = require('react-ga');
 
@@ -17,6 +19,8 @@ interface IProps extends IMeetingMutation, IURLConnector {
   params: {
       id: string,
   };
+  questions?: IQuestion[];
+  answers?: IAnswer[];
 };
 
 interface IState {
@@ -29,7 +33,15 @@ interface IState {
     completeError?: string;
 };
 
-@connect(undefined, (dispatch) => ({
+@connect((_, ownProps: IProps) => {
+  const out: any = {};
+  if (ownProps.data.getMeeting !== undefined) {
+    out.questions = (ownProps.data.getMeeting.outcomeSet.questions || [])
+      .filter((q) => !q.archived);
+    out.answers = ownProps.data.getMeeting.answers;
+  }
+  return out;
+}, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
 class MeetingInner extends React.Component<IProps, IState> {
@@ -45,45 +57,75 @@ class MeetingInner extends React.Component<IProps, IState> {
     };
     this.setAnswer = this.setAnswer.bind(this);
     this.next = this.next.bind(this);
-    this.getNextQuestionToAnswer = this.getNextQuestionToAnswer.bind(this);
     this.renderFinished = this.renderFinished.bind(this);
     this.review = this.review.bind(this);
+    this.goToQuestion = this.goToQuestion.bind(this);
+    this.goToReview = this.goToReview.bind(this);
+    this.goToNextQuestionOrReview = this.goToNextQuestionOrReview.bind(this);
+    this.canGoToPreviousQuestion = this.canGoToPreviousQuestion.bind(this);
+    this.goToPreviousQuestion = this.goToPreviousQuestion.bind(this);
+    this.renderAnswerReview = this.renderAnswerReview.bind(this);
   }
 
-  public componentDidUpdate() {
-    if (this.state.currentQuestion === undefined &&
-      this.state.finished === false &&
-      this.props.data.getMeeting !== undefined ) {
-      const nextQuestion = this.getNextQuestionToAnswer();
-      if (nextQuestion === null) {
-        this.setState({
-          currentQuestion: undefined,
-          finished: true,
-        });
+  public componentDidUpdate(prevProps: IProps) {
+    if (prevProps.questions === undefined &&
+      this.props.questions !== undefined) {
+      if (this.props.questions.length <= 0) {
+        this.goToReview();
       } else {
-        this.setState({
-          currentQuestion: nextQuestion.id,
-          currentValue: undefined,
-          finished: false,
-        });
+        this.goToQuestion(0);
       }
     }
   }
 
-  private getNextQuestionToAnswer(): Question|null {
-    const questionsToAnswer = this.props.data.getMeeting.outcomeSet.questions
-    .filter((q) => !q.archived)
-    .filter((question) => {
-      const found = this.props.data.getMeeting.answers.find((answer) => answer.questionID === question.id);
-      if (found === undefined) {
-        return true;
-      }
-      return false;
-    });
-    if (questionsToAnswer.length > 0) {
-      return questionsToAnswer[0] as Question;
+  private goToQuestion(idx: number) {
+    let idxx = idx;
+    if (idx < 0) {
+      idxx = 0;
     }
-    return null;
+    if (idx >= this.props.questions.length) {
+      idxx = this.props.questions.length - 1;
+    }
+    const question = this.props.questions[idxx];
+    const answer = this.props.answers.find((answer) => answer.questionID === question.id);
+    this.setState({
+      currentQuestion: question.id,
+      currentValue: (answer ? (answer as IIntAnswer).answer : undefined),
+      finished: false,
+    });
+  }
+
+  private goToReview() {
+    this.setState({
+      finished: true,
+    });
+  }
+
+  private goToNextQuestionOrReview() {
+    const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
+    if (this.props.questions.length > currentIdx + 1) {
+      this.goToQuestion(currentIdx+1);
+    } else {
+      this.goToReview();
+    }
+  }
+
+  private goToPreviousQuestion() {
+    if (this.state.finished) {
+      return this.setState({
+        finished: false,
+      });
+    }
+    const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
+    if (currentIdx === -1 || currentIdx === 0) {
+      return;
+    }
+    this.goToQuestion(currentIdx-1);
+  }
+
+  private canGoToPreviousQuestion(): boolean {
+    const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
+    return currentIdx !== -1 && currentIdx !== 0;
   }
 
   private setAnswer(value: number) {
@@ -91,6 +133,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       currentValue: value,
     });
   }
+
   private logGAEvent(action: string) {
     ReactGA.event({
       category : 'assessment',
@@ -100,6 +143,11 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   private next() {
+    const answer = this.props.answers.find((answer) => answer.questionID === this.state.currentQuestion);
+    if (answer !== undefined && this.state.currentValue === (answer as Answer).answer) {
+      this.goToNextQuestionOrReview();
+      return;
+    }
     this.setState({
       saving: true,
     });
@@ -107,10 +155,10 @@ class MeetingInner extends React.Component<IProps, IState> {
     .then(() => {
       this.setState({
         saving: false,
-        currentQuestion: undefined,
         saveError: undefined,
       });
       this.logGAEvent('answered');
+      this.goToNextQuestionOrReview();
     })
     .catch((e: string) => {
       this.setState({
@@ -140,6 +188,29 @@ class MeetingInner extends React.Component<IProps, IState> {
       });
   }
 
+  private renderAnswerReview(): JSX.Element {
+    const navigateToQuestion = (idx: number) => {
+      return () => this.goToQuestion(idx);
+    };
+    const children: JSX.Element[] = this.props.questions.map((q: Question, idx: number) => {
+      const answer = this.props.answers.find((a) => a.questionID === q.id);
+      const inner = answer === undefined ?
+        (<div>Unknown Answer</div>) :
+        (<Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={navigateToQuestion(idx)} value={(answer as Answer).answer} />);
+      return (
+        <div key={q.id}>
+          <h3>{q.question}</h3>
+          {inner}
+        </div>
+      );
+    });
+    return(
+      <div className="answer-review">
+        {children}
+      </div>
+    );
+  }
+
   private renderFinished(): JSX.Element {
     const props: ButtonProps = {};
     if (this.state.completing) {
@@ -147,12 +218,11 @@ class MeetingInner extends React.Component<IProps, IState> {
       props.disabled = true;
     }
     return (
-      <div id="meeting">
-        <Helmet>
-          <title>Questionnaire Finished</title>
-        </Helmet>
-        <h1>Thanks!</h1>
-        <p>The questionnaire is complete. Thanks for your time!</p>
+      <div>
+        <h1>Review</h1>
+        <p>Please review your answers below. Once you are happy, click save, to mark the record as complete.</p>
+        {this.renderAnswerReview()}
+        <Button onClick={this.goToPreviousQuestion}>Back</Button>
         <Button {...props} onClick={this.review}>Save</Button>
         <p>{this.state.completeError}</p>
       </div>
@@ -160,24 +230,35 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   public render() {
+    const wrapper = (inner: JSX.Element): JSX.Element => {
+      return (
+        <Grid container columns={1} id="meeting">
+          <Grid.Column>
+            <Helmet>
+              <title>Questionnaire</title>
+            </Helmet>
+            <div id="meeting">
+              {inner}
+            </div>
+          </Grid.Column>
+        </Grid>
+      );
+    };
+
     const meeting = this.props.data.getMeeting;
     if (meeting === undefined) {
-        return (<div />);
+        return wrapper(<div />);
     }
     if (this.state.finished) {
-      return this.renderFinished();
+      return wrapper(this.renderFinished());
     }
     const currentQuestionID = this.state.currentQuestion;
     if (currentQuestionID === undefined) {
-      return (<div />);
+      return wrapper(<div />);
     }
     const question = meeting.outcomeSet.questions.find((q) => q.id === currentQuestionID);
     if (question === undefined) {
-      return (
-        <div>
-          Unknown question
-        </div>
-      );
+      return wrapper(<div>Unknown question</div>);
     }
     const q = question as Question;
     const nextProps: ButtonProps = {};
@@ -188,20 +269,16 @@ class MeetingInner extends React.Component<IProps, IState> {
     if (this.state.currentValue === undefined) {
       nextProps.disabled = true;
     }
-    return (
-      <Grid container columns={1} id="meeting">
-        <Grid.Column>
-          <Helmet>
-            <title>Conducting Meeting</title>
-          </Helmet>
-          <h1>{question.question}</h1>
-          <h3>{question.description}</h3>
-          <Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} />
-          <Button {...nextProps} onClick={this.next}>Next</Button>
-          <p>{this.state.saveError}</p>
-        </Grid.Column>
-      </Grid>
-    );
+    return wrapper((
+      <div>
+        <h1>{question.question}</h1>
+        <h3>{question.description}</h3>
+        <Likert key={this.state.currentQuestion} leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} value={this.state.currentValue} />
+        {this.canGoToPreviousQuestion() && <Button onClick={this.goToPreviousQuestion}>Back</Button>}
+        <Button {...nextProps} onClick={this.next}>Next</Button>
+        <p>{this.state.saveError}</p>
+      </div>
+    ));
   }
 }
 const Meeting = completeMeeting<IProps>(getMeeting<IProps>((props) => props.params.id)(addLikertAnswer<IProps>(MeetingInner)));

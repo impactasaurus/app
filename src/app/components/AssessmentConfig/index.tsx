@@ -2,12 +2,13 @@ import * as React from 'react';
 import { Button, Select, Input, ButtonProps, SelectProps } from 'semantic-ui-react';
 import {DateTimePicker} from 'components/DateTimePicker';
 import {Hint} from 'components/Hint';
+import {RecordTagInput} from 'components/RecordTagInput';
 import {IOutcomeResult, allOutcomeSets} from 'apollo/modules/outcomeSets';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IAssessmentConfig} from 'models/assessment';
 import * as moment from 'moment';
-const strings = require('./../../../strings.json');
 import './style.less';
+const strings = require('./../../../strings.json');
 
 interface IProps  {
   showDatePicker: boolean;
@@ -23,6 +24,7 @@ interface IState {
   conducted?: moment.Moment;
   dateSelectionError?: string;
   saving?: boolean;
+  tags?: string[];
 }
 
 class AssessmentConfigInner extends React.Component<IProps, IState> {
@@ -34,12 +36,14 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
       dateSelectionError: undefined,
       conducted: moment(),
       saving: false,
+      tags: [],
     };
     this.startMeeting = this.startMeeting.bind(this);
     this.setOS = this.setOS.bind(this);
     this.setBenID = this.setBenID.bind(this);
     this.setConductedDate = this.setConductedDate.bind(this);
     this.renderDatePicker = this.renderDatePicker.bind(this);
+    this.setTags = this.setTags.bind(this);
   }
 
   private validateStartMeetingOptions(beneficiaryID?: string, outcomeSetID?: string): string|null {
@@ -62,7 +66,7 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
       });
       return;
     }
-    const conducted = this.state.conducted;
+    const {conducted, tags} = this.state;
     this.setState({
       saving: true,
     });
@@ -70,6 +74,7 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
       beneficiaryID: benID,
       outcomeSetID: osID,
       date: this.props.showDatePicker ? conducted.toDate() : null,
+      tags,
     })
     .catch((e: Error|string)=> {
       this.setState({
@@ -118,6 +123,12 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     });
   }
 
+  private setTags(tags: string[]): void {
+    this.setState({
+      tags,
+    });
+  }
+
   private renderDatePicker(): JSX.Element {
     if (this.props.showDatePicker === false) {
       return (<div />);
@@ -147,13 +158,12 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     }
     return (
       <div className="impactform assessment-config">
-        <span className="label">
-          <Hint text={strings.beneficiaryIDExplanation} />
-          <h3 id="benID">Beneficiary ID</h3>
-        </span>
+        <h3 className="label"><Hint text={strings.beneficiaryIDExplanation} />Beneficiary ID</h3>
         <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID} />
         <h3 className="label">Questionnaire</h3>
         <Select {...selectProps} placeholder="Questionnaire" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
+        <h3 className="label optional"><Hint text={strings.tagExplanation} />Tags</h3>
+        <RecordTagInput onChange={this.setTags} />
         {this.renderDatePicker()}
         <Button {...startProps} className="submit" onClick={this.startMeeting}>{this.props.buttonText}</Button>
         <p>{this.state.startMeetingError}</p>

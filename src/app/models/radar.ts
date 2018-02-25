@@ -10,4 +10,10 @@ export interface IRadarSeries {
   datapoints: IRadarPoint[];
 }
 
-export type RadarData = IRadarSeries[];
+export interface IRadarData {
+  series: IRadarSeries[];
+  scaleMin: number;
+  scaleMax: number;
+}
+
+export type RadarData = IRadarData;
