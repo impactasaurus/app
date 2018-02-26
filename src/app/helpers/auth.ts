@@ -74,6 +74,9 @@ export function getUserID(): string|null {
 
 export function isBeneficiaryUser(): boolean {
   const decoded = getDecodedToken();
+  if (decoded !== null && decoded['https://app.impactasaurus.org/beneficiary'] !== undefined) {
+    return decoded['https://app.impactasaurus.org/beneficiary'];
+  }
   if (decoded === null || decoded.app_metadata === undefined || decoded.app_metadata.beneficiary === undefined) {
     return false;
   }
@@ -82,6 +85,9 @@ export function isBeneficiaryUser(): boolean {
 
 export function getBeneficiaryScope(): string|null {
   const decoded = getDecodedToken();
+  if (decoded !== null && decoded['https://app.impactasaurus.org/scope'] !== undefined) {
+    return decoded['https://app.impactasaurus.org/scope'];
+  }
   if (decoded === null || decoded.app_metadata === undefined || decoded.app_metadata.scope === undefined) {
     return null;
   }

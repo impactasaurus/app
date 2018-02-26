@@ -17,7 +17,7 @@ var config = {
     auth: {
       clientID: "pfKiAOUJh5r6jCxRn5vUYq7odQsjPUKf",
       domain: "impact.eu.auth0.com",
-      scope : "openid app_metadata user_metadata",
+      scope : "openid profile",
       connection: "Username-Password-Authentication",
       publicPages: [/login/, /jti\/.*/]
     },
