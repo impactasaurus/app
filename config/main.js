@@ -9,7 +9,7 @@ var config = {
 
   app: {
     api: "https://api.impactasaurus.org/v1/graphql",
-    root: "https://app.impactasaurus.org",
+    root: (process.env.NODE_ENV === "production") ? "https://app.impactasaurus.org" : "http://localhost:8080",
     head: {
       title: 'Impactasaurus',
       titleTemplate: '%s | Impactasaurus',
@@ -17,7 +17,7 @@ var config = {
     auth: {
       clientID: "pfKiAOUJh5r6jCxRn5vUYq7odQsjPUKf",
       domain: "impact.eu.auth0.com",
-      scope : "openid profile",
+      scope : "openid profile email",
       connection: "Username-Password-Authentication",
       publicPages: [/login/, /jti\/.*/]
     },

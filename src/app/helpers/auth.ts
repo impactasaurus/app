@@ -1,3 +1,6 @@
+import {AuthOptions, WebAuth} from 'auth0-js';
+const appConfig = require('../../../config/main');
+
 export function getToken(): string|null {
   return localStorage.getItem('token');
 }
@@ -72,6 +75,14 @@ export function getUserID(): string|null {
   return decoded.sub;
 }
 
+export function getUserEmail(): string|null {
+  const decoded = getDecodedToken();
+  if (decoded === null || decoded.email === undefined) {
+    return null;
+  }
+  return decoded.email;
+}
+
 export function isBeneficiaryUser(): boolean {
   const decoded = getDecodedToken();
   if (decoded !== null && decoded['https://app.impactasaurus.org/beneficiary'] !== undefined) {
@@ -92,4 +103,16 @@ export function getBeneficiaryScope(): string|null {
     return null;
   }
   return decoded.app_metadata.scope;
+}
+
+export function getWebAuth(): WebAuth {
+  const options: AuthOptions = {
+    domain: appConfig.app.auth.domain,
+    clientID: appConfig.app.auth.clientID,
+    scope: appConfig.app.auth.scope,
+    responseType: 'token id_token',
+    redirectUri: `${appConfig.app.root}/login`,
+  };
+
+  return new WebAuth(options);
 }
