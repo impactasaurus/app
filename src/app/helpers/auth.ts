@@ -77,7 +77,7 @@ export function getUserID(): string|null {
 
 export function getUserEmail(): string|null {
   const decoded = getDecodedToken();
-  if (decoded === null || decoded.sub === undefined) {
+  if (decoded === null || decoded.email === undefined) {
     return null;
   }
   return decoded.email;
