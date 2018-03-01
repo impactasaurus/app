@@ -45,18 +45,10 @@ class Auth0Lock extends React.Component<IProps, {}> {
     this.lock = new auth0Lock(appConfig.app.auth.clientID, appConfig.app.auth.domain, options);
     this.lock.show();
     this.lock.on('authenticated', (authResult: auth0.Auth0DecodedHash) => {
-      this.lock.getUserInfo(authResult.accessToken, (err: auth0.Auth0Error, _: auth0.Auth0UserProfile) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-
-        saveAuth(authResult.idToken);
-
-        if (this.props.onAuthenticated) {
-          this.props.onAuthenticated();
-        }
-      });
+      saveAuth(authResult.idToken);
+      if (this.props.onAuthenticated) {
+        this.props.onAuthenticated();
+      }
     });
   }
 
