@@ -1,68 +1,69 @@
-const appConfig = require('../../../../config/main');
-
 import * as React from 'react';
-import auth0Lock from 'auth0-lock';
-import {saveAuth} from 'helpers/auth';
+import {Auth0Error, WebAuth} from 'auth0-js';
+import {saveAuth, getWebAuth} from 'helpers/auth';
 import './style.less';
-
-let count = 0;
+import {Message} from 'semantic-ui-react';
+const ReactGA = require('react-ga');
 
 interface IProps {
   onAuthenticated?: ()=>void;
-  auth0Options?: Auth0LockConstructorOptions;
 }
 
-class Auth0Lock extends React.Component<IProps, {}> {
+interface IState {
+  error?: Auth0Error;
+}
 
-  private lock: Auth0LockStatic;
-  private divID: string;
+class Auth0Lock extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
-    this.divID = `auth0-lock-container-${count++}`;
+    this.state = {
+      error: undefined,
+    };
+    this.parseRedirect = this.parseRedirect.bind(this);
   }
 
-  public componentWillUnmount() {
-    this.lock.hide();
+  private parseRedirect(webAuth: WebAuth, onFailure: (error: Auth0Error) => void): void {
+    webAuth.parseHash((err, authResult) => {
+      if (err || authResult === null || authResult === undefined) {
+        onFailure(err);
+        return;
+      }
+      saveAuth(authResult.idToken);
+      if (this.props.onAuthenticated) {
+        this.props.onAuthenticated();
+      }
+    });
   }
 
   public componentDidMount() {
-    let options = this.props.auth0Options || {};
-    options = Object.assign({}, options, {
-      autofocus: true,
-      container: this.divID,
-      allowSignUp: false,
-      rememberLastLogin : false,
-      auth: {
-        params: {
-          scope: appConfig.app.auth.scope,
-        },
-      },
-      theme: {
-        primaryColor: '#935D8C',
-      },
-    });
-    this.lock = new auth0Lock(appConfig.app.auth.clientID, appConfig.app.auth.domain, options);
-    this.lock.show();
-    this.lock.on('authenticated', (authResult: auth0.Auth0DecodedHash) => {
-      this.lock.getUserInfo(authResult.accessToken, (err: auth0.Auth0Error, _: auth0.Auth0UserProfile) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
+    const webAuth = getWebAuth();
 
-        saveAuth(authResult.idToken);
-
-        if (this.props.onAuthenticated) {
-          this.props.onAuthenticated();
-        }
-      });
+    this.parseRedirect(webAuth, (err: Auth0Error) => {
+      if (err) {
+        ReactGA.event({
+          category : 'login',
+          action : 'failed',
+          label: err.description,
+        });
+        this.setState({error: err});
+      } else {
+        webAuth.authorize();
+      }
     });
   }
 
   public render() {
+    if (this.state.error !== undefined) {
+      return (
+        <Message warning>
+          <Message.Header>Error {this.state.error.code}</Message.Header>
+          <Message.Content>Please try refreshing the page.</Message.Content>
+        </Message>
+      );
+    }
     return (
-      <div id={this.divID} className="impact-auth0-lock" />
+      <div />
     );
   }
 }

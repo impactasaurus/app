@@ -163,7 +163,6 @@ var config = {
       template: './src/index.ejs'
     }),
     new CopyWebpackPlugin([
-      { from: './src/tokenrefresh.html', to:"tokenrefresh.html" },
       { from: './src/favicon.ico', to:"favicon.ico" },
     ])
   ],

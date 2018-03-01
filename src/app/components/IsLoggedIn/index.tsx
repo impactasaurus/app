@@ -5,10 +5,13 @@ import { bindActionCreators } from 'redux';
 import { RouterState } from '@types/react-router-redux';
 import {IURLConnector} from 'redux/modules/url';
 import { IStore } from 'redux/IStore';
+import {setUserDetails, setLoggedInStatus, SetUserDetailsFunc, SetLoggedInStatusFunc, getUserID as getUserIDFromStore, isUserLoggedIn} from 'modules/user';
+import {getWebAuth} from '../../helpers/auth';
+import {WebAuth} from 'auth0-js';
+
 const { connect } = require('react-redux');
 const config = require('../../../../config/main').app.auth;
 const ReactGA = require('react-ga');
-import {setUserDetails, setLoggedInStatus, SetUserDetailsFunc, SetLoggedInStatusFunc, getUserID as getUserIDFromStore, isUserLoggedIn} from 'modules/user';
 
 interface IProps extends IURLConnector {
   routeState?: RouterState;
@@ -19,7 +22,7 @@ interface IProps extends IURLConnector {
 }
 
 interface IState {
-  listening?: boolean;
+  webAuth: WebAuth;
 }
 
 @connect((state: IStore) => ({
@@ -36,15 +39,15 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      listening: false,
+      webAuth: getWebAuth(),
     };
     this.setup = this.setup.bind(this);
     this.sendToLogin = this.sendToLogin.bind(this);
     this.isStoredJWTValid = this.isStoredJWTValid.bind(this);
     this.setupRefreshTrigger = this.setupRefreshTrigger.bind(this);
     this.trackUser = this.trackUser.bind(this);
-    this.listenForRefresh = this.listenForRefresh.bind(this);
     this.isPublicPage = this.isPublicPage.bind(this);
+    this.refreshToken = this.refreshToken.bind(this);
   }
 
   public componentDidMount() {
@@ -88,29 +91,22 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
   }
 
   private refreshToken() {
-    const iframe = document.getElementById('refresh-iframe') as HTMLIFrameElement;
-    iframe.contentWindow.postMessage({
-      type: 'refresh_token',
-      payload: {
-        url: `https://${config.domain}/authorize?client_id=${config.clientID}&response_type=token&connection=${config.connection}&sso=true&scope=${config.scope}&redirect_uri={REDIRECT}`,
-        replaceToken: '{REDIRECT}',
-      },
-    }, window.location.origin);
-  }
-
-  private listenForRefresh() {
-    if (this.state.listening) {
-      return;
-    }
-    const refreshMessageReceiver = (e) => {
-      if (e.origin === parent.location.origin && e.data.type === 'token_refreshed') {
-        saveAuth(e.data.payload.token);
-        this.setup();
+    this.state.webAuth.checkSession({}, (err, authResult) => {
+      if (err !== undefined && err !== null) {
+        console.error(err.description);
+        ReactGA.event({
+          category : 'silent_auth',
+          action : 'failed',
+          label: err.description,
+        });
+        return;
       }
-    };
-    window.addEventListener('message', refreshMessageReceiver, false);
-    this.setState({
-      listening: true,
+      ReactGA.event({
+        category : 'silent_auth',
+        action : 'success',
+      });
+      saveAuth(authResult.idToken);
+      this.setup();
     });
   }
 
@@ -142,7 +138,6 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
   }
 
   private setup() {
-    this.listenForRefresh();
     this.trackUser();
     const isLoggedIn = this.isStoredJWTValid();
     if (this.props.isLoggedIn !== isLoggedIn) {
