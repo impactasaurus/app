@@ -1,11 +1,9 @@
 import * as React from 'react';
-import {Auth0Error, AuthOptions, WebAuth} from 'auth0-js';
-import {saveAuth} from 'helpers/auth';
+import {Auth0Error, WebAuth} from 'auth0-js';
+import {saveAuth, getWebAuth} from 'helpers/auth';
 import './style.less';
 import {Message} from 'semantic-ui-react';
 const ReactGA = require('react-ga');
-
-const appConfig = require('../../../../config/main');
 
 interface IProps {
   onAuthenticated?: ()=>void;
@@ -39,15 +37,7 @@ class Auth0Lock extends React.Component<IProps, IState> {
   }
 
   public componentDidMount() {
-    const options: AuthOptions = {
-      domain: appConfig.app.auth.domain,
-      clientID: appConfig.app.auth.clientID,
-      scope: appConfig.app.auth.scope,
-      responseType: 'token id_token',
-      redirectUri: `${appConfig.app.root}/login`,
-    };
-
-    const webAuth = new WebAuth(options);
+    const webAuth = getWebAuth();
 
     this.parseRedirect(webAuth, (err: Auth0Error) => {
       if (err) {
