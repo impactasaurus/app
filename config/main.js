@@ -9,7 +9,7 @@ var config = {
 
   app: {
     api: "https://api.impactasaurus.org/v1/graphql",
-    root: "https://app.impactasaurus.org",
+    root: (process.env.NODE_ENV === "production") ? "https://app.impactasaurus.org" : "http://localhost:8080",
     head: {
       title: 'Impactasaurus',
       titleTemplate: '%s | Impactasaurus',
