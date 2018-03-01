@@ -58,7 +58,7 @@ class Auth0Lock extends React.Component<IProps, IState> {
       return (
         <Message warning>
           <Message.Header>Error {this.state.error.code}</Message.Header>
-          Please try refreshing the page.
+          <Message.Content>Please try refreshing the page.</Message.Content>
         </Message>
       );
     }

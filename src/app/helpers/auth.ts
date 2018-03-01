@@ -75,6 +75,14 @@ export function getUserID(): string|null {
   return decoded.sub;
 }
 
+export function getUserEmail(): string|null {
+  const decoded = getDecodedToken();
+  if (decoded === null || decoded.sub === undefined) {
+    return null;
+  }
+  return decoded.email;
+}
+
 export function isBeneficiaryUser(): boolean {
   const decoded = getDecodedToken();
   if (decoded !== null && decoded['https://app.impactasaurus.org/beneficiary'] !== undefined) {
