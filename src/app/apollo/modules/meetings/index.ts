@@ -50,6 +50,27 @@ export const getMeetings = <T>(idExtractor: IDExtractor<T>) => {
   });
 };
 
+const getIncompleteMeetingsGQL = gql`
+  query ($beneficiaryID: String!) {
+    getIncompleteMeetings: incompleteMeetings(beneficiary: $beneficiaryID) {
+      ...meetingWithOutcomeSetAndAggregates
+    }
+  }
+  ${fragmentWithOutcomeSetAndAggregates}`;
+
+export const getIncompleteMeetings = <T>(idExtractor: IDExtractor<T>, name: string) => {
+  return graphql<any, T>(getIncompleteMeetingsGQL, {
+    options: (props: T) => {
+      return {
+        variables: {
+          beneficiaryID: idExtractor(props),
+        },
+      };
+    },
+    name,
+  });
+};
+
 export const newMeeting = graphql(gql`
   mutation ($beneficiaryID: String!, $outcomeSetID: String!, $conducted: String!, $tags: [String]) {
     newMeeting: AddMeeting(beneficiaryID:$beneficiaryID, outcomeSetID:$outcomeSetID, conducted:$conducted, tags:$tags) {
@@ -67,6 +88,11 @@ export const newMeeting = graphql(gql`
         },
         refetchQueries: [{
           query: getMeetingsGQL,
+          variables: {
+            beneficiaryID: config.beneficiaryID,
+          },
+        }, {
+          query: getIncompleteMeetingsGQL,
           variables: {
             beneficiaryID: config.beneficiaryID,
           },
@@ -92,6 +118,11 @@ export const newRemoteMeeting = graphql(gql`
         },
         refetchQueries: [{
           query: getMeetingsGQL,
+          variables: {
+            beneficiaryID: config.beneficiaryID,
+          },
+        }, {
+          query: getIncompleteMeetingsGQL,
           variables: {
             beneficiaryID: config.beneficiaryID,
           },
@@ -139,6 +170,9 @@ export function completeMeeting<T>(component) {
         refetchQueries: [{
           query: getMeetingsGQL,
           variables: { beneficiaryID },
+        }, {
+          query: getIncompleteMeetingsGQL,
+          variables: { beneficiaryID },
         }],
       }).then(mutationResultExtractor<IMeeting>('completeMeeting')),
     }),
@@ -148,6 +182,10 @@ export function completeMeeting<T>(component) {
 export interface IMeetingResult extends QueryProps {
   getMeeting?: IMeeting;
   getMeetings?: IMeeting[];
+}
+
+export interface IIncompleteMeetingsResult extends QueryProps {
+  getIncompleteMeetings?: IMeeting[];
 }
 
 export interface IMeetingMutation {

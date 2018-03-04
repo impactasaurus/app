@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import {IStore} from 'redux/IStore';
 import {IURLConnector} from 'redux/modules/url';
 import {Aggregation, Visualisation, getAggregation, getVisualisation, getSelectedQuestionSetID} from 'models/pref';
-import {getMeetings, IMeetingResult} from 'apollo/modules/meetings';
+import {getIncompleteMeetings, getMeetings, IIncompleteMeetingsResult, IMeetingResult} from 'apollo/modules/meetings';
 import {IMeeting} from 'models/meeting';
 import {MeetingRadar} from 'components/MeetingRadar';
 import {MeetingTable} from 'components/MeetingTable';
@@ -26,12 +26,13 @@ interface IProps extends IURLConnector {
   agg?: Aggregation;
   selectedQuestionSetID?: string;
   data?: IMeetingResult;
+  incompleteMeetings?: IIncompleteMeetingsResult;
   isCategoryAgPossible?: boolean;
   isBeneficiary: boolean;
 }
 
 export enum ReviewPage {
-  PROGRESS,
+  JOURNEY,
   RECORDS,
 }
 
@@ -87,6 +88,8 @@ class ReviewInner extends React.Component<IProps, IState> {
     this.getInnerPage = this.getInnerPage.bind(this);
     this.renderSubMenu = this.renderSubMenu.bind(this);
     this.innerPageSetter = this.innerPageSetter.bind(this);
+    this.renderJourney = this.renderJourney.bind(this);
+    this.renderRecords = this.renderRecords.bind(this);
   }
 
   private handleClick(url: string) {
@@ -96,7 +99,7 @@ class ReviewInner extends React.Component<IProps, IState> {
   }
 
   private getInnerPage(): ReviewPage {
-    return this.state.innerPage || ReviewPage.PROGRESS;
+    return this.state.innerPage || ReviewPage.JOURNEY;
   }
 
   private innerPageSetter(toSet: ReviewPage): () => void {
@@ -126,7 +129,7 @@ class ReviewInner extends React.Component<IProps, IState> {
     );
   }
 
-  private renderInner(): JSX.Element {
+  private renderJourney(): JSX.Element {
     if (this.props.data.loading) {
       return (
         <Loader active={true} inline="centered" />
@@ -136,38 +139,66 @@ class ReviewInner extends React.Component<IProps, IState> {
       return (
         <Message error={true}>
           <Message.Header>Error</Message.Header>
-          <div>Failed to load assessments</div>
+          <div>Failed to load records</div>
         </Message>
       );
     }
     if (!Array.isArray(this.props.data.getMeetings) || this.props.data.getMeetings.length === 0) {
       return (
-        <p>No meetings found for beneficiary {this.props.params.id}</p>
-      );
-    }
-    const page = this.getInnerPage();
-    if (page === ReviewPage.PROGRESS) {
-      return (
-        <div>
-          <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={true}/>
-          <QuestionSetSelect
-            allowedQuestionSetIDs={getQuestionSetOptions(this.props.data.getMeetings)}
-            autoSelectFirst={true}
-          />
-          {this.renderVis()}
-        </div>
+        <p>No complete meetings found for beneficiary {this.props.params.id}</p>
       );
     }
     return (
-      <RecordList meetings={this.props.data.getMeetings} />
+      <div>
+        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={true}/>
+        <QuestionSetSelect
+          allowedQuestionSetIDs={getQuestionSetOptions(this.props.data.getMeetings)}
+          autoSelectFirst={true}
+        />
+        {this.renderVis()}
+      </div>
     );
+  }
+
+  private renderRecords(): JSX.Element {
+    if (this.props.data.loading || this.props.incompleteMeetings.loading) {
+      return (
+        <Loader active={true} inline="centered" />
+      );
+    }
+    if (this.props.data.error !== undefined || this.props.incompleteMeetings.error !== undefined) {
+      return (
+        <Message error={true}>
+          <Message.Header>Error</Message.Header>
+          <div>Failed to load records</div>
+        </Message>
+      );
+    }
+    const noCompleteMeetings = !Array.isArray(this.props.data.getMeetings) || this.props.data.getMeetings.length === 0;
+    const noIncompleteMeetings = !Array.isArray(this.props.incompleteMeetings.getIncompleteMeetings) || this.props.incompleteMeetings.getIncompleteMeetings.length === 0;
+    if (noCompleteMeetings && noIncompleteMeetings) {
+      return (
+        <p>No meetings found for beneficiary {this.props.params.id}</p>
+      );
+    }
+    return (
+      <RecordList meetings={[].concat(...this.props.data.getMeetings, ...this.props.incompleteMeetings.getIncompleteMeetings)} />
+    );
+  }
+
+  private renderInner(): JSX.Element {
+    const page = this.getInnerPage();
+    if (page === ReviewPage.JOURNEY) {
+      return this.renderJourney();
+    }
+    return this.renderRecords();
   }
 
   private renderSubMenu(): JSX.Element {
     const inner = this.getInnerPage();
     return (
       <Menu pointing secondary>
-        <Menu.Item name="Progress" active={inner === ReviewPage.PROGRESS} onClick={this.innerPageSetter(ReviewPage.PROGRESS)}/>
+        <Menu.Item name="Journey" active={inner === ReviewPage.JOURNEY} onClick={this.innerPageSetter(ReviewPage.JOURNEY)}/>
         <Menu.Item name="Records" active={inner === ReviewPage.RECORDS} onClick={this.innerPageSetter(ReviewPage.RECORDS)}/>
       </Menu>
     );
@@ -203,5 +234,5 @@ class ReviewInner extends React.Component<IProps, IState> {
   }
 }
 
-const Review = getMeetings<IProps>((p) => p.params.id)(ReviewInner);
+const Review = getIncompleteMeetings<IProps>((p) => p.params.id, 'incompleteMeetings')(getMeetings<IProps>((p) => p.params.id)(ReviewInner));
 export { Review }
