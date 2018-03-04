@@ -8,7 +8,7 @@ interface IProps extends IURLConnector {
   params: {
     id: string,
   };
-  data?: IMeetingResult;
+  completeMeetings?: IMeetingResult;
   incompleteMeetings?: IIncompleteMeetingsResult;
 }
 
@@ -20,12 +20,7 @@ class RecordsInner extends React.Component<IProps, any> {
   }
 
   private renderRecords(): JSX.Element {
-    if (this.props.data.loading || this.props.incompleteMeetings.loading) {
-      return (
-        <Loader active={true} inline="centered" />
-      );
-    }
-    if (this.props.data.error !== undefined || this.props.incompleteMeetings.error !== undefined) {
+    if (this.props.completeMeetings.error !== undefined || this.props.incompleteMeetings.error !== undefined) {
       return (
         <Message error={true}>
           <Message.Header>Error</Message.Header>
@@ -33,7 +28,12 @@ class RecordsInner extends React.Component<IProps, any> {
         </Message>
       );
     }
-    const noCompleteMeetings = !Array.isArray(this.props.data.getMeetings) || this.props.data.getMeetings.length === 0;
+    if (this.props.completeMeetings.loading || this.props.incompleteMeetings.loading) {
+      return (
+        <Loader active={true} inline="centered" />
+      );
+    }
+    const noCompleteMeetings = !Array.isArray(this.props.completeMeetings.getMeetings) || this.props.completeMeetings.getMeetings.length === 0;
     const noIncompleteMeetings = !Array.isArray(this.props.incompleteMeetings.getIncompleteMeetings) || this.props.incompleteMeetings.getIncompleteMeetings.length === 0;
     if (noCompleteMeetings && noIncompleteMeetings) {
       return (
@@ -41,7 +41,7 @@ class RecordsInner extends React.Component<IProps, any> {
       );
     }
     return (
-      <RecordList meetings={[].concat(...this.props.data.getMeetings, ...this.props.incompleteMeetings.getIncompleteMeetings)} />
+      <RecordList meetings={[].concat(...this.props.completeMeetings.getMeetings, ...this.props.incompleteMeetings.getIncompleteMeetings)} />
     );
   }
 
@@ -58,5 +58,5 @@ class RecordsInner extends React.Component<IProps, any> {
   }
 }
 
-const Records = getIncompleteMeetings<IProps>((p) => p.params.id, 'incompleteMeetings')(getMeetings<IProps>((p) => p.params.id)(RecordsInner));
+const Records = getMeetings<IProps>((p) => p.params.id, 'completeMeetings')(getIncompleteMeetings<IProps>((p) => p.params.id, 'incompleteMeetings')(RecordsInner));
 export { Records }

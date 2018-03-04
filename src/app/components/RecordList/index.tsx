@@ -57,7 +57,7 @@ class RecordList extends React.Component<IProp, IState> {
     }
     let incomplete = (<span/>);
     if (r.incomplete) {
-      incomplete = (<Popup trigger={<Icon name="hide"/>} content="Incomplete" /> );
+      incomplete = (<Popup trigger={<Icon name="hourglass half"/>} content="Incomplete" /> );
     }
     return [
       <Table.Row className={clz} key={r.id}>
