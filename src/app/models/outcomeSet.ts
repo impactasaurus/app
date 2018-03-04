@@ -1,6 +1,6 @@
 import {IQuestion, fragment as qFragment} from './question';
 import {ICategory, fragment as cFragment} from './category';
-import {gql} from 'react-apollo';
+import gql from 'graphql-tag';
 
 export interface IOutcomeSet {
   id: string;

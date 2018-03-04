@@ -1,7 +1,8 @@
-import {gql, graphql} from 'react-apollo';
+import {graphql} from 'react-apollo';
 import {IOutcomeSet, fragment as osFragment} from 'models/outcomeSet';
 import {mutationResultExtractor} from 'helpers/apollo';
 import {clearCacheOfAllMeetings} from 'apollo/modules/meetings';
+import gql from 'graphql-tag';
 
 export function addQuestionCategory<T>(component) {
   return graphql<any, T>(gql`

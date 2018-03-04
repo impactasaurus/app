@@ -1,6 +1,7 @@
-import {gql, graphql, QueryProps} from 'react-apollo';
+import {graphql, QueryProps} from 'react-apollo';
 import {IOutcomeSet, fragment} from 'models/outcomeSet';
 import {IDExtractor, mutationResultExtractor} from 'helpers/apollo';
+import gql from 'graphql-tag';
 
 export const getOutcomeSet = <T>(idExtractor: IDExtractor<T>) => {
   return graphql<any, T>(gql`

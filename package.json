@@ -24,11 +24,12 @@
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
-    "@types/auth0-js": "^8.11.2",
+    "@types/auth0-js": "8.11.2",
     "@types/base16": "1.0.1",
     "@types/chai": "3.4.34",
     "@types/classnames": "0.0.32",
     "@types/enzyme": "2.8.0",
+    "@types/graphql": "0.12.4",
     "@types/history": "4.5.0",
     "@types/isomorphic-fetch": "0.0.34",
     "@types/mocha": "2.2.38",
@@ -111,11 +112,14 @@
   },
   "dependencies": {
     "apollo-cache-invalidation": "0.0.3",
+    "apollo-client-preset": "1.0.8",
     "auth0-js": "9.3.1",
     "chart.js": "2.6.0",
     "chartjs-color": "2.1.0",
     "distinct-colors": "1.0.4",
     "es6-promise": "4.0.5",
+    "graphql": "0.13.1",
+    "graphql-tag": "2.8.0",
     "history": "4.5.1",
     "input-moment": "0.3.4",
     "isomorphic-fetch": "2.2.1",
@@ -124,7 +128,7 @@
     "rc-slider": "8.2.0",
     "react": "15.6.1",
     "react-addons-shallow-compare": "15.6.0",
-    "react-apollo": "1.4.15",
+    "react-apollo": "2.0.4",
     "react-css-modules": "4.1.0",
     "react-dates": "12.5.1",
     "react-dom": "15.6.1",
@@ -142,6 +146,6 @@
     "redux-storage-engine-localstorage": "1.1.4",
     "redux-thunk": "2.2.0",
     "semantic-ui-react": "0.71.3",
-    "url-search-params-polyfill": "^2.0.0"
+    "url-search-params-polyfill": "2.0.0"
   }
 }

@@ -1,4 +1,5 @@
-import {gql, graphql} from 'react-apollo';
+import {graphql} from 'react-apollo';
+import gql from 'graphql-tag';
 import {IOutcomeSet, fragment as osFragment} from 'models/outcomeSet';
 import {mutationResultExtractor} from 'helpers/apollo';
 import {clearCacheOfAllMeetings} from 'apollo/modules/meetings';
