@@ -27,7 +27,7 @@ class ReviewSelector extends React.Component<IURLConnector, IState> {
 
   private review() {
     const benID = this.state.enteredBenID;
-    this.props.setURL(`/review/${benID}`);
+    this.props.setURL(`/beneficiary/${benID}`);
   }
 
   private setBenID(_, data) {
