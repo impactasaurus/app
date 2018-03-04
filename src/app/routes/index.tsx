@@ -8,7 +8,11 @@ export default (
     <Route path="record" component={containers.AssessmentTypeSelect} />
     <Route path="record/:type" component={containers.AssessmentConfig} />
     <Route path="beneficiary" component={containers.ReviewSelector} />
-    <Route path="beneficiary/:id" component={containers.Review} />
+    <Route path="beneficiary/:id" component={containers.Review}>
+      <IndexRoute component={containers.Journey}/>
+      <Route path="journey" component={containers.Journey} />
+      <Route path="records" component={containers.Records} />
+    </Route>
     <Route path="settings" component={containers.Settings}>
       <Route path="account" component={containers.Account} />
       <Route path="organisation" component={containers.Organisation} />

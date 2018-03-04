@@ -16,3 +16,5 @@ export {Report} from './Report';
 export {ServiceReport} from './ServiceReport';
 export {BeneficiaryRedirect} from './BeneficiaryRedirect';
 export {RateOfChangeReport} from './RateOfChangeReport';
+export {Journey} from './Journey';
+export {Records} from './Records';

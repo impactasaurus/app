@@ -38,7 +38,7 @@ const getMeetingsGQL = gql`
   }
   ${fragmentWithOutcomeSetAndAggregates}`;
 
-export const getMeetings = <T>(idExtractor: IDExtractor<T>) => {
+export const getMeetings = <T>(idExtractor: IDExtractor<T>, name?: string) => {
   return graphql<any, T>(getMeetingsGQL, {
     options: (props: T) => {
       return {
@@ -47,6 +47,31 @@ export const getMeetings = <T>(idExtractor: IDExtractor<T>) => {
         },
       };
     },
+    name: name ? name : 'data',
+  });
+};
+
+const getAllMeetingsGQL = gql`
+  query getAllMeetings ($beneficiaryID: String!) {
+    getIncompleteMeetings: incompleteMeetings(beneficiary: $beneficiaryID) {
+      ...meetingWithOutcomeSetAndAggregates
+    }
+    getMeetings: meetings(beneficiary: $beneficiaryID) {
+      ...meetingWithOutcomeSetAndAggregates
+    }
+  }
+  ${fragmentWithOutcomeSetAndAggregates}`;
+
+export const getAllMeetings = <T>(idExtractor: IDExtractor<T>, name?: string) => {
+  return graphql<any, T>(getAllMeetingsGQL, {
+    options: (props: T) => {
+      return {
+        variables: {
+          beneficiaryID: idExtractor(props),
+        },
+      };
+    },
+    name: name ? name : 'data',
   });
 };
 
@@ -67,6 +92,11 @@ export const newMeeting = graphql(gql`
         },
         refetchQueries: [{
           query: getMeetingsGQL,
+          variables: {
+            beneficiaryID: config.beneficiaryID,
+          },
+        }, {
+          query: getAllMeetingsGQL,
           variables: {
             beneficiaryID: config.beneficiaryID,
           },
@@ -92,6 +122,11 @@ export const newRemoteMeeting = graphql(gql`
         },
         refetchQueries: [{
           query: getMeetingsGQL,
+          variables: {
+            beneficiaryID: config.beneficiaryID,
+          },
+        }, {
+          query: getAllMeetingsGQL,
           variables: {
             beneficiaryID: config.beneficiaryID,
           },
@@ -139,6 +174,9 @@ export function completeMeeting<T>(component) {
         refetchQueries: [{
           query: getMeetingsGQL,
           variables: { beneficiaryID },
+        }, {
+          query: getAllMeetingsGQL,
+          variables: { beneficiaryID },
         }],
       }).then(mutationResultExtractor<IMeeting>('completeMeeting')),
     }),
@@ -147,6 +185,11 @@ export function completeMeeting<T>(component) {
 
 export interface IMeetingResult extends QueryProps {
   getMeeting?: IMeeting;
+  getMeetings?: IMeeting[];
+}
+
+export interface IGetAllMeetingsResult extends QueryProps {
+  getIncompleteMeetings?: IMeeting[];
   getMeetings?: IMeeting[];
 }
 
