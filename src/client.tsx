@@ -8,12 +8,17 @@ const { Router, browserHistory } = require('react-router');
 import { syncHistoryWithStore } from 'react-router-redux';
 const { ReduxAsyncConnect } = require('redux-connect');
 import { configureStore } from './app/redux/store';
+import { Provider } from 'react-redux';
 import { getToken } from 'helpers/auth';
 import 'isomorphic-fetch';
 import routes from './app/routes';
 import Raven = require('raven-js');
 
-import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo';
+import { ApolloClient } from 'apollo-client';
+import { ApolloLink } from 'apollo-link';
+import { createHttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { ApolloProvider } from 'react-apollo';
 
 const appConfig = require('../config/main');
 
@@ -32,40 +37,42 @@ if (appConfig.env === 'production') {
   }).install();
 }
 
-const networkInterface = createNetworkInterface({
-  uri: appConfig.app.api,
+const httpLink = createHttpLink({ uri: appConfig.app.api });
+const middlewareLink = new ApolloLink((operation, forward) => {
+  operation.setContext({
+    headers: {
+      authorization: getToken() ? `Bearer ${getToken()}` : null,
+    },
+  });
+  return forward(operation);
 });
-networkInterface.use([{
-  applyMiddleware(req, next) {
-    if (!req.options.headers) {
-      req.options.headers = {};  // Create the header object if needed.
-    }
-    req.options.headers.authorization = getToken() ? `Bearer ${getToken()}` : null;
-    next();
-  },
-}]);
-const client = new ApolloClient({networkInterface});
+
+const link = middlewareLink.concat(httpLink);
+const client = new ApolloClient({
+  link,
+  cache: new InMemoryCache(),
+});
 
 const store = configureStore(
   browserHistory,
-  {
-    apollo: client.reducer(),
-  },
-  [client.middleware()],
+  {},
+  [],
   window.__INITIAL_STATE__,
 );
 const history = syncHistoryWithStore(browserHistory, store);
 const connectedCmp = (props) => <ReduxAsyncConnect {...props} />;
 
 ReactDOM.render(
-  <ApolloProvider client={client} store={store}>
-    <Router
-      history={history}
-      render={connectedCmp}
-      onUpdate={logPageView}
-    >
-      {routes}
-    </Router>
-  </ApolloProvider>,
+  <Provider store={store}>
+    <ApolloProvider client={client}>
+      <Router
+        history={history}
+        render={connectedCmp}
+        onUpdate={logPageView}
+      >
+        {routes}
+      </Router>
+    </ApolloProvider>
+  </Provider>,
   document.getElementById('app'),
 );

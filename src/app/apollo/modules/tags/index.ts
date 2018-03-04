@@ -1,4 +1,5 @@
-import {gql, graphql, QueryProps} from 'react-apollo';
+import {graphql, QueryProps} from 'react-apollo';
+import gql from 'graphql-tag';
 
 export const getTags = <T>(component)  => {
   return graphql<any, T>(gql`

@@ -1,4 +1,5 @@
-import {gql, graphql, QueryProps, QueryOpts} from 'react-apollo';
+import {graphql, QueryProps, QueryOpts} from 'react-apollo';
+import gql from 'graphql-tag';
 import {IJOCServiceReport, jocFragment, IROCReport, rocFragment} from 'models/report';
 import {Extractor, IDExtractor} from 'helpers/apollo';
 

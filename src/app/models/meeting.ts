@@ -1,7 +1,7 @@
 import {IAnswer, fragment as aFragment} from './answer';
 import {fragment as osFragment, IOutcomeSet} from './outcomeSet';
 import {IAggregates, fragment as agFragment} from './aggregates';
-import {gql} from 'react-apollo';
+import gql from 'graphql-tag';
 
 export interface IMeeting {
   id: string;

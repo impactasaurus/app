@@ -1,8 +1,9 @@
-import {gql, graphql, QueryProps} from 'react-apollo';
+import {graphql, QueryProps} from 'react-apollo';
 import {IMeeting, fragment, fragmentWithOutcomeSetAndAggregates} from 'models/meeting';
 import {IDExtractor, mutationResultExtractor} from 'helpers/apollo';
 import { invalidateFields, ROOT } from 'apollo-cache-invalidation';
 import {IAssessmentConfig} from 'models/assessment';
+import gql from 'graphql-tag';
 
 // see impactasaurus/app#55, not an ideal fix
 // forces refetch of meeting related queries by deleting root query pointers for `meeting` and `meetings` queries
@@ -38,7 +39,7 @@ const getMeetingsGQL = gql`
   }
   ${fragmentWithOutcomeSetAndAggregates}`;
 
-export const getMeetings = <T>(idExtractor: IDExtractor<T>) => {
+export const getMeetings = <T>(idExtractor: IDExtractor<T>, name?: string) => {
   return graphql<any, T>(getMeetingsGQL, {
     options: (props: T) => {
       return {
@@ -47,6 +48,7 @@ export const getMeetings = <T>(idExtractor: IDExtractor<T>) => {
         },
       };
     },
+    name: name ? name : 'data',
   });
 };
 

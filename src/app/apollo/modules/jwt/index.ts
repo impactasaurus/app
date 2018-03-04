@@ -1,5 +1,6 @@
-import {gql, graphql, QueryProps} from 'react-apollo';
+import {graphql, QueryProps} from 'react-apollo';
 import {IDExtractor} from 'helpers/apollo';
+import gql from 'graphql-tag';
 
 export const getJWT = <T>(idExtractor: IDExtractor<T>) => {
   return graphql<any, T>(gql`
