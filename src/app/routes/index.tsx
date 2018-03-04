@@ -7,8 +7,8 @@ export default (
     <IndexRoute component={containers.Home} />
     <Route path="record" component={containers.AssessmentTypeSelect} />
     <Route path="record/:type" component={containers.AssessmentConfig} />
-    <Route path="review" component={containers.ReviewSelector} />
-    <Route path="review/:id" component={containers.Review} />
+    <Route path="beneficiary" component={containers.ReviewSelector} />
+    <Route path="beneficiary/:id" component={containers.Review} />
     <Route path="settings" component={containers.Settings}>
       <Route path="account" component={containers.Account} />
       <Route path="organisation" component={containers.Organisation} />
