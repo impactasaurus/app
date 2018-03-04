@@ -33,7 +33,7 @@ class Header extends React.Component<IProps, any> {
     if (exact) {
       return this.props.currentURL === url;
     }
-    return this.props.currentURL !== undefined && this.props.currentURL.includes(url);
+    return this.props.currentURL !== undefined && this.props.currentURL.startsWith(url);
   }
 
   private handleClick(url: string) {

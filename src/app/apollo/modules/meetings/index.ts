@@ -38,7 +38,7 @@ const getMeetingsGQL = gql`
   }
   ${fragmentWithOutcomeSetAndAggregates}`;
 
-export const getMeetings = <T>(idExtractor: IDExtractor<T>) => {
+export const getMeetings = <T>(idExtractor: IDExtractor<T>, name?: string) => {
   return graphql<any, T>(getMeetingsGQL, {
     options: (props: T) => {
       return {
@@ -47,6 +47,7 @@ export const getMeetings = <T>(idExtractor: IDExtractor<T>) => {
         },
       };
     },
+    name: name ? name : 'data',
   });
 };
 
