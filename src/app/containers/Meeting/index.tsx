@@ -178,7 +178,7 @@ class MeetingInner extends React.Component<IProps, IState> {
           completing: false,
           completeError: undefined,
         });
-        this.props.setURL(`/review/${this.props.data.getMeeting.beneficiary}`);
+        this.props.setURL(`/beneficiary/${this.props.data.getMeeting.beneficiary}`);
       })
       .catch((e: string) => {
         this.setState({

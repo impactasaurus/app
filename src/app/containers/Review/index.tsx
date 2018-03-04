@@ -136,7 +136,7 @@ class ReviewInner extends React.Component<IProps, any> {
 
     let backButton: JSX.Element = (<div />);
     if (this.props.isBeneficiary === false) {
-      backButton = (<Button onClick={this.handleClick('/review')} content="Back" icon="left arrow" labelPosition="left" primary id="back-button"/>);
+      backButton = (<Button onClick={this.handleClick('/beneficiary')} content="Back" icon="left arrow" labelPosition="left" primary id="back-button"/>);
     }
 
     return (
