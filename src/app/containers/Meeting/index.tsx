@@ -31,6 +31,7 @@ interface IState {
     saving?: boolean;
     completing?: boolean;
     completeError?: string;
+    init?: boolean;
 };
 
 @connect((_, ownProps: IProps) => {
@@ -54,6 +55,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       finished: false,
       saveError: undefined,
       saving: false,
+      init: false,
     };
     this.setAnswer = this.setAnswer.bind(this);
     this.next = this.next.bind(this);
@@ -67,9 +69,9 @@ class MeetingInner extends React.Component<IProps, IState> {
     this.renderAnswerReview = this.renderAnswerReview.bind(this);
   }
 
-  public componentDidUpdate(prevProps: IProps) {
-    if (prevProps.questions === undefined &&
-      this.props.questions !== undefined) {
+  public componentDidUpdate() {
+    if (this.props.questions !== undefined && this.state.init === false) {
+      this.setState({init: true});
       if (this.props.questions.length <= 0) {
         this.goToReview();
       } else {
