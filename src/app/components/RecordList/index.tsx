@@ -4,8 +4,12 @@ import './style.less';
 import {IMeeting, sortMeetingsByConducted} from '../../models/meeting';
 import {renderArray, renderArrayForArray} from '../../helpers/react';
 import {getHumanisedDate} from '../../helpers/moment';
+import {IURLConnector} from 'redux/modules/url';
+import {setURL} from 'redux/modules/url';
+import {bindActionCreators} from 'redux';
+const { connect } = require('react-redux');
 
-interface IProp {
+interface IProp extends IURLConnector {
   meetings: IMeeting[];
 }
 
@@ -13,6 +17,9 @@ interface IState {
   open: string[];
 }
 
+@connect(undefined, (dispatch) => ({
+  setURL: bindActionCreators(setURL, dispatch),
+}))
 class RecordList extends React.Component<IProp, IState> {
 
   constructor(props) {
@@ -41,8 +48,25 @@ class RecordList extends React.Component<IProp, IState> {
 
   private renderTag(t: string): JSX.Element {
     return (
-      <Label>{t}</Label>
+      <Label key={t}>{t}</Label>
     );
+  }
+
+  private resume(m: IMeeting): () => void {
+    return () => {
+      this.props.setURL(`/meeting/${m.id}`);
+    };
+  }
+
+  private renderActions(r: IMeeting): JSX.Element[] {
+    if (r.incomplete) {
+      return [
+        (<Popup key="continue" trigger={<Icon name="arrow right" onClick={this.resume(r)}/>} content="Continue" />),
+      ];
+    }
+    return [
+      (<span key="comingsoon">Coming Soon!</span>),
+    ];
   }
 
   private renderRecord(r: IMeeting, idx: number): JSX.Element[] {
@@ -68,7 +92,7 @@ class RecordList extends React.Component<IProp, IState> {
         <Table.Cell>{r.outcomeSet.name}</Table.Cell>
         <Table.Cell>{renderArray(this.renderTag, r.tags)}</Table.Cell>
         <Table.Cell>{r.user}</Table.Cell>
-        <Table.Cell>Coming Soon!</Table.Cell>
+        <Table.Cell className="actions">{this.renderActions(r)}</Table.Cell>
       </Table.Row>,
     ];
   }
