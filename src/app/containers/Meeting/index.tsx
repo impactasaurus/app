@@ -4,7 +4,7 @@ import {IMeetingResult, IMeetingMutation, getMeeting, addLikertAnswer, completeM
 import {Question} from 'models/question';
 import { Likert} from 'components/Likert';
 import 'rc-slider/assets/index.css';
-import { Button, Grid, ButtonProps } from 'semantic-ui-react';
+import { Button, Grid, ButtonProps, Loader } from 'semantic-ui-react';
 import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
@@ -21,7 +21,7 @@ interface IProps extends IMeetingMutation, IURLConnector {
   };
   questions?: IQuestion[];
   answers?: IAnswer[];
-};
+}
 
 interface IState {
     currentQuestion?: string;
@@ -32,7 +32,15 @@ interface IState {
     completing?: boolean;
     completeError?: string;
     init?: boolean;
-};
+}
+
+function logGAEvent(action: string) {
+  ReactGA.event({
+    category : 'assessment',
+    label : 'likert',
+    action,
+  });
+}
 
 @connect((_, ownProps: IProps) => {
   const out: any = {};
@@ -136,14 +144,6 @@ class MeetingInner extends React.Component<IProps, IState> {
     });
   }
 
-  private logGAEvent(action: string) {
-    ReactGA.event({
-      category : 'assessment',
-      label : 'likert',
-      action,
-    });
-  }
-
   private next() {
     const answer = this.props.answers.find((answer) => answer.questionID === this.state.currentQuestion);
     if (answer !== undefined && this.state.currentValue === (answer as Answer).answer) {
@@ -159,7 +159,7 @@ class MeetingInner extends React.Component<IProps, IState> {
         saving: false,
         saveError: undefined,
       });
-      this.logGAEvent('answered');
+      logGAEvent('answered');
       this.goToNextQuestionOrReview();
     })
     .catch((e: string) => {
@@ -249,14 +249,14 @@ class MeetingInner extends React.Component<IProps, IState> {
 
     const meeting = this.props.data.getMeeting;
     if (meeting === undefined) {
-        return wrapper(<div />);
+        return wrapper(<Loader active={true} inline="centered" />);
     }
     if (this.state.finished) {
       return wrapper(this.renderFinished());
     }
     const currentQuestionID = this.state.currentQuestion;
     if (currentQuestionID === undefined) {
-      return wrapper(<div />);
+      return wrapper(<Loader active={true} inline="centered" />);
     }
     const question = meeting.outcomeSet.questions.find((q) => q.id === currentQuestionID);
     if (question === undefined) {
