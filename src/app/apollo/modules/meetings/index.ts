@@ -183,6 +183,28 @@ export function completeMeeting<T>(component) {
   })(component);
 }
 
+export function deleteMeeting<T>(component) {
+  return graphql<any, T>(gql`
+  mutation DeleteMeeting ($meetingID: String!) {
+    DeleteMeeting(meetingID: $meetingID)
+  }`, {
+    props: ({ mutate }) => ({
+      deleteMeeting: (meetingID: string, beneficiaryID: string) => mutate({
+        variables: {
+          meetingID,
+        },
+        refetchQueries: [{
+          query: getMeetingsGQL,
+          variables: { beneficiaryID },
+        }, {
+          query: getAllMeetingsGQL,
+          variables: { beneficiaryID },
+        }],
+      }),
+    }),
+  })(component);
+}
+
 export interface IMeetingResult extends QueryProps {
   getMeeting?: IMeeting;
   getMeetings?: IMeeting[];
@@ -191,6 +213,10 @@ export interface IMeetingResult extends QueryProps {
 export interface IGetAllMeetingsResult extends QueryProps {
   getIncompleteMeetings?: IMeeting[];
   getMeetings?: IMeeting[];
+}
+
+export interface IDeleteMeetingMutation {
+  deleteMeeting?(meetingID: string, beneficiaryID: string);
 }
 
 export interface IMeetingMutation {

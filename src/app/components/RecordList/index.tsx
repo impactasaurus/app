@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Table, IconProps, Label, Icon, Popup} from 'semantic-ui-react';
+import {Table, IconProps, Label, Icon, Popup, Button} from 'semantic-ui-react';
 import './style.less';
 import {IMeeting, sortMeetingsByConducted} from '../../models/meeting';
 import {renderArray, renderArrayForArray} from '../../helpers/react';
@@ -7,9 +7,11 @@ import {getHumanisedDate} from '../../helpers/moment';
 import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'redux/modules/url';
 import {bindActionCreators} from 'redux';
+import {deleteMeeting, IDeleteMeetingMutation} from 'apollo/modules/meetings';
+import {ConfirmButton} from 'components/ConfirmButton';
 const { connect } = require('react-redux');
 
-interface IProp extends IURLConnector {
+interface IProp extends IURLConnector, IDeleteMeetingMutation {
   meetings: IMeeting[];
 }
 
@@ -20,7 +22,7 @@ interface IState {
 @connect(undefined, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
-class RecordList extends React.Component<IProp, IState> {
+class RecordListInner extends React.Component<IProp, IState> {
 
   constructor(props) {
     super(props);
@@ -58,15 +60,19 @@ class RecordList extends React.Component<IProp, IState> {
     };
   }
 
+  private delete(m: IMeeting): () => Promise<any> {
+    return () => {
+      return this.props.deleteMeeting(m.id, m.beneficiary);
+    };
+  }
+
   private renderActions(r: IMeeting): JSX.Element[] {
+    const actions: JSX.Element[] = [];
+    actions.push((<ConfirmButton onConfirm={this.delete(r)} promptText="Are you sure you want to delete this record?" buttonProps={{icon: 'delete', compact:true, size:'tiny'}} tooltip="Delete" />));
     if (r.incomplete) {
-      return [
-        (<Popup key="continue" trigger={<Icon name="arrow right" onClick={this.resume(r)}/>} content="Continue" />),
-      ];
+      actions.push((<Popup key="continue" trigger={<Button onClick={this.resume(r)} icon="arrow right" compact size="tiny" />} content="Continue" />));
     }
-    return [
-      (<span key="comingsoon">Coming Soon!</span>),
-    ];
+    return actions;
   }
 
   private renderRecord(r: IMeeting, idx: number): JSX.Element[] {
@@ -119,4 +125,5 @@ class RecordList extends React.Component<IProp, IState> {
   }
 }
 
+const RecordList = deleteMeeting<IProp>(RecordListInner);
 export { RecordList };

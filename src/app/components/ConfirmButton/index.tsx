@@ -9,6 +9,10 @@ interface IProps {
   onConfirm: ()=>Promise<any>;
   onCancel?: ()=>void;
   tooltip?: string;
+  // By default the loading spinner continues to be shown even after the onConfirm promise is fulfilled.
+  // This is good for delete buttons, where the ConfirmButton will be removed from the DOM on success anyways.
+  // By default is false.
+  stopSpinnerOnCompletion?: boolean;
 }
 
 interface IState {
@@ -58,6 +62,9 @@ class ConfirmButton extends React.Component<IProps, IState> {
     });
     this.props.onConfirm()
     .then(() => {
+      if (this.props.stopSpinnerOnCompletion !== true) {
+        return;
+      }
       this.setState({
         show: this.state.show,
         doing: false,
