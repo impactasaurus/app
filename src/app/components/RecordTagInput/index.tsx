@@ -8,9 +8,6 @@ interface IProps {
   onChange: (tags: string[]) => void;
   data?: ITagResult;
   allowNewTags?: boolean;
-}
-
-interface IState {
   tags: string[];
 }
 
@@ -20,20 +17,11 @@ function getMatchingTags(systemTags: string[], selectedTags: string[], q: string
     .filter((t) => t.toLowerCase().includes(q.toLowerCase()));
 }
 
-class RecordTagInputInner extends React.Component<IProps, IState> {
+class RecordTagInputInner extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
-    this.state = {
-      tags: [],
-    };
     this.renderInput = this.renderInput.bind(this);
-    this.onChange = this.onChange.bind(this);
-  }
-
-  private onChange(tags: string[]) {
-    this.props.onChange(tags);
-    this.setState({tags});
   }
 
   private renderInput(props) {
@@ -45,7 +33,7 @@ class RecordTagInputInner extends React.Component<IProps, IState> {
       }
       addTag(result.title);
     };
-    const results: any[] = getMatchingTags(this.props.data.getTags || [], this.state.tags, value)
+    const results: any[] = getMatchingTags(this.props.data.getTags || [], this.props.tags, value)
       .map((t) => ({title: t}));
     let icon;
     if (this.props.allowNewTags !== false) {
@@ -77,11 +65,11 @@ class RecordTagInputInner extends React.Component<IProps, IState> {
     return (
       <div className="record-tag-input">
         <TagInput
-          onChange={this.onChange}
+          onChange={this.props.onChange}
           renderInput={this.renderInput}
           addOnBlur={false}
           addOnKeyboard={false}
-      />
+        />
       </div>
     );
   }

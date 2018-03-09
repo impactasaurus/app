@@ -163,7 +163,7 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
         <h3 className="label">Questionnaire</h3>
         <Select {...selectProps} placeholder="Questionnaire" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
         <h3 className="label optional"><Hint text={strings.tagExplanation} />Tags</h3>
-        <RecordTagInput onChange={this.setTags} />
+        <RecordTagInput onChange={this.setTags} tags={this.state.tags} />
         {this.renderDatePicker()}
         <Button {...startProps} className="submit" onClick={this.startMeeting}>{this.props.buttonText}</Button>
         <p>{this.state.startMeetingError}</p>

@@ -115,7 +115,7 @@ class Report extends React.Component<IURLConnector, IState> {
         <h3 className="label"><Hint text={strings.JOCReportDateRange} />Date Range</h3>
         <DateRangePicker onSelect={this.setDateRange} future={false}/>
         <h3 className="label optional"><Hint text={strings.tagUsage} />Tags</h3>
-        <RecordTagInput onChange={this.setTags} allowNewTags={false} />
+        <RecordTagInput onChange={this.setTags} tags={this.state.tags} allowNewTags={false} />
         <Button className="submit" onClick={this.navigateToReport}>Generate</Button>
         <p>{this.state.error}</p>
       </div>
