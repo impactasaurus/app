@@ -69,6 +69,7 @@ class RecordTagInputInner extends React.Component<IProps, any> {
           renderInput={this.renderInput}
           addOnBlur={false}
           addOnKeyboard={false}
+          tags={this.props.tags}
         />
       </div>
     );

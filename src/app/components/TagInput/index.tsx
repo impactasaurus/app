@@ -8,28 +8,19 @@ interface IProps {
   renderInput?: (props) => JSX.Element;
   addOnBlur?: boolean;
   addOnKeyboard?: boolean;
-}
-
-interface IState {
   tags: string[];
 }
 
-class TagInput extends React.Component<IProps, IState> {
+class TagInput extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
-    this.state = {
-      tags: [],
-    };
     this.onChange = this.onChange.bind(this);
     this.renderTag = this.renderTag.bind(this);
     this.renderInput = this.renderInput.bind(this);
   }
 
   private onChange(tags: string[]): void {
-    this.setState({
-      tags,
-    });
     this.props.onChange(tags);
   }
 
@@ -81,7 +72,7 @@ class TagInput extends React.Component<IProps, IState> {
     return (
       <TagsInput
         className="tag-input"
-        value={this.state.tags}
+        value={this.props.tags}
         onChange={this.onChange}
         renderTag={this.renderTag}
         renderInput={input}
