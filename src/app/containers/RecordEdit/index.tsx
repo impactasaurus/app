@@ -2,7 +2,10 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import {Button, Loader, Grid, ButtonProps} from 'semantic-ui-react';
 import {IURLConnector} from 'redux/modules/url';
-import {getMeeting, IMeetingResult} from 'apollo/modules/meetings';
+import {
+  editMeetingDate, editMeetingTags, getMeeting, IEditMeetingDate, IEditMeetingTags,
+  IMeetingResult,
+} from 'apollo/modules/meetings';
 import {RecordTagInput} from 'components/RecordTagInput';
 import {DateTimePicker} from 'components/DateTimePicker';
 import {Hint} from 'components/Hint';
@@ -12,7 +15,7 @@ import {setURL} from 'redux/modules/url';
 const strings = require('./../../../strings.json');
 const { connect } = require('react-redux');
 
-interface IProps extends IURLConnector {
+interface IProps extends IURLConnector, IEditMeetingDate, IEditMeetingTags {
   params: {
     id: string,
   };
@@ -74,12 +77,30 @@ class RecordEditInner extends React.Component<IProps, IState> {
   }
 
   private saveRecord() {
-    // const {conducted, tags} = this.state;
+    const record = this.props.data.getMeeting;
+    const {conducted, tags} = this.state;
     this.setState({
       saving: true,
       saveError: undefined,
     });
-    return Promise.resolve()
+
+    let p = Promise.resolve(record);
+
+    if (!this.state.conducted.isSame(record.conducted)) {
+      p = p.then(() => {
+        return this.props.editMeetingDate(record.id, conducted.toDate());
+      });
+    }
+
+    const newTags = JSON.stringify(Array.from(tags).sort());
+    const oldTags = JSON.stringify(Array.from(record.tags).sort());
+    if (newTags !== oldTags) {
+      p = p.then(() => {
+        return this.props.editMeetingTags(record.id, tags);
+      });
+    }
+
+    return p
       .then(() => {
         this.nextPage();
       })
@@ -177,5 +198,5 @@ class RecordEditInner extends React.Component<IProps, IState> {
   }
 }
 
-const RecordEdit = getMeeting<IProps>((props) => props.params.id)(RecordEditInner);
+const RecordEdit = editMeetingTags<IProps>(editMeetingDate<IProps>(getMeeting<IProps>((props) => props.params.id)(RecordEditInner)));
 export { RecordEdit }
