@@ -42,7 +42,7 @@ class RecordListInner extends React.Component<IProp, any> {
 
   private edit(m: IMeeting): () => void {
     return () => {
-      this.props.setURL(`/meeting/${m.id}/edit`);
+      this.props.setURL(`/meeting/${m.id}/edit`, `?next=${window.location.pathname}`);
     };
   }
 
