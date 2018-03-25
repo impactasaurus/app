@@ -90,7 +90,7 @@ class RecordListInner extends React.Component<IProp, any> {
               <Table.HeaderCell>Date</Table.HeaderCell>
               <Table.HeaderCell>Questionnaire</Table.HeaderCell>
               <Table.HeaderCell>Tags</Table.HeaderCell>
-              <Table.HeaderCell>Conductor</Table.HeaderCell>
+              <Table.HeaderCell>Facilitator</Table.HeaderCell>
               <Table.HeaderCell>Actions</Table.HeaderCell>
             </Table.Row>
           </Table.Header>

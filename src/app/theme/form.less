@@ -1,6 +1,7 @@
 @import (reference) './variables.less';
 
 @marginBottom: 10px;
+@marginTop: 25px;
 
 #impactasaurus {
   .impactform {
@@ -11,9 +12,16 @@
       margin: auto;
       margin-top: 25px;
     }
+    .button-group {
+      button {
+        display: inline-block;
+        margin-left: 5px;
+        margin-right: 5px;
+      }
+    }
     .label:not(.ui) {
       display: block;
-      margin-top: 25px;
+      margin-top: @marginTop;
       margin-bottom: @marginBottom;
       text-transform: capitalize;
       &:after {
@@ -21,6 +29,12 @@
       }
       &.optional:after {
         content: " (optional):"
+      }
+      &.inline {
+        display: inline-block;
+        margin-right: @marginBottom;
+        margin-bottom: @marginBottom/2;
+        margin-top: @marginTop/2;
       }
     }
     h3 {

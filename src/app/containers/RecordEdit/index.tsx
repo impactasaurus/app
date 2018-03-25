@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import {Button, Loader, Grid, ButtonProps} from 'semantic-ui-react';
+import {Button, Loader, Grid, ButtonProps, Label} from 'semantic-ui-react';
 import {IURLConnector} from 'redux/modules/url';
 import {
   editMeetingDate, editMeetingTags, getMeeting, IEditMeetingDate, IEditMeetingTags,
@@ -12,6 +12,8 @@ import {Hint} from 'components/Hint';
 import * as moment from 'moment';
 import {bindActionCreators} from 'redux';
 import {setURL} from 'redux/modules/url';
+import {renderArray} from 'helpers/react';
+import './style.less';
 const strings = require('./../../../strings.json');
 const { connect } = require('react-redux');
 
@@ -31,6 +33,8 @@ interface IState {
   conducted?: moment.Moment;
   tags?: string[];
   saving?: boolean;
+  tagEditing?: boolean;
+  dateEditing?: boolean;
 }
 
 function getNextPageURL(p: IProps): string|undefined {
@@ -53,6 +57,8 @@ class RecordEditInner extends React.Component<IProps, IState> {
     this.setConductedDate = this.setConductedDate.bind(this);
     this.nextPage = this.nextPage.bind(this);
     this.loadState = this.loadState.bind(this);
+    this.renderTagSection = this.renderTagSection.bind(this);
+    this.renderDateSection = this.renderDateSection.bind(this);
   }
 
   public componentWillMount() {
@@ -138,15 +144,72 @@ class RecordEditInner extends React.Component<IProps, IState> {
     });
   }
 
+  private renderEditButton(onClick: ()=>void): JSX.Element {
+    return (<Button className="field-edit" onClick={onClick} compact size="tiny" primary>Edit</Button>);
+  }
+
+  private renderDateSection(dateEditing: boolean): JSX.Element {
+    let control = (<div />);
+    if (dateEditing) {
+      control = (<DateTimePicker moment={this.state.conducted} onChange={this.setConductedDate} allowFutureDates={false} />);
+    } else {
+      const dateEdit = () => {
+        this.setState({dateEditing: true});
+      };
+      control = this.renderEditButton(dateEdit);
+    }
+    return (
+      <div>
+        <h4 className="label inline">Date Conducted</h4>
+        <span className="conductedDate">{this.state.conducted.format('llll')}</span>
+        {control}
+      </div>
+    );
+  }
+
+  private renderTagSection(tagEditing: boolean): JSX.Element {
+    let tags = (<div />);
+    if (tagEditing) {
+      tags = (<RecordTagInput onChange={this.setTags} tags={this.state.tags} />);
+    } else {
+      const tagEdit = () => {
+        this.setState({tagEditing: true});
+      };
+      const editButton = this.renderEditButton(tagEdit);
+      if (this.state.tags.length > 0) {
+        tags = (
+          <div>
+            {renderArray((t) => (<Label>{t}</Label>), this.state.tags)}
+            {editButton}
+          </div>
+        );
+      } else {
+        tags = (
+          <span>
+            <span>No tags</span>
+            {editButton}
+          </span>
+        );
+      }
+    }
+    return (
+      <div>
+        <h4 className="label inline optional"><Hint text={strings.tagExplanation} />Tags</h4>
+        {tags}
+      </div>
+    );
+  }
+
   public render() {
     const wrapper = (inner: JSX.Element): JSX.Element => {
       return (
-        <Grid container columns={1} id="meeting">
+        <Grid container columns={1} id="record-edit">
           <Grid.Column>
             <Helmet>
               <title>Edit Record</title>
             </Helmet>
             <div id="record-edit">
+              <h1>Edit Record</h1>
               {inner}
             </div>
           </Grid.Column>
@@ -172,25 +235,24 @@ class RecordEditInner extends React.Component<IProps, IState> {
     return wrapper((
       <div className="impactform">
         <div>
-          <h3 className="label">Beneficiary ID</h3>
+          <h4 className="label inline">Beneficiary ID</h4>
           <span>{record.beneficiary}</span>
         </div>
         <div>
-          <h3 className="label">Questionnaire</h3>
+          <h4 className="label inline">Questionnaire</h4>
           <span>{record.outcomeSet.name}</span>
         </div>
         <div>
-          <h3 className="label optional"><Hint text={strings.tagExplanation} />Tags</h3>
-          <RecordTagInput onChange={this.setTags} tags={this.state.tags} />
+          <h4 className="label inline">Facilitator</h4>
+          <span>{record.user}</span>
         </div>
+        {this.renderTagSection(this.state.tagEditing)}
+        {this.renderDateSection(this.state.dateEditing)}
         <div>
-          <h3 className="label">Date Conducted</h3>
-          <span className="conductedDate">{this.state.conducted.format('llll')}</span>
-          <DateTimePicker moment={this.state.conducted} onChange={this.setConductedDate} allowFutureDates={false} />
-        </div>
-        <div>
-          <Button className="cancel" onClick={this.nextPage}>Cancel</Button>
-          <Button {...startProps} className="submit" onClick={this.saveRecord}>Save</Button>
+          <div className="button-group">
+            <Button className="cancel" onClick={this.nextPage}>Cancel</Button>
+            <Button {...startProps} className="submit" onClick={this.saveRecord}>Save</Button>
+          </div>
           <p>{this.state.saveError}</p>
         </div>
       </div>
