@@ -205,6 +205,50 @@ export function deleteMeeting<T>(component) {
   })(component);
 }
 
+export interface IEditMeetingTags {
+  editMeetingTags(meetingID: string, tags: string[]): Promise<IMeeting>;
+}
+export function editMeetingTags<T>(component) {
+  return graphql<any, T>(gql`
+  mutation EditMeetingTags ($meetingID: String!, $tags: [String]) {
+    editMeetingTags: EditMeetingTags(meetingID: $meetingID, tags: $tags) {
+      ...meetingWithOutcomeSetAndAggregates
+    }
+  }
+  ${fragmentWithOutcomeSetAndAggregates}`, {
+    props: ({ mutate }) => ({
+      editMeetingTags: (meetingID: string, tags: string[]) => mutate({
+        variables: {
+          meetingID,
+          tags: tags || [],
+        },
+      }).then(mutationResultExtractor<IMeeting>('editMeetingTags')),
+    }),
+  })(component);
+}
+
+export interface IEditMeetingDate {
+  editMeetingDate(meetingID: string, conducted: Date): Promise<IMeeting>;
+}
+export function editMeetingDate<T>(component) {
+  return graphql<any, T>(gql`
+  mutation EditMeetingDate ($meetingID: String!, $conducted: String!) {
+    editMeetingDate: EditMeetingDate(meetingID: $meetingID, conducted: $conducted) {
+      ...meetingWithOutcomeSetAndAggregates
+    }
+  }
+  ${fragmentWithOutcomeSetAndAggregates}`, {
+    props: ({ mutate }) => ({
+      editMeetingDate: (meetingID: string, conducted: Date) => mutate({
+        variables: {
+          meetingID,
+          conducted: conducted.toISOString(),
+        },
+      }).then(mutationResultExtractor<IMeeting>('editMeetingDate')),
+    }),
+  })(component);
+}
+
 export interface IMeetingResult extends QueryProps {
   getMeeting?: IMeeting;
   getMeetings?: IMeeting[];

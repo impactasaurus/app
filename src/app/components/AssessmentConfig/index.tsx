@@ -22,7 +22,6 @@ interface IState {
   selectedOS?: string;
   selectedBenID?: string;
   conducted?: moment.Moment;
-  dateSelectionError?: string;
   saving?: boolean;
   tags?: string[];
 }
@@ -33,7 +32,6 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       startMeetingError: undefined,
-      dateSelectionError: undefined,
       conducted: moment(),
       saving: false,
       tags: [],
@@ -110,16 +108,8 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
   }
 
   private setConductedDate(date: moment.Moment) {
-    if (date > moment()) {
-      this.setState({
-        dateSelectionError: 'Conducted date must be in the past',
-        conducted: this.state.conducted,
-      });
-      return;
-    }
     this.setState({
       conducted: date,
-      dateSelectionError: undefined,
     });
   }
 
@@ -133,13 +123,11 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     if (this.props.showDatePicker === false) {
       return (<div />);
     }
-    const conductedCopy = this.state.conducted.clone();
     return (
       <div>
         <h3 className="label">Date Conducted</h3>
         <span className="conductedDate">{this.state.conducted.format('llll')}</span>
-        <DateTimePicker moment={conductedCopy} onChange={this.setConductedDate}/>
-        <p>{this.state.dateSelectionError}</p>
+        <DateTimePicker moment={this.state.conducted} onChange={this.setConductedDate} allowFutureDates={false}/>
       </div>
     );
   }
@@ -163,7 +151,7 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
         <h3 className="label">Questionnaire</h3>
         <Select {...selectProps} placeholder="Questionnaire" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
         <h3 className="label optional"><Hint text={strings.tagExplanation} />Tags</h3>
-        <RecordTagInput onChange={this.setTags} />
+        <RecordTagInput onChange={this.setTags} tags={this.state.tags} />
         {this.renderDatePicker()}
         <Button {...startProps} className="submit" onClick={this.startMeeting}>{this.props.buttonText}</Button>
         <p>{this.state.startMeetingError}</p>
