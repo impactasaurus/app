@@ -1,10 +1,10 @@
 import * as React from 'react';
-import {Icon, Popup} from 'semantic-ui-react';
+import {Icon, Popup, SemanticICONS} from 'semantic-ui-react';
 import './style.less';
 
 interface IProps {
   text: string;
-  icon?: string;
+  icon?: SemanticICONS;
 }
 
 class Hint extends React.Component<IProps, any> {

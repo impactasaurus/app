@@ -2,7 +2,8 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import {IMeetingResult, IMeetingMutation, getMeeting, addLikertAnswer, completeMeeting} from 'apollo/modules/meetings';
 import {Question} from 'models/question';
-import { Likert} from 'components/Likert';
+import {Likert} from 'components/Likert';
+import {Notepad} from 'components/Notepad';
 import 'rc-slider/assets/index.css';
 import { Button, Grid, ButtonProps, Loader } from 'semantic-ui-react';
 import './style.less';
@@ -32,6 +33,11 @@ interface IState {
     completing?: boolean;
     completeError?: string;
     init?: boolean;
+    notes?: string;
+}
+
+function hasAnswerChanged(prev: Answer, s: IState): boolean {
+  return prev === undefined || s.currentValue !== prev.answer || s.notes !== prev.notes;
 }
 
 function logGAEvent(action: string) {
@@ -66,6 +72,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       init: false,
     };
     this.setAnswer = this.setAnswer.bind(this);
+    this.setNotes = this.setNotes.bind(this);
     this.next = this.next.bind(this);
     this.renderFinished = this.renderFinished.bind(this);
     this.review = this.review.bind(this);
@@ -102,6 +109,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       currentQuestion: question.id,
       currentValue: (answer ? (answer as IIntAnswer).answer : undefined),
       finished: false,
+      notes: answer ? answer.notes : undefined,
     });
   }
 
@@ -144,16 +152,22 @@ class MeetingInner extends React.Component<IProps, IState> {
     });
   }
 
+  private setNotes(notes: string) {
+    this.setState({
+      notes,
+    });
+  }
+
   private next() {
     const answer = this.props.answers.find((answer) => answer.questionID === this.state.currentQuestion);
-    if (answer !== undefined && this.state.currentValue === (answer as Answer).answer) {
+    if (hasAnswerChanged(answer as IIntAnswer, this.state) === false) {
       this.goToNextQuestionOrReview();
       return;
     }
     this.setState({
       saving: true,
     });
-    this.props.addLikertAnswer(this.props.params.id, this.state.currentQuestion, this.state.currentValue)
+    this.props.addLikertAnswer(this.props.params.id, this.state.currentQuestion, this.state.currentValue, this.state.notes)
     .then(() => {
       this.setState({
         saving: false,
@@ -196,9 +210,23 @@ class MeetingInner extends React.Component<IProps, IState> {
     };
     const children: JSX.Element[] = this.props.questions.map((q: Question, idx: number) => {
       const answer = this.props.answers.find((a) => a.questionID === q.id);
-      const inner = answer === undefined ?
-        (<div>Unknown Answer</div>) :
-        (<Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={navigateToQuestion(idx)} value={(answer as Answer).answer} />);
+      let inner = (<div>Unknown Answer</div>);
+      if (answer !== undefined) {
+        const likert = (
+          <Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel}
+                  onChange={navigateToQuestion(idx)} value={(answer as Answer).answer}/>);
+        if (answer.notes === undefined || answer.notes === null) {
+          inner = likert;
+        } else {
+          inner = (
+            <div>
+              {likert}
+              <div className="notes">{answer.notes}</div>
+            </div>
+          );
+        }
+      }
+
       return (
         <div key={q.id}>
           <h3>{q.question}</h3>
@@ -275,7 +303,8 @@ class MeetingInner extends React.Component<IProps, IState> {
       <div>
         <h1>{question.question}</h1>
         <h3>{question.description}</h3>
-        <Likert key={this.state.currentQuestion} leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} value={this.state.currentValue} />
+        <Likert key={'l-' + this.state.currentQuestion} leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} value={this.state.currentValue} />
+        <Notepad key={'np-' + this.state.currentQuestion} onChange={this.setNotes} notes={this.state.notes} />
         {this.canGoToPreviousQuestion() && <Button onClick={this.goToPreviousQuestion}>Back</Button>}
         <Button {...nextProps} onClick={this.next}>Next</Button>
         <p>{this.state.saveError}</p>

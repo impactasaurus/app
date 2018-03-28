@@ -1,11 +1,11 @@
 import * as React from 'react';
-import {Icon} from 'semantic-ui-react';
+import {Icon, SemanticICONS} from 'semantic-ui-react';
 import './style.less';
 
 interface IProps {
   text: string;
   title: string;
-  icon: string;
+  icon: SemanticICONS;
   onClick?: React.ReactEventHandler<any>;
 }
 
