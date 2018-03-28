@@ -36,7 +36,8 @@ class Notepad extends React.Component<IProps, IState> {
   }
 
   public render() {
-    const placeholder = this.props.placeholder || 'Please enter any additional notes';
+    let placeholder = this.props.placeholder || 'Record any additional information';
+    placeholder = placeholder + '. Please ensure the notes do not contain personally identifiable information.';
     const notesNotNull: string | undefined = this.props.notes ? this.props.notes : undefined;
     return (
       <Accordion className="notepad">
