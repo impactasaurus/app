@@ -63,7 +63,7 @@ function aggregateAcrossCategoryQuestions(os: IOutcomeSet, cID: string, question
   return aggregate(values, c.aggregation);
 }
 
-function getQuestions(os: IOutcomeSet, includeArchived = false): IQuestion[] {
+export function getQuestions(os: IOutcomeSet, includeArchived = false): IQuestion[] {
   return os.questions.filter((q) => includeArchived || !q.archived);
 }
 
