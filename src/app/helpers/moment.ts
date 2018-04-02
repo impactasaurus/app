@@ -66,3 +66,8 @@ export function getHumanisedTimeSinceDate(d: Date): string {
 export function getHumanisedDate(d: Date): string {
   return moment(d).format('MMMM Do YYYY');
 }
+
+export function getHumanisedDateFromISO(s: string): string {
+  const d = new Date(s);
+  return moment(d).format('MMMM Do YYYY');
+}

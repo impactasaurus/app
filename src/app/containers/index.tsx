@@ -19,3 +19,4 @@ export {RateOfChangeReport} from './RateOfChangeReport';
 export {Journey} from './Journey';
 export {Records} from './Records';
 export {RecordEdit} from './RecordEdit';
+export {RecordView} from './RecordView';
