@@ -22,6 +22,7 @@ export default (
     <Route path="login" component={containers.Login} />
     <Route path="meeting/:id" component={containers.Meeting} />
     <Route path="meeting/:id/edit" component={containers.RecordEdit} />
+    <Route path="meeting/:id/view" component={containers.RecordView} />
     <Route path="report" component={containers.Report} />
     <Route path="report/service/:questionSetID/:start/:end" component={containers.ServiceReport} />
     <Route path="report/roc/:questionSetID/:start/:end" component={containers.RateOfChangeReport} />

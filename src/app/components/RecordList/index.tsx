@@ -25,6 +25,7 @@ class RecordListInner extends React.Component<IProp, any> {
     this.edit = this.edit.bind(this);
     this.resume = this.resume.bind(this);
     this.delete = this.delete.bind(this);
+    this.view = this.view.bind(this);
     this.renderRecord = this.renderRecord.bind(this);
   }
 
@@ -37,6 +38,12 @@ class RecordListInner extends React.Component<IProp, any> {
   private resume(m: IMeeting): () => void {
     return () => {
       this.props.setURL(`/meeting/${m.id}`);
+    };
+  }
+
+  private view(m: IMeeting): () => void {
+    return () => {
+      this.props.setURL(`/meeting/${m.id}/view`, `?next=${window.location.pathname}`);
     };
   }
 
@@ -58,6 +65,8 @@ class RecordListInner extends React.Component<IProp, any> {
     actions.push((<Popup key="edit" trigger={<Button onClick={this.edit(r)} icon="edit" compact size="tiny" />} content="Edit" />));
     if (r.incomplete) {
       actions.push((<Popup key="continue" trigger={<Button onClick={this.resume(r)} icon="arrow right" compact size="tiny" />} content="Continue" />));
+    } else {
+      actions.push((<Popup key="view" trigger={<Button onClick={this.view(r)} icon="eye" compact size="tiny" />} content="View" />));
     }
     return actions;
   }
