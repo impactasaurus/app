@@ -6,7 +6,7 @@ import {Likert} from 'components/Likert';
 import {Notepad} from 'components/Notepad';
 import {RecordQuestionSummary} from 'components/RecordQuestionSummary';
 import 'rc-slider/assets/index.css';
-import { Button, Grid, ButtonProps, Loader } from 'semantic-ui-react';
+import { Button, Grid, ButtonProps, Loader, Icon } from 'semantic-ui-react';
 import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
@@ -217,7 +217,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       if (answer === undefined || answer.notes === undefined || answer.notes === null) {
         return (<span />);
       }
-      return (<div className="notes">{answer.notes}</div>);
+      return (<div className="notes"><Icon name="comments outline" />{answer.notes}</div>);
     };
 
     return (
