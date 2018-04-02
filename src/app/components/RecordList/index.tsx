@@ -54,7 +54,7 @@ class RecordListInner extends React.Component<IProp, any> {
 
   private renderActions(r: IMeeting): JSX.Element[] {
     const actions: JSX.Element[] = [];
-    actions.push((<ConfirmButton onConfirm={this.delete(r)} promptText="Are you sure you want to delete this record?" buttonProps={{icon: 'delete', compact:true, size:'tiny'}} tooltip="Delete" />));
+    actions.push((<ConfirmButton key="delete" onConfirm={this.delete(r)} promptText="Are you sure you want to delete this record?" buttonProps={{icon: 'delete', compact:true, size:'tiny'}} tooltip="Delete" />));
     actions.push((<Popup key="edit" trigger={<Button onClick={this.edit(r)} icon="edit" compact size="tiny" />} content="Edit" />));
     if (r.incomplete) {
       actions.push((<Popup key="continue" trigger={<Button onClick={this.resume(r)} icon="arrow right" compact size="tiny" />} content="Continue" />));

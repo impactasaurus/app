@@ -4,6 +4,7 @@ import {IMeetingResult, IMeetingMutation, getMeeting, addLikertAnswer, completeM
 import {Question} from 'models/question';
 import {Likert} from 'components/Likert';
 import {Notepad} from 'components/Notepad';
+import {RecordQuestionSummary} from 'components/RecordQuestionSummary';
 import 'rc-slider/assets/index.css';
 import { Button, Grid, ButtonProps, Loader } from 'semantic-ui-react';
 import './style.less';
@@ -205,38 +206,27 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   private renderAnswerReview(): JSX.Element {
-    const navigateToQuestion = (idx: number) => {
-      return () => this.goToQuestion(idx);
+    const navigateToQuestion = (selectedQ: IQuestion, _: number): Promise<void> => {
+      const idx = this.props.questions.findIndex((q) => q.id === selectedQ.id);
+      this.goToQuestion(idx);
+      return Promise.resolve();
     };
-    const children: JSX.Element[] = this.props.questions.map((q: Question, idx: number) => {
-      const answer = this.props.answers.find((a) => a.questionID === q.id);
-      let inner = (<div>Unknown Answer</div>);
-      if (answer !== undefined) {
-        const likert = (
-          <Likert leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel}
-                  onChange={navigateToQuestion(idx)} value={(answer as Answer).answer}/>);
-        if (answer.notes === undefined || answer.notes === null) {
-          inner = likert;
-        } else {
-          inner = (
-            <div>
-              {likert}
-              <div className="notes">{answer.notes}</div>
-            </div>
-          );
-        }
-      }
 
-      return (
-        <div key={q.id}>
-          <h3>{q.question}</h3>
-          {inner}
-        </div>
-      );
-    });
-    return(
+    const renderNote = (q: IQuestion): JSX.Element => {
+      const answer = this.props.answers.find((a) => a.questionID === q.id);
+      if (answer === undefined || answer.notes === undefined || answer.notes === null) {
+        return (<span />);
+      }
+      return (<div className="notes">{answer.notes}</div>);
+    };
+
+    return (
       <div className="answer-review">
-        {children}
+        <RecordQuestionSummary
+          recordID={this.props.params.id}
+          onQuestionClick={navigateToQuestion}
+          renderQuestionFooter={renderNote}
+        />
       </div>
     );
   }
