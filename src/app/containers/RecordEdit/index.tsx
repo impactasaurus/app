@@ -63,14 +63,12 @@ class RecordEditInner extends React.Component<IProps, IState> {
 
   public componentWillMount() {
     if (this.props.data.getMeeting !== undefined) {
-      console.log('mount');
       this.loadState(this.props);
     }
   }
 
   public componentWillReceiveProps(nextProps: IProps) {
     if (nextProps.data.getMeeting !== undefined && this.props.data.getMeeting === undefined) {
-      console.log('receive');
       this.loadState(nextProps);
     }
   }
