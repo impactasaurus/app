@@ -3,7 +3,8 @@
 import * as color from 'chartjs-color';
 import * as moment from 'moment';
 import * as distinctColors from 'distinct-colors';
-import {getHumanisedTimeSinceDate} from 'helpers/moment';
+import {getHumanisedDateFromISO} from 'helpers/moment';
+import {OutcomeGraphData, IOutcomeGraphSeries} from './index';
 
 // module pattern
 export function SessionsConverter() {
@@ -17,11 +18,11 @@ export function SessionsConverter() {
     labelSet = {};
   }
 
-  function getConvertedSessions(sessions) {
+  function getConvertedSessions(sessions: OutcomeGraphData) {
     const convertedSessions = [];
     // get distinct colours of all the different ones we could have
     const differentColours = distinctColors({count: sessions.length});
-    sessions.forEach(function sessionIterator(session) {
+    sessions.forEach(function sessionIterator(session: IOutcomeGraphSeries) {
       // remove the first element each time
       const sessionColour = differentColours.splice(0, 1)[0];
       convertedSessions.push(getConvertedSession(session, sessionColour));
@@ -29,14 +30,14 @@ export function SessionsConverter() {
     return convertedSessions;
   }
 
-  function getConvertedSession(session, chartColour) {
+  function getConvertedSession(session: IOutcomeGraphSeries, chartColour) {
 
     const outcomes = session.outcomes;
     // data set item for session
     const convertedSession: any = {};
 
     if (moment(session.timestamp).isValid()) {
-      convertedSession.label = getHumanisedTimeSinceDate(session.timestamp);
+      convertedSession.label = getHumanisedDateFromISO(session.timestamp);
     } else {
       convertedSession.label = session.timestamp;
     }
@@ -53,6 +54,10 @@ export function SessionsConverter() {
     convertedSession.backgroundColor = color(colour).alpha(0.2).rgbString();
     convertedSession.borderColor = colour;
     convertedSession.pointBackgroundColor = colour;
+
+    if (session.disabled === true) {
+      convertedSession.hidden = true;
+    }
 
     return convertedSession;
   }
@@ -114,7 +119,7 @@ export function SessionsConverter() {
   }
 
   return {
-    getChartJSConvertedData: function getChartJSConvertedData(sessions) {
+    getChartJSConvertedData: function getChartJSConvertedData(sessions: OutcomeGraphData) {
       init();
       return {
         datasets: getConvertedSessions(sessions),

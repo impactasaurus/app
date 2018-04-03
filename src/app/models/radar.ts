@@ -8,6 +8,7 @@ export interface IRadarSeries {
   name?: string | Date;
   note?: string;
   datapoints: IRadarPoint[];
+  disabled?: boolean;
 }
 
 export interface IRadarData {

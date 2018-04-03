@@ -19,6 +19,7 @@ export interface IOutcomeGraphPoint {
 export interface IOutcomeGraphSeries {
   timestamp: string;
   notes?: string;
+  disabled?: boolean;
   outcomes: IOutcomeGraphPoint[];
 }
 
@@ -33,7 +34,7 @@ function getAxisTitle(original: string): string {
   return original;
 }
 
-type OutcomeGraphData = IOutcomeGraphSeries[];
+export type OutcomeGraphData = IOutcomeGraphSeries[];
 
 class RadarChart extends React.Component<IProp, IState> {
 
@@ -54,6 +55,7 @@ class RadarChart extends React.Component<IProp, IState> {
       return {
         notes: s.note,
         timestamp: (s.name instanceof Date) ? s.name.toISOString() : s.name,
+        disabled: s.disabled,
         outcomes: s.datapoints.map((d: IRadarPoint): IOutcomeGraphPoint => {
           return {
             notes: d.note,

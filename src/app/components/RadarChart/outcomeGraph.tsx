@@ -1,10 +1,9 @@
-// originated from github.com/ALDLife/outcome-graph
-
 import * as Chart from 'chart.js';
 import {SessionsConverter} from './sessionsConverter';
+import {OutcomeGraphData} from './index';
 const sessionsConverter = SessionsConverter();
 
-export function getOutcomeGraph(canvasDiv, data, min, max) {
+export function getOutcomeGraph(canvasDiv, data: OutcomeGraphData, min, max) {
   const chartConfig = getConfig(data, min, max);
   const canvasElement = document.getElementById(canvasDiv);
   if (canvasElement === null) {
@@ -14,7 +13,7 @@ export function getOutcomeGraph(canvasDiv, data, min, max) {
   return new Chart(canvasElement, chartConfig);
 }
 
-function getConfig(data, min, max) {
+function getConfig(data: OutcomeGraphData, min, max) {
   return {
     type: 'radar',
     data: sessionsConverter.getChartJSConvertedData(data),
