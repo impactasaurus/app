@@ -12,18 +12,33 @@ import {IMeeting} from 'models/meeting';
 import {MeetingRadar} from 'components/MeetingRadar';
 import {MeetingTable} from 'components/MeetingTable';
 import {isBeneficiaryUser} from 'modules/user';
-import {MeetingGraph} from '../../components/MeetingGraph';
+import {MeetingGraph} from 'components/MeetingGraph';
+import {SelectedQuestionSetIDKey} from 'models/pref';
+import {setPref, SetPrefFunc} from 'redux/modules/pref';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
   params: {
     id: string,
   };
+  location: {
+    // can provide a ?q=GUID, this will set the questionnaire being viewed to the provided GUID if valid
+    search: string,
+  };
   vis?: Visualisation;
   agg?: Aggregation;
   selectedQuestionSetID?: string;
   data?: IMeetingResult;
   isCategoryAgPossible?: boolean;
+  setPref?: SetPrefFunc;
+}
+
+function getURLQuestionnaire(p: IProps): string|undefined {
+  const urlParams = new URLSearchParams(p.location.search);
+  if (urlParams.has('q') === false) {
+    return undefined;
+  }
+  return urlParams.get('q');
 }
 
 function isCategoryAggregationAvailable(meetings: IMeeting[], selectedQuestionSetID: string|undefined): boolean {
@@ -62,6 +77,7 @@ function filterMeetings(m: IMeeting[], questionSetID: string): IMeeting[] {
   };
 }, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
+  setPref: bindActionCreators(setPref, dispatch),
 }))
 class JourneyInner extends React.Component<IProps, any> {
 
@@ -69,6 +85,14 @@ class JourneyInner extends React.Component<IProps, any> {
     super(props);
     this.renderVis = this.renderVis.bind(this);
     this.renderJourney = this.renderJourney.bind(this);
+  }
+
+  public componentDidMount() {
+    const urlQS = getURLQuestionnaire(this.props);
+    if (urlQS === undefined) {
+      return;
+    }
+    this.props.setPref(SelectedQuestionSetIDKey, urlQS);
   }
 
   private renderVis(): JSX.Element {
