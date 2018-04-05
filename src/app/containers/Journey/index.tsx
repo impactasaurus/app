@@ -61,6 +61,11 @@ function getQuestionSetOptions(ms: IMeeting[]): string[] {
   return ms.map((m) => m.outcomeSetID);
 }
 
+function getUniqueQuestionSetOptions(ms: IMeeting[]): string[] {
+  const options = getQuestionSetOptions(ms);
+  return options.filter((v, i, a) => a.indexOf(v) === i).sort();
+}
+
 function filterMeetings(m: IMeeting[], questionSetID: string): IMeeting[] {
   return m.filter((m) => m.outcomeSetID === questionSetID);
 }
@@ -85,9 +90,29 @@ class JourneyInner extends React.Component<IProps, any> {
     super(props);
     this.renderVis = this.renderVis.bind(this);
     this.renderJourney = this.renderJourney.bind(this);
+    this.selectedURLQuestionnaire = this.selectedURLQuestionnaire.bind(this);
   }
 
   public componentDidMount() {
+    this.selectedURLQuestionnaire();
+  }
+
+  public componentWillReceiveProps(nextProps: IProps) {
+    const prevMeetings = this.props.data.getMeetings;
+    const nextMeetings = nextProps.data.getMeetings;
+    // If a beneficiary has been viewed, then a new questionnaire completed, the new questionnaire will not be auto
+    // selected based on the URL, as the beneficiary's meetings do not contain the provided questionnaire ID based on
+    // the data in the cache.
+    // After the new data has been fetched, we can then auto select.
+    const noPreviousRecords = Array.isArray(prevMeetings) === false && Array.isArray(nextMeetings) === true;
+    const recordQuestionnairesHaveChanged = Array.isArray(prevMeetings) === true && Array.isArray(nextMeetings) === true
+      && getUniqueQuestionSetOptions(prevMeetings).length !== getUniqueQuestionSetOptions(nextMeetings).length;
+    if (noPreviousRecords || recordQuestionnairesHaveChanged) {
+      this.selectedURLQuestionnaire();
+    }
+  }
+
+  private selectedURLQuestionnaire() {
     const urlQS = getURLQuestionnaire(this.props);
     if (urlQS === undefined) {
       return;
