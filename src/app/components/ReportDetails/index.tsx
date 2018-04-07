@@ -4,6 +4,7 @@ import {IOutcomeSet} from 'models/outcomeSet';
 import {Message, Accordion, Label} from 'semantic-ui-react';
 import {renderArray} from 'helpers/react';
 import './style.less';
+import {BeneficiaryPill} from 'components/BeneficiaryPill';
 
 interface IProp {
   includedBeneficiaries: string[];
@@ -52,7 +53,7 @@ class ReportDetails extends React.Component<IProp, any> {
         title: `This report aggregates data covering ${this.dealWithSingularOrMultiple(noBens, 'beneficiary', 'beneficiaries')}.`,
         content: (
           <div>
-            {includedBens.map((bID) => (<Label key={bID}>{bID}</Label>))}
+            {includedBens.map((bID) => (<BeneficiaryPill beneficiaryID={bID} questionnaireID={qs.id}/>))}
           </div>
         ),
       });
@@ -62,7 +63,7 @@ class ReportDetails extends React.Component<IProp, any> {
         title: `${this.dealWithSingularOrMultiple(excluded.beneficiaryIDs.length, 'beneficiary has', 'beneficiaries have')} been excluded because ${excludedReason}.`,
         content: (
           <div>
-            {excluded.beneficiaryIDs.map((bID) => (<Label key={bID}>{bID}</Label>))}
+            {excluded.beneficiaryIDs.map((bID) => (<BeneficiaryPill beneficiaryID={bID} questionnaireID={qs.id}/>))}
           </div>
         ),
       });
