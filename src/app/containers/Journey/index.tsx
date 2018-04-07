@@ -12,18 +12,33 @@ import {IMeeting} from 'models/meeting';
 import {MeetingRadar} from 'components/MeetingRadar';
 import {MeetingTable} from 'components/MeetingTable';
 import {isBeneficiaryUser} from 'modules/user';
-import {MeetingGraph} from '../../components/MeetingGraph';
+import {MeetingGraph} from 'components/MeetingGraph';
+import {SelectedQuestionSetIDKey} from 'models/pref';
+import {setPref, SetPrefFunc} from 'redux/modules/pref';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
   params: {
     id: string,
   };
+  location: {
+    // can provide a ?q=GUID, this will set the questionnaire being viewed to the provided GUID if valid
+    search: string,
+  };
   vis?: Visualisation;
   agg?: Aggregation;
   selectedQuestionSetID?: string;
   data?: IMeetingResult;
   isCategoryAgPossible?: boolean;
+  setPref?: SetPrefFunc;
+}
+
+function getURLQuestionnaire(p: IProps): string|undefined {
+  const urlParams = new URLSearchParams(p.location.search);
+  if (urlParams.has('q') === false) {
+    return undefined;
+  }
+  return urlParams.get('q');
 }
 
 function isCategoryAggregationAvailable(meetings: IMeeting[], selectedQuestionSetID: string|undefined): boolean {
@@ -46,6 +61,11 @@ function getQuestionSetOptions(ms: IMeeting[]): string[] {
   return ms.map((m) => m.outcomeSetID);
 }
 
+function getUniqueQuestionSetOptions(ms: IMeeting[]): string[] {
+  const options = getQuestionSetOptions(ms);
+  return options.filter((v, i, a) => a.indexOf(v) === i).sort();
+}
+
 function filterMeetings(m: IMeeting[], questionSetID: string): IMeeting[] {
   return m.filter((m) => m.outcomeSetID === questionSetID);
 }
@@ -62,6 +82,7 @@ function filterMeetings(m: IMeeting[], questionSetID: string): IMeeting[] {
   };
 }, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
+  setPref: bindActionCreators(setPref, dispatch),
 }))
 class JourneyInner extends React.Component<IProps, any> {
 
@@ -69,6 +90,34 @@ class JourneyInner extends React.Component<IProps, any> {
     super(props);
     this.renderVis = this.renderVis.bind(this);
     this.renderJourney = this.renderJourney.bind(this);
+    this.selectedURLQuestionnaire = this.selectedURLQuestionnaire.bind(this);
+  }
+
+  public componentDidMount() {
+    this.selectedURLQuestionnaire();
+  }
+
+  public componentWillReceiveProps(nextProps: IProps) {
+    const prevMeetings = this.props.data.getMeetings;
+    const nextMeetings = nextProps.data.getMeetings;
+    // If a beneficiary has been viewed, then a new questionnaire completed, the new questionnaire will not be auto
+    // selected based on the URL, as the beneficiary's meetings do not contain the provided questionnaire ID based on
+    // the data in the cache.
+    // After the new data has been fetched, we can then auto select.
+    const noPreviousRecords = Array.isArray(prevMeetings) === false && Array.isArray(nextMeetings) === true;
+    const recordQuestionnairesHaveChanged = Array.isArray(prevMeetings) === true && Array.isArray(nextMeetings) === true
+      && getUniqueQuestionSetOptions(prevMeetings).length !== getUniqueQuestionSetOptions(nextMeetings).length;
+    if (noPreviousRecords || recordQuestionnairesHaveChanged) {
+      this.selectedURLQuestionnaire();
+    }
+  }
+
+  private selectedURLQuestionnaire() {
+    const urlQS = getURLQuestionnaire(this.props);
+    if (urlQS === undefined) {
+      return;
+    }
+    this.props.setPref(SelectedQuestionSetIDKey, urlQS);
   }
 
   private renderVis(): JSX.Element {
