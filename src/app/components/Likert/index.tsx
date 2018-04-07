@@ -72,15 +72,24 @@ class Likert extends React.Component<IProps, IState> {
     this.props.onChange(this.invertValue(value));
   }
 
+  private getMarks(lv: number, rv: number, p: IProps) {
+    if (p.rightLabel === null && p.leftLabel === null) {
+      return undefined;
+    }
+    const marks = {};
+    if (p.rightLabel !== null) {
+      marks[rv] = p.rightLabel;
+    }
+    if (p.leftLabel !== null) {
+      marks[lv] = p.leftLabel;
+    }
+    return marks;
+  }
+
   public render() {
     const leftValue = this.minValue();
     const rightValue = this.maxValue();
-    let marks;
-    if (this.props.rightLabel !== null || this.props.leftLabel !== null) {
-      marks = {};
-      marks[leftValue] = this.props.leftLabel;
-      marks[rightValue] = this.props.rightLabel;
-    }
+
     let className = 'likert-scale';
     if (this.state.awaitingAnswer) {
       className = `${className} awaiting-input`;
@@ -90,7 +99,7 @@ class Likert extends React.Component<IProps, IState> {
         className={className}
         min={leftValue}
         max={rightValue}
-        marks={marks}
+        marks={this.getMarks(leftValue, rightValue, this.props)}
         dots={true}
         onChange={this.setAnswer}
         onBeforeChange={this.touched}
