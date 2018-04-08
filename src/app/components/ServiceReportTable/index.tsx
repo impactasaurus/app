@@ -44,8 +44,9 @@ class ServiceReportTable extends React.Component<IProp, any> {
   private renderTable(p: IProp): JSX.Element {
     const rows = p.category ? this.getCategoryRows(p) : this.getQuestionRows(p);
     if (rows.length === 0) {
-      return (<div />);
+      return (<div/>);
     }
+    rows.sort((a, b) => a.name.localeCompare(b.name));
     return (
       <ImpactTable
         data={rows}

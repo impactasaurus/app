@@ -183,6 +183,7 @@ class MeetingTable extends React.Component<IProp, IState> {
 
     const isCat = aggregation === Aggregation.CATEGORY;
     const rows = isCat ? this.getCategoryRows() : this.getQuestionRows();
+    rows.sort((a, b) => a.name.localeCompare(b.name));
 
     const areMeetingsSame = this.state.firstMeeting.id === this.state.secondMeeting.id;
 

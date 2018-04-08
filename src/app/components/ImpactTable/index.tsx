@@ -78,19 +78,11 @@ class ImpactTable extends React.Component<IProp, any> {
     );
   }
 
-  private sortByDelta(rows: IRow[]): IRow[] {
-    return rows
-    .filter((r) => r !== null)
-    .sort((a, b) => {
-      return delta(a) - delta(b);
-    });
-  }
-
   private renderTable(p: IProp): JSX.Element {
     if (p.data.length === 0) {
       return (<div />);
     }
-    const rows = this.sortByDelta(p.data);
+    const rows = p.data;
     const initialColumnValues = rows.map((row) => row.first); // get values from initial column
     const latestColumnValues = rows.map((row) => row.last); // get values from latest column
     const differenceColumnValues = rows.map(delta); // get values from difference column
