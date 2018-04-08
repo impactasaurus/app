@@ -1,7 +1,6 @@
 import {gql, graphql} from 'react-apollo';
 import {IOutcomeSet, fragment as osFragment} from 'models/outcomeSet';
 import {mutationResultExtractor} from 'helpers/apollo';
-import {clearCacheOfAllMeetings} from 'apollo/modules/meetings';
 
 export function addLikertQuestion<T>(component) {
   return graphql<any, T>(gql`
@@ -30,20 +29,14 @@ export function addLikertQuestion<T>(component) {
 
 export function editLikertQuestion<T>(component) {
   return graphql<any, T>(gql`
-  mutation ($outcomeSetID: ID!, $questionID: ID!, $question: String!, $description: String, $minLabel: String, $maxLabel: String, $categoryID: ID) {
+  mutation ($outcomeSetID: ID!, $questionID: ID!, $question: String!, $description: String, $minLabel: String, $maxLabel: String) {
     editLikertQuestion: EditLikertQuestion(outcomeSetID:$outcomeSetID, questionID: $questionID, question: $question, description: $description, minLabel: $minLabel, maxLabel: $maxLabel) {
       ...defaultOutcomeSet
     },
-    setCategory: SetCategory(outcomeSetID: $outcomeSetID, questionID: $questionID, categoryID: $categoryID) {
-      ...defaultOutcomeSet
-    }
   }
   ${osFragment}`, {
-    options: {
-      refetchQueries: ['getOutcomeSet'],
-    },
     props: ({ mutate }) => ({
-      editLikertQuestion: (outcomeSetID: string, questionID: string, question: string, minLabel?: string, maxLabel?: string, description?: string, categoryID?: string): Promise<IOutcomeSet> => mutate({
+      editLikertQuestion: (outcomeSetID: string, questionID: string, question: string, minLabel?: string, maxLabel?: string, description?: string): Promise<IOutcomeSet> => mutate({
         variables: {
           outcomeSetID,
           questionID,
@@ -51,10 +44,8 @@ export function editLikertQuestion<T>(component) {
           description,
           minLabel,
           maxLabel,
-          categoryID,
         },
-        update: clearCacheOfAllMeetings(),
-      }).then(mutationResultExtractor<IOutcomeSet>('setCategory')),
+      }).then(mutationResultExtractor<IOutcomeSet>('editLikertQuestion')),
     }),
   })(component);
 }
@@ -80,6 +71,6 @@ export function deleteQuestion<T>(component) {
 
 export interface IQuestionMutation {
   addLikertQuestion?(outcomeSetID: string, question: string, minValue: number, maxValue: number, minLabel?: string, maxLabel?: string, description?: string, categoryID?: string): Promise<IOutcomeSet>;
-  editLikertQuestion?(outcomeSetID: string, questionID: string, question: string, minLabel?: string, maxLabel?: string, description?: string, categoryID?: string): Promise<IOutcomeSet>;
+  editLikertQuestion?(outcomeSetID: string, questionID: string, question: string, minLabel?: string, maxLabel?: string, description?: string): Promise<IOutcomeSet>;
   deleteQuestion?(outcomeSetID: string, questionID: string): Promise<IOutcomeSet>;
 }
