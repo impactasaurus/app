@@ -23,47 +23,52 @@ class MeetingTable extends React.Component<IProp, IState> {
   constructor(props) {
     super(props);
 
-    this.state = {
-      firstMeeting: this.initialMeeting(props),
-      secondMeeting: this.lastMeeting(props),
-    };
-
     this.onFirstMeetingSelectChange = this.onFirstMeetingSelectChange.bind(this);
     this.onSecondMeetingSelectChange = this.onSecondMeetingSelectChange.bind(this);
-    this.initialMeeting = this.initialMeeting.bind(this);
-    this.lastMeeting = this.lastMeeting.bind(this);
+    this.getQuestionRows = this.getQuestionRows.bind(this);
+    this.getCategoryRows = this.getCategoryRows.bind(this);
+    this.getMeetingOptions = this.getMeetingOptions.bind(this);
+    this.renderMeetingSelectionFrom = this.renderMeetingSelectionFrom.bind(this);
+    this.renderTable = this.renderTable.bind(this);
+
+    this.state = {
+      firstMeeting: this.initialMeeting(props.meetings),
+      secondMeeting: this.lastMeeting(props.meetings),
+    };
   }
 
   public componentWillUpdate(nextProps) {
-    if (this.state.firstMeeting !== this.initialMeeting(nextProps)
-      || this.state.secondMeeting !== this.lastMeeting(nextProps)) {
+    const i = this.initialMeeting(nextProps.meetings);
+    const l = this.lastMeeting(nextProps.meetings);
+    if (this.state.firstMeeting !== i || this.state.secondMeeting !== l) {
       this.setState({
-        firstMeeting: this.initialMeeting(nextProps),
-        secondMeeting: this.lastMeeting(nextProps),
+        firstMeeting: i,
+        secondMeeting: l,
       });
     }
   }
 
-  private initialMeeting(props: IProp): IMeeting {
-    return props.meetings.reduce((first: IMeeting, m: IMeeting): IMeeting => {
-      const fConducted = Date.parse(first.conducted);
-      const mConducted = Date.parse(m.conducted);
-      if (mConducted < fConducted) {
+  private findMeeting(meetings: IMeeting[], comp: (fm: IMeeting, fc: number, sm: IMeeting, sc: number) => IMeeting): IMeeting|undefined {
+    return meetings.reduce((last: IMeeting|undefined, m: IMeeting): IMeeting => {
+      if (last === undefined) {
         return m;
       }
-      return first;
-    }, props.meetings[0]);
+      const mConducted = Date.parse(m.conducted);
+      const lConducted = Date.parse(last.conducted);
+      return comp(m, mConducted, last, lConducted);
+    }, undefined);
   }
 
-  private lastMeeting(props: IProp): IMeeting {
-    return props.meetings.reduce((last: IMeeting, m: IMeeting): IMeeting => {
-      const fConducted = Date.parse(last.conducted);
-      const mConducted = Date.parse(m.conducted);
-      if (mConducted > fConducted) {
-        return m;
-      }
-      return last;
-    }, props.meetings[0]);
+  private initialMeeting(meetings: IMeeting[]): IMeeting|undefined {
+    return this.findMeeting(meetings, (fm, fc, sm, sc) => {
+      return (sc < fc) ? sm : fm;
+    });
+  }
+
+  private lastMeeting(meetings: IMeeting[]): IMeeting|undefined {
+    return this.findMeeting(meetings, (fm, fc, sm, sc) => {
+      return (sc > fc) ? sm : fm;
+    });
   }
 
   private getCategoryRows(): IRow[] {
@@ -151,6 +156,7 @@ class MeetingTable extends React.Component<IProp, IState> {
       };
     });
   }
+
   private renderMeetingSelectionFrom(): JSX.Element {
     return (
       <div id="selectMeetingsContainer">
@@ -193,6 +199,10 @@ class MeetingTable extends React.Component<IProp, IState> {
 
   public render() {
     if (!Array.isArray(this.props.meetings) || this.props.meetings.length === 0) {
+      return (<div />);
+    }
+
+    if (this.state.firstMeeting === undefined || this.state.secondMeeting === undefined) {
       return (<div />);
     }
 
