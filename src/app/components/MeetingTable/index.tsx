@@ -28,7 +28,7 @@ class MeetingTable extends React.Component<IProp, IState> {
     this.getQuestionRows = this.getQuestionRows.bind(this);
     this.getCategoryRows = this.getCategoryRows.bind(this);
     this.getMeetingOptions = this.getMeetingOptions.bind(this);
-    this.renderMeetingSelectionFrom = this.renderMeetingSelectionFrom.bind(this);
+    this.renderMeetingSelectionForm = this.renderMeetingSelectionForm.bind(this);
     this.renderTable = this.renderTable.bind(this);
 
     this.state = {
@@ -148,7 +148,9 @@ class MeetingTable extends React.Component<IProp, IState> {
   private getMeetingOptions(): DropdownItemProps[] {
     const { meetings } = this.props;
 
-    return meetings.map((meeting) => {
+    return Array.from(meetings).sort((a,b) => {
+      return Date.parse(a.conducted) - Date.parse(b.conducted);
+    }).map((meeting) => {
       return {
         value: meeting.id,
         key: meeting.id,
@@ -157,7 +159,7 @@ class MeetingTable extends React.Component<IProp, IState> {
     });
   }
 
-  private renderMeetingSelectionFrom(): JSX.Element {
+  private renderMeetingSelectionForm(): JSX.Element {
     return (
       <div id="selectMeetingsContainer">
         <span>First meeting</span>
@@ -208,7 +210,7 @@ class MeetingTable extends React.Component<IProp, IState> {
 
     return (
       <div className="meeting-table">
-        {this.renderMeetingSelectionFrom()}
+        {this.renderMeetingSelectionForm()}
         {this.renderTable()}
       </div>
     );
