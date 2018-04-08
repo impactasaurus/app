@@ -38,14 +38,23 @@ class MeetingTable extends React.Component<IProp, IState> {
   }
 
   public componentWillUpdate(nextProps) {
-    const i = this.initialMeeting(nextProps.meetings);
-    const l = this.lastMeeting(nextProps.meetings);
-    if (this.state.firstMeeting !== i || this.state.secondMeeting !== l) {
-      this.setState({
-        firstMeeting: i,
-        secondMeeting: l,
-      });
+    const sortedIDs = (m: IMeeting[]): string[] => {
+      return Array.from(m).map((m) => m.id).sort();
+    };
+    const oMeetings = sortedIDs(this.props.meetings);
+    const nMeetings = sortedIDs(nextProps.meetings);
+    if (oMeetings.length === nMeetings.length) {
+      const same = oMeetings.reduce<boolean>((pv: boolean, cv: string, idx: number): boolean => {
+        return cv === nMeetings[idx] && pv;
+      }, true);
+      if (same) {
+        return;
+      }
     }
+    this.setState({
+      firstMeeting: this.initialMeeting(nextProps.meetings),
+      secondMeeting: this.lastMeeting(nextProps.meetings),
+    });
   }
 
   private findMeeting(meetings: IMeeting[], comp: (fm: IMeeting, fc: number, sm: IMeeting, sc: number) => IMeeting): IMeeting|undefined {
