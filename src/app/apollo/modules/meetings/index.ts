@@ -161,16 +161,17 @@ export function addLikertAnswer<T>(component) {
 
 export function completeMeeting<T>(component) {
   return graphql<any, T>(gql`
-  mutation ($meetingID: String!) {
-    completeMeeting: CompleteMeeting(meetingID: $meetingID) {
+  mutation ($meetingID: String!, $notes: String) {
+    completeMeeting: CompleteMeeting(meetingID: $meetingID, notes: $notes) {
       ...meetingWithOutcomeSetAndAggregates
     }
   }
   ${fragmentWithOutcomeSetAndAggregates}`, {
     props: ({ mutate }) => ({
-      completeMeeting: (meetingID: string, beneficiaryID: string): Promise<IMeeting> => mutate({
+      completeMeeting: (meetingID: string, beneficiaryID: string, notes?: string): Promise<IMeeting> => mutate({
         variables: {
           meetingID,
+          notes,
         },
         refetchQueries: [{
           query: getMeetingsGQL,
@@ -268,5 +269,5 @@ export interface IMeetingMutation {
   newMeeting(config: IAssessmentConfig): Promise<IMeeting>;
   newRemoteMeeting(config: IAssessmentConfig, daysToComplete: number): Promise<string>;
   addLikertAnswer(meetingID: string, questionID: string, value: number, notes?: string): Promise<IMeeting>;
-  completeMeeting(meetingID: string, beneficiaryID: string): Promise<IMeeting>;
+  completeMeeting(meetingID: string, beneficiaryID: string, notes?: string): Promise<IMeeting>;
 }
