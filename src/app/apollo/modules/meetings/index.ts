@@ -266,8 +266,8 @@ export interface IDeleteMeetingMutation {
 }
 
 export interface IMeetingMutation {
-  newMeeting(config: IAssessmentConfig): Promise<IMeeting>;
-  newRemoteMeeting(config: IAssessmentConfig, daysToComplete: number): Promise<string>;
-  addLikertAnswer(meetingID: string, questionID: string, value: number, notes?: string): Promise<IMeeting>;
-  completeMeeting(meetingID: string, beneficiaryID: string, notes?: string): Promise<IMeeting>;
+  newMeeting?(config: IAssessmentConfig): Promise<IMeeting>;
+  newRemoteMeeting?(config: IAssessmentConfig, daysToComplete: number): Promise<string>;
+  addLikertAnswer?(meetingID: string, questionID: string, value: number, notes?: string): Promise<IMeeting>;
+  completeMeeting?(meetingID: string, beneficiaryID: string, notes?: string): Promise<IMeeting>;
 }

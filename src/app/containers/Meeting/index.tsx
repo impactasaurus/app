@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import {IMeetingResult, IMeetingMutation, getMeeting, addLikertAnswer, completeMeeting} from 'apollo/modules/meetings';
-import {Question} from 'models/question';
-import {Likert} from 'components/Likert';
-import {Notepad} from 'components/Notepad';
+import {IMeetingResult, IMeetingMutation, getMeeting, completeMeeting} from 'apollo/modules/meetings';
+import {Question} from 'components/Question';
 import {RecordQuestionSummary} from 'components/RecordQuestionSummary';
 import 'rc-slider/assets/index.css';
 import { Button, Grid, ButtonProps, Loader, Icon } from 'semantic-ui-react';
@@ -11,10 +9,9 @@ import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import {IURLConnector} from 'redux/modules/url';
-import {IIntAnswer, IAnswer, Answer} from 'models/answer';
+import {IAnswer} from 'models/answer';
 import {IQuestion} from 'models/question';
 const { connect } = require('react-redux');
-const ReactGA = require('react-ga');
 
 interface IProps extends IMeetingMutation, IURLConnector {
   data: IMeetingResult;
@@ -28,25 +25,9 @@ interface IProps extends IMeetingMutation, IURLConnector {
 interface IState {
     currentQuestion?: string;
     finished?: boolean;
-    currentValue?: number;
-    saveError?: string;
-    saving?: boolean;
     completing?: boolean;
     completeError?: string;
     init?: boolean;
-    notes?: string;
-}
-
-function hasAnswerChanged(prev: Answer, s: IState): boolean {
-  return prev === undefined || s.currentValue !== prev.answer || s.notes !== prev.notes;
-}
-
-function logGAEvent(action: string) {
-  ReactGA.event({
-    category : 'assessment',
-    label : 'likert',
-    action,
-  });
 }
 
 @connect((_, ownProps: IProps) => {
@@ -66,15 +47,9 @@ class MeetingInner extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       currentQuestion: undefined,
-      currentValue: undefined,
       finished: false,
-      saveError: undefined,
-      saving: false,
       init: false,
     };
-    this.setAnswer = this.setAnswer.bind(this);
-    this.setNotes = this.setNotes.bind(this);
-    this.next = this.next.bind(this);
     this.renderFinished = this.renderFinished.bind(this);
     this.review = this.review.bind(this);
     this.goToQuestion = this.goToQuestion.bind(this);
@@ -105,12 +80,9 @@ class MeetingInner extends React.Component<IProps, IState> {
       idxx = this.props.questions.length - 1;
     }
     const question = this.props.questions[idxx];
-    const answer = this.props.answers.find((answer) => answer.questionID === question.id);
     this.setState({
       currentQuestion: question.id,
-      currentValue: (answer ? (answer as IIntAnswer).answer : undefined),
       finished: false,
-      notes: answer ? answer.notes : undefined,
     });
   }
 
@@ -145,44 +117,6 @@ class MeetingInner extends React.Component<IProps, IState> {
   private canGoToPreviousQuestion(): boolean {
     const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
     return currentIdx !== -1 && currentIdx !== 0;
-  }
-
-  private setAnswer(value: number) {
-    this.setState({
-      currentValue: value,
-    });
-  }
-
-  private setNotes(notes: string) {
-    this.setState({
-      notes,
-    });
-  }
-
-  private next() {
-    const answer = this.props.answers.find((answer) => answer.questionID === this.state.currentQuestion);
-    if (hasAnswerChanged(answer as IIntAnswer, this.state) === false) {
-      this.goToNextQuestionOrReview();
-      return;
-    }
-    this.setState({
-      saving: true,
-    });
-    this.props.addLikertAnswer(this.props.params.id, this.state.currentQuestion, this.state.currentValue, this.state.notes)
-    .then(() => {
-      this.setState({
-        saving: false,
-        saveError: undefined,
-      });
-      logGAEvent('answered');
-      this.goToNextQuestionOrReview();
-    })
-    .catch((e: string) => {
-      this.setState({
-        saving: false,
-        saveError: e,
-      });
-    });
   }
 
   private review() {
@@ -276,31 +210,14 @@ class MeetingInner extends React.Component<IProps, IState> {
     if (currentQuestionID === undefined) {
       return wrapper(<Loader active={true} inline="centered" />);
     }
-    const question = meeting.outcomeSet.questions.find((q) => q.id === currentQuestionID);
-    if (question === undefined) {
-      return wrapper(<div>Unknown question</div>);
-    }
-    const q = question as Question;
-    const nextProps: ButtonProps = {};
-    if (this.state.saving) {
-      nextProps.loading = true;
-      nextProps.disabled = true;
-    }
-    if (this.state.currentValue === undefined) {
-      nextProps.disabled = true;
-    }
-    return wrapper((
-      <div>
-        <h1>{question.question}</h1>
-        <h3>{question.description}</h3>
-        <Likert key={'l-' + this.state.currentQuestion} leftValue={q.minValue} rightValue={q.maxValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} value={this.state.currentValue} />
-        <Notepad key={'np-' + this.state.currentQuestion} onChange={this.setNotes} notes={this.state.notes} />
-        {this.canGoToPreviousQuestion() && <Button onClick={this.goToPreviousQuestion}>Back</Button>}
-        <Button {...nextProps} onClick={this.next}>Next</Button>
-        <p>{this.state.saveError}</p>
-      </div>
-    ));
+    return wrapper(<Question
+      record={meeting}
+      questionID={currentQuestionID}
+      showPrevious={this.canGoToPreviousQuestion()}
+      onPrevious={this.goToPreviousQuestion}
+      onNext={this.goToNextQuestionOrReview}
+    />);
   }
 }
-const Meeting = completeMeeting<IProps>(getMeeting<IProps>((props) => props.params.id)(addLikertAnswer<IProps>(MeetingInner)));
+const Meeting = completeMeeting<IProps>(getMeeting<IProps>((props) => props.params.id)(MeetingInner));
 export { Meeting }
