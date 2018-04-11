@@ -211,6 +211,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       return wrapper(<Loader active={true} inline="centered" />);
     }
     return wrapper(<Question
+      key={currentQuestionID}
       record={meeting}
       questionID={currentQuestionID}
       showPrevious={this.canGoToPreviousQuestion()}

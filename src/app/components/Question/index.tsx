@@ -8,7 +8,6 @@ import { Button, ButtonProps } from 'semantic-ui-react';
 import {IIntAnswer, Answer, IAnswer} from 'models/answer';
 import {IMeeting} from '../../models/meeting';
 import {IMeetingMutation} from 'apollo/modules/meetings';
-import {isNullOrUndefined} from 'util';
 const ReactGA = require('react-ga');
 
 interface IProps extends IMeetingMutation {
