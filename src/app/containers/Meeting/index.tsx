@@ -2,15 +2,15 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import {IMeetingResult, IMeetingMutation, getMeeting, completeMeeting} from 'apollo/modules/meetings';
 import {Question} from 'components/Question';
-import {RecordQuestionSummary} from 'components/RecordQuestionSummary';
 import 'rc-slider/assets/index.css';
-import { Button, Grid, ButtonProps, Loader, Icon } from 'semantic-ui-react';
+import { Grid, Loader } from 'semantic-ui-react';
 import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import {IURLConnector} from 'redux/modules/url';
 import {IAnswer} from 'models/answer';
 import {IQuestion} from 'models/question';
+import {QuestionnaireReview} from '../../components/QuestionnaireReview';
 const { connect } = require('react-redux');
 
 interface IProps extends IMeetingMutation, IURLConnector {
@@ -25,8 +25,6 @@ interface IProps extends IMeetingMutation, IURLConnector {
 interface IState {
     currentQuestion?: string;
     finished?: boolean;
-    completing?: boolean;
-    completeError?: string;
     init?: boolean;
 }
 
@@ -51,13 +49,13 @@ class MeetingInner extends React.Component<IProps, IState> {
       init: false,
     };
     this.renderFinished = this.renderFinished.bind(this);
-    this.review = this.review.bind(this);
     this.goToQuestion = this.goToQuestion.bind(this);
     this.goToReview = this.goToReview.bind(this);
     this.goToNextQuestionOrReview = this.goToNextQuestionOrReview.bind(this);
     this.canGoToPreviousQuestion = this.canGoToPreviousQuestion.bind(this);
     this.goToPreviousQuestion = this.goToPreviousQuestion.bind(this);
-    this.renderAnswerReview = this.renderAnswerReview.bind(this);
+    this.completed = this.completed.bind(this);
+    this.goToQuestionWithID = this.goToQuestionWithID.bind(this);
   }
 
   public componentDidUpdate() {
@@ -84,6 +82,15 @@ class MeetingInner extends React.Component<IProps, IState> {
       currentQuestion: question.id,
       finished: false,
     });
+  }
+
+  private goToQuestionWithID(qID: string) {
+    const idx = this.props.questions.findIndex((q) => q.id === qID);
+    this.goToQuestion(idx);
+  }
+
+  private completed() {
+    this.props.setURL(`/beneficiary/${this.props.data.getMeeting.beneficiary}`, `?q=${this.props.data.getMeeting.outcomeSetID}`);
   }
 
   private goToReview() {
@@ -119,67 +126,14 @@ class MeetingInner extends React.Component<IProps, IState> {
     return currentIdx !== -1 && currentIdx !== 0;
   }
 
-  private review() {
-    this.setState({
-      completing: true,
-    });
-    this.props.completeMeeting(this.props.params.id, this.props.data.getMeeting.beneficiary)
-      .then(() => {
-        this.setState({
-          completing: false,
-          completeError: undefined,
-        });
-        this.props.setURL(`/beneficiary/${this.props.data.getMeeting.beneficiary}`, `?q=${this.props.data.getMeeting.outcomeSetID}`);
-      })
-      .catch((e: string) => {
-        this.setState({
-          completing: false,
-          completeError: e,
-        });
-      });
-  }
-
-  private renderAnswerReview(): JSX.Element {
-    const navigateToQuestion = (selectedQ: IQuestion, _: number): Promise<void> => {
-      const idx = this.props.questions.findIndex((q) => q.id === selectedQ.id);
-      this.goToQuestion(idx);
-      return Promise.resolve();
-    };
-
-    const renderNote = (q: IQuestion): JSX.Element => {
-      const answer = this.props.answers.find((a) => a.questionID === q.id);
-      if (answer === undefined || answer.notes === undefined || answer.notes === null) {
-        return (<span />);
-      }
-      return (<div className="notes"><Icon name="comments outline" />{answer.notes}</div>);
-    };
-
-    return (
-      <div className="answer-review">
-        <RecordQuestionSummary
-          recordID={this.props.params.id}
-          onQuestionClick={navigateToQuestion}
-          renderQuestionFooter={renderNote}
-        />
-      </div>
-    );
-  }
-
   private renderFinished(): JSX.Element {
-    const props: ButtonProps = {};
-    if (this.state.completing) {
-      props.loading = true;
-      props.disabled = true;
-    }
-    return (
-      <div>
-        <h1>Review</h1>
-        <p>Please review your answers below. Once you are happy, click save, to mark the record as complete.</p>
-        {this.renderAnswerReview()}
-        <Button onClick={this.goToPreviousQuestion}>Back</Button>
-        <Button {...props} onClick={this.review}>Save</Button>
-        <p>{this.state.completeError}</p>
-      </div>
+    return(
+      <QuestionnaireReview
+        record={this.props.data.getMeeting}
+        onQuestionClick={this.goToQuestionWithID}
+        onBack={this.goToPreviousQuestion}
+        onComplete={this.completed}
+      />
     );
   }
 
