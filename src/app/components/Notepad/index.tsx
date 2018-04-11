@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {Icon, Form, Accordion, TextArea, TextAreaProps} from 'semantic-ui-react';
 import './style.less';
+import {isNullOrUndefined} from 'util';
 
 interface IProps {
   notes: string | undefined | null;
@@ -21,6 +22,14 @@ class Notepad extends React.Component<IProps, IState> {
     };
     this.onChange = this.onChange.bind(this);
     this.toggleOpen = this.toggleOpen.bind(this);
+  }
+
+  public componentWillUpdate(nextProps: IProps) {
+    if (isNullOrUndefined(this.props.notes) && !isNullOrUndefined(nextProps.notes)) {
+      this.setState({
+        open: true,
+      });
+    }
   }
 
   private onChange(_: React.FormEvent<HTMLTextAreaElement>, data: TextAreaProps): void {
