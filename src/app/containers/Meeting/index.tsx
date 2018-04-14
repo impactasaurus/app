@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import {IMeetingResult, IMeetingMutation, getMeeting, completeMeeting} from 'apollo/modules/meetings';
+import {IMeetingResult, getMeeting} from 'apollo/modules/meetings';
 import {Question} from 'components/Question';
 import 'rc-slider/assets/index.css';
 import { Grid, Loader } from 'semantic-ui-react';
@@ -13,7 +13,7 @@ import {IQuestion} from 'models/question';
 import {QuestionnaireReview} from '../../components/QuestionnaireReview';
 const { connect } = require('react-redux');
 
-interface IProps extends IMeetingMutation, IURLConnector {
+interface IProps extends IURLConnector {
   data: IMeetingResult;
   params: {
       id: string,
@@ -30,7 +30,7 @@ interface IState {
 
 @connect((_, ownProps: IProps) => {
   const out: any = {};
-  if (ownProps.data.getMeeting !== undefined) {
+  if (ownProps.data !== undefined && ownProps.data.getMeeting !== undefined) {
     out.questions = (ownProps.data.getMeeting.outcomeSet.questions || [])
       .filter((q) => !q.archived);
     out.answers = ownProps.data.getMeeting.answers;
@@ -174,5 +174,5 @@ class MeetingInner extends React.Component<IProps, IState> {
     />);
   }
 }
-const Meeting = completeMeeting<IProps>(getMeeting<IProps>((props) => props.params.id)(MeetingInner));
+const Meeting = getMeeting<IProps>((props) => props.params.id)(MeetingInner);
 export { Meeting }
