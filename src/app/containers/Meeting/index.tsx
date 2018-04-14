@@ -170,9 +170,10 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   private renderNotepad(): JSX.Element {
-    const placeholder = 'Record any non question specific comments, goals or actions';
+    const placeholder = 'Record any additional comments, goals or actions';
     return (
       <div>
+        <h1>Additional Comments</h1>
         <Notepad onChange={this.setNotes} notes={this.state.notes} collapsible={false} placeholder={placeholder}/>
         <Button onClick={this.goToPreviousScreen}>Back</Button>
         <Button onClick={this.goToNextScreen}>Next</Button>
