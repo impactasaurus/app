@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import {IMeetingResult, getMeeting} from 'apollo/modules/meetings';
 import {Question} from 'components/Question';
 import 'rc-slider/assets/index.css';
-import { Grid, Loader } from 'semantic-ui-react';
+import { Grid, Loader, Button } from 'semantic-ui-react';
 import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
@@ -11,6 +11,7 @@ import {IURLConnector} from 'redux/modules/url';
 import {IAnswer} from 'models/answer';
 import {IQuestion} from 'models/question';
 import {QuestionnaireReview} from '../../components/QuestionnaireReview';
+import {Notepad} from 'components/Notepad';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
@@ -22,10 +23,17 @@ interface IProps extends IURLConnector {
   answers?: IAnswer[];
 }
 
+enum State {
+  QUESTION,
+  NOTES,
+  REVIEW,
+}
+
 interface IState {
     currentQuestion?: string;
-    finished?: boolean;
+    state?: State;
     init?: boolean;
+    notes?: string;
 }
 
 @connect((_, ownProps: IProps) => {
@@ -45,17 +53,20 @@ class MeetingInner extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       currentQuestion: undefined,
-      finished: false,
       init: false,
+      state: State.QUESTION,
     };
     this.renderFinished = this.renderFinished.bind(this);
     this.goToQuestion = this.goToQuestion.bind(this);
     this.goToReview = this.goToReview.bind(this);
-    this.goToNextQuestionOrReview = this.goToNextQuestionOrReview.bind(this);
+    this.goToNextScreen = this.goToNextScreen.bind(this);
     this.canGoToPreviousQuestion = this.canGoToPreviousQuestion.bind(this);
-    this.goToPreviousQuestion = this.goToPreviousQuestion.bind(this);
+    this.goToPreviousScreen = this.goToPreviousScreen.bind(this);
+    this.goToNotepad = this.goToNotepad.bind(this);
     this.completed = this.completed.bind(this);
     this.goToQuestionWithID = this.goToQuestionWithID.bind(this);
+    this.renderNotepad = this.renderNotepad.bind(this);
+    this.setNotes = this.setNotes.bind(this);
   }
 
   public componentDidUpdate() {
@@ -80,7 +91,7 @@ class MeetingInner extends React.Component<IProps, IState> {
     const question = this.props.questions[idxx];
     this.setState({
       currentQuestion: question.id,
-      finished: false,
+      state: State.QUESTION,
     });
   }
 
@@ -95,23 +106,40 @@ class MeetingInner extends React.Component<IProps, IState> {
 
   private goToReview() {
     this.setState({
-      finished: true,
+      state: State.REVIEW,
     });
   }
 
-  private goToNextQuestionOrReview() {
-    const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
-    if (this.props.questions.length > currentIdx + 1) {
-      this.goToQuestion(currentIdx+1);
-    } else {
-      this.goToReview();
-    }
+  private goToNotepad() {
+    this.setState({
+      state: State.NOTES,
+    });
   }
 
-  private goToPreviousQuestion() {
-    if (this.state.finished) {
+  private setNotes(notes: string) {
+    this.setState({
+      notes,
+    });
+  }
+
+  private goToNextScreen() {
+    const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
+    if (this.props.questions.length > currentIdx + 1) {
+      return this.goToQuestion(currentIdx+1);
+    }
+    if (this.state.state === State.NOTES) {
+      return this.goToReview();
+    }
+    this.goToNotepad();
+  }
+
+  private goToPreviousScreen() {
+    if (this.state.state === State.REVIEW) {
+      return this.goToNotepad();
+    }
+    if (this.state.state !== State.QUESTION) {
       return this.setState({
-        finished: false,
+        state: State.QUESTION,
       });
     }
     const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
@@ -122,6 +150,9 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   private canGoToPreviousQuestion(): boolean {
+    if (this.props.questions.length === 0) {
+      return false;
+    }
     const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
     return currentIdx !== -1 && currentIdx !== 0;
   }
@@ -131,10 +162,21 @@ class MeetingInner extends React.Component<IProps, IState> {
       <QuestionnaireReview
         record={this.props.data.getMeeting}
         onQuestionClick={this.goToQuestionWithID}
-        onBack={this.goToPreviousQuestion}
+        onBack={this.goToPreviousScreen}
         onComplete={this.completed}
+        recordNotes={this.state.notes}
       />
     );
+  }
+
+  private renderNotepad(): JSX.Element {
+    const placeholder = 'Record any non question specific comments, goals or actions';
+    return (
+      <div>
+        <Notepad onChange={this.setNotes} notes={this.state.notes} collapsible={false} placeholder={placeholder}/>
+        <Button onClick={this.goToPreviousScreen}>Back</Button>
+        <Button onClick={this.goToNextScreen}>Next</Button>
+      </div>);
   }
 
   public render() {
@@ -157,8 +199,11 @@ class MeetingInner extends React.Component<IProps, IState> {
     if (meeting === undefined) {
         return wrapper(<Loader active={true} inline="centered" />);
     }
-    if (this.state.finished) {
+    if (this.state.state === State.REVIEW) {
       return wrapper(this.renderFinished());
+    }
+    if (this.state.state === State.NOTES) {
+      return wrapper(this.renderNotepad());
     }
     const currentQuestionID = this.state.currentQuestion;
     if (currentQuestionID === undefined) {
@@ -169,8 +214,8 @@ class MeetingInner extends React.Component<IProps, IState> {
       record={meeting}
       questionID={currentQuestionID}
       showPrevious={this.canGoToPreviousQuestion()}
-      onPrevious={this.goToPreviousQuestion}
-      onNext={this.goToNextQuestionOrReview}
+      onPrevious={this.goToPreviousScreen}
+      onNext={this.goToNextScreen}
     />);
   }
 }

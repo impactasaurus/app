@@ -7,6 +7,8 @@ interface IProps {
   notes: string | undefined | null;
   onChange: (notes: string) => void;
   placeholder?: string;
+  // defaults to true
+  collapsible?: boolean;
 }
 
 interface IState {
@@ -22,6 +24,7 @@ class Notepad extends React.Component<IProps, IState> {
     };
     this.onChange = this.onChange.bind(this);
     this.toggleOpen = this.toggleOpen.bind(this);
+    this.renderTextArea = this.renderTextArea.bind(this);
   }
 
   public componentWillUpdate(nextProps: IProps) {
@@ -44,10 +47,25 @@ class Notepad extends React.Component<IProps, IState> {
     });
   }
 
-  public render() {
+  public renderTextArea(): JSX.Element {
     let placeholder = this.props.placeholder || 'Record any additional information';
     placeholder = placeholder + '. Please ensure the notes do not contain personally identifiable information.';
     const notesNotNull: string | undefined = this.props.notes ? this.props.notes : undefined;
+    return (
+      <Form>
+        <TextArea autoHeight placeholder={placeholder} rows={2} onChange={this.onChange} value={notesNotNull} />
+      </Form>
+    );
+  }
+
+  public render() {
+    if (this.props.collapsible === false) {
+      return (
+        <div className="notepad">
+          {this.renderTextArea()}
+        </div>
+      );
+    }
     return (
       <Accordion className="notepad">
         <Accordion.Title className="accordion" active={this.state.open} index={0} onClick={this.toggleOpen}>
@@ -55,9 +73,7 @@ class Notepad extends React.Component<IProps, IState> {
           Notes
         </Accordion.Title>
         <Accordion.Content active={this.state.open}>
-          <Form>
-            <TextArea autoHeight placeholder={placeholder} rows={2} onChange={this.onChange} value={notesNotNull} />
-          </Form>
+          {this.renderTextArea()}
         </Accordion.Content>
       </Accordion>
     );

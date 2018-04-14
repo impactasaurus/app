@@ -4,12 +4,12 @@ import {RecordQuestionSummary} from 'components/RecordQuestionSummary';
 import 'rc-slider/assets/index.css';
 import { Button, ButtonProps, Icon } from 'semantic-ui-react';
 import './style.less';
-import {IURLConnector} from 'redux/modules/url';
 import {IQuestion} from 'models/question';
 import {IMeeting} from 'models/meeting';
 
-interface IProps extends IMeetingMutation, IURLConnector {
+interface IProps extends IMeetingMutation {
   record: IMeeting;
+  recordNotes?: string;
   onComplete: () => void;
   onBack: () => void;
   onQuestionClick: (questionID: string) => void;
@@ -39,7 +39,7 @@ class QuestionnaireReviewInner extends React.Component<IProps, IState> {
       completing: true,
       completeError: undefined,
     });
-    this.props.completeMeeting(this.props.record.id, this.props.record.beneficiary)
+    this.props.completeMeeting(this.props.record.id, this.props.record.beneficiary, this.props.recordNotes)
       .then(() => {
         this.setState({
           completing: false,
