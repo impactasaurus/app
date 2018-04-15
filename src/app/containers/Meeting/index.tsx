@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import {IMeetingResult, getMeeting} from 'apollo/modules/meetings';
 import {Question} from 'components/Question';
 import 'rc-slider/assets/index.css';
-import { Grid, Loader, Button } from 'semantic-ui-react';
+import { Grid, Loader } from 'semantic-ui-react';
 import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
@@ -11,7 +11,7 @@ import {IURLConnector} from 'redux/modules/url';
 import {IAnswer} from 'models/answer';
 import {IQuestion} from 'models/question';
 import {QuestionnaireReview} from '../../components/QuestionnaireReview';
-import {Notepad} from 'components/Notepad';
+import {MeetingNotepad} from '../../components/MeetingNotepad';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
@@ -33,7 +33,6 @@ interface IState {
     currentQuestion?: string;
     state?: State;
     init?: boolean;
-    notes?: string;
 }
 
 @connect((_, ownProps: IProps) => {
@@ -66,7 +65,6 @@ class MeetingInner extends React.Component<IProps, IState> {
     this.completed = this.completed.bind(this);
     this.goToQuestionWithID = this.goToQuestionWithID.bind(this);
     this.renderNotepad = this.renderNotepad.bind(this);
-    this.setNotes = this.setNotes.bind(this);
   }
 
   public componentDidUpdate() {
@@ -116,12 +114,6 @@ class MeetingInner extends React.Component<IProps, IState> {
     });
   }
 
-  private setNotes(notes: string) {
-    this.setState({
-      notes,
-    });
-  }
-
   private goToNextScreen() {
     const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
     if (this.props.questions.length > currentIdx + 1) {
@@ -164,20 +156,18 @@ class MeetingInner extends React.Component<IProps, IState> {
         onQuestionClick={this.goToQuestionWithID}
         onBack={this.goToPreviousScreen}
         onComplete={this.completed}
-        recordNotes={this.state.notes}
       />
     );
   }
 
   private renderNotepad(): JSX.Element {
-    const placeholder = 'Record any additional comments, goals or actions';
     return (
-      <div>
-        <h1>Additional Comments</h1>
-        <Notepad onChange={this.setNotes} notes={this.state.notes} collapsible={false} placeholder={placeholder}/>
-        <Button onClick={this.goToPreviousScreen}>Back</Button>
-        <Button onClick={this.goToNextScreen}>Next</Button>
-      </div>);
+      <MeetingNotepad
+        record={this.props.data.getMeeting}
+        onComplete={this.goToNextScreen}
+        onBack={this.goToPreviousScreen}
+      />
+    );
   }
 
   public render() {

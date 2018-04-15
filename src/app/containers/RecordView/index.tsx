@@ -1,12 +1,11 @@
 import * as React from 'react';
 import {Helmet} from 'react-helmet';
-import {Button, Loader, Grid, Icon} from 'semantic-ui-react';
+import {Button, Loader, Grid} from 'semantic-ui-react';
 import {IURLConnector} from 'redux/modules/url';
 import {getMeeting, IMeetingResult} from 'apollo/modules/meetings';
 import {bindActionCreators} from 'redux';
 import {setURL} from 'redux/modules/url';
 import './style.less';
-import {IQuestion} from '../../models/question';
 import {RecordQuestionSummary} from 'components/RecordQuestionSummary';
 import {getHumanisedDateFromISO} from 'helpers/moment';
 const { connect } = require('react-redux');
@@ -38,7 +37,6 @@ class RecordViewInner extends React.Component<IProps, any> {
   constructor(props) {
     super(props);
     this.nextPage = this.nextPage.bind(this);
-    this.renderNote = this.renderNote.bind(this);
   }
 
   private nextPage() {
@@ -57,14 +55,6 @@ class RecordViewInner extends React.Component<IProps, any> {
 
   private noop(): Promise<void> {
     return Promise.resolve();
-  };
-
-  private renderNote(q: IQuestion): JSX.Element {
-    const answer = this.props.data.getMeeting.answers.find((a) => a.questionID === q.id);
-    if (answer === undefined || answer.notes === undefined || answer.notes === null) {
-      return (<span />);
-    }
-    return (<div className="notes"><Icon name="comments outline" />{answer.notes}</div>);
   };
 
   public render() {
@@ -112,7 +102,6 @@ class RecordViewInner extends React.Component<IProps, any> {
         <RecordQuestionSummary
           recordID={this.props.params.id}
           onQuestionClick={this.noop}
-          renderQuestionFooter={this.renderNote}
         />
         <div>
           <Button className="back" onClick={this.nextPage}>Back</Button>

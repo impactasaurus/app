@@ -2,14 +2,13 @@ import * as React from 'react';
 import {IMeetingMutation, completeMeeting} from 'apollo/modules/meetings';
 import {RecordQuestionSummary} from 'components/RecordQuestionSummary';
 import 'rc-slider/assets/index.css';
-import { Button, ButtonProps, Icon } from 'semantic-ui-react';
+import { Button, ButtonProps } from 'semantic-ui-react';
 import './style.less';
 import {IQuestion} from 'models/question';
 import {IMeeting} from 'models/meeting';
 
 interface IProps extends IMeetingMutation {
   record: IMeeting;
-  recordNotes?: string;
   onComplete: () => void;
   onBack: () => void;
   onQuestionClick: (questionID: string) => void;
@@ -31,7 +30,6 @@ class QuestionnaireReviewInner extends React.Component<IProps, IState> {
     this.review = this.review.bind(this);
     this.renderAnswerReview = this.renderAnswerReview.bind(this);
     this.navigateToQuestion = this.navigateToQuestion.bind(this);
-    this.renderNote = this.renderNote.bind(this);
   }
 
   private review() {
@@ -39,7 +37,7 @@ class QuestionnaireReviewInner extends React.Component<IProps, IState> {
       completing: true,
       completeError: undefined,
     });
-    this.props.completeMeeting(this.props.record.id, this.props.record.beneficiary, this.props.recordNotes)
+    this.props.completeMeeting(this.props.record.id, this.props.record.beneficiary)
       .then(() => {
         this.setState({
           completing: false,
@@ -60,21 +58,12 @@ class QuestionnaireReviewInner extends React.Component<IProps, IState> {
     return Promise.resolve();
   };
 
-  private renderNote(q: IQuestion): JSX.Element {
-    const answer = this.props.record.answers.find((a) => a.questionID === q.id);
-    if (answer === undefined || answer.notes === undefined || answer.notes === null) {
-      return (<span />);
-    }
-    return (<div className="notes"><Icon name="comments outline" />{answer.notes}</div>);
-  };
-
   private renderAnswerReview(): JSX.Element {
     return (
       <div className="answer-review">
         <RecordQuestionSummary
           recordID={this.props.record.id}
           onQuestionClick={this.navigateToQuestion}
-          renderQuestionFooter={this.renderNote}
         />
       </div>
     );

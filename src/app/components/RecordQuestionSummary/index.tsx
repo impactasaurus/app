@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Loader} from 'semantic-ui-react';
+import {Loader, Icon} from 'semantic-ui-react';
 import {IQuestion} from 'models/question';
 import {getMeeting} from 'apollo/modules/meetings';
 import {IMeetingResult} from 'apollo/modules/meetings';
@@ -8,17 +8,33 @@ import {Question} from 'models/question';
 import {getQuestions} from 'helpers/questionnaire';
 import {renderArray} from 'helpers/react';
 import {Likert} from 'components/Likert';
+import {IMeeting} from '../../models/meeting';
+import {isNullOrUndefined} from 'util';
 const { connect } = require('react-redux');
 
 interface IProps {
   recordID: string;
   onQuestionClick?: (question: IQuestion, value: number) => Promise<void>;
-  renderQuestionFooter?: (question: IQuestion) => JSX.Element;
 
   // apollo gathered
   data?: IMeetingResult;
   questions?: IQuestion[];
   answers?: IAnswer[];
+}
+
+function renderQuestionNote(q: IQuestion, r: IMeeting): JSX.Element {
+  const answer = r.answers.find((a) => a.questionID === q.id);
+  if (answer === undefined || answer.notes === undefined || answer.notes === null) {
+    return (<span />);
+  }
+  return (<div className="notes"><Icon name="comments outline" />{answer.notes}</div>);
+}
+
+function renderQuestionnaireNote(r: IMeeting): JSX.Element {
+  if (isNullOrUndefined(r.notes)) {
+    return (<span />);
+  }
+  return (<div className="notes"><Icon name="comments outline" />{r.notes}</div>);
 }
 
 @connect((_, ownProps: IProps) => {
@@ -57,16 +73,12 @@ class RecordQuestionSummaryInner extends React.Component<IProps, any> {
           onChange={this.likertOnClick(q)}
         />
       );
-      if (this.props.renderQuestionFooter === undefined) {
-        inner = likert;
-      } else {
-        inner = (
-          <div>
-            {likert}
-            {this.props.renderQuestionFooter(q)}
-          </div>
-        );
-      }
+      inner = (
+        <div>
+          {likert}
+          {renderQuestionNote(q, this.props.data.getMeeting)}
+        </div>
+      );
     }
 
     return (
@@ -90,6 +102,7 @@ class RecordQuestionSummaryInner extends React.Component<IProps, any> {
     }
     return wrapper((
       <div>
+        {renderQuestionnaireNote(this.props.data.getMeeting)}
         {renderArray<Question>(this.renderQuestion, this.props.questions as Question[])}
       </div>
     ));
