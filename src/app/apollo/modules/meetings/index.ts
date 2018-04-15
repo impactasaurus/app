@@ -184,6 +184,28 @@ export function completeMeeting<T>(component) {
   })(component);
 }
 
+export interface ISetMeetingNotes {
+  setMeetingNotes?: (meetingID: string, notes?: string) => Promise<IMeeting>;
+}
+export function setMeetingNotes<T>(component) {
+  return graphql<any, T>(gql`
+  mutation ($meetingID: String!, $notes: String) {
+    setNotes: SetMeetingNotes(meetingID: $meetingID, notes: $notes) {
+      ...meetingWithOutcomeSetAndAggregates
+    }
+  }
+  ${fragmentWithOutcomeSetAndAggregates}`, {
+    props: ({ mutate }) => ({
+      setMeetingNotes: (meetingID: string, notes?: string): Promise<IMeeting> => mutate({
+        variables: {
+          meetingID,
+          notes,
+        },
+      }).then(mutationResultExtractor<IMeeting>('setNotes')),
+    }),
+  })(component);
+}
+
 export function deleteMeeting<T>(component) {
   return graphql<any, T>(gql`
   mutation DeleteMeeting ($meetingID: String!) {
