@@ -23,7 +23,7 @@ interface IProps extends IURLConnector {
   answers?: IAnswer[];
 }
 
-enum State {
+enum Screen {
   QUESTION,
   NOTES,
   REVIEW,
@@ -31,7 +31,7 @@ enum State {
 
 interface IState {
     currentQuestion?: string;
-    state?: State;
+    screen?: Screen;
     init?: boolean;
 }
 
@@ -53,7 +53,7 @@ class MeetingInner extends React.Component<IProps, IState> {
     this.state = {
       currentQuestion: undefined,
       init: false,
-      state: State.QUESTION,
+      screen: Screen.QUESTION,
     };
     this.renderFinished = this.renderFinished.bind(this);
     this.goToQuestion = this.goToQuestion.bind(this);
@@ -89,7 +89,7 @@ class MeetingInner extends React.Component<IProps, IState> {
     const question = this.props.questions[idxx];
     this.setState({
       currentQuestion: question.id,
-      state: State.QUESTION,
+      screen: Screen.QUESTION,
     });
   }
 
@@ -104,13 +104,13 @@ class MeetingInner extends React.Component<IProps, IState> {
 
   private goToReview() {
     this.setState({
-      state: State.REVIEW,
+      screen: Screen.REVIEW,
     });
   }
 
   private goToNotepad() {
     this.setState({
-      state: State.NOTES,
+      screen: Screen.NOTES,
     });
   }
 
@@ -119,19 +119,19 @@ class MeetingInner extends React.Component<IProps, IState> {
     if (this.props.questions.length > currentIdx + 1) {
       return this.goToQuestion(currentIdx+1);
     }
-    if (this.state.state === State.NOTES) {
+    if (this.state.screen === Screen.NOTES) {
       return this.goToReview();
     }
     this.goToNotepad();
   }
 
   private goToPreviousScreen() {
-    if (this.state.state === State.REVIEW) {
+    if (this.state.screen === Screen.REVIEW) {
       return this.goToNotepad();
     }
-    if (this.state.state !== State.QUESTION) {
+    if (this.state.screen !== Screen.QUESTION) {
       return this.setState({
-        state: State.QUESTION,
+        screen: Screen.QUESTION,
       });
     }
     const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
@@ -190,10 +190,10 @@ class MeetingInner extends React.Component<IProps, IState> {
     if (meeting === undefined) {
         return wrapper(<Loader active={true} inline="centered" />);
     }
-    if (this.state.state === State.REVIEW) {
+    if (this.state.screen === Screen.REVIEW) {
       return wrapper(this.renderFinished());
     }
-    if (this.state.state === State.NOTES) {
+    if (this.state.screen === Screen.NOTES) {
       return wrapper(this.renderNotepad());
     }
     const currentQuestionID = this.state.currentQuestion;
