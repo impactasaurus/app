@@ -11,8 +11,8 @@ export interface IQuestion {
 export interface ILikertScale extends IQuestion {
   minLabel?: string;
   maxLabel?: string;
-  minValue?: number;
-  maxValue: number;
+  leftValue?: number;
+  rightValue: number;
 }
 
 export type Question = ILikertScale;
@@ -23,8 +23,8 @@ export interface ILikertQuestionForm {
   description?: string;
   minLabel?: string;
   maxLabel?: string;
-  minValue?: number;
-  maxValue?: number;
+  leftValue?: number;
+  rightValue?: number;
 }
 
 export const fragment = gql`
@@ -37,7 +37,7 @@ export const fragment = gql`
     ... on LikertScale{
         minLabel,
         maxLabel,
-        minValue,
-        maxValue,
+        leftValue,
+        rightValue,
     }
   }`;
