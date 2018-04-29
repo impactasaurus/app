@@ -157,7 +157,7 @@ class QuestionInner extends React.Component<IProps, IState> {
       <div>
         <h1>{q.question}</h1>
         <h3>{q.description}</h3>
-        <Likert key={'l-' + q.id} leftValue={q.leftValue} rightValue={q.rightValue} leftLabel={q.minLabel} rightLabel={q.maxLabel} onChange={this.setAnswer} value={this.state.value} />
+        <Likert key={'l-' + q.id} leftValue={q.leftValue} rightValue={q.rightValue} leftLabel={q.leftLabel} rightLabel={q.rightLabel} onChange={this.setAnswer} value={this.state.value} />
         <Notepad key={'np-' + q.id} onChange={this.setNotes} notes={this.state.notes} />
         {(this.props.showPrevious !== false) && <Button onClick={this.goToPreviousQuestion}>Back</Button>}
         <Button {...nextProps} onClick={this.next}>Next</Button>

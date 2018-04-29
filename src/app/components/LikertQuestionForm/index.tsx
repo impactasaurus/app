@@ -107,8 +107,8 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
       categoryID: this.state.categoryID,
       leftValue: lv,
       rightValue: rv,
-      minLabel: this.state.leftLabel,
-      maxLabel: this.state.rightLabel,
+      leftLabel: this.state.leftLabel,
+      rightLabel: this.state.rightLabel,
       description: this.state.description,
     })
       .then(() => {

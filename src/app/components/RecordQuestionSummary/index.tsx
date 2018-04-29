@@ -67,8 +67,8 @@ class RecordQuestionSummaryInner extends React.Component<IProps, any> {
         <Likert
           leftValue={q.leftValue}
           rightValue={q.rightValue}
-          leftLabel={q.minLabel}
-          rightLabel={q.maxLabel}
+          leftLabel={q.leftLabel}
+          rightLabel={q.rightLabel}
           value={(answer as Answer).answer}
           onChange={this.likertOnClick(q)}
         />
