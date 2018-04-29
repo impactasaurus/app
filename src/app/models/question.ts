@@ -8,11 +8,17 @@ export interface IQuestion {
   categoryID: string;
 }
 
+export interface ILabel {
+  value: number;
+  label: string;
+}
+
 export interface ILikertScale extends IQuestion {
   leftLabel?: string;
   rightLabel?: string;
   leftValue?: number;
   rightValue: number;
+  labels: ILabel[];
 }
 
 export type Question = ILikertScale;
@@ -38,6 +44,10 @@ export const fragment = gql`
       leftValue,
       rightValue,
       leftLabel,
-      rightLabel
+      rightLabel,
+      labels {
+        value,
+        label
+      }
     }
   }`;

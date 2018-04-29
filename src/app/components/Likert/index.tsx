@@ -1,10 +1,10 @@
 import * as React from 'react';
 import Slider from 'rc-slider';
 import './style.less';
+import {ILabel} from 'models/question';
 
 interface IProps {
-  leftLabel?: string;
-  rightLabel?: string;
+  labels?: ILabel[];
   leftValue: number;
   rightValue: number;
   onChange: (value: number) => void;
@@ -72,17 +72,12 @@ class Likert extends React.Component<IProps, IState> {
     this.props.onChange(this.invertValue(value));
   }
 
-  private getMarks(lv: number, rv: number, p: IProps) {
-    if (p.rightLabel === null && p.leftLabel === null) {
-      return undefined;
-    }
+  private getMarks(p: IProps) {
     const marks = {};
-    if (p.rightLabel !== null) {
-      marks[rv] = p.rightLabel;
-    }
-    if (p.leftLabel !== null) {
-      marks[lv] = p.leftLabel;
-    }
+    (p.labels || []).forEach((l: ILabel) => {
+      const value = this.invertValue(l.value);
+      marks[value] = l.label;
+    });
     return marks;
   }
 
@@ -99,7 +94,7 @@ class Likert extends React.Component<IProps, IState> {
         className={className}
         min={leftValue}
         max={rightValue}
-        marks={this.getMarks(leftValue, rightValue, this.props)}
+        marks={this.getMarks(this.props)}
         dots={true}
         onChange={this.setAnswer}
         onBeforeChange={this.touched}
