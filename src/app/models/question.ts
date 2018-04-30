@@ -8,11 +8,17 @@ export interface IQuestion {
   categoryID: string;
 }
 
+export interface ILabel {
+  value: number;
+  label: string;
+}
+
 export interface ILikertScale extends IQuestion {
-  minLabel?: string;
-  maxLabel?: string;
-  minValue?: number;
-  maxValue: number;
+  leftLabel?: string;
+  rightLabel?: string;
+  leftValue?: number;
+  rightValue: number;
+  labels: ILabel[];
 }
 
 export type Question = ILikertScale;
@@ -21,10 +27,10 @@ export interface ILikertQuestionForm {
   question?: string;
   categoryID?: string;
   description?: string;
-  minLabel?: string;
-  maxLabel?: string;
-  minValue?: number;
-  maxValue?: number;
+  leftLabel?: string;
+  rightLabel?: string;
+  leftValue?: number;
+  rightValue?: number;
 }
 
 export const fragment = gql`
@@ -35,9 +41,13 @@ export const fragment = gql`
     archived,
     categoryID,
     ... on LikertScale{
-        minLabel,
-        maxLabel,
-        minValue,
-        maxValue,
+      leftValue,
+      rightValue,
+      leftLabel,
+      rightLabel,
+      labels {
+        value,
+        label
+      }
     }
   }`;

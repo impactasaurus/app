@@ -19,7 +19,7 @@ class EditLikertQuestionInner extends React.Component<IProps, any> {
   }
 
   private editQuestion(q: ILikertQuestionForm): Promise<IOutcomeSet> {
-    let p = this.props.editLikertQuestion(this.props.QuestionSetID, this.props.question.id, q.question, q.minLabel, q.maxLabel, q.description);
+    let p = this.props.editLikertQuestion(this.props.QuestionSetID, this.props.question.id, q.question, q.leftLabel, q.rightLabel, q.description);
     if (q.categoryID !== this.props.question.categoryID) {
       p = p.then(() => {
         return this.props.setCategory(this.props.QuestionSetID, this.props.question.id, q.categoryID);
@@ -37,10 +37,10 @@ class EditLikertQuestionInner extends React.Component<IProps, any> {
         newQuestion={q.question}
         categoryID={q.categoryID}
         description={q.description}
-        leftLabel={q.minLabel}
-        rightLabel={q.maxLabel}
-        leftValue={q.minValue}
-        rightValue={q.maxValue}
+        leftLabel={q.leftLabel}
+        rightLabel={q.rightLabel}
+        leftValue={q.leftValue}
+        rightValue={q.rightValue}
         submitButtonText="Save changes"
         onSubmitButtonClick={this.editQuestion}
         {...this.props}

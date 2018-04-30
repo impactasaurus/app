@@ -67,11 +67,11 @@ class QuestionListInner extends React.Component<IProps, IState> {
   private getQuestionDescription(q: Question): string {
     const description = q.description || '';
 
-    if (q.minLabel || q.maxLabel) {
+    if (q.leftLabel || q.rightLabel) {
       if (description) {
-        return `${description} (${q.minLabel} > ${q.maxLabel})`;
+        return `${description} (${q.leftLabel} > ${q.rightLabel})`;
       }
-      return `${q.minLabel} > ${q.maxLabel}`;
+      return `${q.leftLabel} > ${q.rightLabel}`;
     }
     return description;
   }

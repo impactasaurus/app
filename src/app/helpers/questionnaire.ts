@@ -15,13 +15,13 @@ function aggregate(values: number[], aggregation: string): number {
 
 export function getMinQuestionValue(os: IOutcomeSet): number|undefined {
   return getQuestions(os).reduce<number>((prev, q: Question) => {
-    return prev ? Math.min(q.minValue, q.maxValue, prev) : Math.min(q.minValue, q.maxValue);
+    return prev ? Math.min(q.rightValue, q.leftValue, prev) : Math.min(q.rightValue, q.leftValue);
   }, undefined);
 }
 
 export function getMaxQuestionValue(os: IOutcomeSet): number|undefined {
   return getQuestions(os).reduce<number>((prev, q: Question) => {
-    return prev ? Math.max(q.minValue, q.maxValue, prev) : Math.max(q.minValue, q.maxValue);
+    return prev ? Math.max(q.leftValue, q.rightValue, prev) : Math.max(q.leftValue, q.rightValue);
   }, undefined);
 }
 
@@ -46,11 +46,11 @@ export function getMaxCategoryValue(os: IOutcomeSet): number|undefined {
 }
 
 function getCategoryMaxValue(os: IOutcomeSet, cID: string): number|undefined {
-  return aggregateAcrossCategoryQuestions(os, cID, (q: Question) => Math.max(q.minValue, q.maxValue));
+  return aggregateAcrossCategoryQuestions(os, cID, (q: Question) => Math.max(q.leftValue, q.rightValue));
 }
 
 function getCategoryMinValue(os: IOutcomeSet, cID: string): number|undefined {
-  return aggregateAcrossCategoryQuestions(os, cID, (q: Question) => Math.min(q.minValue, q.maxValue));
+  return aggregateAcrossCategoryQuestions(os, cID, (q: Question) => Math.min(q.leftValue, q.rightValue));
 }
 
 function aggregateAcrossCategoryQuestions(os: IOutcomeSet, cID: string, questionMapper: (q: Question) => number): number|undefined {
@@ -89,7 +89,7 @@ export function convertQuestionValueToPercentage(os: IOutcomeSet, qID: string, v
   if (q === undefined) {
     return undefined;
   }
-  const max = Math.max(q.minValue, q.maxValue);
-  const min = Math.min(q.minValue, q.maxValue);
+  const max = Math.max(q.leftValue, q.rightValue);
+  const min = Math.min(q.leftValue, q.rightValue);
   return (value / (max - min)) * 100;
 }

@@ -65,10 +65,9 @@ class RecordQuestionSummaryInner extends React.Component<IProps, any> {
     if (answer !== undefined) {
       const likert = (
         <Likert
-          leftValue={q.minValue}
-          rightValue={q.maxValue}
-          leftLabel={q.minLabel}
-          rightLabel={q.maxLabel}
+          leftValue={q.leftValue}
+          rightValue={q.rightValue}
+          labels={q.labels}
           value={(answer as Answer).answer}
           onChange={this.likertOnClick(q)}
         />
