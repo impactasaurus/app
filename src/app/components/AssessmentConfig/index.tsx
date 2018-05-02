@@ -41,6 +41,7 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     this.setOS = this.setOS.bind(this);
     this.setBenID = this.setBenID.bind(this);
     this.setDebounceBenID = this.setDebounceBenID.bind(this);
+    this.clearDebouncedID = this.clearDebouncedID.bind(this);
     this.setConductedDate = this.setConductedDate.bind(this);
     this.renderDatePicker = this.renderDatePicker.bind(this);
     this.setTags = this.setTags.bind(this);
@@ -115,6 +116,12 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     });
   }
 
+  private clearDebouncedID() {
+    this.setState({
+      debouncedBenID: undefined,
+    });
+  }
+
   private setConductedDate(date: moment.Moment) {
     this.setState({
       conducted: date,
@@ -155,7 +162,7 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     return (
       <div className="impactform assessment-config">
         <h3 className="label"><Hint text={strings.beneficiaryIDExplanation} />Beneficiary ID</h3>
-        <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID} onBlur={this.setDebounceBenID} />
+        <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID} onBlur={this.setDebounceBenID} onFocus={this.clearDebouncedID} />
         <h3 className="label">Questionnaire</h3>
         <Select {...selectProps} placeholder="Questionnaire" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
         <h3 className="label optional"><Hint text={strings.tagExplanation} />Tags</h3>

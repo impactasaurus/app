@@ -42,9 +42,6 @@ class RecordTagInputWithSuggestionsInner extends React.Component<IProps, any> {
   }
 
   private renderSuggested(props: IProps): JSX.Element {
-    if (isNullOrUndefined(props.data)) {
-      return (<div />);
-    }
     const wrap = (inner: JSX.Element): JSX.Element => {
       return ((
         <div>
@@ -53,6 +50,9 @@ class RecordTagInputWithSuggestionsInner extends React.Component<IProps, any> {
         </div>
       ));
     };
+    if (isNullOrUndefined(props.data)) {
+      return wrap(<span>Suggested tags will appear here</span>);
+    }
     if (isNullOrUndefined(props.data.error) === false) {
       return wrap(<span>Failed to load suggested tags - sorry</span>);
     }
