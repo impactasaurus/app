@@ -70,17 +70,20 @@ class TagInput extends React.Component<IProps, any> {
     const addOnBlur = this.props.addOnBlur !== false;
     const addKeys = this.props.addOnKeyboard === false ? [] : [13]; // enter
     return (
-      <TagsInput
-        className="tag-input"
-        value={this.props.tags}
-        onChange={this.onChange}
-        renderTag={this.renderTag}
-        renderInput={input}
-        renderLayout={this.renderLayout}
-        addOnBlur={addOnBlur}
-        removeKeys={[]}
-        addKeys={addKeys}
-      />
+      <div>
+        <TagsInput
+          className="tag-input"
+          value={this.props.tags}
+          onChange={this.onChange}
+          renderTag={this.renderTag}
+          renderInput={input}
+          renderLayout={this.renderLayout}
+          addOnBlur={addOnBlur}
+          removeKeys={[]}
+          addKeys={addKeys}
+        />
+      </div>
+
     );
   }
 }

@@ -6,7 +6,7 @@ import {
   editMeetingDate, editMeetingTags, getMeeting, IEditMeetingDate, IEditMeetingTags,
   IMeetingResult,
 } from 'apollo/modules/meetings';
-import {RecordTagInput} from 'components/RecordTagInput';
+import {RecordTagInputWithSuggestions} from 'components/RecordTagInputWithSuggestions';
 import {DateTimePicker} from 'components/DateTimePicker';
 import {Hint} from 'components/Hint';
 import * as moment from 'moment';
@@ -165,10 +165,16 @@ class RecordEditInner extends React.Component<IProps, IState> {
     );
   }
 
-  private renderTagSection(tagEditing: boolean): JSX.Element {
+  private renderTagSection(beneficiary: string, tagEditing: boolean): JSX.Element {
     let tags = (<div />);
     if (tagEditing) {
-      tags = (<RecordTagInput onChange={this.setTags} tags={this.state.tags} />);
+      tags = (
+        <RecordTagInputWithSuggestions
+          onChange={this.setTags}
+          tags={this.state.tags}
+          beneficiary={beneficiary}
+        />
+      );
     } else {
       const tagEdit = () => {
         this.setState({tagEditing: true});
@@ -244,7 +250,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
           <h4 className="label inline">Facilitator</h4>
           <span>{record.user}</span>
         </div>
-        {this.renderTagSection(this.state.tagEditing)}
+        {this.renderTagSection(record.beneficiary, this.state.tagEditing)}
         {this.renderDateSection(this.state.dateEditing)}
         <div>
           <div className="button-group">

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button, Select, Input, ButtonProps, SelectProps } from 'semantic-ui-react';
 import {DateTimePicker} from 'components/DateTimePicker';
 import {Hint} from 'components/Hint';
-import {RecordTagInput} from 'components/RecordTagInput';
+import {RecordTagInputWithSuggestions} from 'components/RecordTagInputWithSuggestions';
 import {IOutcomeResult, allOutcomeSets} from 'apollo/modules/outcomeSets';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IAssessmentConfig} from 'models/assessment';
@@ -21,6 +21,7 @@ interface IState {
   startMeetingError?: string;
   selectedOS?: string;
   selectedBenID?: string;
+  debouncedBenID?: string;
   conducted?: moment.Moment;
   saving?: boolean;
   tags?: string[];
@@ -39,6 +40,8 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     this.startMeeting = this.startMeeting.bind(this);
     this.setOS = this.setOS.bind(this);
     this.setBenID = this.setBenID.bind(this);
+    this.setDebounceBenID = this.setDebounceBenID.bind(this);
+    this.clearDebouncedID = this.clearDebouncedID.bind(this);
     this.setConductedDate = this.setConductedDate.bind(this);
     this.renderDatePicker = this.renderDatePicker.bind(this);
     this.setTags = this.setTags.bind(this);
@@ -107,6 +110,18 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     });
   }
 
+  private setDebounceBenID() {
+    this.setState({
+      debouncedBenID: this.state.selectedBenID,
+    });
+  }
+
+  private clearDebouncedID() {
+    this.setState({
+      debouncedBenID: undefined,
+    });
+  }
+
   private setConductedDate(date: moment.Moment) {
     this.setState({
       conducted: date,
@@ -147,11 +162,15 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     return (
       <div className="impactform assessment-config">
         <h3 className="label"><Hint text={strings.beneficiaryIDExplanation} />Beneficiary ID</h3>
-        <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID} />
+        <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID} onBlur={this.setDebounceBenID} onFocus={this.clearDebouncedID} />
         <h3 className="label">Questionnaire</h3>
         <Select {...selectProps} placeholder="Questionnaire" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
         <h3 className="label optional"><Hint text={strings.tagExplanation} />Tags</h3>
-        <RecordTagInput onChange={this.setTags} tags={this.state.tags} />
+        <RecordTagInputWithSuggestions
+          onChange={this.setTags}
+          tags={this.state.tags}
+          beneficiary={this.state.debouncedBenID}
+        />
         {this.renderDatePicker()}
         <Button {...startProps} className="submit" onClick={this.startMeeting}>{this.props.buttonText}</Button>
         <p>{this.state.startMeetingError}</p>
