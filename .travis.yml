@@ -18,5 +18,5 @@ deploy:
     branch: master
 after_deploy:
   - python --version
-  - sudo pip install awscli
+  - pip install --user awscli && export PATH=$PATH:$HOME/.local/bin
   - aws configure set preview.cloudfront true && aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
