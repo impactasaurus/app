@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { Button, ButtonProps, Message, Input, Select } from 'semantic-ui-react';
+import { Button, ButtonProps, Message, Input, Select, Message } from 'semantic-ui-react';
 import { Likert } from 'components/Likert';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import './style.less';
 import {ILikertQuestionForm} from 'models/question';
 const ReactGA = require('react-ga');
+const strings = require('./../../../strings.json');
 
 interface IProps  {
   QuestionSetID: string;
@@ -57,6 +58,7 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
     this.setRightLabel = this.setRightLabel.bind(this);
     this.setLeftValue = this.setLeftValue.bind(this);
     this.setRightValue = this.setRightValue.bind(this);
+    this.renderValueInputs = this.renderValueInputs.bind(this);
   }
 
   private isInt(str: string): boolean {
@@ -184,6 +186,22 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
     return categories;
   }
 
+  private renderValueInputs() {
+    const left = (<Input className="left" type="number" placeholder="Left Value" onChange={this.setLeftValue} defaultValue={this.state.leftValue} disabled={this.props.edit} />);
+    const right = (<Input className="right" type="number" placeholder="Right Value" onChange={this.setRightValue} defaultValue={this.state.rightValue} disabled={this.props.edit} />);
+    let editMsg = (<span />);
+    if (this.props.edit) {
+      editMsg = (<Message content={strings.valuesNotEditable} info={true}/>);
+    }
+    return (
+      <div>
+        {editMsg}
+        {left}
+        {right}
+      </div>
+    );
+  }
+
   public render() {
     const addProps: ButtonProps = {};
     if (this.state.saving) {
@@ -216,8 +234,7 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
                 disabled={true} />
             </div>
             <div className="section lower">
-              <Input className="left" type="number" placeholder="Left Value" onChange={this.setLeftValue} defaultValue={this.state.leftValue} disabled={this.props.edit} />
-              <Input className="right" type="number" placeholder="Right Value" onChange={this.setRightValue} defaultValue={this.state.rightValue} disabled={this.props.edit} />
+              {this.renderValueInputs()}
             </div>
             <div className="controls">
               <Button {...addProps} onClick={this.onSubmitButtonClick}>{this.props.submitButtonText}</Button>
