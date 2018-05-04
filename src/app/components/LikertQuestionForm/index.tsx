@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, ButtonProps, Message, Input, Select, Message } from 'semantic-ui-react';
+import { Button, ButtonProps, Message, Input, Select } from 'semantic-ui-react';
 import { Likert } from 'components/Likert';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
