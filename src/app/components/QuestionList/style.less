@@ -1,8 +1,29 @@
 @import (reference) './../../theme/variables.less';
 
-.question.list {
+#impactasaurus .question.list {
   .right.floated.content > * {
     display: inline-block;
     vertical-align: middle;
+  }
+
+  .category-pill.set {
+    &.col-0 {
+      background-color: @primary;
+      color: @primaryTextColor
+    }
+    &.col-1 {
+      background-color: @primaryd;
+      color: @primaryTextColor
+    }
+    &.col-2 {
+      background-color: @primaryl;
+    }
+    &.col-3 {
+      background-color: @primarydd;
+      color: @primaryTextColor
+    }
+    &.col-4 {
+      background-color: @primaryll;
+    }
   }
 }

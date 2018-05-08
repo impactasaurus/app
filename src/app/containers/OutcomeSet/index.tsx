@@ -104,9 +104,9 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
             <div>Description: {os.description || 'No description'}{this.renderEditDescriptionButton()}</div>
           }
           <h3>Questions</h3>
-          <QuestionList outcomeSetID={params.id} />
+          <QuestionList outcomeSetID={params.id} data={this.props.data}/>
           <h3>Question Categories <Hint text={strings.questionCategoryExplanation} /></h3>
-          <CategoryList outcomeSetID={params.id} />
+          <CategoryList outcomeSetID={params.id} data={this.props.data}/>
         </Grid.Column>
       </Grid>
     );
