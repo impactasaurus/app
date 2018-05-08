@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
+import {IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ICategoryMutation, deleteCategory} from 'apollo/modules/categories';
 import {renderArray} from 'helpers/react';
 import {ICategory} from 'models/category';
@@ -11,13 +11,13 @@ import {ConfirmButton} from 'components/ConfirmButton';
 
 interface IProps extends ICategoryMutation {
   outcomeSetID: string;
-  data?: IOutcomeResult;
-};
+  data: IOutcomeResult;
+}
 
 interface IState {
   newCategoryClicked?: boolean;
   editedCategoryId?: string;
-};
+}
 
 class CategoryListInner extends React.Component<IProps, IState> {
 
@@ -132,5 +132,5 @@ class CategoryListInner extends React.Component<IProps, IState> {
     );
   }
 }
-const CategoryList = getOutcomeSet<IProps>((props) => props.outcomeSetID)(deleteCategory<IProps>(CategoryListInner));
+const CategoryList = deleteCategory<IProps>(CategoryListInner);
 export { CategoryList }

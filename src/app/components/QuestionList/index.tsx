@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
+import {IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {IQuestionMutation, deleteQuestion} from 'apollo/modules/questions';
 import {renderArray} from 'helpers/react';
 import {Question} from 'models/question';
@@ -9,28 +9,63 @@ import {NewLikertQuestion} from 'components/NewLikertQuestion';
 import {ConfirmButton} from 'components/ConfirmButton';
 import {CategoryPill} from 'components/CategoryPill';
 import {EditLikertQuestion} from 'components/EditLikertQuestion';
-const ReactGA = require('react-ga');
 import './style.less';
+import {isNullOrUndefined} from 'util';
+const ReactGA = require('react-ga');
 
 interface IProps extends IQuestionMutation {
-  data?: IOutcomeResult;
+  data: IOutcomeResult;
   outcomeSetID: string;
-};
+}
 
 interface IState {
   newQuestionClicked?: boolean;
   editedQuestionId?: string;
-};
+  categoryClasses?: {[catID: string]: string};
+}
+
+function assignCategoriesClasses(current: {[catID: string]: string}, data: IOutcomeResult): {[catID: string]: string} {
+  const assignments = Object.assign({}, current);
+  if (isNullOrUndefined(data.getOutcomeSet) || !Array.isArray(data.getOutcomeSet.questions)) {
+    return assignments;
+  }
+  data.getOutcomeSet.questions.forEach((q: Question) => {
+    if (isNullOrUndefined(q.categoryID)) {
+      return;
+    }
+    const assignment = assignments[q.categoryID];
+    if (!isNullOrUndefined(assignment)) {
+      return;
+    }
+    const noAssigned = Object.keys(assignments).length;
+    assignments[q.categoryID] = `col-${noAssigned % 5}`;
+  });
+  return assignments;
+}
 
 class QuestionListInner extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      categoryClasses: assignCategoriesClasses({}, this.props.data),
+    };
     this.renderNewQuestionControl = this.renderNewQuestionControl.bind(this);
     this.renderQuestion = this.renderQuestion.bind(this);
     this.deleteQuestion = this.deleteQuestion.bind(this);
     this.setNewQuestionClicked = this.setNewQuestionClicked.bind(this);
+    this.getCategoryPillClass = this.getCategoryPillClass.bind(this);
+  }
+
+  public componentWillUpdate(nextProps: IProps) {
+    const currentAssignment = this.state.categoryClasses;
+    const newAssignments = assignCategoriesClasses(currentAssignment, nextProps.data);
+    if (Object.keys(newAssignments).length !== Object.keys(currentAssignment).length) {
+      this.setState({
+        ...this.state,
+        categoryClasses: newAssignments,
+      });
+    }
   }
 
   private logQuestionDeletedGAEvent() {
@@ -87,6 +122,10 @@ class QuestionListInner extends React.Component<IProps, IState> {
     );
   }
 
+  private getCategoryPillClass(catID?: string): string|undefined {
+    return (isNullOrUndefined(catID)) ? undefined : this.state.categoryClasses[catID];
+  }
+
   private renderQuestion(q: Question): JSX.Element {
     const description = this.getQuestionDescription(q);
 
@@ -99,7 +138,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
     return (
       <List.Item className="question" key={q.id}>
         <List.Content floated="right" verticalAlign="middle">
-          <CategoryPill outcomeSetID={this.props.outcomeSetID} questionID={q.id} />
+          <CategoryPill outcomeSetID={this.props.outcomeSetID} questionID={q.id} cssClass={this.getCategoryPillClass(q.categoryID)} data={this.props.data}/>
           <Popup trigger={editButton} content="Edit" />
           <ConfirmButton onConfirm={this.deleteQuestion(q.id)} promptText="Are you sure you want to archive this question?" buttonProps={{icon: 'archive', compact:true, size:'tiny'}} tooltip="Archive" />
         </List.Content>
@@ -150,5 +189,5 @@ class QuestionListInner extends React.Component<IProps, IState> {
     );
   }
 }
-const QuestionList = getOutcomeSet<IProps>((props) => props.outcomeSetID)(deleteQuestion<IProps>(QuestionListInner));
+const QuestionList = deleteQuestion<IProps>(QuestionListInner);
 export { QuestionList }

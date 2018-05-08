@@ -1,15 +1,16 @@
 import * as React from 'react';
-import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
+import {IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ICategoryMutation, setCategory} from 'apollo/modules/categories';
 import {ICategory} from 'models/category';
 import { Label, Select, Loader } from 'semantic-ui-react';
-const ReactGA = require('react-ga');
 import './style.less';
+const ReactGA = require('react-ga');
 
 interface IProps extends ICategoryMutation {
   questionID: string;
   outcomeSetID: string;
-  data?: IOutcomeResult;
+  data: IOutcomeResult;
+  cssClass?: string;
 }
 
 interface IState {
@@ -50,7 +51,7 @@ class CategoryPillInner extends React.Component<IProps, IState> {
       leftComponent = (<Loader active={true} inline size="mini" />);
     }
     return (
-      <Label as="a" className={`category-pill ${className}`} horizontal onClick={this.setEditMode}>
+      <Label as="a" className={`category-pill ${className} ${this.props.cssClass || ''}`} horizontal onClick={this.setEditMode}>
         {leftComponent} {text}
       </Label>
     );
@@ -179,5 +180,5 @@ class CategoryPillInner extends React.Component<IProps, IState> {
   }
 }
 
-const CategoryPill = getOutcomeSet<IProps>((props) => props.outcomeSetID)(setCategory<IProps>(CategoryPillInner));
+const CategoryPill = setCategory<IProps>(CategoryPillInner);
 export { CategoryPill }
