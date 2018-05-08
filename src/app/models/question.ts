@@ -27,8 +27,7 @@ export interface ILikertQuestionForm {
   question?: string;
   categoryID?: string;
   description?: string;
-  leftLabel?: string;
-  rightLabel?: string;
+  labels?: ILabel[];
   leftValue?: number;
   rightValue?: number;
 }

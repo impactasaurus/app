@@ -1,25 +1,25 @@
 import {gql, graphql} from 'react-apollo';
 import {IOutcomeSet, fragment as osFragment} from 'models/outcomeSet';
 import {mutationResultExtractor} from 'helpers/apollo';
+import {ILabel} from 'models/question';
 
 export function addLikertQuestion<T>(component) {
   return graphql<any, T>(gql`
-  mutation ($outcomeSetID: ID!, $question: String!, $description: String, $minValue: Int, $maxValue: Int!, $minLabel: String, $maxLabel: String, $categoryID: String) {
-    addLikertQuestion: AddLikertQuestion(outcomeSetID:$outcomeSetID, question: $question, description: $description, minValue: $minValue, maxValue: $maxValue, minLabel: $minLabel, maxLabel: $maxLabel, categoryID: $categoryID) {
+  mutation ($outcomeSetID: ID!, $question: String!, $description: String, $minValue: Int, $maxValue: Int!, $labels: [LabelInput], $categoryID: String) {
+    addLikertQuestion: AddLikertQuestion(outcomeSetID:$outcomeSetID, question: $question, description: $description, minValue: $minValue, maxValue: $maxValue, labels: $labels, categoryID: $categoryID) {
       ...defaultOutcomeSet
     }
   }
   ${osFragment}`, {
     props: ({ mutate }) => ({
-      addLikertQuestion: (outcomeSetID: string, question: string, minValue: number, maxValue: number, minLabel?: string, maxLabel?: string, description?: string, categoryID?: string): Promise<IOutcomeSet> => mutate({
+      addLikertQuestion: (outcomeSetID: string, question: string, minValue: number, maxValue: number, description?: string, categoryID?: string, labels?: ILabel[]): Promise<IOutcomeSet> => mutate({
           variables: {
             outcomeSetID,
             question,
             description,
             minValue,
             maxValue,
-            minLabel,
-            maxLabel,
+            labels,
             categoryID,
           },
       }).then(mutationResultExtractor<IOutcomeSet>('addLikertQuestion')),
@@ -29,21 +29,20 @@ export function addLikertQuestion<T>(component) {
 
 export function editLikertQuestion<T>(component) {
   return graphql<any, T>(gql`
-  mutation ($outcomeSetID: ID!, $questionID: ID!, $question: String!, $description: String, $minLabel: String, $maxLabel: String) {
-    editLikertQuestion: EditLikertQuestion(outcomeSetID:$outcomeSetID, questionID: $questionID, question: $question, description: $description, minLabel: $minLabel, maxLabel: $maxLabel) {
+  mutation ($outcomeSetID: ID!, $questionID: ID!, $question: String!, $description: String, $labels: [LabelInput]) {
+    editLikertQuestion: EditLikertQuestion(outcomeSetID:$outcomeSetID, questionID: $questionID, question: $question, description: $description, labels: $labels) {
       ...defaultOutcomeSet
     },
   }
   ${osFragment}`, {
     props: ({ mutate }) => ({
-      editLikertQuestion: (outcomeSetID: string, questionID: string, question: string, minLabel?: string, maxLabel?: string, description?: string): Promise<IOutcomeSet> => mutate({
+      editLikertQuestion: (outcomeSetID: string, questionID: string, question: string, description?: string, labels?: ILabel[]): Promise<IOutcomeSet> => mutate({
         variables: {
           outcomeSetID,
           questionID,
           question,
           description,
-          minLabel,
-          maxLabel,
+          labels,
         },
       }).then(mutationResultExtractor<IOutcomeSet>('editLikertQuestion')),
     }),
@@ -70,7 +69,7 @@ export function deleteQuestion<T>(component) {
 }
 
 export interface IQuestionMutation {
-  addLikertQuestion?(outcomeSetID: string, question: string, minValue: number, maxValue: number, minLabel?: string, maxLabel?: string, description?: string, categoryID?: string): Promise<IOutcomeSet>;
-  editLikertQuestion?(outcomeSetID: string, questionID: string, question: string, minLabel?: string, maxLabel?: string, description?: string): Promise<IOutcomeSet>;
+  addLikertQuestion?(outcomeSetID: string, question: string, minValue: number, maxValue: number, description?: string, categoryID?: string, labels?: ILabel[]): Promise<IOutcomeSet>;
+  editLikertQuestion?(outcomeSetID: string, questionID: string, question: string, description?: string, labels?: ILabel[]): Promise<IOutcomeSet>;
   deleteQuestion?(outcomeSetID: string, questionID: string): Promise<IOutcomeSet>;
 }

@@ -4,7 +4,8 @@ import { Likert } from 'components/Likert';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import './style.less';
-import {ILikertQuestionForm} from 'models/question';
+import {ILabel, ILikertQuestionForm} from 'models/question';
+import {isNullOrUndefined} from 'util';
 const ReactGA = require('react-ga');
 const strings = require('./../../../strings.json');
 
@@ -104,13 +105,26 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
       saving: true,
     });
 
+    const labels: ILabel[] = [];
+    if (!isNullOrUndefined(this.state.leftLabel) && this.state.leftLabel.length > 0) {
+      labels.push({
+        label: this.state.leftLabel,
+        value: lv,
+      });
+    }
+    if (!isNullOrUndefined(this.state.rightLabel) && this.state.rightLabel.length > 0) {
+      labels.push({
+        label: this.state.rightLabel,
+        value: rv,
+      });
+    }
+
     this.props.onSubmitButtonClick({
       question: this.state.newQuestion,
       categoryID: this.state.categoryID,
       leftValue: lv,
       rightValue: rv,
-      leftLabel: this.state.leftLabel,
-      rightLabel: this.state.rightLabel,
+      labels,
       description: this.state.description,
     })
       .then(() => {
