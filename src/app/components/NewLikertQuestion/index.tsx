@@ -17,7 +17,7 @@ class NewLikertQuestionInner extends React.Component<IProps, any> {
   }
 
   private addQuestion(q: ILikertQuestionForm): Promise<IOutcomeSet> {
-    return this.props.addLikertQuestion(this.props.QuestionSetID, q.question, q.leftValue, q.rightValue, q.leftLabel, q.rightLabel, q.description, q.categoryID);
+    return this.props.addLikertQuestion(this.props.QuestionSetID, q.question, q.leftValue, q.rightValue, q.description, q.categoryID, q.labels);
   }
 
   public render() {

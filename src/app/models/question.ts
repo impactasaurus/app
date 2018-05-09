@@ -27,10 +27,15 @@ export interface ILikertQuestionForm {
   question?: string;
   categoryID?: string;
   description?: string;
-  leftLabel?: string;
-  rightLabel?: string;
+  labels?: ILabel[];
   leftValue?: number;
   rightValue?: number;
+}
+
+export interface ILikertForm {
+  leftValue?: number;
+  rightValue?: number;
+  labels?: ILabel[];
 }
 
 export const fragment = gql`
