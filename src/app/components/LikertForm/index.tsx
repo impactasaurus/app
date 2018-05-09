@@ -3,6 +3,7 @@ import { Message, Input } from 'semantic-ui-react';
 import { Likert } from 'components/Likert';
 import './style.less';
 import {ILabel, ILikertForm} from 'models/question';
+import {isNullOrUndefined} from 'util';
 const strings = require('./../../../strings.json');
 
 interface IProps  {
@@ -17,15 +18,26 @@ const noop = () => {};
 const toInt = (s: string) => parseInt(s, 10);
 const addOrEditLabel = (l: ILabel, ls: ILabel[]): ILabel[] => {
   const base = ls.concat().filter((x) => x.value !== l.value);
-  base.push(l);
+  if (!isNullOrUndefined(l.label) && l.label.length > 0) {
+    base.push(l);
+  }
   return base;
+};
+const replaceLabel = (oldVal: number, newVal: number, label: string, labels: ILabel[]): ILabel[] => {
+  const removedOldLabel = addOrEditLabel({
+    label: undefined,
+    value: oldVal,
+  }, labels);
+  return addOrEditLabel({
+    label,
+    value: newVal,
+  }, removedOldLabel);
 };
 
 class LikertForm extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
-    console.log(props);
     this.setLeftLabel = this.setLeftLabel.bind(this);
     this.setRightLabel = this.setRightLabel.bind(this);
     this.setLeftValue = this.setLeftValue.bind(this);
@@ -58,18 +70,28 @@ class LikertForm extends React.Component<IProps, any> {
   }
 
   private setLeftValue(_, data) {
+    const newV = toInt(data.value);
+    if (isNaN(newV)) {
+      return;
+    }
     this.props.onChange({
-      labels: this.props.labels,
-      leftValue: toInt(data.value),
+      // also need to update the left label as it will now have a new value
+      labels: replaceLabel(this.props.leftValue, newV, this.getLeftLabel(), this.props.labels),
+      leftValue: newV,
       rightValue: this.props.rightValue,
     });
   }
 
   private setRightValue(_, data) {
+    const newV = toInt(data.value);
+    if (isNaN(newV)) {
+      return;
+    }
     this.props.onChange({
-      labels: this.props.labels,
+      // also need to update the right label as it will now have a new value
+      labels: replaceLabel(this.props.rightValue, newV, this.getRightLabel(), this.props.labels),
       leftValue: this.props.leftValue,
-      rightValue: toInt(data.value),
+      rightValue: newV,
     });
   }
 
