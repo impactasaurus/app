@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { Button, ButtonProps, Message, Input, Select } from 'semantic-ui-react';
-import { Likert } from 'components/Likert';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
-import './style.less';
 import {ILabel, ILikertQuestionForm} from 'models/question';
+import {LikertForm} from 'components/LikertForm';
+import {ILikertForm} from 'models/question';
+import './style.less';
 import {isNullOrUndefined} from 'util';
 const ReactGA = require('react-ga');
-const strings = require('./../../../strings.json');
 
 interface IProps  {
   QuestionSetID: string;
@@ -18,8 +18,7 @@ interface IProps  {
   newQuestion?: string;
   categoryID?: string;
   description?: string;
-  leftLabel?: string;
-  rightLabel?: string;
+  labels?: ILabel[];
   leftValue?: number;
   rightValue?: number;
   submitButtonText: string;
@@ -30,10 +29,9 @@ interface IState {
   newQuestion?: string;
   categoryID?: string;
   description?: string;
-  leftLabel?: string;
-  rightLabel?: string;
-  leftValue?: string;
-  rightValue?: string;
+  labels?: ILabel[];
+  leftValue?: number;
+  rightValue?: number;
   saving?: boolean;
 }
 
@@ -46,31 +44,18 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
       newQuestion: this.props.newQuestion || '',
       categoryID: this.props.categoryID || null,
       description: this.props.description || '',
-      leftLabel: this.props.leftLabel || '',
-      rightLabel: this.props.rightLabel || '',
-      leftValue: this.props.leftValue ? this.props.leftValue.toString() : '0',
-      rightValue: this.props.rightValue ? this.props.rightValue.toString() : '10',
+      labels: this.props.labels || [],
+      leftValue: !isNullOrUndefined(this.props.leftValue) ? this.props.leftValue : 1,
+      rightValue: !isNullOrUndefined(this.props.rightValue) ? this.props.rightValue : 5,
     };
     this.onSubmitButtonClick = this.onSubmitButtonClick.bind(this);
     this.setNewQuestion = this.setNewQuestion.bind(this);
     this.setCategory = this.setCategory.bind(this);
     this.setDescription = this.setDescription.bind(this);
-    this.setLeftLabel = this.setLeftLabel.bind(this);
-    this.setRightLabel = this.setRightLabel.bind(this);
     this.setLeftValue = this.setLeftValue.bind(this);
     this.setRightValue = this.setRightValue.bind(this);
-    this.renderValueInputs = this.renderValueInputs.bind(this);
+    this.setLikertOptions = this.setLikertOptions.bind(this);
   }
-
-  private isInt(str: string): boolean {
-    const n = Number(str);
-    const i = Math.floor(n);
-    return !Number.isNaN(i) && i === n;
-  }
-
-  private leftValueInt = (s: IState) => parseInt(s.leftValue, 10);
-  private rightValueInt = (s: IState) => parseInt(s.rightValue, 10);
-  private noop = () => {};
 
   private logQuestionGAEvent(action) {
     ReactGA.event({
@@ -87,14 +72,8 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
       });
       return;
     }
-    if (!this.isInt(this.state.leftValue) || !this.isInt(this.state.rightValue)) {
-      this.setState({
-        newQuestionError: 'The left and right values must be whole integers',
-      });
-      return;
-    }
-    const lv = this.leftValueInt(this.state);
-    const rv = this.rightValueInt(this.state);
+    const lv = this.state.leftValue;
+    const rv = this.state.rightValue;
     if (lv === rv) {
       this.setState({
         newQuestionError: 'The left and right values cannot be equal',
@@ -105,41 +84,27 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
       saving: true,
     });
 
-    const labels: ILabel[] = [];
-    if (!isNullOrUndefined(this.state.leftLabel) && this.state.leftLabel.length > 0) {
-      labels.push({
-        label: this.state.leftLabel,
-        value: lv,
-      });
-    }
-    if (!isNullOrUndefined(this.state.rightLabel) && this.state.rightLabel.length > 0) {
-      labels.push({
-        label: this.state.rightLabel,
-        value: rv,
-      });
-    }
-
     this.props.onSubmitButtonClick({
       question: this.state.newQuestion,
       categoryID: this.state.categoryID,
       leftValue: lv,
       rightValue: rv,
-      labels,
+      labels: this.state.labels,
       description: this.state.description,
     })
-      .then(() => {
-        this.logQuestionGAEvent(`${this.props.edit ? 'edited' : 'created'}`);
-        this.setState({
-          saving: false,
-        });
-        this.props.OnSuccess();
-      })
-      .catch((e: Error)=> {
-        this.setState({
-          newQuestionError: e.message,
-          saving: false,
-        });
+    .then(() => {
+      this.logQuestionGAEvent(`${this.props.edit ? 'edited' : 'created'}`);
+      this.setState({
+        saving: false,
       });
+      this.props.OnSuccess();
+    })
+    .catch((e: Error)=> {
+      this.setState({
+        newQuestionError: e.message,
+        saving: false,
+      });
+    });
   }
 
   private setNewQuestion(_, data) {
@@ -160,15 +125,11 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
     });
   }
 
-  private setLeftLabel(_, data) {
+  private setLikertOptions(options: ILikertForm) {
     this.setState({
-      leftLabel: data.value,
-    });
-  }
-
-  private setRightLabel(_, data) {
-    this.setState({
-      rightLabel: data.value,
+      leftValue: options.leftValue,
+      rightValue: options.rightValue,
+      labels: options.labels,
     });
   }
 
@@ -200,22 +161,6 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
     return categories;
   }
 
-  private renderValueInputs() {
-    const left = (<Input className="left" type="number" placeholder="Left Value" onChange={this.setLeftValue} defaultValue={this.state.leftValue} disabled={this.props.edit} />);
-    const right = (<Input className="right" type="number" placeholder="Right Value" onChange={this.setRightValue} defaultValue={this.state.rightValue} disabled={this.props.edit} />);
-    let editMsg = (<span />);
-    if (this.props.edit) {
-      editMsg = (<Message content={strings.valuesNotEditable} info={true}/>);
-    }
-    return (
-      <div>
-        {editMsg}
-        {left}
-        {right}
-      </div>
-    );
-  }
-
   public render() {
     const addProps: ButtonProps = {};
     if (this.state.saving) {
@@ -226,7 +171,7 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
       <Message>
         <Message.Content className="likert-form-container">
           <Message.Header>{this.props.edit ? 'Edit Likert Question' : 'New Likert Question'}</Message.Header>
-          <div className="likert-form">
+          <div className="likert-question-form">
             <div className="section upper">
               <Input className="full question-name" autoFocus type="text" placeholder="Question" onChange={this.setNewQuestion} value={this.state.newQuestion} />
               <div className="category">
@@ -236,20 +181,13 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
             <div className="section upper">
               <Input className="full" type="text" placeholder="Description (optional)" onChange={this.setDescription} value={this.state.description} />
             </div>
-            <div className="section mid">
-              <Input className="left" type="text" placeholder="Left Label (optional)" onChange={this.setLeftLabel} value={this.state.leftLabel} />
-              <Input className="right" type="text" placeholder="Right Label (optional)" onChange={this.setRightLabel} value={this.state.rightLabel} />
-            </div>
-            <div className="section likert">
-              <Likert
-                leftValue={this.leftValueInt(this.state)}
-                rightValue={this.rightValueInt(this.state)}
-                onChange={this.noop}
-                disabled={true} />
-            </div>
-            <div className="section lower">
-              {this.renderValueInputs()}
-            </div>
+            <LikertForm
+              edit={this.props.edit}
+              labels={this.state.labels}
+              leftValue={this.state.leftValue}
+              rightValue={this.state.rightValue}
+              onChange={this.setLikertOptions}
+            />
             <div className="controls">
               <Button {...addProps} onClick={this.onSubmitButtonClick}>{this.props.submitButtonText}</Button>
               <p>{this.state.newQuestionError}</p>

@@ -42,7 +42,11 @@ export function editLikertQuestion<T>(component) {
           questionID,
           question,
           description,
-          labels,
+          // this is here to defend against __typename attributes
+          labels: labels.map<ILabel>((l: ILabel): ILabel => ({
+            label: l.label,
+            value: l.value,
+          })),
         },
       }).then(mutationResultExtractor<IOutcomeSet>('editLikertQuestion')),
     }),

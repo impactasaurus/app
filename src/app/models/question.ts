@@ -32,6 +32,12 @@ export interface ILikertQuestionForm {
   rightValue?: number;
 }
 
+export interface ILikertForm {
+  leftValue?: number;
+  rightValue?: number;
+  labels?: ILabel[];
+}
+
 export const fragment = gql`
   fragment defaultQuestion on QuestionInterface {
     id,

@@ -37,8 +37,7 @@ class EditLikertQuestionInner extends React.Component<IProps, any> {
         newQuestion={q.question}
         categoryID={q.categoryID}
         description={q.description}
-        leftLabel={q.leftLabel}
-        rightLabel={q.rightLabel}
+        labels={q.labels}
         leftValue={q.leftValue}
         rightValue={q.rightValue}
         submitButtonText="Save changes"
