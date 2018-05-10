@@ -80,6 +80,14 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
       });
       return;
     }
+    const findLabelForValue = (val: number): ILabel|undefined => this.state.labels.find((l) => l.value === val);
+    if (findLabelForValue(lv) === undefined || findLabelForValue(rv) === undefined) {
+      this.setState({
+        newQuestionError: 'Questions must have labels on the left and right extremes of the scale',
+      });
+      return;
+    }
+
     this.setState({
       saving: true,
     });
