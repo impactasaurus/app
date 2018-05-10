@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Message, Input } from 'semantic-ui-react';
+import {Message, Input, Label, InputProps} from 'semantic-ui-react';
 import { Likert } from 'components/Likert';
 import './style.less';
 import {ILabel, ILikertForm} from 'models/question';
@@ -14,7 +14,10 @@ interface IProps  {
   rightValue: number;
 }
 
-const noop = () => {};
+interface IState {
+  selectedLabel?: number;
+}
+
 const toInt = (s: string) => parseInt(s, 10);
 const addOrEditLabel = (l: ILabel, ls: ILabel[]): ILabel[] => {
   const base = ls.concat().filter((x) => x.value !== l.value);
@@ -34,64 +37,24 @@ const replaceLabel = (oldVal: number, newVal: number, label: string, labels: ILa
   }, removedOldLabel);
 };
 
-class LikertForm extends React.Component<IProps, any> {
+class LikertForm extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
-    this.setLeftLabel = this.setLeftLabel.bind(this);
-    this.setRightLabel = this.setRightLabel.bind(this);
+    this.state = {};
+    this.setLabelBeingEdited = this.setLabelBeingEdited.bind(this);
     this.setLeftValue = this.setLeftValue.bind(this);
     this.setRightValue = this.setRightValue.bind(this);
     this.renderValueInputs = this.renderValueInputs.bind(this);
+    this.setLabel = this.setLabel.bind(this);
     this.getLeftLabel = this.getLeftLabel.bind(this);
     this.getRightLabel = this.getRightLabel.bind(this);
+    this.renderLabelControl = this.renderLabelControl.bind(this);
   }
 
-  private setLeftLabel(_, data) {
-    this.props.onChange({
-      labels: addOrEditLabel({
-        value: this.props.leftValue,
-        label: data.value,
-      }, this.props.labels),
-      leftValue: this.props.leftValue,
-      rightValue: this.props.rightValue,
-    });
-  }
-
-  private setRightLabel(_, data) {
-    this.props.onChange({
-      labels: addOrEditLabel({
-        value: this.props.rightValue,
-        label: data.value,
-      }, this.props.labels),
-      leftValue: this.props.leftValue,
-      rightValue: this.props.rightValue,
-    });
-  }
-
-  private setLeftValue(_, data) {
-    const newV = toInt(data.value);
-    if (isNaN(newV)) {
-      return;
-    }
-    this.props.onChange({
-      // also need to update the left label as it will now have a new value
-      labels: replaceLabel(this.props.leftValue, newV, this.getLeftLabel(), this.props.labels),
-      leftValue: newV,
-      rightValue: this.props.rightValue,
-    });
-  }
-
-  private setRightValue(_, data) {
-    const newV = toInt(data.value);
-    if (isNaN(newV)) {
-      return;
-    }
-    this.props.onChange({
-      // also need to update the right label as it will now have a new value
-      labels: replaceLabel(this.props.rightValue, newV, this.getRightLabel(), this.props.labels),
-      leftValue: this.props.leftValue,
-      rightValue: newV,
+  private setLabelBeingEdited(val: number) {
+    this.setState({
+      selectedLabel: val,
     });
   }
 
@@ -105,18 +68,73 @@ class LikertForm extends React.Component<IProps, any> {
     return (l === undefined) ? undefined : l.label;
   }
 
-  private renderValueInputs() {
-    const left = (<Input className="left" type="number" placeholder="Left Value" onChange={this.setLeftValue} defaultValue={this.props.leftValue} disabled={this.props.edit} />);
-    const right = (<Input className="right" type="number" placeholder="Right Value" onChange={this.setRightValue} defaultValue={this.props.rightValue} disabled={this.props.edit} />);
-    let editMsg = (<span />);
+  private setLeftValue(_, data) {
+    const newV = toInt(data.value);
+    if (isNaN(newV)) {
+      return;
+    }
+    this.setState({
+      selectedLabel: undefined,
+    });
+    this.props.onChange({
+      // also need to update the left label as it will now have a new value
+      labels: replaceLabel(this.props.leftValue, newV, this.getLeftLabel(), this.props.labels),
+      leftValue: newV,
+      rightValue: this.props.rightValue,
+    });
+  }
+
+  private setRightValue(_, data) {
+    const newV = toInt(data.value);
+    if (isNaN(newV)) {
+      return;
+    }
+    this.setState({
+      selectedLabel: undefined,
+    });
+    this.props.onChange({
+      // also need to update the right label as it will now have a new value
+      labels: replaceLabel(this.props.rightValue, newV, this.getRightLabel(), this.props.labels),
+      leftValue: this.props.leftValue,
+      rightValue: newV,
+    });
+  }
+
+  private setLabel(_, data) {
+    this.props.onChange({
+      labels: addOrEditLabel({
+        value: this.state.selectedLabel,
+        label: data.value,
+      }, this.props.labels),
+      leftValue: this.props.leftValue,
+      rightValue: this.props.rightValue,
+    });
+  }
+
+  private renderLabelControl(): JSX.Element {
+    const props: InputProps = {};
+    let message = (<span />);
+    if (this.state.selectedLabel === undefined) {
+      props.disabled = true;
+      message = (<Label basic pointing="left">Click a point on the scale to set or edit labels</Label>);
+    }
+    const editedLabel = this.props.labels.find((l) => l.value === this.state.selectedLabel);
+    return (
+      <div key={this.state.selectedLabel}>
+        <Input {...props} icon="tag" iconPosition="left" placeholder="Label for highlighted point" onChange={this.setLabel} defaultValue={editedLabel ? editedLabel.label : undefined} />
+        {message}
+      </div>
+    );
+  }
+
+  private renderValueInputs(): JSX.Element {
     if (this.props.edit) {
-      editMsg = (<Message content={strings.valuesNotEditable} info={true}/>);
+      return (<Message content={strings.valuesNotEditable} info={true}/>);
     }
     return (
       <div>
-        {editMsg}
-        {left}
-        {right}
+        <Input className="left" type="number" placeholder="Left Value" onChange={this.setLeftValue} defaultValue={this.props.leftValue} disabled={this.props.edit} />
+        <Input className="right" type="number" placeholder="Right Value" onChange={this.setRightValue} defaultValue={this.props.rightValue} disabled={this.props.edit} />
       </div>
     );
   }
@@ -125,18 +143,21 @@ class LikertForm extends React.Component<IProps, any> {
     return (
       <div className="likert-form">
         <div className="section mid">
-          <Input className="left" type="text" placeholder="Left Label (optional)" onChange={this.setLeftLabel} value={this.getLeftLabel()} />
-          <Input className="right" type="text" placeholder="Right Label (optional)" onChange={this.setRightLabel} value={this.getRightLabel()} />
+          {this.renderValueInputs()}
         </div>
         <div className="section likert">
           <Likert
+            key={`${this.props.leftValue}-${this.props.rightValue}`}
             leftValue={this.props.leftValue}
             rightValue={this.props.rightValue}
-            onChange={noop}
-            disabled={true} />
+            onChange={this.setLabelBeingEdited}
+            disabled={false}
+            value={this.state.selectedLabel}
+            labels={this.props.labels}
+          />
         </div>
         <div className="section lower">
-          {this.renderValueInputs()}
+          {this.renderLabelControl()}
         </div>
       </div>
     );
