@@ -4,5 +4,5 @@
   "JOCReportDateRange": "Any beneficiaries, who have been assessed within this time period, will be considered for inclusion in the report.",
   "tagExplanation": "Tags are words which can be saved against records. They can be used to filter your records when reporting. Common uses of tags include demographic or intervention information.",
   "tagUsage": "Use tags to filter the records you would like included within the report. Only records containing all the specified tags will be included.",
-  "valuesNotEditable": "We do not allow these values to be edited to ensure data consistency. If you would like to change them, please delete this question and recreate it or contact support@impactasaurus.org"
+  "valuesNotEditable": "We do not allow the values of the scale to be edited to ensure data consistency. If you would like to change them, please delete this question and recreate it or contact support@impactasaurus.org"
 }

@@ -1,3 +1,5 @@
+@import (reference) './../../theme/variables.less';
+
 .likert-form {
   .right {
     float: right;
@@ -8,7 +10,18 @@
 
     .likert-scale {
       margin-top: 0px;
-      margin-bottom: 0px;
+      margin-bottom: 30px;
+
+      .rc-slider-track {
+        display: none;
+      }
+
+      .rc-slider-dot {
+        border-color: @primary;
+      }
     }
+  }
+  .ui.left.pointing {
+    font-weight: normal;
   }
 }
