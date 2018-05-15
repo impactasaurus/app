@@ -66,7 +66,11 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
       return this.props.newMeeting(config)
       .then((meeting) => {
         this.recordMeetingStarted();
-        this.props.setURL(`/meeting/${meeting.id}`);
+        if (this.getType() === AssessmentType.historic) {
+          this.props.setURL(`/dataentry/${meeting.id}`);
+        } else {
+          this.props.setURL(`/meeting/${meeting.id}`);
+        }
       });
     }
   }
