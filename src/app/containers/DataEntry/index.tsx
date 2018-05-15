@@ -62,10 +62,11 @@ class DataEntryInner extends React.Component<IProps, IState> {
     };
   }
 
-  private renderQuestion(q: Question): JSX.Element {
+  private renderQuestion(q: Question, idx: number): JSX.Element {
     return (
       <QuestionInline
         key={q.id}
+        index={idx+1}
         record={this.props.data.getMeeting}
         questionID={q.id}
         onSaving={this.setSaving(true)}

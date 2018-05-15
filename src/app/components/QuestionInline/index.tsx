@@ -16,6 +16,8 @@ interface IProps extends IMeetingMutation {
   onSaving: () => void;
   onSaved: (error?: Error) => void;
   disabled?: boolean;
+  // if provided, will number the question
+  index?: number;
 }
 
 interface IState {
@@ -159,9 +161,10 @@ class QuestionInlineInner extends React.Component<IProps, IState> {
     if (this.state.saving) {
       spinner = (<Loader active inline size="mini" />);
     }
+    const numbering = this.props.index ? `${this.props.index}. ` : '';
     return (
       <div className="question-inline">
-        <h3>{q.question} {spinner}</h3>
+        <h3>{numbering}{q.question} {spinner}</h3>
         <LikertDebounced key={'l-' + q.id} leftValue={q.leftValue} rightValue={q.rightValue} labels={q.labels} onChange={this.setAnswer} value={this.state.value} disabled={this.props.disabled} />
         <Notepad key={'np-' + q.id} onChange={this.setNotes} notes={this.state.notes} onBlur={this.saveNotes} disabled={this.props.disabled} />
         <p>{this.state.saveError}</p>
