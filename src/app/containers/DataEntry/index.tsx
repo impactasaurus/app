@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import {IMeetingResult, getMeeting} from 'apollo/modules/meetings';
 import 'rc-slider/assets/index.css';
-import { Grid, Loader } from 'semantic-ui-react';
+import {ButtonProps, Grid, Loader, Button} from 'semantic-ui-react';
 import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
@@ -10,11 +10,14 @@ import {IURLConnector} from 'redux/modules/url';
 import {IAnswer} from 'models/answer';
 import {IQuestion, Question} from 'models/question';
 import {QuestionInline} from 'components/QuestionInline';
-import {renderArray} from '../../helpers/react';
-import {getHumanisedDateFromISO} from '../../helpers/moment';
+import {renderArray} from 'helpers/react';
+import {getHumanisedDateFromISO} from 'helpers/moment';
+import {completeMeeting, IMeetingMutation} from 'apollo/modules/meetings';
+import {QuestionnaireReview} from 'components/QuestionnaireReview';
+import {MeetingNotepad} from 'components/MeetingNotepad';
 const { connect } = require('react-redux');
 
-interface IProps extends IURLConnector {
+interface IProps extends IURLConnector, IMeetingMutation {
   data: IMeetingResult;
   params: {
       id: string,
@@ -25,6 +28,21 @@ interface IProps extends IURLConnector {
 
 interface IState {
     saving?: boolean;
+    completing?: boolean;
+    completeError?: string;
+    screen?: Screen;
+}
+
+enum Screen {
+  QUESTION,
+  NOTES,
+  REVIEW,
+}
+
+function answeredAllQuestions(p: IProps): boolean {
+  return p.questions.reduce((answeredAll, q) => {
+    return answeredAll && p.answers.find((a) => a.questionID === q.id) !== undefined;
+  }, true);
 }
 
 @connect((_, ownProps: IProps) => {
@@ -44,10 +62,24 @@ class DataEntryInner extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       saving: false,
+      screen: Screen.QUESTION,
     };
     this.completed = this.completed.bind(this);
     this.setSaving = this.setSaving.bind(this);
+    this.completed = this.completed.bind(this);
+    this.setPage = this.setPage.bind(this);
     this.renderQuestion = this.renderQuestion.bind(this);
+    this.renderFinished = this.renderFinished.bind(this);
+    this.renderQuestionPage = this.renderQuestionPage.bind(this);
+    this.renderNotepad = this.renderNotepad.bind(this);
+  }
+
+  private setPage(page: Screen): () => void {
+    return () => {
+      this.setState({
+        screen: page,
+      });
+    };
   }
 
   private completed() {
@@ -76,6 +108,52 @@ class DataEntryInner extends React.Component<IProps, IState> {
     );
   }
 
+  private renderQuestionPage(): JSX.Element {
+    const meeting = this.props.data.getMeeting;
+
+    const props: ButtonProps = {};
+    if (this.state.completing) {
+      props.loading = true;
+      props.disabled = true;
+    }
+    if (this.state.saving) {
+      props.disabled = true;
+    }
+    if (!answeredAllQuestions(this.props)) {
+      props.disabled = true;
+    }
+
+    return (
+      <div>
+        <h1>{meeting.beneficiary} - {getHumanisedDateFromISO(meeting.conducted)}</h1>
+        {renderArray(this.renderQuestion, this.props.questions)}
+        <Button {...props} onClick={this.setPage(Screen.NOTES)}>Next</Button>
+        <p>{this.state.completeError}</p>
+      </div>
+    );
+  }
+
+  private renderFinished(): JSX.Element {
+    return(
+      <QuestionnaireReview
+        record={this.props.data.getMeeting}
+        onQuestionClick={this.setPage(Screen.QUESTION)}
+        onBack={this.setPage(Screen.NOTES)}
+        onComplete={this.completed}
+      />
+    );
+  }
+
+  private renderNotepad(): JSX.Element {
+    return (
+      <MeetingNotepad
+        record={this.props.data.getMeeting}
+        onComplete={this.setPage(Screen.REVIEW)}
+        onBack={this.setPage(Screen.QUESTION)}
+      />
+    );
+  }
+
   public render() {
     const wrapper = (inner: JSX.Element): JSX.Element => {
       return (
@@ -97,13 +175,14 @@ class DataEntryInner extends React.Component<IProps, IState> {
         return wrapper(<Loader active={true} inline="centered" />);
     }
 
-    return wrapper((
-      <div>
-        <h1>{meeting.beneficiary} - {getHumanisedDateFromISO(meeting.conducted)}</h1>
-        {renderArray(this.renderQuestion, this.props.questions)}
-      </div>
-    ));
+    if (this.state.screen === Screen.REVIEW) {
+      return wrapper(this.renderFinished());
+    }
+    if (this.state.screen === Screen.NOTES) {
+      return wrapper(this.renderNotepad());
+    }
+    return wrapper(this.renderQuestionPage());
   }
 }
-const DataEntry = getMeeting<IProps>((props) => props.params.id)(DataEntryInner);
+const DataEntry = completeMeeting<IProps>(getMeeting<IProps>((props) => props.params.id)(DataEntryInner));
 export { DataEntry }
