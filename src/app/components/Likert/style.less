@@ -9,6 +9,12 @@
   &.rc-slider-disabled {
     background-color: transparent;
     cursor: not-allowed;
+
+    &.awaiting-input {
+      .rc-slider-dot {
+        border-color: @placeholder;
+      }
+    }
   }
 
   .rc-slider-track {
