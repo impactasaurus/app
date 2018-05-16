@@ -8,6 +8,7 @@ import {IMeetingMutation} from 'apollo/modules/meetings';
 import { Loader } from 'semantic-ui-react';
 import {LikertDebounced} from '../LikertDebounced';
 import './style.less';
+import {isNullOrUndefined} from 'util';
 const ReactGA = require('react-ga');
 
 interface IProps extends IMeetingMutation {
@@ -25,7 +26,6 @@ interface IState {
   notes?: string;
   saveError?: string;
   saving?: boolean;
-  touched?: boolean;
 }
 
 function hasAnswerChanged(prev: Answer, s: IState): boolean {
@@ -48,7 +48,6 @@ class QuestionInlineInner extends React.Component<IProps, IState> {
       value: undefined,
       saveError: undefined,
       saving: false,
-      touched: false,
     };
     this.setAnswer = this.setAnswer.bind(this);
     this.setNotes = this.setNotes.bind(this);
@@ -88,7 +87,7 @@ class QuestionInlineInner extends React.Component<IProps, IState> {
       return;
     }
     const a = this.getAnswer(p);
-    if (a === undefined || a === null) {
+    if (isNullOrUndefined(a)) {
       this.setState({
         notes: undefined,
         value: undefined,

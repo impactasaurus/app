@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet';
 import {IMeetingResult, getMeeting} from 'apollo/modules/meetings';
 import 'rc-slider/assets/index.css';
 import {ButtonProps, Grid, Loader, Button} from 'semantic-ui-react';
-import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import {IURLConnector} from 'redux/modules/url';
