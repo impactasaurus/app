@@ -20,6 +20,7 @@ export default (
       <Route path="questions/:id" component={containers.OutcomeSet} />
     </Route>
     <Route path="login" component={containers.Login} />
+    <Route path="dataentry/:id" component={containers.DataEntry} />
     <Route path="meeting/:id" component={containers.Meeting} />
     <Route path="meeting/:id/edit" component={containers.RecordEdit} />
     <Route path="meeting/:id/view" component={containers.RecordView} />

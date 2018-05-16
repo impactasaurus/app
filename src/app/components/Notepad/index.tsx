@@ -6,9 +6,11 @@ import {isNullOrUndefined} from 'util';
 interface IProps {
   notes: string | undefined | null;
   onChange: (notes: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
   // defaults to true
   collapsible?: boolean;
+  disabled?: boolean;
 }
 
 interface IState {
@@ -53,7 +55,7 @@ class Notepad extends React.Component<IProps, IState> {
     const notesNotNull: string | undefined = this.props.notes ? this.props.notes : undefined;
     return (
       <Form>
-        <TextArea autoHeight placeholder={placeholder} rows={2} onChange={this.onChange} value={notesNotNull} />
+        <TextArea disabled={this.props.disabled === true} autoHeight placeholder={placeholder} rows={2} onChange={this.onChange} value={notesNotNull} onBlur={this.props.onBlur} />
       </Form>
     );
   }

@@ -5,6 +5,7 @@ import { Button, ButtonProps} from 'semantic-ui-react';
 import {Notepad} from 'components/Notepad';
 import {IMeeting} from 'models/meeting';
 import {isNullOrUndefined} from 'util';
+import './style.less';
 const ReactGA = require('react-ga');
 
 interface IProps extends ISetMeetingNotes {
@@ -84,7 +85,7 @@ class MeetingNotepadInner extends React.Component<IProps, IState> {
       nextProps.disabled = true;
     }
     return (
-      <div>
+      <div className="meeting-notepad">
         <h1>Additional Comments</h1>
         <Notepad onChange={this.setNotes} notes={this.state.notes} collapsible={false} placeholder={placeholder}/>
         <Button onClick={this.props.onBack}>Back</Button>

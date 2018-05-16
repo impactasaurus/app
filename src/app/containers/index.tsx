@@ -20,3 +20,4 @@ export {Journey} from './Journey';
 export {Records} from './Records';
 export {RecordEdit} from './RecordEdit';
 export {RecordView} from './RecordView';
+export {DataEntry} from './DataEntry';
