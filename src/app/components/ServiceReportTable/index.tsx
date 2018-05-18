@@ -34,7 +34,7 @@ class ServiceReportTable extends React.Component<IProp, any> {
         return null;
       }
       return {
-        name: question ? question.question : 'Unknown',
+        name: question ? (question.short || question.question) : 'Unknown',
         first: first.value,
         last: last.value,
       };

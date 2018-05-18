@@ -80,7 +80,7 @@ class RocReportBarChart extends React.Component<IProp, any> {
       const qMeanROC = aggregateQuestionROC(q);
       if (qMeanROC !== undefined) {
         bcd.data.push(qMeanROC);
-        bcd.labels.push(q.question);
+        bcd.labels.push((q.short || q.question));
       }
       return bcd;
     }, {

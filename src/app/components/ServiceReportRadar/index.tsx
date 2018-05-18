@@ -45,10 +45,9 @@ class ServiceReportRadar extends React.Component<IProp, any> {
           const q = p.questionSet.questions.find((q) => q.id === point.questionID);
           let question = 'Unknown Question';
           if (q !== undefined) {
+            question = (q.short || q.question);
             if (q.archived) {
-              question = `${q.question} (archived)`;
-            } else {
-              question = q.question;
+              question = `${question} (archived)`;
             }
           }
           return {

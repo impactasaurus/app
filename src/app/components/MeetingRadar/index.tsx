@@ -23,7 +23,7 @@ class MeetingRadar extends React.Component<IProp, any> {
           return answers;
         }
         return answers.concat({
-          axis: q.question,
+          axis: (q.short || q.question),
           value: answer.answer,
         });
       }, []);
