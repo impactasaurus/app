@@ -114,7 +114,7 @@ class MeetingTable extends React.Component<IProp, IState> {
       }
       rows[q.question] = {
         first: a.answer,
-        name: q.question,
+        name: (q.short || q.question),
       };
       return rows;
     }, {});
@@ -125,7 +125,7 @@ class MeetingTable extends React.Component<IProp, IState> {
       }
       if (rows[q.question] === undefined) {
         rows[q.question] = {
-          name: q.question,
+          name: (q.short || q.question),
         };
       }
       rows[q.question] = { ...rows[q.question], last: a.answer };

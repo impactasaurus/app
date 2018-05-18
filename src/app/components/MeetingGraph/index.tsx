@@ -45,7 +45,7 @@ class MeetingGraph extends React.Component<IProp, any> {
           return series;
         }
         return series.concat({
-          label: q.question,
+          label: (q.short || q.question),
           data: [{
             x: new Date(meeting.conducted),
             y: answer.answer,
