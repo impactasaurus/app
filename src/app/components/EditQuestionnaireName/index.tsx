@@ -80,21 +80,19 @@ class EditQuestionnaireNameInner extends React.Component<IProps, IState> {
 
   public render() {
     return (
-      <div className="edit-control">
+      <div className="edit-control questionnaire name">
         <Input
           type="text"
           placeholder="Name"
-          size="huge"
+          size="large"
           onChange={this.onNameInputChange}
           onKeyPress={this.onNewNameInputKeyPress}
           value={this.state.name}
           onFocus={this.moveCaretAtEnd}
           autoFocus
         />
-        <Button onClick={this.submitNewName} size="huge" icon labelPosition="right" loading={this.state.isBeingSubmitted}>
-          Edit name
-          <Icon name="pencil"/>
-        </Button>
+        <Button onClick={this.props.afterSubmit} size="large">Cancel</Button>
+        <Button primary onClick={this.submitNewName} size="large" loading={this.state.isBeingSubmitted}>Save</Button>
         <p>{this.state.error}</p>
       </div>
     );
