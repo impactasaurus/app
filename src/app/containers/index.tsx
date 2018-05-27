@@ -21,3 +21,4 @@ export {Records} from './Records';
 export {RecordEdit} from './RecordEdit';
 export {RecordView} from './RecordView';
 export {DataEntry} from './DataEntry';
+export {Data} from './Data';
