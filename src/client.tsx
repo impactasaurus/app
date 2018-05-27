@@ -33,7 +33,7 @@ if (appConfig.env === 'production') {
 }
 
 const networkInterface = createNetworkInterface({
-  uri: appConfig.app.api,
+  uri: appConfig.app.api + '/v1/graphql',
 });
 networkInterface.use([{
   applyMiddleware(req, next) {

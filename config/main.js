@@ -8,7 +8,7 @@ var config = {
   karmaPort: 9876,
 
   app: {
-    api: "https://api.impactasaurus.org/v1/graphql",
+    api: "https://api.impactasaurus.org",
     root: (process.env.NODE_ENV === "production") ? "https://app.impactasaurus.org" : "http://localhost:8080",
     head: {
       title: 'Impactasaurus',

@@ -15,6 +15,8 @@ export default (
     </Route>
     <Route path="settings" component={containers.Settings}>
       <Route path="account" component={containers.Account} />
+      <Route path="data/questionnaire/export/:id" component={containers.ExportQuestionnaire} />
+      <Route path="data" component={containers.Data} />
       <Route path="organisation" component={containers.Organisation} />
       <Route path="questions" component={containers.OutcomeSets} />
       <Route path="questions/:id" component={containers.OutcomeSet} />

@@ -20,7 +20,7 @@ If you want to try out changes using a local server and database you need to hos
 
 First spin up the server project, details for how to do this can be found in the [server project](https://github.com/impactasaurus/server).
 
-Then edit `config/main.js`, changing `config.app.api` to point at `http://localhost:8081/v1/graphql` instead of the live API.
+Then edit `config/main.js`, changing `config.app.api` to point at `http://localhost:8081` instead of the live API.
 
 ## Contributing
 

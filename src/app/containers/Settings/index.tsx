@@ -45,6 +45,7 @@ class Settings extends React.Component<IProps, any> {
         </Helmet>
         <Menu pointing secondary>
           <Menu.Item name="Account" active={this.isSelected('/settings/account')} onClick={this.handleClick('/settings/account')} />
+          <Menu.Item name="Data" active={this.isSelected('/settings/data')} onClick={this.handleClick('/settings/data')} />
           <Menu.Item name="Organisation" active={this.isSelected('/settings/organisation')} onClick={this.handleClick('/settings/organisation')} />
           <Menu.Item name="Questionnaires" active={this.isSelected('/settings/questions')} onClick={this.handleClick('/settings/questions')} />
         </Menu>

@@ -75,6 +75,22 @@ export const getAllMeetings = <T>(idExtractor: IDExtractor<T>, name?: string) =>
   });
 };
 
+export const exportMeetings = <T>(idExtractor: IDExtractor<T>) => {
+  return graphql<any, T>(gql`
+    query ($qid: String!){
+      exportMeetings: exportMeetings(qID:$qid)
+    }`, {
+    options: (props: T) => {
+      return {
+        variables: {
+          qid: idExtractor(props),
+        },
+        fetchPolicy: 'network-only',
+      };
+    },
+  });
+};
+
 export const newMeeting = graphql(gql`
   mutation ($beneficiaryID: String!, $outcomeSetID: String!, $conducted: String!, $tags: [String]) {
     newMeeting: AddMeeting(beneficiaryID:$beneficiaryID, outcomeSetID:$outcomeSetID, conducted:$conducted, tags:$tags) {
@@ -284,6 +300,10 @@ export interface IGetAllMeetingsResult extends QueryProps {
 
 export interface IDeleteMeetingMutation {
   deleteMeeting?(meetingID: string, beneficiaryID: string);
+}
+
+export interface IExportMeetingsResult extends QueryProps {
+  exportMeetings?: string;
 }
 
 export interface IMeetingMutation {
