@@ -5,6 +5,7 @@ import {IOutcomeSet} from 'models/outcomeSet';
 
 interface IProps extends ICategoryMutation {
   OnSuccess: ()=>void;
+  OnCancel: ()=>void;
   onSubmitButtonPress: (QuestionSetID: string, name: string, aggregation: string, description: string)=>Promise<IOutcomeSet>;
   submitButtonText: string;
   QuestionSetID: string;
@@ -110,7 +111,8 @@ class QuestionCategoryForm extends React.Component<IProps, IState> {
         <Input autoFocus type="text" placeholder="Name" onChange={this.setName} value={this.state.name} />
         <Input type="text" placeholder="Description" onChange={this.setDescription} value={this.state.description} />
         <Select placeholder="Aggregation" options={this.getAggregationOptions()} value={this.state.aggregation} onChange={this.setAggregation} />
-        <Button {...submitProps} onClick={this.onSubmitButtonClick}>{this.props.submitButtonText}</Button>
+        <Button onClick={this.props.OnCancel}>Cancel</Button>
+        <Button {...submitProps} primary onClick={this.onSubmitButtonClick}>{this.props.submitButtonText}</Button>
         <p>{this.state.error}</p>
       </div>
     );
