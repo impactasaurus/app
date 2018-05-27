@@ -99,6 +99,10 @@ var config = {
         })
       },
       {
+        test: /\.inline.svg$/,
+        loader: 'babel-loader!svg-react-loader'
+      },
+      {
         test: /\.eot(\?.*)?$/,
         loader: 'file-loader?name=fonts/[hash].[ext]'
       },
@@ -111,7 +115,7 @@ var config = {
         loader: 'url-loader?limit=10000&mimetype=application/octet-stream&name=fonts/[hash].[ext]'
       },
       {
-        test: /\.svg(\?.*)?$/,
+        test: /^(?!.*\.inline\.svg$).*\.svg$/,
         loader: 'url-loader?limit=10000&mimetype=image/svg+xml&name=fonts/[hash].[ext]'
       },
       {

@@ -5,8 +5,10 @@ import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import { IStore } from 'redux/IStore';
 import { clearAuth } from 'helpers/auth';
-const { connect } = require('react-redux');
 import {isUserLoggedIn, isBeneficiaryUser} from 'modules/user';
+import './style.less';
+const { connect } = require('react-redux');
+const TwitterIcon = require('./twitter.inline.svg');
 
 interface IProps extends IURLConnector  {
   currentURL?: string;
@@ -47,38 +49,40 @@ class Header extends React.Component<IProps, any> {
       clearAuth();
       this.props.setURL('/login');
     };
-
   }
 
   public render() {
-      if(this.props.isLoggedIn && this.props.isBeneficiary !== true) {
-        return(
-          <Menu size="massive">
+    if(this.props.isLoggedIn && this.props.isBeneficiary !== true) {
+      return(
+        <Menu size="massive">
           <Menu.Item name="home" active={this.isActive('/', true)} onClick={this.handleClick('/')} />
           <Menu.Item name="record" active={this.isActive('/record') || this.isActive('/meeting') || this.isActive('/dataentry')} onClick={this.handleClick('/record')} />
           <Menu.Item name="beneficiary" active={this.isActive('/beneficiary')} onClick={this.handleClick('/beneficiary')} />
           <Menu.Item name="report" active={this.isActive('/report')} onClick={this.handleClick('/report')} />
 
-           <Menu.Menu position="right">
+          <Menu.Menu position="right">
+            <Menu.Item href="https://twitter.com/impactasaurus" target="blank" id="twitter-menu-link">
+              <TwitterIcon />
+            </Menu.Item>
             <Menu.Item name="settings" active={this.isActive('/settings')} onClick={this.handleClick('/settings')} />
             <Menu.Item name="log out" onClick={this.logOut()} />
           </Menu.Menu>
         </Menu>
       );
     } else if (this.props.isLoggedIn && this.props.isBeneficiary) {
-        return(
-          <Menu size="massive">
-            <Menu.Menu position="right">
-              <Menu.Item name="log out" onClick={this.logOut()} />
-            </Menu.Menu>
-          </Menu>
-        );
+      return(
+        <Menu size="massive">
+          <Menu.Menu position="right">
+            <Menu.Item name="log out" onClick={this.logOut()} />
+          </Menu.Menu>
+        </Menu>
+      );
     } else {
-        return(
-          <Menu size="massive">
-            <Menu.Item name="Impactasaurus" active={this.isActive('/', true)} onClick={this.handleClick('/')} />
-          </Menu>
-        );
+      return(
+        <Menu size="massive">
+          <Menu.Item name="Impactasaurus" active={this.isActive('/', true)} onClick={this.handleClick('/')} />
+        </Menu>
+      );
     }
   }
 }
