@@ -122,10 +122,12 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     });
   }
 
-  private setNewClicked() {
-    this.setState({
-      newClicked: true,
-    });
+  private setNewClicked(toSet: boolean): ()=>void {
+    return ()=> {
+      this.setState({
+        newClicked: toSet,
+      });
+    };
   }
 
   private renderNewControl(): JSX.Element {
@@ -140,7 +142,8 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
           <List.Content>
             <Input type="text" placeholder="Name" onChange={this.setNewName}/>
             <Input type="text" placeholder="Description" onChange={this.setNewDescription}/>
-            <Button {...addProps} onClick={this.createQS}>Create</Button>
+            <Button onClick={this.setNewClicked(false)}>Cancel</Button>
+            <Button {...addProps} primary onClick={this.createQS}>Create</Button>
             <p>{this.state.createError}</p>
           </List.Content>
         </List.Item>
@@ -148,7 +151,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     } else {
       return (
         <List.Item className="new-control" key="new">
-          <List.Content onClick={this.setNewClicked}>
+          <List.Content onClick={this.setNewClicked(true)}>
             <List.Header as="a">New Questionnaire</List.Header>
           </List.Content>
         </List.Item>
