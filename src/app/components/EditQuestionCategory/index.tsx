@@ -8,6 +8,7 @@ interface IProps extends ICategoryMutation {
   QuestionSetID: string;
   category: ICategory;
   OnSuccess: ()=>void;
+  OnCancel: ()=>void;
 }
 
 class EditQuestionCategoryInner extends React.Component<IProps, any> {
@@ -26,6 +27,7 @@ class EditQuestionCategoryInner extends React.Component<IProps, any> {
     return (
       <QuestionCategoryForm
         OnSuccess={this.props.OnSuccess}
+        OnCancel={this.props.OnCancel}
         onSubmitButtonPress={this.onSubmitButtonPress}
         QuestionSetID={this.props.QuestionSetID}
         submitButtonText="Save changes"

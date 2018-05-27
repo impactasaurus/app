@@ -118,6 +118,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
         question={q}
         QuestionSetID={this.props.outcomeSetID}
         OnSuccess={this.setEditedQuestionId(null)}
+        OnCancel={this.setEditedQuestionId(null)}
       />
     );
   }
@@ -155,7 +156,10 @@ class QuestionListInner extends React.Component<IProps, IState> {
       return (
         <List.Item className="new-control">
           <List.Content>
-            <NewLikertQuestion QuestionSetID={this.props.outcomeSetID} OnSuccess={this.setNewQuestionClicked(false)} />
+            <NewLikertQuestion
+              QuestionSetID={this.props.outcomeSetID}
+              OnSuccess={this.setNewQuestionClicked(false)}
+              OnCancel={this.setNewQuestionClicked(false)} />
           </List.Content>
         </List.Item>
       );

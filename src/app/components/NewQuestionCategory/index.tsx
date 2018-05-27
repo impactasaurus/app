@@ -6,6 +6,7 @@ import {IOutcomeSet} from 'models/outcomeSet';
 interface IProps extends ICategoryMutation {
   QuestionSetID: string;
   OnSuccess: ()=>void;
+  OnCancel: ()=>void;
 }
 
 class NewQuestionCategoryInner extends React.Component<IProps, any> {
@@ -24,6 +25,7 @@ class NewQuestionCategoryInner extends React.Component<IProps, any> {
     return (
       <QuestionCategoryForm
         OnSuccess={this.props.OnSuccess}
+        OnCancel={this.props.OnCancel}
         onSubmitButtonPress={this.onSubmitButtonPress}
         QuestionSetID={this.props.QuestionSetID}
         submitButtonText="Add"

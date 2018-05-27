@@ -7,6 +7,7 @@ import {IQuestionMutation, addLikertQuestion} from 'apollo/modules/questions';
 interface IProps extends IQuestionMutation {
   QuestionSetID: string;
   OnSuccess: ()=>void;
+  OnCancel: ()=>void;
 }
 
 class NewLikertQuestionInner extends React.Component<IProps, any> {
@@ -25,6 +26,7 @@ class NewLikertQuestionInner extends React.Component<IProps, any> {
       <LikertQuestionForm
         onSubmitButtonClick={this.addQuestion}
         submitButtonText="Add"
+        onCancel={this.props.OnCancel}
         {...this.props}
       />
     );

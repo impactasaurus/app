@@ -67,6 +67,7 @@ class CategoryListInner extends React.Component<IProps, IState> {
               category={c}
               QuestionSetID={this.props.outcomeSetID}
               OnSuccess={this.setEditedCategoryId(null)}
+              OnCancel={this.setEditedCategoryId(null)}
             />
           </List.Content>
         </List.Item>
@@ -98,7 +99,11 @@ class CategoryListInner extends React.Component<IProps, IState> {
       return (
         <List.Item className="new-control">
           <List.Content>
-            <NewQuestionCategory QuestionSetID={this.props.outcomeSetID} OnSuccess={this.setNewCategoryClicked(false)} />
+            <NewQuestionCategory
+              QuestionSetID={this.props.outcomeSetID}
+              OnSuccess={this.setNewCategoryClicked(false)}
+              OnCancel={this.setNewCategoryClicked(false)}
+            />
           </List.Content>
         </List.Item>
       );

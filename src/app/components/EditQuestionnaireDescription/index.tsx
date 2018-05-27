@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Input, Button, Icon } from 'semantic-ui-react';
+import { Input, Button } from 'semantic-ui-react';
 import { editQuestionSet, IOutcomeMutation } from 'apollo/modules/outcomeSets';
 import { IOutcomeResult } from '../../apollo/modules/outcomeSets';
 import './style.less';
@@ -80,7 +80,7 @@ class EditQuestionnaireDescriptionInner extends React.Component<IProps, IState> 
 
   public render() {
     return (
-      <div className="edit-control">
+      <div className="edit-control questionnaire description">
         <Input
           type="text"
           placeholder="Description"
@@ -90,10 +90,8 @@ class EditQuestionnaireDescriptionInner extends React.Component<IProps, IState> 
           onFocus={this.moveCaretAtEnd}
           autoFocus
         />
-        <Button onClick={this.submitNewDescription} icon labelPosition="right" loading={this.state.isBeingSubmitted}>
-          Edit description
-          <Icon name="pencil"/>
-        </Button>
+        <Button onClick={this.props.afterSubmit}>Cancel</Button>
+        <Button primary onClick={this.submitNewDescription} loading={this.state.isBeingSubmitted}>Save</Button>
         <p>{this.state.error}</p>
       </div>
     );

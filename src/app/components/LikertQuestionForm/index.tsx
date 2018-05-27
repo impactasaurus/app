@@ -13,6 +13,7 @@ interface IProps  {
   QuestionSetID: string;
   data?: IOutcomeResult;
   OnSuccess: ()=>void;
+  onCancel: ()=>void;
   onSubmitButtonClick: (question: ILikertQuestionForm)=>Promise<IOutcomeSet>;
   edit?: boolean;
   newQuestion?: string;
@@ -197,7 +198,8 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
               onChange={this.setLikertOptions}
             />
             <div className="controls">
-              <Button {...addProps} onClick={this.onSubmitButtonClick}>{this.props.submitButtonText}</Button>
+              <Button onClick={this.props.onCancel}>Cancel</Button>
+              <Button {...addProps} primary onClick={this.onSubmitButtonClick}>{this.props.submitButtonText}</Button>
               <p>{this.state.newQuestionError}</p>
             </div>
           </div>
