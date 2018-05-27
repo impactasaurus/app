@@ -8,6 +8,7 @@ import {ICategoryMutation, setCategory} from '../../apollo/modules/categories';
 interface IProps extends IQuestionMutation, ICategoryMutation {
   QuestionSetID: string;
   OnSuccess: ()=>void;
+  OnCancel: ()=>void;
   question: Question;
 }
 
@@ -42,6 +43,7 @@ class EditLikertQuestionInner extends React.Component<IProps, any> {
         rightValue={q.rightValue}
         submitButtonText="Save changes"
         onSubmitButtonClick={this.editQuestion}
+        onCancel={this.props.OnCancel}
         {...this.props}
       />
     );
