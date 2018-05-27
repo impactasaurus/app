@@ -9,6 +9,7 @@ import {isUserLoggedIn, isBeneficiaryUser} from 'modules/user';
 import './style.less';
 const { connect } = require('react-redux');
 const TwitterIcon = require('./twitter.inline.svg');
+const Logo = require('./logo.inline.svg');
 
 interface IProps extends IURLConnector  {
   currentURL?: string;
@@ -55,13 +56,15 @@ class Header extends React.Component<IProps, any> {
     if(this.props.isLoggedIn && this.props.isBeneficiary !== true) {
       return(
         <Menu size="massive">
-          <Menu.Item name="home" active={this.isActive('/', true)} onClick={this.handleClick('/')} />
+          <Menu.Item active={this.isActive('/', true)} onClick={this.handleClick('/')} className="icon-menu-item">
+            <Logo />
+          </Menu.Item>
           <Menu.Item name="record" active={this.isActive('/record') || this.isActive('/meeting') || this.isActive('/dataentry')} onClick={this.handleClick('/record')} />
           <Menu.Item name="beneficiary" active={this.isActive('/beneficiary')} onClick={this.handleClick('/beneficiary')} />
           <Menu.Item name="report" active={this.isActive('/report')} onClick={this.handleClick('/report')} />
 
           <Menu.Menu position="right">
-            <Menu.Item href="https://twitter.com/impactasaurus" target="blank" id="twitter-menu-link">
+            <Menu.Item href="https://twitter.com/impactasaurus" target="blank" className="icon-menu-item">
               <TwitterIcon />
             </Menu.Item>
             <Menu.Item name="settings" active={this.isActive('/settings')} onClick={this.handleClick('/settings')} />

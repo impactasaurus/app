@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Input, Button, Icon } from 'semantic-ui-react';
+import { Input, Button } from 'semantic-ui-react';
 import { editQuestionSet, IOutcomeMutation } from 'apollo/modules/outcomeSets';
 import { IOutcomeResult } from '../../apollo/modules/outcomeSets';
 import './style.less';
