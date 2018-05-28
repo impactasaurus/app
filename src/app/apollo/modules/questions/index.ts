@@ -3,6 +3,14 @@ import {IOutcomeSet, fragment as osFragment} from 'models/outcomeSet';
 import {mutationResultExtractor} from 'helpers/apollo';
 import {ILabel} from 'models/question';
 
+// cleanLabelArray defends against __typename attributes
+const cleanLabelArray = (labels: ILabel[]): ILabel[] => {
+  return labels.map<ILabel>((l: ILabel): ILabel => ({
+    label: l.label,
+    value: l.value,
+  }));
+};
+
 export function addLikertQuestion<T>(component) {
   return graphql<any, T>(gql`
   mutation ($outcomeSetID: ID!, $question: String!, $description: String, $minValue: Int, $maxValue: Int!, $labels: [LabelInput], $categoryID: String) {
@@ -19,7 +27,7 @@ export function addLikertQuestion<T>(component) {
             description,
             minValue,
             maxValue,
-            labels,
+            labels: cleanLabelArray(labels),
             categoryID,
           },
       }).then(mutationResultExtractor<IOutcomeSet>('addLikertQuestion')),
@@ -42,11 +50,7 @@ export function editLikertQuestion<T>(component) {
           questionID,
           question,
           description,
-          // this is here to defend against __typename attributes
-          labels: labels.map<ILabel>((l: ILabel): ILabel => ({
-            label: l.label,
-            value: l.value,
-          })),
+          labels: cleanLabelArray(labels),
         },
       }).then(mutationResultExtractor<IOutcomeSet>('editLikertQuestion')),
     }),

@@ -1,13 +1,14 @@
 import * as React from 'react';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {LikertQuestionForm} from 'components/LikertQuestionForm';
-import {ILikertQuestionForm} from 'models/question';
+import {ILikertForm, ILikertQuestionForm} from 'models/question';
 import {IQuestionMutation, addLikertQuestion} from 'apollo/modules/questions';
 
 interface IProps extends IQuestionMutation {
   QuestionSetID: string;
   OnSuccess: ()=>void;
   OnCancel: ()=>void;
+  Defaults?: ILikertForm;
 }
 
 class NewLikertQuestionInner extends React.Component<IProps, any> {
@@ -22,11 +23,15 @@ class NewLikertQuestionInner extends React.Component<IProps, any> {
   }
 
   public render() {
+    const defaults: ILikertForm = this.props.Defaults || {};
     return (
       <LikertQuestionForm
         onSubmitButtonClick={this.addQuestion}
         submitButtonText="Add"
         onCancel={this.props.OnCancel}
+        labels={defaults.labels}
+        leftValue={defaults.leftValue}
+        rightValue={defaults.rightValue}
         {...this.props}
       />
     );
