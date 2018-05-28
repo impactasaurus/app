@@ -3,3 +3,7 @@
 .ui.secondary.menu .item {
   color: @gray;
 }
+
+.ui.menu.add-margin {
+  margin-bottom: 2em;
+}

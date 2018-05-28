@@ -176,7 +176,7 @@ class MeetingInner extends React.Component<IProps, IState> {
     if (this.state.screen === Screen.QUESTION) {
       value = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
     }
-    return (<Progress secondary value={value} total={this.props.questions.length} size="tiny" />);
+    return (<Progress value={value} total={this.props.questions.length} size="tiny" />);
   }
 
   public render() {

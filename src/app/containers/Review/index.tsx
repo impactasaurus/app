@@ -69,7 +69,7 @@ class Review extends React.Component<IProps, any> {
 
   private renderSubMenu(): JSX.Element {
     return (
-      <Menu pointing secondary>
+      <Menu pointing secondary className="add-margin">
         <Menu.Item name="Journey" active={this.props.child === ReviewPage.JOURNEY} onClick={this.innerPageSetter(ReviewPage.JOURNEY)}/>
         <Menu.Item name="Records" active={this.props.child === ReviewPage.RECORDS} onClick={this.innerPageSetter(ReviewPage.RECORDS)}/>
       </Menu>
