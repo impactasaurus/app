@@ -76,40 +76,47 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
   }
 
   public render() {
+    const wrapper = (inner: JSX.Element): JSX.Element => {
+      return (
+        <Grid container columns={1} id="question-set">
+          <Grid.Column>
+            <Helmet>
+              <title>Questionnaire</title>
+            </Helmet>
+            <div>
+              {inner}
+            </div>
+          </Grid.Column>
+        </Grid>
+      );
+    };
     const { data, params } = this.props;
     const { displayEditNameControl, displayEditDescriptionControl } = this.state;
     if (data.loading) {
-      return (
-        <Loader active={true} inline="centered" />
-      );
+      return wrapper(<Loader active={true} inline="centered" />);
     }
     const os = data.getOutcomeSet;
     if (os === undefined) {
-        return (<div />);
+        return wrapper(<div />);
     }
-    return (
-      <Grid container columns={1} id="question-set">
-        <Grid.Column>
-          <Helmet>
-            <title>Question Sets</title>
-          </Helmet>
-          {displayEditNameControl ?
-            <EditQuestionnaireName data={data} outcomeSetID={params.id} afterSubmit={this.hideEditNameControl} />
-            :
-            <h1>{os.name}{this.renderEditNameButton()}</h1>
-          }
-          {displayEditDescriptionControl ?
-            <EditQuestionnaireDescription data={data} outcomeSetID={params.id} afterSubmit={this.hideEditDescriptionControl} />
-            :
-            <div>Description: {os.description || 'No description'}{this.renderEditDescriptionButton()}</div>
-          }
-          <h3>Questions</h3>
-          <QuestionList outcomeSetID={params.id} data={this.props.data}/>
-          <h3>Question Categories <Hint text={strings.questionCategoryExplanation} /></h3>
-          <CategoryList outcomeSetID={params.id} data={this.props.data}/>
-        </Grid.Column>
-      </Grid>
-    );
+    return wrapper((
+      <div>
+        {displayEditNameControl ?
+          <EditQuestionnaireName data={data} outcomeSetID={params.id} afterSubmit={this.hideEditNameControl} />
+          :
+          <h1>{os.name}{this.renderEditNameButton()}</h1>
+        }
+        {displayEditDescriptionControl ?
+          <EditQuestionnaireDescription data={data} outcomeSetID={params.id} afterSubmit={this.hideEditDescriptionControl} />
+          :
+          <div>Description: {os.description || 'No description'}{this.renderEditDescriptionButton()}</div>
+        }
+        <h3>Questions</h3>
+        <QuestionList outcomeSetID={params.id} data={this.props.data}/>
+        <h3>Question Categories <Hint text={strings.questionCategoryExplanation} /></h3>
+        <CategoryList outcomeSetID={params.id} data={this.props.data}/>
+      </div>
+    ));
   }
 }
 
