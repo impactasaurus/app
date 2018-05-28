@@ -2,7 +2,7 @@ import * as React from 'react';
 import {IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {IQuestionMutation, deleteQuestion} from 'apollo/modules/questions';
 import {renderArray} from 'helpers/react';
-import {Question} from 'models/question';
+import {ILikertForm, Question} from 'models/question';
 import {IOutcomeSet} from 'models/outcomeSet';
 import { List, Loader, Button, Popup } from 'semantic-ui-react';
 import {NewLikertQuestion} from 'components/NewLikertQuestion';
@@ -11,6 +11,7 @@ import {CategoryPill} from 'components/CategoryPill';
 import {EditLikertQuestion} from 'components/EditLikertQuestion';
 import './style.less';
 import {isNullOrUndefined} from 'util';
+import {getQuestions} from '../../helpers/questionnaire';
 const ReactGA = require('react-ga');
 
 interface IProps extends IQuestionMutation {
@@ -153,13 +154,23 @@ class QuestionListInner extends React.Component<IProps, IState> {
 
   private renderNewQuestionControl(): JSX.Element {
     if (this.state.newQuestionClicked === true) {
+      const defaults: ILikertForm = {};
+      const qs = getQuestions(this.props.data.getOutcomeSet) || [];
+      if (qs.length > 0) {
+        const last = qs[qs.length-1] as Question;
+        defaults.labels = last.labels;
+        defaults.rightValue = last.rightValue;
+        defaults.leftValue = last.leftValue;
+      }
       return (
         <List.Item className="new-control">
           <List.Content>
             <NewLikertQuestion
               QuestionSetID={this.props.outcomeSetID}
               OnSuccess={this.setNewQuestionClicked(false)}
-              OnCancel={this.setNewQuestionClicked(false)} />
+              OnCancel={this.setNewQuestionClicked(false)}
+              Defaults={defaults}
+            />
           </List.Content>
         </List.Item>
       );
@@ -187,7 +198,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
     }
     return (
       <List divided relaxed verticalAlign="middle" className="list question">
-        {renderArray(this.renderQuestion, os.questions.filter((q) => !q.archived))}
+        {renderArray(this.renderQuestion, getQuestions(os))}
         {this.renderNewQuestionControl()}
       </List>
     );
