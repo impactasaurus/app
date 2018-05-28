@@ -5,7 +5,6 @@ import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import {IStore} from 'redux/IStore';
-import './style.less';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
