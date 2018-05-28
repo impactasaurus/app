@@ -73,35 +73,38 @@ class ServiceReportInner extends React.Component<IProp, any> {
   }
 
   public render() {
-    if (this.props.JOCServiceReport.error) {
+    const wrapper = (inner: JSX.Element): JSX.Element => {
       return (
         <Grid container columns={1} id="service-report">
           <Grid.Column>
-            <Message error>
-              {renderArray(this.renderError, this.props.JOCServiceReport.error.graphQLErrors)}
-            </Message>
+            <Helmet>
+              <title>Service Report</title>
+            </Helmet>
+            <div>
+              {inner}
+            </div>
           </Grid.Column>
         </Grid>
       );
+    };
+    if (this.props.JOCServiceReport.error) {
+      return wrapper((
+        <Message error>
+          {renderArray(this.renderError, this.props.JOCServiceReport.error.graphQLErrors)}
+        </Message>
+      ));
     }
     if (this.props.data.loading || this.props.JOCServiceReport.loading) {
-      return (
-        <Loader active={true} inline="centered" />
-      );
+      return wrapper(<Loader active={true} inline="centered" />);
     }
-    return (
-      <Grid container columns={1} id="service-report">
-        <Grid.Column>
-          <Helmet>
-            <title>Service Report</title>
-          </Helmet>
-          <h1>Service Report</h1>
-          <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
-          <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} />
-          {this.renderVis()}
-        </Grid.Column>
-      </Grid>
-    );
+    return wrapper((
+      <div>
+        <h1>Service Report</h1>
+        <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
+        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} />
+        {this.renderVis()}
+      </div>
+    ));
   }
 }
 

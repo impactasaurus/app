@@ -104,45 +104,44 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
 
   private renderError(message: string): JSX.Element {
     return (
-      <Grid container columns={1} id="benRedirect">
-        <Grid.Column>
-          <Message error={true}>
-            <Message.Header>Error</Message.Header>
-            <div>{message}</div>
-          </Message>
-        </Grid.Column>
-      </Grid>
+      <Message error={true}>
+        <Message.Header>Error</Message.Header>
+        <div>{message}</div>
+      </Message>
     );
   }
 
   private confirmUserWantsToContinue(): JSX.Element {
     return (
-      <Grid container columns={1} id="benRedirect">
-        <Grid.Column>
-          <Message warning={true}>
-            <Message.Header>Warning</Message.Header>
-            <div>Using this link will log you out of Impactasaurus</div>
-            <br />
-            <Button onClick={this.confirmed}>Continue</Button>
-          </Message>
-        </Grid.Column>
-      </Grid>
+      <Message warning={true}>
+        <Message.Header>Warning</Message.Header>
+        <div>Using this link will log you out of Impactasaurus</div>
+        <br />
+        <Button onClick={this.confirmed}>Continue</Button>
+      </Message>
     );
   }
 
   public render() {
+    const wrapper = (inner: JSX.Element): JSX.Element => {
+      return (
+        <Grid container columns={1} id="benRedirect">
+          <Grid.Column>
+            {inner}
+          </Grid.Column>
+        </Grid>
+      );
+    };
     if (this.props.isLoggedIn && !this.props.isBeneficiary && !this.state.confirmed) {
-      return this.confirmUserWantsToContinue();
+      return wrapper(this.confirmUserWantsToContinue());
     }
     if (this.props.data.loading || (this.props.data.error === undefined && this.state.error === false)) {
-      return (
-        <Loader active={true} inline="centered" />
-      );
+      return wrapper(<Loader active={true} inline="centered" />);
     }
     if (this.state.expired) {
-      return this.renderError('This link has expired. Please request a new link');
+      return wrapper(this.renderError('This link has expired. Please request a new link'));
     }
-    return this.renderError('This link is not valid. Please try refreshing, if it continues to fail, please request a new link');
+    return wrapper(this.renderError('This link is not valid. Please try refreshing, if it continues to fail, please request a new link'));
   }
 }
 

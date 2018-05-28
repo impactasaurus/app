@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import {IMeetingResult, getMeeting} from 'apollo/modules/meetings';
 import {Question} from 'components/Question';
 import 'rc-slider/assets/index.css';
-import { Grid, Loader } from 'semantic-ui-react';
+import { Grid, Loader, Progress } from 'semantic-ui-react';
 import './style.less';
 import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
@@ -65,6 +65,7 @@ class MeetingInner extends React.Component<IProps, IState> {
     this.completed = this.completed.bind(this);
     this.goToQuestionWithID = this.goToQuestionWithID.bind(this);
     this.renderNotepad = this.renderNotepad.bind(this);
+    this.renderProgressBar = this.renderProgressBar.bind(this);
   }
 
   public componentDidUpdate() {
@@ -170,19 +171,30 @@ class MeetingInner extends React.Component<IProps, IState> {
     );
   }
 
+  private renderProgressBar(): JSX.Element {
+    let value = this.props.questions.length;
+    if (this.state.screen === Screen.QUESTION) {
+      value = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
+    }
+    return (<Progress value={value} total={this.props.questions.length} size="tiny" />);
+  }
+
   public render() {
-    const wrapper = (inner: JSX.Element): JSX.Element => {
+    const wrapper = (inner: JSX.Element, progress: JSX.Element = <div />): JSX.Element => {
       return (
-        <Grid container columns={1} id="meeting">
-          <Grid.Column>
-            <Helmet>
-              <title>Questionnaire</title>
-            </Helmet>
-            <div id="meeting">
-              {inner}
-            </div>
-          </Grid.Column>
-        </Grid>
+        <div id="meeting">
+          {progress}
+          <Grid container columns={1} id="meeting">
+            <Grid.Column>
+              <Helmet>
+                <title>Questionnaire</title>
+              </Helmet>
+              <div>
+                {inner}
+              </div>
+            </Grid.Column>
+          </Grid>
+        </div>
       );
     };
 
@@ -191,10 +203,10 @@ class MeetingInner extends React.Component<IProps, IState> {
         return wrapper(<Loader active={true} inline="centered" />);
     }
     if (this.state.screen === Screen.REVIEW) {
-      return wrapper(this.renderFinished());
+      return wrapper(this.renderFinished(), this.renderProgressBar());
     }
     if (this.state.screen === Screen.NOTES) {
-      return wrapper(this.renderNotepad());
+      return wrapper(this.renderNotepad(), this.renderProgressBar());
     }
     const currentQuestionID = this.state.currentQuestion;
     if (currentQuestionID === undefined) {
@@ -207,7 +219,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       showPrevious={this.canGoToPreviousQuestion()}
       onPrevious={this.goToPreviousScreen}
       onNext={this.goToNextScreen}
-    />);
+    />, this.renderProgressBar());
   }
 }
 const Meeting = getMeeting<IProps>((props) => props.params.id)(MeetingInner);

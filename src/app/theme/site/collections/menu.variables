@@ -1,6 +1,6 @@
 @import (reference) './../../variables.less';
 
-@margin: 2em 0em;
+@margin: 0em 0em;
 @background: @primary;
 @borderRadius: 0em;
 @border: 0em;
