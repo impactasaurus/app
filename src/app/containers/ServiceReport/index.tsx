@@ -34,7 +34,7 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
   if (props.JOCServiceReport.error || props.JOCServiceReport.loading) {
     return false;
   }
-  return props.JOCServiceReport.getJOCServiceReport.categoryAggregates.first.length > 0;
+  return props.JOCServiceReport.getJOCServiceReport.categories.length > 0;
 };
 
 @connect((state: IStore, ownProps: IProp) => {

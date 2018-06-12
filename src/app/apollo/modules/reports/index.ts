@@ -1,15 +1,15 @@
 import {gql, graphql, QueryProps, QueryOpts} from 'react-apollo';
-import {IJOCServiceReport, jocFragment, IROCReport, rocFragment} from 'models/report';
+import {IROCReport, rocFragment, answerAggregationFragment, IAnswerAggregationReport} from 'models/report';
 import {Extractor, IDExtractor} from 'helpers/apollo';
 
 export const getJOCServiceReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>) => {
   return graphql<any, T>(gql`
     query JOCServiceReport($start: String!, $end: String!, $questionSetID: String!, $tags:[String]) {
-      getJOCServiceReport: JOCServiceReport(start:$start, end: $end, questionSetID: $questionSetID, tags: $tags) {
-        ...defaultJOCReport
+      getJOCServiceReport: report(start:$start, end: $end, questionnaire: $questionSetID, tags: $tags, openStart: true) {
+        ...answerAggregationFragment
       }
     }
-    ${jocFragment}`,
+    ${answerAggregationFragment}`,
   {
     name: 'JOCServiceReport',
     options: (props: T): QueryOpts => {
@@ -51,7 +51,7 @@ export const getROCReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end:
 };
 
 export interface IJOCResult extends QueryProps {
-  getJOCServiceReport?: IJOCServiceReport;
+  getJOCServiceReport?: IAnswerAggregationReport;
 }
 
 export interface IJOCReportResult {
