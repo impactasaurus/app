@@ -1,11 +1,34 @@
 import * as React from 'react';
-import {IJOCServiceReport, IQuestionAggregates, ICategoryAggregates} from 'models/report';
+import {IAnswerAggregationReport, IExcluded, IExclusion} from 'models/report';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {ReportDetails} from 'components/ReportDetails';
+import {isNullOrUndefined} from 'util';
 
 interface IProp {
-  serviceReport: IJOCServiceReport;
+  serviceReport: IAnswerAggregationReport;
   questionSet: IOutcomeSet;
+}
+
+function getExcluded(excluded: IExclusion[]): IExcluded {
+  return excluded.reduce((agg: IExcluded, e: IExclusion) => {
+    const b = !isNullOrUndefined(e.beneficiary);
+    const q = !isNullOrUndefined(e.question);
+    const c = !isNullOrUndefined(e.category);
+    if (b && !q && !c) {
+      agg.beneficiaryIDs.push(e.beneficiary);
+    }
+    if (q && !b && !c) {
+      agg.questionIDs.push(e.question);
+    }
+    if (c && !b && !q) {
+      agg.categoryIDs.push(e.category);
+    }
+    return agg;
+  }, {
+    categoryIDs: [],
+    questionIDs: [],
+    beneficiaryIDs: [],
+  });
 }
 
 class ServiceReportDetails extends React.Component<IProp, any> {
@@ -28,46 +51,22 @@ class ServiceReportDetails extends React.Component<IProp, any> {
     }
   }
 
-  private getCategoryWarnings(sr: IJOCServiceReport, qs: IOutcomeSet): string[] {
-    const getAllCatWarningsPrefixedWithCatName = (warns: string[], v: ICategoryAggregates): string[] => {
-      if (Array.isArray(v.warnings) && v.warnings.length > 0) {
-        const catIdentifier = this.getCategoryString(v.categoryID, qs);
-        const newWarns = v.warnings.map((w) => `${catIdentifier}: ${w}`);
-        return warns.concat(newWarns);
-      }
-      return warns;
-    };
-    let warnings = [];
-    warnings = sr.categoryAggregates.first.reduce<string[]>(getAllCatWarningsPrefixedWithCatName, warnings);
-    warnings = sr.categoryAggregates.last.reduce<string[]>(getAllCatWarningsPrefixedWithCatName, warnings);
-    warnings = sr.categoryAggregates.delta.reduce<string[]>(getAllCatWarningsPrefixedWithCatName, warnings);
-    warnings = warnings.filter((item, pos, self) => {
-      return self.indexOf(item) === pos;
+  private getCategoryWarnings(sr: IAnswerAggregationReport, qs: IOutcomeSet): string[] {
+    return sr.excluded.filter((e) => !isNullOrUndefined(e.category) && !isNullOrUndefined(e.beneficiary)).map((e) => {
+      const catIdentifier = this.getCategoryString(e.category, qs);
+      return `Beneficiary '${e.beneficiary}' category '${catIdentifier}': ${e.reason}`;
     });
-    return warnings;
   }
 
-  private getQuestionWarnings(sr: IJOCServiceReport, qs: IOutcomeSet): string[] {
-    const getAllQWarningsPrefixedWithQ = (warns: string[], v: IQuestionAggregates): string[] => {
-      if (Array.isArray(v.warnings) && v.warnings.length > 0) {
-        const questionIdentifier = this.getQuestionString(v.questionID, qs);
-        const newWarns = v.warnings.map((w) => `${questionIdentifier}: ${w}`);
-        return warns.concat(newWarns);
-      }
-      return warns;
-    };
-    let warnings = [];
-    warnings = sr.questionAggregates.first.reduce<string[]>(getAllQWarningsPrefixedWithQ, warnings);
-    warnings = sr.questionAggregates.last.reduce<string[]>(getAllQWarningsPrefixedWithQ, warnings);
-    warnings = sr.questionAggregates.delta.reduce<string[]>(getAllQWarningsPrefixedWithQ, warnings);
-    warnings = warnings.filter((item, pos, self) => {
-      return self.indexOf(item) === pos;
+  private getQuestionWarnings(sr: IAnswerAggregationReport, qs: IOutcomeSet): string[] {
+    return sr.excluded.filter((e) => !isNullOrUndefined(e.question) && !isNullOrUndefined(e.beneficiary)).map((e) => {
+      const questionIdentifier = this.getQuestionString(e.question, qs);
+      return `Beneficiary '${e.beneficiary}' question '${questionIdentifier}': ${e.reason}`;
     });
-    return warnings;
   }
 
-  private getWarnings(sr: IJOCServiceReport, qs: IOutcomeSet): string[] {
-    let warns = sr.warnings;
+  private getWarnings(sr: IAnswerAggregationReport, qs: IOutcomeSet): string[] {
+    let warns = [];
     warns = warns.concat(this.getQuestionWarnings(sr, qs));
     warns = warns.concat(this.getCategoryWarnings(sr, qs));
     return warns;
@@ -75,10 +74,11 @@ class ServiceReportDetails extends React.Component<IProp, any> {
 
   public render() {
     const warnings = this.getWarnings(this.props.serviceReport, this.props.questionSet);
+    const includedBens = this.props.serviceReport.beneficiaries.map((b) => b.id);
     return (
       <ReportDetails
-        includedBeneficiaries={this.props.serviceReport.beneficiaryIDs}
-        excluded={this.props.serviceReport.excluded}
+        includedBeneficiaries={includedBens}
+        excluded={getExcluded(this.props.serviceReport.excluded)}
         warnings={warnings}
         questionSet={this.props.questionSet}
       />

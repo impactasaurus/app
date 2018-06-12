@@ -1,64 +1,72 @@
 import * as React from 'react';
-import {IJOCServiceReport, IQuestionAggregates, ICategoryAggregates} from 'models/report';
+import {IAnswerAggregationReport, IAnswerAggregation} from 'models/report';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {RadarChart} from 'components/RadarChart';
 import {RadarData, IRadarSeries, IRadarPoint} from 'models/radar';
 import {getMinQuestionValue, getMaxQuestionValue, getMinCategoryValue, getMaxCategoryValue} from 'helpers/questionnaire';
 
 interface IProp {
-  serviceReport: IJOCServiceReport;
+  serviceReport: IAnswerAggregationReport;
   questionSet: IOutcomeSet;
   category?: boolean;
+}
+
+function getRadarSeries(aa: IAnswerAggregation[], labeller: (IAnswerAggregation) => string): IRadarSeries[] {
+  const pre = aa.reduce((pre, a) => {
+    const label = labeller(a);
+    pre.initial.push({
+      axis: label,
+      value: a.initial,
+    });
+    pre.latest.push({
+      axis: label,
+      value: a.latest,
+    });
+    return pre;
+  }, {
+    initial: [] as IRadarPoint[],
+    latest: [] as IRadarPoint[],
+  });
+  return [{
+    name: 'Initial',
+    datapoints: pre.initial,
+  }, {
+    name: 'Latest',
+    datapoints: pre.latest,
+  }];
 }
 
 class ServiceReportRadar extends React.Component<IProp, any> {
 
   private getCategoryRadarData(p: IProp): RadarData {
-    const getCatRadarSeries = (c: ICategoryAggregates[], name: string): IRadarSeries => {
-      return {
-        name,
-        datapoints: c.map((point: ICategoryAggregates): IRadarPoint => {
-          let category = 'Unknown Category';
-          const cat = p.questionSet.categories.find((c) => c.id === point.categoryID);
-          if (cat !== undefined) {
-            category = cat.name;
-          }
-          return {
-            axis: category,
-            value: point.value,
-          };
-        }),
-      };
+    const getCatLabel = (aa: IAnswerAggregation): string => {
+      const cat = p.questionSet.categories.find((c) => c.id === aa.id);
+      if (cat !== undefined) {
+        return cat.name;
+      }
+      return 'Unknown Category';
     };
     return {
-      series: [getCatRadarSeries(p.serviceReport.categoryAggregates.first, 'initial'), getCatRadarSeries(p.serviceReport.categoryAggregates.last, 'latest')],
+      series: getRadarSeries(p.serviceReport.categories, getCatLabel),
       scaleMin: getMinCategoryValue(p.questionSet),
       scaleMax: getMaxCategoryValue(p.questionSet),
     };
   }
 
   private getQuestionRadarData(p: IProp): RadarData {
-    const getQRadarSeries = (c: IQuestionAggregates[], name: string): IRadarSeries => {
-      return {
-        name,
-        datapoints: c.map((point: IQuestionAggregates): IRadarPoint => {
-          const q = p.questionSet.questions.find((q) => q.id === point.questionID);
-          let question = 'Unknown Question';
-          if (q !== undefined) {
-            question = (q.short || q.question);
-            if (q.archived) {
-              question = `${question} (archived)`;
-            }
-          }
-          return {
-            axis: question,
-            value: point.value,
-          };
-        }),
-      };
+    const getQLabel = (aa: IAnswerAggregation): string => {
+      const q = p.questionSet.questions.find((q) => q.id === aa.id);
+      if (q === undefined) {
+        return 'Unknown Question';
+      }
+      let question = (q.short || q.question);
+      if (q.archived) {
+        question = `${question} (archived)`;
+      }
+      return question;
     };
     return {
-      series: [getQRadarSeries(p.serviceReport.questionAggregates.first, 'Initial'), getQRadarSeries(p.serviceReport.questionAggregates.last, 'Latest')],
+      series: getRadarSeries(p.serviceReport.questions, getQLabel),
       scaleMin: getMinQuestionValue(p.questionSet),
       scaleMax: getMaxQuestionValue(p.questionSet),
     };
@@ -72,7 +80,7 @@ class ServiceReportRadar extends React.Component<IProp, any> {
   }
 
   private renderRadar(p: IProp): JSX.Element {
-    if (p.serviceReport.beneficiaryIDs.length === 0) {
+    if (p.serviceReport.beneficiaries.length === 0) {
       return (<div />);
     }
     const data = this.getRadarData(p);
