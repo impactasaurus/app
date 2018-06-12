@@ -100,11 +100,11 @@ export const beneficiaryAggregationFragment = gql`
       categories {
         id,
         initial {
-					value,
+          value,
           timestamp
         },
         latest {
-					value,
+          value,
           timestamp
         },
         noRecords,
@@ -118,11 +118,11 @@ export const beneficiaryAggregationFragment = gql`
       questions {
         id,
         initial {
-					value,
+          value,
           timestamp
         },
         latest {
-					value,
+          value,
           timestamp
         },
         noRecords,

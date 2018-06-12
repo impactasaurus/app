@@ -9,7 +9,7 @@ interface IProp {
   questionSet: IOutcomeSet;
 }
 
-function getExclusions(excluded: IExclusion[]): IExcluded {
+function getExcluded(excluded: IExclusion[]): IExcluded {
   return excluded.reduce((agg: IExcluded, e: IExclusion) => {
     const b = !isNullOrUndefined(e.beneficiary);
     const q = !isNullOrUndefined(e.question);
@@ -78,7 +78,7 @@ class ServiceReportDetails extends React.Component<IProp, any> {
     return (
       <ReportDetails
         includedBeneficiaries={includedBens}
-        excluded={getExclusions(this.props.serviceReport.excluded)}
+        excluded={getExcluded(this.props.serviceReport.excluded)}
         warnings={warnings}
         questionSet={this.props.questionSet}
       />
