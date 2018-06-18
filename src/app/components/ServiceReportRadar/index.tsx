@@ -3,7 +3,10 @@ import {IAnswerAggregationReport, IAnswerAggregation} from 'models/report';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {RadarChart} from 'components/RadarChart';
 import {RadarData, IRadarSeries, IRadarPoint} from 'models/radar';
-import {getMinQuestionValue, getMaxQuestionValue, getMinCategoryValue, getMaxCategoryValue} from 'helpers/questionnaire';
+import {
+  getMinQuestionValue, getMaxQuestionValue, getMinCategoryValue, getMaxCategoryValue,
+  getQuestionFriendlyName, getCategoryFriendlyName,
+} from 'helpers/questionnaire';
 
 interface IProp {
   serviceReport: IAnswerAggregationReport;
@@ -40,11 +43,7 @@ class ServiceReportRadar extends React.Component<IProp, any> {
 
   private getCategoryRadarData(p: IProp): RadarData {
     const getCatLabel = (aa: IAnswerAggregation): string => {
-      const cat = p.questionSet.categories.find((c) => c.id === aa.id);
-      if (cat !== undefined) {
-        return cat.name;
-      }
-      return 'Unknown Category';
+      return getCategoryFriendlyName(aa.id, p.questionSet);
     };
     return {
       series: getRadarSeries(p.serviceReport.categories, getCatLabel),
@@ -55,15 +54,7 @@ class ServiceReportRadar extends React.Component<IProp, any> {
 
   private getQuestionRadarData(p: IProp): RadarData {
     const getQLabel = (aa: IAnswerAggregation): string => {
-      const q = p.questionSet.questions.find((q) => q.id === aa.id);
-      if (q === undefined) {
-        return 'Unknown Question';
-      }
-      let question = (q.short || q.question);
-      if (q.archived) {
-        question = `${question} (archived)`;
-      }
-      return question;
+      return getQuestionFriendlyName(aa.id, p.questionSet);
     };
     return {
       series: getRadarSeries(p.serviceReport.questions, getQLabel),

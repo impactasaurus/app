@@ -96,7 +96,7 @@ export const answerAggregationFragment = gql`
 export const beneficiaryAggregationFragment = gql`
   fragment beneficiaryAggregationFragment on Report {
     beneficiaries {
-      ID,
+      id,
       categories {
         id,
         initial {
