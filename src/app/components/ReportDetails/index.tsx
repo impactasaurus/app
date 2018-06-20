@@ -54,7 +54,7 @@ class ReportDetails extends React.Component<IProp, any> {
         content: {
           content: (
             <div>
-              {includedBens.map((bID) => (<BeneficiaryPill beneficiaryID={bID} questionnaireID={qs.id}/>))}
+              {includedBens.map((bID) => (<BeneficiaryPill key={bID} beneficiaryID={bID} questionnaireID={qs.id}/>))}
             </div>
           ),
         },

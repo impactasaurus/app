@@ -1,23 +1,26 @@
 import * as React from 'react';
-import {IBeneficiaryROC, ICategoryROC, IQuestionROC, IROCReport} from 'models/report';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {BarChartData} from 'models/bar';
 import {BarChart} from 'components/BarChart';
 import {IQuestion} from 'models/question';
 import {ICategory} from 'models/category';
-import {convertCategoryValueToPercentage, convertQuestionValueToPercentage} from 'helpers/questionnaire';
+import {
+  convertCategoryValueToPercentage, convertQuestionValueToPercentage, getCategoryFriendlyName,
+  getQuestionFriendlyName, getQuestions,
+} from 'helpers/questionnaire';
+import {IAnswerSummary, IBeneficiaryAggregationReport, IBenSummary} from 'models/report';
 
 interface IProp {
-  report: IROCReport;
+  report: IBeneficiaryAggregationReport;
   questionSet: IOutcomeSet;
   category?: boolean;
 }
 
 class RocReportBarChart extends React.Component<IProp, any> {
 
-  private getCategoryBarData(beneficiaries: IBeneficiaryROC[], qs: IOutcomeSet): BarChartData {
-    const getCategoryForBeneficiary = (cID: string, bd: IBeneficiaryROC): ICategoryROC|undefined => {
-      return bd.categoryROCs.find((cRoc) => cRoc.categoryID === cID);
+  private getCategoryBarData(beneficiaries: IBenSummary[], qs: IOutcomeSet): BarChartData {
+    const getCategoryForBeneficiary = (cID: string, bd: IBenSummary): IAnswerSummary|undefined => {
+      return bd.categories.find((cRoc) => cRoc.aID === cID);
     };
 
     const aggregateCategoryROC = (c: ICategory): number|undefined => {
@@ -25,7 +28,7 @@ class RocReportBarChart extends React.Component<IProp, any> {
       beneficiaries.forEach((b) => {
         const benCatRoc = getCategoryForBeneficiary(c.id, b);
         if (benCatRoc !== undefined) {
-          sum += benCatRoc.value;
+          sum += benCatRoc.stats.roc;
           count += 1;
         }
       });
@@ -39,7 +42,7 @@ class RocReportBarChart extends React.Component<IProp, any> {
       const qMeanROC = aggregateCategoryROC(c);
       if (qMeanROC !== undefined) {
         bcd.data.push(qMeanROC);
-        bcd.labels.push(c.name);
+        bcd.labels.push(getCategoryFriendlyName(c.id, qs));
       }
       return bcd;
     }, {
@@ -56,9 +59,9 @@ class RocReportBarChart extends React.Component<IProp, any> {
     };
   }
 
-  private getQuestionBarData(beneficiaries: IBeneficiaryROC[], qs: IOutcomeSet): BarChartData {
-    const getQuestionForBeneficiary = (qID: string, bd: IBeneficiaryROC): IQuestionROC|undefined => {
-      return bd.questionROCs.find((qRoc) => qRoc.questionID === qID);
+  private getQuestionBarData(beneficiaries: IBenSummary[], qs: IOutcomeSet): BarChartData {
+    const getQuestionForBeneficiary = (qID: string, bd: IBenSummary): IAnswerSummary|undefined => {
+      return bd.questions.find((qRoc) => qRoc.aID === qID);
     };
 
     const aggregateQuestionROC = (q: IQuestion): number|undefined => {
@@ -66,7 +69,7 @@ class RocReportBarChart extends React.Component<IProp, any> {
       beneficiaries.forEach((b) => {
         const benQRoc = getQuestionForBeneficiary(q.id, b);
         if (benQRoc !== undefined) {
-          sum += benQRoc.value;
+          sum += benQRoc.stats.roc;
           count += 1;
         }
       });
@@ -76,11 +79,11 @@ class RocReportBarChart extends React.Component<IProp, any> {
       return convertQuestionValueToPercentage(qs, q.id, sum / count);
     };
 
-    const barData = qs.questions.reduce<any>((bcd, q) => {
+    const barData = getQuestions(qs).reduce<any>((bcd, q) => {
       const qMeanROC = aggregateQuestionROC(q);
       if (qMeanROC !== undefined) {
         bcd.data.push(qMeanROC);
-        bcd.labels.push((q.short || q.question));
+        bcd.labels.push(getQuestionFriendlyName(q.id, qs));
       }
       return bcd;
     }, {

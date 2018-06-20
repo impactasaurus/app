@@ -15,7 +15,8 @@ export interface IID {
   id: string;
 }
 
-export interface IAnswerSummary extends IID {
+export interface IAnswerSummary {
+  aID: string;
   initial: IDateTimeValue;
   latest: IDateTimeValue;
   noRecords: number;
@@ -96,9 +97,9 @@ export const answerAggregationFragment = gql`
 export const beneficiaryAggregationFragment = gql`
   fragment beneficiaryAggregationFragment on Report {
     beneficiaries {
-      ID,
+      id,
       categories {
-        id,
+        aID: id,
         initial {
           value,
           timestamp
@@ -116,7 +117,7 @@ export const beneficiaryAggregationFragment = gql`
         }
       }
       questions {
-        id,
+        aID: id,
         initial {
           value,
           timestamp

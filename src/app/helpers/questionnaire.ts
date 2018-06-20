@@ -1,6 +1,7 @@
 import {IOutcomeSet} from '../models/outcomeSet';
 import {IQuestion, Question} from 'models/question';
 import {ICategory} from '../models/category';
+import {isNullOrUndefined} from 'util';
 
 function aggregate(values: number[], aggregation: string): number {
   if (values.length === 0) {
@@ -92,4 +93,27 @@ export function convertQuestionValueToPercentage(os: IOutcomeSet, qID: string, v
   const max = Math.max(q.leftValue, q.rightValue);
   const min = Math.min(q.leftValue, q.rightValue);
   return (value / (max - min)) * 100;
+}
+
+export function getCategoryFriendlyName(catID: string, qs: IOutcomeSet): string {
+  const cat = qs.categories.find((c) => c.id === catID);
+  if (cat === undefined) {
+    return 'Unknown Category';
+  }
+  return cat.name;
+}
+
+export function getQuestionFriendlyName(qID: string, qs: IOutcomeSet, allowShort: boolean = true): string {
+  const q = qs.questions.find((q) => q.id === qID);
+  if (q === undefined) {
+    return 'Unknown Question';
+  }
+  let question = q.question;
+  if (allowShort && !isNullOrUndefined(q.short)) {
+    question = q.short;
+  }
+  if (q.archived) {
+    question = `${question} (archived)`;
+  }
+  return question;
 }
