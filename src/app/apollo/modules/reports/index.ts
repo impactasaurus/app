@@ -68,3 +68,33 @@ export interface IROCResult extends QueryProps {
 export interface IROCReportResult {
   ROCReport?: IROCResult;
 }
+
+export const exportReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>, openStart: Extractor<T, boolean>) => {
+  return graphql<any, T>(gql`
+    query ($start: String!, $end: String!, $questionSetID: String!, $tags:[String], $openStart: Boolean) {
+      exportReport: exportReport(
+        questionnaire: $questionSetID,
+  	    start: $start,
+  	    end: $end,
+        tags: $tags,
+        openStart: $openStart
+      )
+    }`, {
+    options: (props: T) => {
+      return {
+        variables: {
+          questionSetID: qid(props),
+          start: start(props),
+          end: end(props),
+          tags: tags(props),
+          openStart: openStart(props),
+        },
+        fetchPolicy: 'network-only',
+      };
+    },
+  });
+};
+
+export interface IExportReportResult extends QueryProps {
+  exportReport?: string;
+}
