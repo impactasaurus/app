@@ -2,7 +2,7 @@ import * as React from 'react';
 import 'url-search-params-polyfill';
 import {GraphQLError} from '@types/graphql';
 import { Helmet } from 'react-helmet';
-import { Grid, Loader, Message } from 'semantic-ui-react';
+import { Grid, Loader, Message, Button, Popup } from 'semantic-ui-react';
 import {getJOCServiceReport, IJOCReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ServiceReportDetails} from 'components/ServiceReportDetails';
@@ -13,9 +13,12 @@ import {IStore} from 'redux/IStore';
 import {renderArray} from 'helpers/react';
 import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'models/pref';
 import './style.less';
+import {constructReportQueryParams, constructReportURL} from 'helpers/report';
+import {bindActionCreators} from 'redux';
+import {IURLConnector, setURL} from 'redux/modules/url';
 const { connect } = require('react-redux');
 
-interface IProp extends IJOCReportResult {
+interface IProp extends IJOCReportResult, IURLConnector {
   data: IOutcomeResult;
   params: {
       questionSetID: string,
@@ -44,12 +47,15 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
     agg: getAggregation(state.pref, canCatAg),
     isCategoryAgPossible: canCatAg,
   };
-}, undefined)
+}, (dispatch) => ({
+  setURL: bindActionCreators(setURL, dispatch),
+}))
 class ServiceReportInner extends React.Component<IProp, any> {
 
   constructor(props) {
     super(props);
     this.renderVis = this.renderVis.bind(this);
+    this.exportReportData = this.exportReportData.bind(this);
   }
 
   private renderError(error: GraphQLError): JSX.Element {
@@ -69,6 +75,19 @@ class ServiceReportInner extends React.Component<IProp, any> {
     }
     return (
       <ServiceReportTable serviceReport={p.JOCServiceReport.getJOCServiceReport} questionSet={p.data.getOutcomeSet} category={p.agg === Aggregation.CATEGORY} />
+    );
+  }
+
+  private exportReportData() {
+    const url = constructReportURL('export', new Date(this.props.params.start), new Date(this.props.params.end), this.props.params.questionSetID);
+    const qp = constructReportQueryParams(getTagsFromProps(this.props), true);
+    this.props.setURL(url, qp);
+  }
+
+  private renderVizControlPanel(): JSX.Element {
+    const exportButton = (<Popup trigger={<Button icon="download" onClick={this.exportReportData} />} content="Export report data" />);
+    return (
+      <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} controls={exportButton} />
     );
   }
 
@@ -101,7 +120,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
       <div>
         <h1>Service Report</h1>
         <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
-        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} />
+        {this.renderVizControlPanel()}
         {this.renderVis()}
       </div>
     ));

@@ -15,6 +15,7 @@ interface IProps {
   setPref?: SetPrefFunc;
   showVizOptions?: boolean; // defaults to true
   allowGraph?: boolean; // defaults to true
+  controls?: JSX.Element; // additional, optional controls
 }
 
 @connect((state: IStore, ownProps: IProps) => {
@@ -102,6 +103,7 @@ class VizControlPanel extends React.Component<IProps, any> {
     return (
       <div className="viz-cp">
         {cpItems}
+        {this.props.controls}
       </div>
     );
   }
