@@ -2,6 +2,7 @@ import {IOutcomeSet} from '../models/outcomeSet';
 import {IExcluded, IExclusion} from '../models/report';
 import {isNullOrUndefined} from 'util';
 import {getCategoryFriendlyName, getQuestionFriendlyName} from './questionnaire';
+import {stringify} from 'querystring';
 
 function getCategoryWarnings(exclusions: IExclusion[], qs: IOutcomeSet): string[] {
   return exclusions.filter((e) => !isNullOrUndefined(e.category) && !isNullOrUndefined(e.beneficiary)).map((e) => {
@@ -44,4 +45,26 @@ export function getExcluded(excluded: IExclusion[]): IExcluded {
     questionIDs: [],
     beneficiaryIDs: [],
   });
+}
+
+export function constructReportQueryParams(tags: string[], open?: boolean): string {
+  const params: any = {};
+  if (Array.isArray(tags) && tags.length > 0) {
+    params.tags = JSON.stringify(tags);
+  }
+  if (!isNullOrUndefined(open)) {
+    params.open = open;
+  }
+  return '?' + stringify(params);
+}
+
+export function constructReportURL(reportType: string, start: Date, end: Date, questionnaire: string): string {
+  const encodeDatePathParam = ((d: Date): string => {
+    // had lots of issues with full stops being present in path parameters...
+    return d.toISOString().replace(/\.[0-9]{3}/, '');
+  });
+  const s = encodeDatePathParam(start);
+  const e = encodeDatePathParam(end);
+  return `/report/${reportType}/${questionnaire}/${s}/${e}`;
+
 }

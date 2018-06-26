@@ -8,6 +8,7 @@ import {Hint} from 'components/Hint';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import { bindActionCreators } from 'redux';
 import {RecordTagInput} from 'components/RecordTagInput';
+import {constructReportQueryParams, constructReportURL} from '../../helpers/report';
 const { connect } = require('react-redux');
 const strings = require('./../../../strings.json');
 const ReactGA = require('react-ga');
@@ -56,18 +57,10 @@ class Report extends React.Component<IURLConnector, IState> {
       });
       return;
     }
-    const encodeDatePathParam = ((d: Date): string => {
-      // had lots of issues with full stops being present in path parameters...
-      return d.toISOString().replace(/\.[0-9]{3}/, '');
-    });
-    const s = encodeDatePathParam(this.state.periodStart);
-    const e = encodeDatePathParam(this.state.periodEnd);
     this.logGAEvent(this.dateDiff(this.state.periodStart,this.state.periodEnd));
-    let queryParams;
-    if (Array.isArray(this.state.tags) && this.state.tags.length > 0) {
-      queryParams = `?tags=${JSON.stringify(this.state.tags)}`;
-    }
-    this.props.setURL(`/report/service/${this.state.questionSetID}/${s}/${e}`, queryParams);
+    const url = constructReportURL('service', this.state.periodStart, this.state.periodEnd, this.state.questionSetID);
+    const qp = constructReportQueryParams(this.state.tags);
+    this.props.setURL(url, qp);
   }
   private dateDiff(date1, date2) {
     const oneDay = 1000*60*60*24;

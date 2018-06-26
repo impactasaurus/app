@@ -23,3 +23,4 @@ export {RecordView} from './RecordView';
 export {DataEntry} from './DataEntry';
 export {Data} from './Data';
 export {ExportQuestionnaire} from './ExportQuestionnaire';
+export {ExportReport} from './ExportReport';
