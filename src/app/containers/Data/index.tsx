@@ -45,7 +45,7 @@ class Data extends React.Component<IURLConnector, IState> {
           </Helmet>
           <h1>Data</h1>
           <h3>Export</h3>
-          <p>Export all the records associated with a questionnaire to CSV (compatible with Excel):</p>
+          <p>Export all the records associated with a questionnaire to Excel:</p>
           <QuestionSetSelect onQuestionSetSelected={this.setQuestionSetID} />
           <Button disabled={isNullOrUndefined(this.state.selectedQuestionnaire)} onClick={this.goToExport}>Export</Button>
           <h3>Import</h3>
