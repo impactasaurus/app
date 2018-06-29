@@ -2,7 +2,7 @@ import * as React from 'react';
 import 'url-search-params-polyfill';
 import {GraphQLError} from '@types/graphql';
 import { Helmet } from 'react-helmet';
-import { Grid, Loader, Message, Button, Popup } from 'semantic-ui-react';
+import { Grid, Loader, Message } from 'semantic-ui-react';
 import {getJOCServiceReport, IJOCReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ServiceReportDetails} from 'components/ServiceReportDetails';
@@ -84,13 +84,6 @@ class ServiceReportInner extends React.Component<IProp, any> {
     this.props.setURL(url, qp);
   }
 
-  private renderVizControlPanel(): JSX.Element {
-    const exportButton = (<Popup trigger={<Button icon="download" onClick={this.exportReportData} />} content="Export report data" />);
-    return (
-      <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} controls={exportButton} />
-    );
-  }
-
   public render() {
     const wrapper = (inner: JSX.Element): JSX.Element => {
       return (
@@ -120,7 +113,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
       <div>
         <h1>Service Report</h1>
         <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
-        {this.renderVizControlPanel()}
+        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} export={this.exportReportData} />
         {this.renderVis()}
       </div>
     ));
