@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { Button } from 'semantic-ui-react';
+import { Button, Popup } from 'semantic-ui-react';
 import './style.less';
 import { bindActionCreators } from 'redux';
 import {setPref, SetPrefFunc} from 'modules/pref';
 import {IStore} from 'redux/IStore';
 import {Aggregation, AggregationKey, Visualisation, VisualisationKey, getAggregation, getVisualisation} from 'models/pref';
+import {isNullOrUndefined} from 'util';
 const ReactGA = require('react-ga');
 const { connect } = require('react-redux');
 
@@ -16,6 +17,7 @@ interface IProps {
   showVizOptions?: boolean; // defaults to true
   allowGraph?: boolean; // defaults to true
   controls?: JSX.Element; // additional, optional controls
+  export?: () => void; // if set, will be called if the export button is pressed
 }
 
 @connect((state: IStore, ownProps: IProps) => {
@@ -99,6 +101,9 @@ class VizControlPanel extends React.Component<IProps, any> {
           {this.getVisButtons()}
         </Button.Group>
       ));
+    }
+    if (!isNullOrUndefined(this.props.export)) {
+      cpItems.push((<Popup trigger={<Button icon="download" onClick={this.props.export} />} content="Export data" />));
     }
     return (
       <div className="viz-cp">

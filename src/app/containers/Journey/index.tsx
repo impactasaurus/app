@@ -91,6 +91,7 @@ class JourneyInner extends React.Component<IProps, any> {
     this.renderVis = this.renderVis.bind(this);
     this.renderJourney = this.renderJourney.bind(this);
     this.selectedURLQuestionnaire = this.selectedURLQuestionnaire.bind(this);
+    this.exportBeneficiaryRecords = this.exportBeneficiaryRecords.bind(this);
   }
 
   public componentDidMount() {
@@ -139,6 +140,10 @@ class JourneyInner extends React.Component<IProps, any> {
     );
   }
 
+  private exportBeneficiaryRecords() {
+    this.props.setURL(`/beneficiary/${this.props.params.id}/export/${this.props.selectedQuestionSetID}`);
+  }
+
   private renderJourney(): JSX.Element {
     if (this.props.data.loading) {
       return (
@@ -160,7 +165,11 @@ class JourneyInner extends React.Component<IProps, any> {
     }
     return (
       <div>
-        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={true}/>
+        <VizControlPanel
+          canCategoryAg={this.props.isCategoryAgPossible}
+          allowGraph={true}
+          export={this.exportBeneficiaryRecords}
+        />
         <QuestionSetSelect
           allowedQuestionSetIDs={getQuestionSetOptions(this.props.data.getMeetings)}
           autoSelectFirst={true}

@@ -13,6 +13,7 @@ export default (
       <Route path="journey" component={containers.Journey} />
       <Route path="records" component={containers.Records} />
     </Route>
+    <Route path="beneficiary/:id/export/:qid" component={containers.ExportBenRecords} />
     <Route path="settings" component={containers.Settings}>
       <Route path="account" component={containers.Account} />
       <Route path="data/questionnaire/export/:id" component={containers.ExportQuestionnaire} />
