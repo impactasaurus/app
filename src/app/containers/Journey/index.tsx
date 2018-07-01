@@ -30,6 +30,7 @@ interface IProps extends IURLConnector {
   selectedQuestionSetID?: string;
   data?: IMeetingResult;
   isCategoryAgPossible?: boolean;
+  isCanvasSnapshotPossible?: boolean;
   setPref?: SetPrefFunc;
 }
 
@@ -54,6 +55,10 @@ function isCategoryAggregationAvailable(meetings: IMeeting[], selectedQuestionSe
   return meetingsWithCategories.length > 0;
 }
 
+function isCanvasSnapshotPossible(v: Visualisation): boolean {
+  return v === Visualisation.GRAPH || v === Visualisation.RADAR;
+}
+
 function getQuestionSetOptions(ms: IMeeting[]): string[] {
   if (!Array.isArray(ms)) {
     return [];
@@ -73,12 +78,14 @@ function filterMeetings(m: IMeeting[], questionSetID: string): IMeeting[] {
 @connect((state: IStore, ownProps: IProps) => {
   const selectedQuestionSetID = getSelectedQuestionSetID(state.pref);
   const canCatAg = isCategoryAggregationAvailable(ownProps.data.getMeetings, selectedQuestionSetID);
+  const viz = getVisualisation(state.pref, true);
   return {
-    vis: getVisualisation(state.pref, true),
+    vis: viz,
     agg: getAggregation(state.pref, canCatAg),
     isCategoryAgPossible: canCatAg,
     selectedQuestionSetID,
     isBeneficiary: isBeneficiaryUser(state.user),
+    isCanvasSnapshotPossible: isCanvasSnapshotPossible(viz),
   };
 }, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
@@ -169,6 +176,7 @@ class JourneyInner extends React.Component<IProps, any> {
           canCategoryAg={this.props.isCategoryAgPossible}
           allowGraph={true}
           export={this.exportBeneficiaryRecords}
+          allowCanvasSnapshot={this.props.isCanvasSnapshotPossible}
         />
         <QuestionSetSelect
           allowedQuestionSetIDs={getQuestionSetOptions(this.props.data.getMeetings)}
