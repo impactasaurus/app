@@ -18,6 +18,7 @@ interface IProps {
   allowGraph?: boolean; // defaults to true
   controls?: JSX.Element; // additional, optional controls
   export?: () => void; // if set, will be called if the export button is pressed
+  allowCanvasSnapshot?: boolean; // default = false
 }
 
 @connect((state: IStore, ownProps: IProps) => {
@@ -34,6 +35,7 @@ class VizControlPanel extends React.Component<IProps, any> {
     this.setAggPref = this.setAggPref.bind(this);
     this.setVisPref = this.setVisPref.bind(this);
     this.isAggActive = this.isAggActive.bind(this);
+    this.canvasSnapshot = this.canvasSnapshot.bind(this);
   }
 
   private reactGAVis(label: string) {
@@ -86,6 +88,35 @@ class VizControlPanel extends React.Component<IProps, any> {
     return buttons;
   }
 
+  private canvasSnapshot() {
+    const cs = document.getElementsByTagName('canvas');
+    if (cs.length !== 1) {
+      throw new Error('A single canvas was not found when trying to export image');
+    }
+    const link = document.createElement('a');
+    link.download = 'impactasaurus-graph.png';
+    link.href = cs[0].toDataURL();
+    link.click();
+  }
+
+  private renderExportControls(): JSX.Element {
+    const cpItems: JSX.Element[] = [];
+    if (!isNullOrUndefined(this.props.export)) {
+      cpItems.push((<Popup key="excel" trigger={<Button icon="download" onClick={this.props.export} />} content="Export data" />));
+    }
+    if (this.props.allowCanvasSnapshot === true) {
+      cpItems.push((<Popup key="image" trigger={<Button icon="image outline" onClick={this.canvasSnapshot} />} content="Download image" />));
+    }
+    if (cpItems.length === 0) {
+      return undefined;
+    }
+    return (
+      <Button.Group>
+        {cpItems}
+      </Button.Group>
+    );
+  }
+
   public render() {
     const cpItems: JSX.Element[] = [];
     cpItems.push((
@@ -102,8 +133,9 @@ class VizControlPanel extends React.Component<IProps, any> {
         </Button.Group>
       ));
     }
-    if (!isNullOrUndefined(this.props.export)) {
-      cpItems.push((<Popup trigger={<Button icon="download" onClick={this.props.export} />} content="Export data" />));
+    const exportControls = this.renderExportControls();
+    if (!isNullOrUndefined(exportControls)) {
+      cpItems.push(exportControls);
     }
     return (
       <div className="viz-cp">

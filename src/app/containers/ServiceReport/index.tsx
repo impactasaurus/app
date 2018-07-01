@@ -31,6 +31,7 @@ interface IProp extends IJOCReportResult, IURLConnector {
   vis?: Visualisation;
   agg?: Aggregation;
   isCategoryAgPossible?: boolean;
+  isCanvasSnapshotPossible?: boolean;
 }
 
 const isCategoryAggregationAvailable = (props: IProp): boolean => {
@@ -42,10 +43,12 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
 
 @connect((state: IStore, ownProps: IProp) => {
   const canCatAg = isCategoryAggregationAvailable(ownProps);
+  const viz = getVisualisation(state.pref, false);
   return {
-    vis: getVisualisation(state.pref, false),
+    vis: viz,
     agg: getAggregation(state.pref, canCatAg),
     isCategoryAgPossible: canCatAg,
+    isCanvasSnapshotPossible: viz === Visualisation.RADAR,
   };
 }, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
@@ -113,7 +116,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
       <div>
         <h1>Service Report</h1>
         <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
-        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} export={this.exportReportData} />
+        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} export={this.exportReportData} allowCanvasSnapshot={this.props.isCanvasSnapshotPossible} />
         {this.renderVis()}
       </div>
     ));
