@@ -1,4 +1,3 @@
-import 'babel-polyfill';
 import 'isomorphic-fetch';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
