@@ -1,7 +1,5 @@
-import * as e6p from 'es6-promise';
-(e6p as any).polyfill();
+import 'babel-polyfill';
 import 'isomorphic-fetch';
-
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 const { Router, browserHistory } = require('react-router');

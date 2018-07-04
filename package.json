@@ -7,7 +7,7 @@
     "prebuild": "npm run clean",
     "build": "webpack --config config/webpack/index.js",
     "build:prod": "cross-env NODE_ENV=production npm run build",
-    "start": "webpack-dev-server --inline --config config/webpack/index.js",
+    "start": "webpack-dev-server --inline --config config/webpack/index.js --host 0.0.0.0",
     "start:prod": "cross-env NODE_ENV=production npm start",
     "test": "karma start config/test/karma.conf.js",
     "lint": "tslint \"src/**/**.ts*\""
@@ -115,10 +115,10 @@
   "dependencies": {
     "apollo-cache-invalidation": "0.0.3",
     "auth0-js": "9.3.1",
+    "babel-polyfill": "6.26.0",
     "chart.js": "2.6.0",
     "chartjs-color": "2.1.0",
     "distinct-colors": "1.0.4",
-    "es6-promise": "4.0.5",
     "history": "4.5.1",
     "input-moment": "0.3.4",
     "isomorphic-fetch": "2.2.1",
