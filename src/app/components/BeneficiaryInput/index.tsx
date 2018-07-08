@@ -9,6 +9,7 @@ interface IProps {
   onChange?: (ben: string) => void;
   onBlur?: (ben: string) => void;
   onFocus?: () => void;
+  allowUnknown?: boolean; // defaults to false
 
   bens?: IBeneficiaryResult;
   data?: IGetOrgResult;
@@ -46,7 +47,9 @@ class BeneficiaryInputInner extends React.Component<IProps, IState> {
 
   private onSearchResultSelect(_, data) {
     this.onChange(data.result.title);
-    this.props.onBlur(data.result.title);
+    if (!isNullOrUndefined(this.props.onBlur)) {
+      this.props.onBlur(data.result.title);
+    }
   }
 
   private onBlur() {
@@ -63,8 +66,12 @@ class BeneficiaryInputInner extends React.Component<IProps, IState> {
     };
 
     if (isNullOrUndefined(this.props.bens.getBeneficiaries) || value.length < 1) {
+      const noMatches = [];
+      if (this.props.allowUnknown === true) {
+        noMatches.push(newBeneficiaryResult);
+      }
       return this.setState({
-        searchResults: [newBeneficiaryResult],
+        searchResults: noMatches,
       });
     }
 
@@ -77,7 +84,7 @@ class BeneficiaryInputInner extends React.Component<IProps, IState> {
     }));
 
     const exactMatch = this.props.bens.getBeneficiaries.find((b) => b === value);
-    if (exactMatch === undefined) {
+    if (exactMatch === undefined && this.props.allowUnknown === true) {
       searchResults.push(newBeneficiaryResult);
     }
 
@@ -103,8 +110,9 @@ class BeneficiaryInputInner extends React.Component<IProps, IState> {
             onFocus={this.props.onFocus}
             icon={undefined}
             fluid={true}
-            showNoResults={false}
-            input={<Input type="text" placeholder="Beneficiary ID" />}
+            showNoResults={true}
+            noResultsMessage="Unknown beneficiary"
+            input={<Input type="text" placeholder="Beneficiary ID" icon={false}/>}
           />
         </div>
       );
