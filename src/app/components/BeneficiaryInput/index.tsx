@@ -2,6 +2,7 @@ import * as React from 'react';
 import {isNullOrUndefined} from 'util';
 import {Search, Input} from 'semantic-ui-react';
 import {getBeneficiaries, IBeneficiaryResult} from 'apollo/modules/beneficiaries';
+import {getOrganisation, IGetOrgResult} from 'apollo/modules/organisation';
 import './style.less';
 
 interface IProps {
@@ -10,6 +11,7 @@ interface IProps {
   onFocus?: () => void;
 
   bens?: IBeneficiaryResult;
+  data?: IGetOrgResult;
 }
 
 interface IState {
@@ -26,7 +28,7 @@ class BeneficiaryInputInner extends React.Component<IProps, IState> {
     this.onBlur = this.onBlur.bind(this);
     this.handleSearchChange = this.handleSearchChange.bind(this);
     this.onSearchResultSelect = this.onSearchResultSelect.bind(this);
-    // this.onInputChange = this.onInputChange.bind(this);
+    this.onInputChange = this.onInputChange.bind(this);
   }
 
   private onChange(benID) {
@@ -38,11 +40,9 @@ class BeneficiaryInputInner extends React.Component<IProps, IState> {
     }
   }
 
-  /*
   private onInputChange(_, data) {
     this.onChange(data.value);
   }
-  */
 
   private onSearchResultSelect(_, data) {
     this.onChange(data.result.title);
@@ -87,25 +87,33 @@ class BeneficiaryInputInner extends React.Component<IProps, IState> {
   }
 
   public render() {
+    let shouldShowTypeahead = false;
+    if (!isNullOrUndefined(this.props.data.getOrganisation)) {
+      shouldShowTypeahead = this.props.data.getOrganisation.settings.beneficiaryTypeAhead;
+    }
+    if (shouldShowTypeahead) {
+      return (
+        <div className="beneficiary-input">
+          <Search
+            loading={this.props.bens.loading}
+            onResultSelect={this.onSearchResultSelect}
+            onSearchChange={this.handleSearchChange}
+            results={this.state.searchResults}
+            onBlur={this.onBlur}
+            onFocus={this.props.onFocus}
+            icon={undefined}
+            fluid={true}
+            showNoResults={false}
+            input={<Input type="text" placeholder="Beneficiary ID" />}
+          />
+        </div>
+      );
+    }
     return (
-      <div className="beneficiary-input">
-        <Search
-          loading={this.props.bens.loading}
-          onResultSelect={this.onSearchResultSelect}
-          onSearchChange={this.handleSearchChange}
-          results={this.state.searchResults}
-          onBlur={this.onBlur}
-          onFocus={this.props.onFocus}
-          icon={undefined}
-          fluid={true}
-          showNoResults={false}
-          input={<Input type="text" placeholder="Beneficiary ID" />}
-        />
-      </div>
-      // <Input type="text" placeholder="Beneficiary ID" onChange={this.onInputChange} onBlur={this.onBlur} onFocus={this.props.onFocus} />
+      <Input type="text" placeholder="Beneficiary ID" onChange={this.onInputChange} onBlur={this.onBlur} onFocus={this.props.onFocus} />
     );
   }
 }
 
-const BeneficiaryInput = getBeneficiaries<IProps>(BeneficiaryInputInner, 'bens');
+const BeneficiaryInput = getOrganisation<IProps>(getBeneficiaries<IProps>(BeneficiaryInputInner, 'bens'));
 export {BeneficiaryInput};
