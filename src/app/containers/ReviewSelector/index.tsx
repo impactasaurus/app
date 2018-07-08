@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { Button, Input, Grid, Form } from 'semantic-ui-react';
-import './style.less';
+import { Button, Grid, Form } from 'semantic-ui-react';
+import {BeneficiaryInput} from 'components/BeneficiaryInput';
 import { setURL } from 'modules/url';
 import { bindActionCreators } from 'redux';
 import { IURLConnector } from 'redux/modules/url';
 import { Hint } from 'components/Hint';
+import './style.less';
 const { connect } = require('react-redux');
 const strings = require('./../../../strings.json');
 
@@ -30,9 +31,9 @@ class ReviewSelector extends React.Component<IURLConnector, IState> {
     this.props.setURL(`/beneficiary/${benID}`);
   }
 
-  private setBenID(_, data) {
+  private setBenID(benID) {
     this.setState({
-      enteredBenID: data.value,
+      enteredBenID: benID,
     });
   }
 
@@ -47,7 +48,7 @@ class ReviewSelector extends React.Component<IURLConnector, IState> {
           <h1>Review</h1>
           <Form onSubmit={this.review}>
             <h3 className="label"><Hint text={strings.beneficiaryIDExplanation} />Beneficiary ID</h3>
-            <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID}/>
+            <BeneficiaryInput onChange={this.setBenID}/>
             <Button className="submit" type="submit">Review</Button>
           </Form>
         </div>

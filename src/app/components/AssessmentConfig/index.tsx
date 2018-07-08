@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { Button, Select, Input, ButtonProps, SelectProps } from 'semantic-ui-react';
+import { Button, Select, ButtonProps, SelectProps } from 'semantic-ui-react';
 import {DateTimePicker} from 'components/DateTimePicker';
 import {Hint} from 'components/Hint';
 import {RecordTagInputWithSuggestions} from 'components/RecordTagInputWithSuggestions';
+import {BeneficiaryInput} from 'components/BeneficiaryInput';
 import {IOutcomeResult, allOutcomeSets} from 'apollo/modules/outcomeSets';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IAssessmentConfig} from 'models/assessment';
@@ -104,15 +105,15 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     });
   }
 
-  private setBenID(_, data) {
+  private setBenID(ben: string) {
     this.setState({
-      selectedBenID: data.value,
+      selectedBenID: ben,
     });
   }
 
-  private setDebounceBenID() {
+  private setDebounceBenID(ben: string) {
     this.setState({
-      debouncedBenID: this.state.selectedBenID,
+      debouncedBenID: ben,
     });
   }
 
@@ -162,7 +163,7 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     return (
       <div className="impactform assessment-config">
         <h3 className="label"><Hint text={strings.beneficiaryIDExplanation} />Beneficiary ID</h3>
-        <Input type="text" placeholder="Beneficiary ID" onChange={this.setBenID} onBlur={this.setDebounceBenID} onFocus={this.clearDebouncedID} />
+        <BeneficiaryInput onChange={this.setBenID} onBlur={this.setDebounceBenID} onFocus={this.clearDebouncedID} />
         <h3 className="label">Questionnaire</h3>
         <Select {...selectProps} placeholder="Questionnaire" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
         <h3 className="label optional"><Hint text={strings.tagExplanation} />Tags</h3>
