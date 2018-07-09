@@ -7,11 +7,13 @@ import { bindActionCreators } from 'redux';
 import { IURLConnector } from 'redux/modules/url';
 import { Hint } from 'components/Hint';
 import './style.less';
+import {isNullOrUndefined} from 'util';
 const { connect } = require('react-redux');
 const strings = require('./../../../strings.json');
 
 interface IState {
   enteredBenID?: string;
+  error?: string;
 }
 
 @connect(undefined, (dispatch) => ({
@@ -28,12 +30,16 @@ class ReviewSelector extends React.Component<IURLConnector, IState> {
 
   private review() {
     const benID = this.state.enteredBenID;
+    if (isNullOrUndefined(benID) || benID === '') {
+      return this.setState({error: 'Please enter a beneficiary ID'});
+    }
     this.props.setURL(`/beneficiary/${benID}`);
   }
 
   private setBenID(benID) {
     this.setState({
       enteredBenID: benID,
+      error: undefined,
     });
   }
 
@@ -50,6 +56,7 @@ class ReviewSelector extends React.Component<IURLConnector, IState> {
             <h3 className="label"><Hint text={strings.beneficiaryIDExplanation} />Beneficiary ID</h3>
             <BeneficiaryInput onChange={this.setBenID}/>
             <Button className="submit" type="submit">Review</Button>
+            <span>{this.state.error}</span>
           </Form>
         </div>
         {this.props.children}
