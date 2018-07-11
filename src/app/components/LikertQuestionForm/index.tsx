@@ -192,16 +192,16 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
         <Message.Content className="likert-form-container">
           <Message.Header>{this.props.edit ? 'Edit Likert Question' : 'New Likert Question'}</Message.Header>
           <div className="likert-question-form">
-            <div className="section upper">
+            <div className="section upper split">
               <Input className="full question-name" autoFocus type="text" placeholder="Question" onChange={this.setNewQuestion} value={this.state.newQuestion} />
-              <div className="category">
-                <Select placeholder="Category (optional)" options={this.getCategoryOptions()} onChange={this.setCategory} defaultValue={this.state.categoryID} />
+              <div className="right">
+                <Input type="text" placeholder="Short Identifier (optional)" onChange={this.setShort} value={this.state.short} />
               </div>
             </div>
-            <div className="section upper">
+            <div className="section upper split">
               <Input className="full" type="text" placeholder="Description (optional)" onChange={this.setDescription} value={this.state.description} />
-              <div className="short">
-                <Input type="text" placeholder="Short Identifier (optional)" onChange={this.setShort} value={this.state.short} />
+              <div className="right">
+                <Select placeholder="Category (optional)" options={this.getCategoryOptions()} onChange={this.setCategory} defaultValue={this.state.categoryID} />
               </div>
             </div>
             <LikertForm
