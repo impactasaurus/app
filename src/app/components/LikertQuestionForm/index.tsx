@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, ButtonProps, Message, Input, Select } from 'semantic-ui-react';
+import { Button, ButtonProps, Message, Input, Select, Form } from 'semantic-ui-react';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import {ILabel, ILikertQuestionForm} from 'models/question';
@@ -191,19 +191,18 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
       <Message>
         <Message.Content className="likert-form-container">
           <Message.Header>{this.props.edit ? 'Edit Likert Question' : 'New Likert Question'}</Message.Header>
+          <Form>
+            <Form.Group>
+              <Form.Input required label="Question" placeholder="Question" width={12} onChange={this.setNewQuestion} value={this.state.newQuestion} />
+              <Form.Input label="Short Identifier" placeholder="Short Identifier" width={4} onChange={this.setShort} value={this.state.short} />
+            </Form.Group>
+            <Form.Group>
+              <Form.Input label="Description" placeholder="Description" width={12} onChange={this.setDescription} value={this.state.description} />
+              <Form.Select label="Category" placeholder="Category" options={this.getCategoryOptions()} width={4} onChange={this.setCategory} defaultValue={this.state.categoryID} />
+            </Form.Group>
+          </Form>
+
           <div className="likert-question-form">
-            <div className="section upper split">
-              <Input className="full question-name" autoFocus type="text" placeholder="Question" onChange={this.setNewQuestion} value={this.state.newQuestion} />
-              <div className="right">
-                <Input type="text" placeholder="Short Identifier (optional)" onChange={this.setShort} value={this.state.short} />
-              </div>
-            </div>
-            <div className="section upper split">
-              <Input className="full" type="text" placeholder="Description (optional)" onChange={this.setDescription} value={this.state.description} />
-              <div className="right">
-                <Select placeholder="Category (optional)" options={this.getCategoryOptions()} onChange={this.setCategory} defaultValue={this.state.categoryID} />
-              </div>
-            </div>
             <LikertForm
               edit={this.props.edit}
               labels={this.state.labels}
