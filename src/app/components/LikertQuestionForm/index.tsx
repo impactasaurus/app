@@ -19,6 +19,7 @@ interface IProps  {
   newQuestion?: string;
   categoryID?: string;
   description?: string;
+  short?: string;
   labels?: ILabel[];
   leftValue?: number;
   rightValue?: number;
@@ -30,6 +31,7 @@ interface IState {
   newQuestion?: string;
   categoryID?: string;
   description?: string;
+  short?: string;
   labels?: ILabel[];
   leftValue?: number;
   rightValue?: number;
@@ -45,6 +47,7 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
       newQuestion: this.props.newQuestion || '',
       categoryID: this.props.categoryID || null,
       description: this.props.description || '',
+      short: this.props.short || '',
       labels: this.props.labels || [],
       leftValue: !isNullOrUndefined(this.props.leftValue) ? this.props.leftValue : 1,
       rightValue: !isNullOrUndefined(this.props.rightValue) ? this.props.rightValue : 5,
@@ -53,6 +56,7 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
     this.setNewQuestion = this.setNewQuestion.bind(this);
     this.setCategory = this.setCategory.bind(this);
     this.setDescription = this.setDescription.bind(this);
+    this.setShort = this.setShort.bind(this);
     this.setLeftValue = this.setLeftValue.bind(this);
     this.setRightValue = this.setRightValue.bind(this);
     this.setLikertOptions = this.setLikertOptions.bind(this);
@@ -100,6 +104,7 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
       rightValue: rv,
       labels: this.state.labels,
       description: this.state.description,
+      short: this.state.short,
     })
     .then(() => {
       this.logQuestionGAEvent(`${this.props.edit ? 'edited' : 'created'}`);
@@ -131,6 +136,12 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
   private setDescription(_, data) {
     this.setState({
       description: data.value,
+    });
+  }
+
+  private setShort(_, data) {
+    this.setState({
+      short: data.value,
     });
   }
 
@@ -189,6 +200,9 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
             </div>
             <div className="section upper">
               <Input className="full" type="text" placeholder="Description (optional)" onChange={this.setDescription} value={this.state.description} />
+              <div className="short">
+                <Input type="text" placeholder="Short Identifier (optional)" onChange={this.setShort} value={this.state.short} />
+              </div>
             </div>
             <LikertForm
               edit={this.props.edit}
