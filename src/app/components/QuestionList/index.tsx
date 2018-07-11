@@ -112,6 +112,13 @@ class QuestionListInner extends React.Component<IProps, IState> {
     return description;
   }
 
+  private getQuestionTitle(q: Question): string {
+    if (!isNullOrUndefined(q.short) && q.short !== '') {
+      return `${q.question} [${q.short}]`;
+    }
+    return q.question;
+  }
+
   private renderEditQuestionForm(q: Question): JSX.Element {
     return (
       <EditLikertQuestion
@@ -129,7 +136,6 @@ class QuestionListInner extends React.Component<IProps, IState> {
   }
 
   private renderQuestion(q: Question): JSX.Element {
-    const description = this.getQuestionDescription(q);
 
     if (this.state.editedQuestionId && this.state.editedQuestionId === q.id) {
       return this.renderEditQuestionForm(q);
@@ -145,8 +151,8 @@ class QuestionListInner extends React.Component<IProps, IState> {
           <ConfirmButton onConfirm={this.deleteQuestion(q.id)} promptText="Are you sure you want to archive this question?" buttonProps={{icon: 'archive', compact:true, size:'tiny'}} tooltip="Archive" />
         </List.Content>
         <List.Content verticalAlign="middle">
-          <List.Header>{q.question}</List.Header>
-          <List.Description>{description}</List.Description>
+          <List.Header>{this.getQuestionTitle(q)}</List.Header>
+          <List.Description>{this.getQuestionDescription(q)}</List.Description>
         </List.Content>
       </List.Item>
     );
