@@ -145,5 +145,13 @@ function getTagsFromProps(p: IProp): string[] {
   return parsedTags;
 }
 
-const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps)(ServiceReportInner));
+function getOpenStartFromProps(p: IProp): boolean {
+  const urlParams = new URLSearchParams(p.location.search);
+  if (urlParams.has('open') === false) {
+    return true;
+  }
+  return JSON.parse(urlParams.get('open'));
+}
+
+const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenStartFromProps)(ServiceReportInner));
 export {ServiceReport}

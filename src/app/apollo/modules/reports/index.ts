@@ -4,11 +4,12 @@ import {
   beneficiaryAggregationFragment, IBeneficiaryAggregationReport,
 } from 'models/report';
 import {Extractor, IDExtractor} from 'helpers/apollo';
+import {isNullOrUndefined} from 'util';
 
-export const getJOCServiceReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>) => {
+export const getJOCServiceReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>, open?: Extractor<T, boolean>) => {
   return graphql<any, T>(gql`
-    query JOCServiceReport($start: String!, $end: String!, $questionSetID: String!, $tags:[String]) {
-      getJOCServiceReport: report(start:$start, end: $end, questionnaire: $questionSetID, tags: $tags, openStart: true) {
+    query JOCServiceReport($start: String!, $end: String!, $questionSetID: String!, $tags:[String], $open: Boolean) {
+      getJOCServiceReport: report(start:$start, end: $end, questionnaire: $questionSetID, tags: $tags, openStart: $open) {
         ...answerAggregationFragment
       }
     }
@@ -16,12 +17,17 @@ export const getJOCServiceReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T
   {
     name: 'JOCServiceReport',
     options: (props: T): QueryOpts => {
+      let openStart = true;
+      if (!isNullOrUndefined(open)) {
+        openStart = open(props);
+      }
       return {
         variables: {
           questionSetID: qid(props),
           start: start(props),
           end: end(props),
           tags: tags(props),
+          open: openStart,
         },
         fetchPolicy: 'network-only',
       };
