@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Button, ButtonProps, Message, Input, Select } from 'semantic-ui-react';
+import { Button, ButtonProps, Message, Form, Input } from 'semantic-ui-react';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import {ILabel, ILikertQuestionForm} from 'models/question';
 import {LikertForm} from 'components/LikertForm';
+import {Hint} from 'components/Hint';
 import {ILikertForm} from 'models/question';
 import './style.less';
 import {isNullOrUndefined} from 'util';
@@ -19,6 +20,7 @@ interface IProps  {
   newQuestion?: string;
   categoryID?: string;
   description?: string;
+  short?: string;
   labels?: ILabel[];
   leftValue?: number;
   rightValue?: number;
@@ -30,6 +32,7 @@ interface IState {
   newQuestion?: string;
   categoryID?: string;
   description?: string;
+  short?: string;
   labels?: ILabel[];
   leftValue?: number;
   rightValue?: number;
@@ -45,6 +48,7 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
       newQuestion: this.props.newQuestion || '',
       categoryID: this.props.categoryID || null,
       description: this.props.description || '',
+      short: this.props.short || '',
       labels: this.props.labels || [],
       leftValue: !isNullOrUndefined(this.props.leftValue) ? this.props.leftValue : 1,
       rightValue: !isNullOrUndefined(this.props.rightValue) ? this.props.rightValue : 5,
@@ -53,6 +57,7 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
     this.setNewQuestion = this.setNewQuestion.bind(this);
     this.setCategory = this.setCategory.bind(this);
     this.setDescription = this.setDescription.bind(this);
+    this.setShort = this.setShort.bind(this);
     this.setLeftValue = this.setLeftValue.bind(this);
     this.setRightValue = this.setRightValue.bind(this);
     this.setLikertOptions = this.setLikertOptions.bind(this);
@@ -100,6 +105,7 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
       rightValue: rv,
       labels: this.state.labels,
       description: this.state.description,
+      short: this.state.short,
     })
     .then(() => {
       this.logQuestionGAEvent(`${this.props.edit ? 'edited' : 'created'}`);
@@ -131,6 +137,12 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
   private setDescription(_, data) {
     this.setState({
       description: data.value,
+    });
+  }
+
+  private setShort(_, data) {
+    this.setState({
+      short: data.value,
     });
   }
 
@@ -180,16 +192,21 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
       <Message>
         <Message.Content className="likert-form-container">
           <Message.Header>{this.props.edit ? 'Edit Likert Question' : 'New Likert Question'}</Message.Header>
+          <Form>
+            <Form.Group>
+              <Form.Input required label="Question" placeholder="Question" width={12} onChange={this.setNewQuestion} value={this.state.newQuestion} />
+              <Form.Field width={4}>
+                <label>Shortened Form <Hint text="Shortened form of the question. Used instead of the question, when reviewing data in visualisations and exports"/></label>
+                <Input placeholder="Shortened Form" onChange={this.setShort} value={this.state.short} />
+              </Form.Field>
+            </Form.Group>
+            <Form.Group>
+              <Form.Input label="Description" placeholder="Description" width={12} onChange={this.setDescription} value={this.state.description} />
+              <Form.Select label="Category" placeholder="Category" options={this.getCategoryOptions()} width={4} onChange={this.setCategory} defaultValue={this.state.categoryID} />
+            </Form.Group>
+          </Form>
+
           <div className="likert-question-form">
-            <div className="section upper">
-              <Input className="full question-name" autoFocus type="text" placeholder="Question" onChange={this.setNewQuestion} value={this.state.newQuestion} />
-              <div className="category">
-                <Select placeholder="Category (optional)" options={this.getCategoryOptions()} onChange={this.setCategory} defaultValue={this.state.categoryID} />
-              </div>
-            </div>
-            <div className="section upper">
-              <Input className="full" type="text" placeholder="Description (optional)" onChange={this.setDescription} value={this.state.description} />
-            </div>
             <LikertForm
               edit={this.props.edit}
               labels={this.state.labels}

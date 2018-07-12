@@ -1,4 +1,10 @@
 .likert-form-container {
+
+  label {
+    text-align: left;
+    font-weight: normal !important;
+  }
+
   text-align: center;
   .header {
     font-weight: normal !important;
@@ -17,11 +23,11 @@
       margin-bottom: 1em;
       text-align: left;
     }
-    > .section:first-of-type {
+    .split {
       margin-top: 2em;
       display: table;
 
-      .question-name {
+      > .ui.input {
         display: table-cell;
         width: 100%;
 
@@ -31,7 +37,7 @@
           width: 100%;
         }
       }
-      .category {
+      .right {
         padding-left: 14px;
       }
     }
