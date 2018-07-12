@@ -196,8 +196,8 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
             <Form.Group>
               <Form.Input required label="Question" placeholder="Question" width={12} onChange={this.setNewQuestion} value={this.state.newQuestion} />
               <Form.Field width={4}>
-                <label>Short Form <Hint text="Short form of the question. Used when reviewing data in visualisations and exports"/></label>
-                <Input placeholder="Short Form" onChange={this.setShort} value={this.state.short} />
+                <label>Shortened Form <Hint text="Shortened form of the question. Used instead of the question, when reviewing data in visualisations and exports"/></label>
+                <Input placeholder="Shortened Form" onChange={this.setShort} value={this.state.short} />
               </Form.Field>
             </Form.Group>
             <Form.Group>
