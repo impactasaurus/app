@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Button, ButtonProps, Message, Form } from 'semantic-ui-react';
+import { Button, ButtonProps, Message, Form, Input } from 'semantic-ui-react';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import {ILabel, ILikertQuestionForm} from 'models/question';
 import {LikertForm} from 'components/LikertForm';
+import {Hint} from 'components/Hint';
 import {ILikertForm} from 'models/question';
 import './style.less';
 import {isNullOrUndefined} from 'util';
@@ -194,7 +195,10 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
           <Form>
             <Form.Group>
               <Form.Input required label="Question" placeholder="Question" width={12} onChange={this.setNewQuestion} value={this.state.newQuestion} />
-              <Form.Input label="Short Identifier" placeholder="Short Identifier" width={4} onChange={this.setShort} value={this.state.short} />
+              <Form.Field width={4}>
+                <label>Short Form <Hint text="Short form of the question. Used when reviewing data in visualisations and exports"/></label>
+                <Input placeholder="Short Form" onChange={this.setShort} value={this.state.short} />
+              </Form.Field>
             </Form.Group>
             <Form.Group>
               <Form.Input label="Description" placeholder="Description" width={12} onChange={this.setDescription} value={this.state.description} />
