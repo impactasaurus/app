@@ -10,8 +10,12 @@ import { bindActionCreators } from 'redux';
 import {IURLConnector} from 'redux/modules/url';
 import {IAnswer} from 'models/answer';
 import {IQuestion} from 'models/question';
-import {QuestionnaireReview} from '../../components/QuestionnaireReview';
-import {MeetingNotepad} from '../../components/MeetingNotepad';
+import {QuestionnaireReview} from 'components/QuestionnaireReview';
+import {QuestionnaireInstructions} from 'components/QuestionnaireInstructions';
+import {MeetingNotepad} from 'components/MeetingNotepad';
+import {isNullOrUndefined} from 'util';
+import {IOutcomeSet} from 'models/outcomeSet';
+import {Screen, IMeetingState, getPreviousState, canGoBack, getNextState} from './state-machine';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
@@ -21,12 +25,7 @@ interface IProps extends IURLConnector {
   };
   questions?: IQuestion[];
   answers?: IAnswer[];
-}
-
-enum Screen {
-  QUESTION,
-  NOTES,
-  REVIEW,
+  questionnaire?: IOutcomeSet;
 }
 
 interface IState {
@@ -41,6 +40,7 @@ interface IState {
     out.questions = (ownProps.data.getMeeting.outcomeSet.questions || [])
       .filter((q) => !q.archived);
     out.answers = ownProps.data.getMeeting.answers;
+    out.questionnaire = ownProps.data.getMeeting.outcomeSet;
   }
   return out;
 }, (dispatch) => ({
@@ -56,98 +56,85 @@ class MeetingInner extends React.Component<IProps, IState> {
       screen: Screen.QUESTION,
     };
     this.renderFinished = this.renderFinished.bind(this);
-    this.goToQuestion = this.goToQuestion.bind(this);
-    this.goToReview = this.goToReview.bind(this);
     this.goToNextScreen = this.goToNextScreen.bind(this);
-    this.canGoToPreviousQuestion = this.canGoToPreviousQuestion.bind(this);
+    this.canGoToPrevious = this.canGoToPrevious.bind(this);
     this.goToPreviousScreen = this.goToPreviousScreen.bind(this);
-    this.goToNotepad = this.goToNotepad.bind(this);
     this.completed = this.completed.bind(this);
     this.goToQuestionWithID = this.goToQuestionWithID.bind(this);
     this.renderNotepad = this.renderNotepad.bind(this);
     this.renderProgressBar = this.renderProgressBar.bind(this);
+    this.renderInstructions = this.renderInstructions.bind(this);
+    this.hasInstructions = this.hasInstructions.bind(this);
+    this.currentQuestionIdx = this.currentQuestionIdx.bind(this);
   }
 
   public componentDidUpdate() {
     if (this.props.questions !== undefined && this.state.init === false) {
       this.setState({init: true});
-      if (this.props.questions.length <= 0) {
-        this.goToReview();
-      } else {
-        this.goToQuestion(0);
-      }
-    }
-  }
 
-  private goToQuestion(idx: number) {
-    let idxx = idx;
-    if (idx < 0) {
-      idxx = 0;
+      let screen: Screen;
+      if (this.hasInstructions()) {
+        screen = Screen.INSTRUCTIONS;
+      } else if (this.props.questions.length <= 0) {
+        screen = Screen.REVIEW;
+      } else {
+        screen = Screen.QUESTION;
+      }
+      this.setMeetingState({
+        screen,
+        qIdx: 0,
+      });
     }
-    if (idx >= this.props.questions.length) {
-      idxx = this.props.questions.length - 1;
-    }
-    const question = this.props.questions[idxx];
-    this.setState({
-      currentQuestion: question.id,
-      screen: Screen.QUESTION,
-    });
   }
 
   private goToQuestionWithID(qID: string) {
     const idx = this.props.questions.findIndex((q) => q.id === qID);
-    this.goToQuestion(idx);
+    this.setMeetingState({
+      screen: Screen.QUESTION,
+      qIdx: idx,
+    });
   }
 
   private completed() {
     this.props.setURL(`/beneficiary/${this.props.data.getMeeting.beneficiary}`, `?q=${this.props.data.getMeeting.outcomeSetID}`);
   }
 
-  private goToReview() {
-    this.setState({
-      screen: Screen.REVIEW,
-    });
+  private hasInstructions() {
+    return !isNullOrUndefined(this.props.questionnaire.instructions) &&
+      this.props.questionnaire.instructions.length !== 0;
   }
 
-  private goToNotepad() {
-    this.setState({
-      screen: Screen.NOTES,
-    });
+  private currentQuestionIdx(): number {
+    return this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
   }
 
   private goToNextScreen() {
-    const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
-    if (this.props.questions.length > currentIdx + 1) {
-      return this.goToQuestion(currentIdx+1);
+    const nextState = getNextState(this.state.screen, this.currentQuestionIdx(), this.props.questions.length);
+    this.setMeetingState(nextState);
+  }
+
+  private setMeetingState(s: IMeetingState) {
+    let idxx = s.qIdx;
+    if (idxx < 0) {
+      idxx = 0;
     }
-    if (this.state.screen === Screen.NOTES) {
-      return this.goToReview();
+    if (idxx >= this.props.questions.length) {
+      idxx = this.props.questions.length - 1;
     }
-    this.goToNotepad();
+    const question = this.props.questions[idxx];
+    this.setState({
+      currentQuestion: question.id,
+      screen: s.screen,
+    });
   }
 
   private goToPreviousScreen() {
-    if (this.state.screen === Screen.REVIEW) {
-      return this.goToNotepad();
-    }
-    if (this.state.screen !== Screen.QUESTION) {
-      return this.setState({
-        screen: Screen.QUESTION,
-      });
-    }
-    const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
-    if (currentIdx === -1 || currentIdx === 0) {
-      return;
-    }
-    this.goToQuestion(currentIdx-1);
+    const prevState = getPreviousState(this.state.screen, this.currentQuestionIdx(), this.hasInstructions());
+    this.setMeetingState(prevState);
   }
 
-  private canGoToPreviousQuestion(): boolean {
-    if (this.props.questions.length === 0) {
-      return false;
-    }
-    const currentIdx = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
-    return currentIdx !== -1 && currentIdx !== 0;
+  private canGoToPrevious(): boolean {
+    return canGoBack(this.state.screen, this.currentQuestionIdx(), this.hasInstructions());
   }
 
   private renderFinished(): JSX.Element {
@@ -171,10 +158,23 @@ class MeetingInner extends React.Component<IProps, IState> {
     );
   }
 
+  private renderInstructions(): JSX.Element {
+    return (
+      <QuestionnaireInstructions
+        title={this.props.questionnaire.name}
+        text={this.props.questionnaire.instructions}
+        onNext={this.goToNextScreen}
+      />
+    );
+  }
+
   private renderProgressBar(): JSX.Element {
     let value = this.props.questions.length;
     if (this.state.screen === Screen.QUESTION) {
       value = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
+    }
+    if (this.state.screen === Screen.INSTRUCTIONS) {
+      value = 0;
     }
     return (<Progress value={value} total={this.props.questions.length} size="tiny" />);
   }
@@ -184,7 +184,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       return (
         <div id="meeting">
           {progress}
-          <Grid container columns={1} id="meeting">
+          <Grid container columns={1}>
             <Grid.Column>
               <Helmet>
                 <title>Questionnaire</title>
@@ -208,6 +208,9 @@ class MeetingInner extends React.Component<IProps, IState> {
     if (this.state.screen === Screen.NOTES) {
       return wrapper(this.renderNotepad(), this.renderProgressBar());
     }
+    if (this.state.screen === Screen.INSTRUCTIONS) {
+      return wrapper(this.renderInstructions(), this.renderProgressBar());
+    }
     const currentQuestionID = this.state.currentQuestion;
     if (currentQuestionID === undefined) {
       return wrapper(<Loader active={true} inline="centered" />);
@@ -216,7 +219,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       key={currentQuestionID}
       record={meeting}
       questionID={currentQuestionID}
-      showPrevious={this.canGoToPreviousQuestion()}
+      showPrevious={this.canGoToPrevious()}
       onPrevious={this.goToPreviousScreen}
       onNext={this.goToNextScreen}
     />, this.renderProgressBar());
