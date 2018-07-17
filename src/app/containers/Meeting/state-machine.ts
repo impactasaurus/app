@@ -10,6 +10,19 @@ export interface IMeetingState {
   qIdx: number;
 }
 
+export function initialState(hasInstructions: boolean): IMeetingState {
+  if (hasInstructions) {
+    return {
+      screen: Screen.INSTRUCTIONS,
+      qIdx: 0,
+    };
+  }
+  return {
+    screen: Screen.QUESTION,
+    qIdx: 0,
+  };
+}
+
 export function getPreviousState(current: Screen, qIdx: number, hasInstructions: boolean): IMeetingState {
   const noChange = {
     screen: current,

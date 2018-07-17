@@ -15,7 +15,7 @@ import {QuestionnaireInstructions} from 'components/QuestionnaireInstructions';
 import {MeetingNotepad} from 'components/MeetingNotepad';
 import {isNullOrUndefined} from 'util';
 import {IOutcomeSet} from 'models/outcomeSet';
-import {Screen, IMeetingState, getPreviousState, canGoBack, getNextState} from './state-machine';
+import {Screen, IMeetingState, getPreviousState, canGoBack, getNextState, initialState} from './state-machine';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
@@ -71,19 +71,7 @@ class MeetingInner extends React.Component<IProps, IState> {
   public componentDidUpdate() {
     if (this.props.questions !== undefined && this.state.init === false) {
       this.setState({init: true});
-
-      let screen: Screen;
-      if (this.hasInstructions()) {
-        screen = Screen.INSTRUCTIONS;
-      } else if (this.props.questions.length <= 0) {
-        screen = Screen.REVIEW;
-      } else {
-        screen = Screen.QUESTION;
-      }
-      this.setMeetingState({
-        screen,
-        qIdx: 0,
-      });
+      this.setMeetingState(initialState(this.hasInstructions()));
     }
   }
 
@@ -169,12 +157,9 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   private renderProgressBar(): JSX.Element {
-    let value = this.props.questions.length;
-    if (this.state.screen === Screen.QUESTION) {
-      value = this.props.questions.findIndex((q) => q.id === this.state.currentQuestion);
-    }
-    if (this.state.screen === Screen.INSTRUCTIONS) {
-      value = 0;
+    let value = this.currentQuestionIdx();
+    if (this.state.screen === Screen.NOTES || this.state.screen === Screen.REVIEW) {
+      value = this.props.questions.length;
     }
     return (<Progress value={value} total={this.props.questions.length} size="tiny" />);
   }
