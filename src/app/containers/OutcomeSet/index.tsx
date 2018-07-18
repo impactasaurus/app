@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import {EditQuestionnaireName} from 'components/EditQuestionnaireName';
 import {EditQuestionnaireDescription} from 'components/EditQuestionnaireDescription';
+import {EditQuestionnaireInstructions} from 'components/EditQuestionnaireInstructions';
 import {IOutcomeResult, getOutcomeSet, IOutcomeMutation} from 'apollo/modules/outcomeSets';
 import {IQuestionMutation, deleteQuestion} from 'apollo/modules/questions';
 import { Button, Icon, Grid, Loader } from 'semantic-ui-react';
@@ -21,55 +22,46 @@ interface IProps extends IOutcomeMutation, IQuestionMutation {
 interface IState {
   displayEditNameControl?: boolean;
   displayEditDescriptionControl?: boolean;
+  editingInstructions?: boolean;
 };
 
 class OutcomeSetInner extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {};
-    this.displayEditNameControl = this.displayEditNameControl.bind(this);
-    this.displayEditDescriptionControl = this.displayEditDescriptionControl.bind(this);
-    this.renderEditNameButton = this.renderEditNameButton.bind(this);
-    this.renderEditDescriptionButton = this.renderEditDescriptionButton.bind(this);
-    this.hideEditNameControl = this.hideEditNameControl.bind(this);
-    this.hideEditDescriptionControl = this.hideEditDescriptionControl.bind(this);
+    this.setEditNameState = this.setEditNameState.bind(this);
+    this.setEditDescState = this.setEditDescState.bind(this);
+    this.setEditInstructionsState = this.setEditInstructionsState.bind(this);
+    this.renderEditButton = this.renderEditButton.bind(this);
   }
 
-  private displayEditNameControl() {
-    this.setState({
-      displayEditNameControl: true,
-    });
+  private setEditNameState(displayed: boolean): () => void {
+    return () => {
+      this.setState({
+        displayEditNameControl: displayed,
+      });
+    };
   }
 
-  private displayEditDescriptionControl() {
-    this.setState({
-      displayEditDescriptionControl: true,
-    });
+  private setEditDescState(displayed: boolean): () => void {
+    return () => {
+      this.setState({
+        displayEditDescriptionControl: displayed,
+      });
+    };
   }
 
-  private hideEditNameControl() {
-    this.setState({
-      displayEditNameControl: false,
-    });
+  private setEditInstructionsState(displayed: boolean): () => void {
+    return () => {
+      this.setState({
+        editingInstructions: displayed,
+      });
+    };
   }
 
-  private hideEditDescriptionControl() {
-    this.setState({
-      displayEditDescriptionControl: false,
-    });
-  }
-
-  private renderEditNameButton(): JSX.Element {
+  private renderEditButton(onClick: () => void): JSX.Element {
     return (
-      <Button icon basic circular size="mini" onClick={this.displayEditNameControl}>
-        <Icon name="pencil"/>
-      </Button>
-    );
-  }
-
-  private renderEditDescriptionButton(): JSX.Element {
-    return (
-      <Button icon basic circular size="mini" onClick={this.displayEditDescriptionControl}>
+      <Button icon basic circular size="mini" onClick={onClick}>
         <Icon name="pencil"/>
       </Button>
     );
@@ -91,7 +83,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
       );
     };
     const { data, params } = this.props;
-    const { displayEditNameControl, displayEditDescriptionControl } = this.state;
+    const { displayEditNameControl, displayEditDescriptionControl, editingInstructions } = this.state;
     if (data.loading) {
       return wrapper(<Loader active={true} inline="centered" />);
     }
@@ -102,14 +94,20 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
     return wrapper((
       <div>
         {displayEditNameControl ?
-          <EditQuestionnaireName data={data} outcomeSetID={params.id} afterSubmit={this.hideEditNameControl} />
+          <EditQuestionnaireName data={data} outcomeSetID={params.id} afterSubmit={this.setEditNameState(false)} />
           :
-          <h1>{os.name}{this.renderEditNameButton()}</h1>
+          <h1>{os.name}{this.renderEditButton(this.setEditNameState(true))}</h1>
         }
         {displayEditDescriptionControl ?
-          <EditQuestionnaireDescription data={data} outcomeSetID={params.id} afterSubmit={this.hideEditDescriptionControl} />
+          <EditQuestionnaireDescription data={data} outcomeSetID={params.id} afterSubmit={this.setEditDescState(false)} />
           :
-          <div>Description: {os.description || 'No description'}{this.renderEditDescriptionButton()}</div>
+          <p>{os.description || 'No description'}{this.renderEditButton(this.setEditDescState(true))}</p>
+        }
+        <h3>Instructions <Hint text={strings.instructionsExplanation} /></h3>
+        {editingInstructions ?
+          <EditQuestionnaireInstructions data={data} outcomeSetID={params.id} afterSubmit={this.setEditInstructionsState(false)} />
+          :
+          <p className="instructions">{os.instructions || 'No instructions'}{this.renderEditButton(this.setEditInstructionsState(true))}</p>
         }
         <h3>Questions</h3>
         <QuestionList outcomeSetID={params.id} data={this.props.data}/>
