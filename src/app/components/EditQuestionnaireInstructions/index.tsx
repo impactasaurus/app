@@ -82,6 +82,8 @@ class EditQuestionnaireInstructionsInner extends React.Component<IProps, IState>
             defaultValue={this.state.instructions}
             onFocus={this.moveCaretAtEnd}
             autoFocus
+            autoHeight
+            rows={3}
           />
         </Form>
         <div>
