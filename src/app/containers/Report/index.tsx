@@ -2,13 +2,14 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import {IURLConnector} from 'redux/modules/url';
 import {setURL} from 'modules/url';
-import { Button, Grid, Message } from 'semantic-ui-react';
+import { Button, Grid, Message, Radio } from 'semantic-ui-react';
 import {DateRangePicker} from 'components/DateRangePicker';
 import {Hint} from 'components/Hint';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import { bindActionCreators } from 'redux';
 import {RecordTagInput} from 'components/RecordTagInput';
 import {constructReportQueryParams, constructReportURL} from '../../helpers/report';
+import './style.less';
 const { connect } = require('react-redux');
 const strings = require('./../../../strings.json');
 const ReactGA = require('react-ga');
@@ -16,6 +17,7 @@ const ReactGA = require('react-ga');
 interface IState {
   periodStart?: Date;
   periodEnd?: Date;
+  all?: boolean;
   questionSetID?: string;
   error?: string;
   tags?: string[];
@@ -30,6 +32,7 @@ class Report extends React.Component<IURLConnector, IState> {
     super(props);
     this.state = {
       tags: [],
+      all: true,
     };
     this.setDateRange = this.setDateRange.bind(this);
     this.setQuestionSetID = this.setQuestionSetID.bind(this);
@@ -37,13 +40,16 @@ class Report extends React.Component<IURLConnector, IState> {
     this.navigateToReport = this.navigateToReport.bind(this);
     this.renderNewReportControl = this.renderNewReportControl.bind(this);
     this.setTags = this.setTags.bind(this);
+    this.setAll = this.setAll.bind(this);
+    this.logGAEvent = this.logGAEvent.bind(this);
   }
 
   private validateInput(): string|null {
     if (!this.state.questionSetID || this.state.questionSetID === '') {
       return 'A question set must be selected';
     }
-    if (!this.state.periodStart || !this.state.periodEnd || this.state.periodStart >= this.state.periodEnd) {
+    const invalidDates = !this.state.periodStart || !this.state.periodEnd || this.state.periodStart >= this.state.periodEnd;
+    if (!this.state.all && invalidDates) {
       return 'Time range must be specified';
     }
     return null;
@@ -57,11 +63,18 @@ class Report extends React.Component<IURLConnector, IState> {
       });
       return;
     }
-    this.logGAEvent(this.dateDiff(this.state.periodStart,this.state.periodEnd));
-    const url = constructReportURL('service', this.state.periodStart, this.state.periodEnd, this.state.questionSetID);
-    const qp = constructReportQueryParams(this.state.tags);
+    let start = this.state.periodStart;
+    let end = this.state.periodEnd;
+    if (this.state.all) {
+      start = new Date(0);
+      end = new Date();
+    }
+    this.logGAEvent();
+    const url = constructReportURL('service', start, end, this.state.questionSetID);
+    const qp = constructReportQueryParams(this.state.tags, false);
     this.props.setURL(url, qp);
   }
+
   private dateDiff(date1, date2) {
     const oneDay = 1000*60*60*24;
     // converting both dates to milliseconds
@@ -79,12 +92,20 @@ class Report extends React.Component<IURLConnector, IState> {
     });
   }
 
-  private logGAEvent(value: number) {
-    ReactGA.event({
-      category : 'servicereport',
-      action : 'range',
-      value,
-    });
+  private logGAEvent() {
+    if (this.state.all) {
+      ReactGA.event({
+        category : 'servicereport',
+        action : 'all',
+      });
+    } else {
+      const value = this.dateDiff(this.state.periodStart, this.state.periodEnd);
+      ReactGA.event({
+        category : 'servicereport',
+        action : 'range',
+        value,
+      });
+    }
   }
 
   private setDateRange(start: Date, end: Date) {
@@ -100,13 +121,33 @@ class Report extends React.Component<IURLConnector, IState> {
     });
   }
 
+  private setAll(toSet: boolean) {
+    return () => {
+      this.setState({
+        all: toSet,
+      });
+    };
+  }
+
   private renderNewReportControl(): JSX.Element {
+    let datePicker = <span />;
+    if (!this.state.all) {
+      datePicker = (
+        <div>
+          <DateRangePicker onSelect={this.setDateRange} future={false}/>
+        </div>
+      );
+    }
     return (
       <div className="impactform">
         <h3 className="label">Questionnaire</h3>
         <QuestionSetSelect onQuestionSetSelected={this.setQuestionSetID} />
-        <h3 className="label"><Hint text={strings.JOCReportDateRange} />Date Range</h3>
-        <DateRangePicker onSelect={this.setDateRange} future={false}/>
+        <h3 className="label">Included Records</h3>
+        <div id="filter-options">
+          <Radio label="All" checked={this.state.all === true} onChange={this.setAll(true)} />
+          <Radio label="Date Filter" checked={this.state.all === false} onChange={this.setAll(false)} />
+        </div>
+        {datePicker}
         <h3 className="label optional"><Hint text={strings.tagUsage} />Tags</h3>
         <RecordTagInput onChange={this.setTags} tags={this.state.tags} allowNewTags={false} />
         <Button className="submit" onClick={this.navigateToReport}>Generate</Button>
@@ -117,7 +158,7 @@ class Report extends React.Component<IURLConnector, IState> {
 
   public render() {
     return (
-      <Grid container columns={1} id="report">
+      <Grid container columns={1} id="report-picker">
         <Grid.Column>
           <Helmet>
             <title>Service Report</title>
