@@ -145,7 +145,7 @@ class Report extends React.Component<IURLConnector, IState> {
         <h3 className="label">Included Records</h3>
         <div id="filter-options">
           <Radio label="All" checked={this.state.all === true} onChange={this.setAll(true)} />
-          <Radio label="Date Filter" checked={this.state.all === false} onChange={this.setAll(false)} />
+          <Radio label="Date Range" checked={this.state.all === false} onChange={this.setAll(false)} />
         </div>
         {datePicker}
         <h3 className="label optional"><Hint text={strings.tagUsage} />Tags</h3>
@@ -166,10 +166,11 @@ class Report extends React.Component<IURLConnector, IState> {
           <h1>Service Report</h1>
           <Message info>
             <Message.Header>What does this report provide?</Message.Header>
+
             <p>The service report quantifies your organisation's impact on your beneficiaries.</p>
             <p>
-              This is calculated by examining how much change there has been between each beneficiary's first ever recorded assessment (may be outside of the specified date range) and their most recent assessment within the provided time range.
-              The average measurements from the first and most recent assessments, across all suitable beneficiaries, are compared and visualised.
+              This is calculated by examining how much change there has been between each beneficiary's first and last record within the report's time range.
+              The average measurements from the first and last records, across all suitable beneficiaries, are compared and visualised.
             </p>
             <p>This report will only include beneficiaries with more than one assessment, so that the amount of change can be understood.</p>
           </Message>
