@@ -68,7 +68,8 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
   }
 
   private sendToLogin() {
-    this.props.setURL('/login');
+    const redirectURL = this.props.routeState.locationBeforeTransitions.pathname;
+    this.props.setURL('/login', '?redirect=' + encodeURIComponent(redirectURL));
   }
 
   private getTimeToExpiry(): number {
