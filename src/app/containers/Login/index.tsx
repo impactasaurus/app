@@ -42,7 +42,11 @@ class Login extends React.Component<IProps, {}> {
     const returnURL = localStorage.getItem(localStorageKey);
     localStorage.removeItem(localStorageKey);
     if (!isNullOrUndefined(returnURL)) {
-      this.props.setURL(decodeURIComponent(returnURL));
+      const components = decodeURIComponent(returnURL).split('?');
+      const query: string|undefined = components.length > 1 ? '?' + components[1] : undefined;
+      this.props.setURL(components[0], query);
+    } else {
+      this.props.setURL('');
     }
   }
 
