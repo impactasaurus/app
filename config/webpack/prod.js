@@ -22,7 +22,10 @@ var config = {
   },
 
   entry: {
-    app: './src/client.tsx'
+    app: [
+      'babel-polyfill',
+      './src/client.tsx'
+    ]
   },
 
   devtool: "source-map",

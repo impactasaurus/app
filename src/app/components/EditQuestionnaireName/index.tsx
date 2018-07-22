@@ -40,6 +40,7 @@ class EditQuestionnaireNameInner extends React.Component<IProps, IState> {
       this.props.outcomeSetID,
       this.state.name,
       this.props.data.getOutcomeSet.description,
+      this.props.data.getOutcomeSet.instructions,
     )
       .then(() => {
         this.setState({

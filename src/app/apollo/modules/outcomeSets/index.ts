@@ -53,18 +53,19 @@ export const newQuestionSet = graphql(gql`
 
 export function editQuestionSet<T>(component) {
   return graphql<any, T>(gql`
-  mutation ($id: ID!, $name: String!, $description: String) {
-    editQuestionSet: EditOutcomeSet(outcomeSetID:$id, name:$name, description:$description) {
+  mutation ($id: ID!, $name: String!, $description: String, $instructions: String) {
+    editQuestionSet: EditOutcomeSet(outcomeSetID:$id, name:$name, description:$description, instructions:$instructions) {
       ...defaultOutcomeSet
     }
   }
   ${fragment}`, {
     props: ({ mutate }) => ({
-      editQuestionSet: (id: string, name: string, description?: string): Promise<IOutcomeSet> => mutate({
+      editQuestionSet: (id: string, name: string, description: string, instructions: string): Promise<IOutcomeSet> => mutate({
           variables: {
-              id,
-              name,
-              description,
+            id,
+            name,
+            description,
+            instructions,
           },
       }).then(mutationResultExtractor<IOutcomeSet>('editQuestionSet')),
     }),
@@ -96,5 +97,5 @@ export interface IOutcomeResult extends QueryProps {
 export interface IOutcomeMutation {
     newQuestionSet?(name: string, description?: string): Promise<IOutcomeSet>;
     deleteQuestionSet?(id: string): Promise<string>;
-    editQuestionSet?(id: string, name: string, description?: string): Promise<IOutcomeSet>;
+    editQuestionSet?(id: string, name: string, description: string, instructions: string): Promise<IOutcomeSet>;
 }

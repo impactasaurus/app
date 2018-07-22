@@ -13,9 +13,12 @@ import {IStore} from 'redux/IStore';
 import {renderArray} from 'helpers/react';
 import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'models/pref';
 import './style.less';
+import {constructReportQueryParams, constructReportURL} from 'helpers/report';
+import {bindActionCreators} from 'redux';
+import {IURLConnector, setURL} from 'redux/modules/url';
 const { connect } = require('react-redux');
 
-interface IProp extends IJOCReportResult {
+interface IProp extends IJOCReportResult, IURLConnector {
   data: IOutcomeResult;
   params: {
       questionSetID: string,
@@ -28,28 +31,34 @@ interface IProp extends IJOCReportResult {
   vis?: Visualisation;
   agg?: Aggregation;
   isCategoryAgPossible?: boolean;
+  isCanvasSnapshotPossible?: boolean;
 }
 
 const isCategoryAggregationAvailable = (props: IProp): boolean => {
   if (props.JOCServiceReport.error || props.JOCServiceReport.loading) {
     return false;
   }
-  return props.JOCServiceReport.getJOCServiceReport.categoryAggregates.first.length > 0;
+  return props.JOCServiceReport.getJOCServiceReport.categories.length > 0;
 };
 
 @connect((state: IStore, ownProps: IProp) => {
   const canCatAg = isCategoryAggregationAvailable(ownProps);
+  const viz = getVisualisation(state.pref, false);
   return {
-    vis: getVisualisation(state.pref, false),
+    vis: viz,
     agg: getAggregation(state.pref, canCatAg),
     isCategoryAgPossible: canCatAg,
+    isCanvasSnapshotPossible: viz === Visualisation.RADAR,
   };
-}, undefined)
+}, (dispatch) => ({
+  setURL: bindActionCreators(setURL, dispatch),
+}))
 class ServiceReportInner extends React.Component<IProp, any> {
 
   constructor(props) {
     super(props);
     this.renderVis = this.renderVis.bind(this);
+    this.exportReportData = this.exportReportData.bind(this);
   }
 
   private renderError(error: GraphQLError): JSX.Element {
@@ -70,6 +79,12 @@ class ServiceReportInner extends React.Component<IProp, any> {
     return (
       <ServiceReportTable serviceReport={p.JOCServiceReport.getJOCServiceReport} questionSet={p.data.getOutcomeSet} category={p.agg === Aggregation.CATEGORY} />
     );
+  }
+
+  private exportReportData() {
+    const url = constructReportURL('export', new Date(this.props.params.start), new Date(this.props.params.end), this.props.params.questionSetID);
+    const qp = constructReportQueryParams(getTagsFromProps(this.props), true);
+    this.props.setURL(url, qp);
   }
 
   public render() {
@@ -101,7 +116,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
       <div>
         <h1>Service Report</h1>
         <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
-        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} />
+        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} export={this.exportReportData} allowCanvasSnapshot={this.props.isCanvasSnapshotPossible} />
         {this.renderVis()}
       </div>
     ));
@@ -130,5 +145,13 @@ function getTagsFromProps(p: IProp): string[] {
   return parsedTags;
 }
 
-const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps)(ServiceReportInner));
+function getOpenStartFromProps(p: IProp): boolean {
+  const urlParams = new URLSearchParams(p.location.search);
+  if (urlParams.has('open') === false) {
+    return true;
+  }
+  return JSON.parse(urlParams.get('open'));
+}
+
+const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenStartFromProps)(ServiceReportInner));
 export {ServiceReport}

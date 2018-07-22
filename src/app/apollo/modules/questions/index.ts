@@ -13,20 +13,21 @@ const cleanLabelArray = (labels: ILabel[]): ILabel[] => {
 
 export function addLikertQuestion<T>(component) {
   return graphql<any, T>(gql`
-  mutation ($outcomeSetID: ID!, $question: String!, $description: String, $minValue: Int, $maxValue: Int!, $labels: [LabelInput], $categoryID: String) {
-    addLikertQuestion: AddLikertQuestion(outcomeSetID:$outcomeSetID, question: $question, description: $description, minValue: $minValue, maxValue: $maxValue, labels: $labels, categoryID: $categoryID) {
+  mutation ($outcomeSetID: ID!, $question: String!, $description: String, $minValue: Int, $maxValue: Int!, $labels: [LabelInput], $categoryID: String, $short: String) {
+    addLikertQuestion: AddLikertQuestion(outcomeSetID:$outcomeSetID, question: $question, description: $description, minValue: $minValue, maxValue: $maxValue, labels: $labels, categoryID: $categoryID, short: $short) {
       ...defaultOutcomeSet
     }
   }
   ${osFragment}`, {
     props: ({ mutate }) => ({
-      addLikertQuestion: (outcomeSetID: string, question: string, minValue: number, maxValue: number, description?: string, categoryID?: string, labels?: ILabel[]): Promise<IOutcomeSet> => mutate({
+      addLikertQuestion: (outcomeSetID: string, question: string, minValue: number, maxValue: number, description?: string, short?: string, categoryID?: string, labels?: ILabel[]): Promise<IOutcomeSet> => mutate({
           variables: {
             outcomeSetID,
             question,
             description,
             minValue,
             maxValue,
+            short,
             labels: cleanLabelArray(labels),
             categoryID,
           },
@@ -37,19 +38,20 @@ export function addLikertQuestion<T>(component) {
 
 export function editLikertQuestion<T>(component) {
   return graphql<any, T>(gql`
-  mutation ($outcomeSetID: ID!, $questionID: ID!, $question: String!, $description: String, $labels: [LabelInput]) {
-    editLikertQuestion: EditLikertQuestion(outcomeSetID:$outcomeSetID, questionID: $questionID, question: $question, description: $description, labels: $labels) {
+  mutation ($outcomeSetID: ID!, $questionID: ID!, $question: String!, $description: String, $short: String, $labels: [LabelInput]) {
+    editLikertQuestion: EditLikertQuestion(outcomeSetID:$outcomeSetID, questionID: $questionID, question: $question, description: $description, labels: $labels, short: $short) {
       ...defaultOutcomeSet
     },
   }
   ${osFragment}`, {
     props: ({ mutate }) => ({
-      editLikertQuestion: (outcomeSetID: string, questionID: string, question: string, description?: string, labels?: ILabel[]): Promise<IOutcomeSet> => mutate({
+      editLikertQuestion: (outcomeSetID: string, questionID: string, question: string, description?: string, short?: string, labels?: ILabel[]): Promise<IOutcomeSet> => mutate({
         variables: {
           outcomeSetID,
           questionID,
           question,
           description,
+          short,
           labels: cleanLabelArray(labels),
         },
       }).then(mutationResultExtractor<IOutcomeSet>('editLikertQuestion')),
@@ -77,7 +79,7 @@ export function deleteQuestion<T>(component) {
 }
 
 export interface IQuestionMutation {
-  addLikertQuestion?(outcomeSetID: string, question: string, minValue: number, maxValue: number, description?: string, categoryID?: string, labels?: ILabel[]): Promise<IOutcomeSet>;
-  editLikertQuestion?(outcomeSetID: string, questionID: string, question: string, description?: string, labels?: ILabel[]): Promise<IOutcomeSet>;
+  addLikertQuestion?(outcomeSetID: string, question: string, minValue: number, maxValue: number, description?: string, short?: string, categoryID?: string, labels?: ILabel[]): Promise<IOutcomeSet>;
+  editLikertQuestion?(outcomeSetID: string, questionID: string, question: string, description?: string, short?: string, labels?: ILabel[]): Promise<IOutcomeSet>;
   deleteQuestion?(outcomeSetID: string, questionID: string): Promise<IOutcomeSet>;
 }

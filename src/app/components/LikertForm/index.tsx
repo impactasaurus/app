@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Message, Input, Label, InputProps} from 'semantic-ui-react';
+import {Message, Input, Label, InputProps, Form} from 'semantic-ui-react';
 import { Likert } from 'components/Likert';
 import './style.less';
 import {ILabel, ILikertForm} from 'models/question';
@@ -132,10 +132,13 @@ class LikertForm extends React.Component<IProps, IState> {
       return (<Message content={strings.valuesNotEditable} info={true}/>);
     }
     return (
-      <div>
-        <Input className="left" type="number" placeholder="Left Value" onChange={this.setLeftValue} defaultValue={this.props.leftValue} disabled={this.props.edit} />
-        <Input className="right" type="number" placeholder="Right Value" onChange={this.setRightValue} defaultValue={this.props.rightValue} disabled={this.props.edit} />
-      </div>
+      <Form>
+        <Form.Group>
+          <Form.Input required label="Left Value" type="number" placeholder="Left Value" width={4} onChange={this.setLeftValue} defaultValue={this.props.leftValue} />
+          <Form.Input className="padding" width={8} />
+          <Form.Input required label="Right Value" type="number" placeholder="Right Value" width={4} onChange={this.setRightValue} defaultValue={this.props.rightValue} />
+        </Form.Group>
+      </Form>
     );
   }
 

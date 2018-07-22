@@ -7,6 +7,7 @@ export interface IOutcomeSet {
   organisationID: string;
   name: string;
   description: string;
+  instructions: string;
   questions: IQuestion[];
   categories: ICategory[];
 }
@@ -15,6 +16,7 @@ export const fragment = gql`
   fragment defaultOutcomeSet on OutcomeSet {
     name,
     description,
+    instructions,
     id,
     questions {
       ...defaultQuestion

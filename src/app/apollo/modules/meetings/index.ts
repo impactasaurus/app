@@ -91,6 +91,27 @@ export const exportMeetings = <T>(idExtractor: IDExtractor<T>) => {
   });
 };
 
+export const exportBenMeetings = <T>(idExtractor: IDExtractor<T>, benExtractor: IDExtractor<T>) => {
+  return graphql<any, T>(gql`
+    query ($qid: String!, $ben:String!){
+      exportBenMeetings: exportBenMeetings(qID:$qid, beneficiary: $ben)
+    }`, {
+    options: (props: T) => {
+      return {
+        variables: {
+          qid: idExtractor(props),
+          ben: benExtractor(props),
+        },
+        fetchPolicy: 'network-only',
+      };
+    },
+  });
+};
+
+export interface IExportBenMeetingsResult extends QueryProps {
+  exportBenMeetings?: string;
+}
+
 export const newMeeting = graphql(gql`
   mutation ($beneficiaryID: String!, $outcomeSetID: String!, $conducted: String!, $tags: [String]) {
     newMeeting: AddMeeting(beneficiaryID:$beneficiaryID, outcomeSetID:$outcomeSetID, conducted:$conducted, tags:$tags) {

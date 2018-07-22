@@ -13,6 +13,7 @@ export default (
       <Route path="journey" component={containers.Journey} />
       <Route path="records" component={containers.Records} />
     </Route>
+    <Route path="beneficiary/:id/export/:qid" component={containers.ExportBenRecords} />
     <Route path="settings" component={containers.Settings}>
       <Route path="account" component={containers.Account} />
       <Route path="data/questionnaire/export/:id" component={containers.ExportQuestionnaire} />
@@ -29,6 +30,7 @@ export default (
     <Route path="report" component={containers.Report} />
     <Route path="report/service/:questionSetID/:start/:end" component={containers.ServiceReport} />
     <Route path="report/roc/:questionSetID/:start/:end" component={containers.RateOfChangeReport} />
+    <Route path="report/export/:questionSetID/:start/:end" component={containers.ExportReport} />
     <Route path ="jti/:jti" component={containers.BeneficiaryRedirect} />
   </Route>
 );

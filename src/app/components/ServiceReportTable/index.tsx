@@ -1,44 +1,40 @@
 import * as React from 'react';
-import {IJOCServiceReport} from 'models/report';
+import {IAnswerAggregation, IAnswerAggregationReport} from 'models/report';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {ImpactTable, IRow} from 'components/ImpactTable';
 
 interface IProp {
-  serviceReport: IJOCServiceReport;
+  serviceReport: IAnswerAggregationReport;
   questionSet: IOutcomeSet;
   category?: boolean;
+}
+
+function getRowData(aa: IAnswerAggregation[], labeller: (IAnswerAggregation) => string): IRow[] {
+  return aa.map((a): IRow => {
+    return {
+      name: labeller(a),
+      last: a.latest,
+      first: a.initial,
+    };
+  });
 }
 
 class ServiceReportTable extends React.Component<IProp, any> {
 
   private getCategoryRows(p: IProp): IRow[] {
-    return p.serviceReport.categoryAggregates.first.map((first): IRow => {
-      const last = p.serviceReport.categoryAggregates.last.find((x) => x.categoryID === first.categoryID);
-      const category = p.questionSet.categories.find((x) => x.id === first.categoryID);
-      if (last === undefined) {
-        return null;
-      }
-      return {
-        name: category ? category.name : 'Unknown',
-        first: first.value,
-        last: last.value,
-      };
-    });
+    const categoryLabeller = (aa: IAnswerAggregation): string => {
+      const category = p.questionSet.categories.find((x) => x.id === aa.id);
+      return category ? category.name : 'Unknown';
+    };
+    return getRowData(p.serviceReport.categories, categoryLabeller);
   }
 
   private getQuestionRows(p: IProp): IRow[] {
-    return p.serviceReport.questionAggregates.first.map((first): IRow => {
-      const last = p.serviceReport.questionAggregates.last.find((x) => x.questionID === first.questionID);
-      const question = p.questionSet.questions.find((x) => x.id === first.questionID);
-      if (last === undefined) {
-        return null;
-      }
-      return {
-        name: question ? (question.short || question.question) : 'Unknown',
-        first: first.value,
-        last: last.value,
-      };
-    });
+    const qLabeller = (aa: IAnswerAggregation): string => {
+      const question = p.questionSet.questions.find((x) => x.id === aa.id);
+      return question ? (question.short || question.question) : 'Unknown';
+    };
+    return getRowData(p.serviceReport.questions, qLabeller);
   }
 
   private renderTable(p: IProp): JSX.Element {

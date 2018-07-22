@@ -32,7 +32,7 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
     props.ROCReport.getROCReport === undefined || props.ROCReport.getROCReport.beneficiaries.length === 0) {
     return false;
   }
-  return props.ROCReport.getROCReport.beneficiaries[0].categoryROCs.length > 0;
+  return props.ROCReport.getROCReport.beneficiaries[0].categories.length > 0;
 };
 
 function renderError(error: GraphQLError): JSX.Element {
