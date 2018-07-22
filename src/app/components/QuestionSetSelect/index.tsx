@@ -22,8 +22,11 @@ interface IProp extends IExternalProps {
 }
 
 const isQuestionSetAllowed = (qsID: string, props: IProp): boolean => {
-  return Array.isArray(props.allowedQuestionSetIDs) === false ||
+  const isAllowed = Array.isArray(props.allowedQuestionSetIDs) === false ||
     props.allowedQuestionSetIDs.indexOf(qsID) !== -1;
+  const isKnown = Array.isArray(props.data.allOutcomeSets) === false ||
+    props.data.allOutcomeSets.map((q) => q.id).indexOf(qsID) !== -1;
+  return  isAllowed && isKnown;
 };
 
 const getSelectedAndAllowedQuestionSetID = (state: IStore, ownProps: IProp): string|undefined => {
