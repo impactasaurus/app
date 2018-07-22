@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {Input, Button, ButtonProps} from 'semantic-ui-react';
+import {ButtonProps, Form} from 'semantic-ui-react';
+import './style.less';
 
 export interface INewQuestionnaire {
   name: string;
@@ -26,8 +27,7 @@ class NewQuestionnaireForm extends React.Component<IProps, IState> {
       saving: false,
     };
     this.onSubmit = this.onSubmit.bind(this);
-    this.setName = this.setName.bind(this);
-    this.setDescription = this.setDescription.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
   private onSubmit() {
@@ -52,17 +52,10 @@ class NewQuestionnaireForm extends React.Component<IProps, IState> {
       });
   }
 
-  private setName(_, data) {
+  private handleChange(_, { name, value }) {
     this.setState({
       ...this.state,
-      name: data.value,
-    });
-  }
-
-  private setDescription(_, data) {
-    this.setState({
-      ...this.state,
-      description: data.value,
+      [name]: value,
     });
   }
 
@@ -73,13 +66,15 @@ class NewQuestionnaireForm extends React.Component<IProps, IState> {
       submitProps.disabled = true;
     }
     return (
-      <div>
-        <Input type="text" placeholder="Name" onChange={this.setName}/>
-        <Input type="text" placeholder="Description" onChange={this.setDescription}/>
-        <Button onClick={this.props.onCancel}>Cancel</Button>
-        <Button {...submitProps} primary onClick={this.onSubmit}>Create</Button>
+      <Form onSubmit={this.onSubmit} className="new-questionnaire-form">
+        <Form.Group>
+          <Form.Input name="name" type="text" placeholder="Name" onChange={this.handleChange} />
+          <Form.Input name="description" type="text" placeholder="Description" onChange={this.handleChange} />
+          <Form.Button onClick={this.props.onCancel}>Cancel</Form.Button>
+          <Form.Button type="submit" primary {...submitProps}>Create</Form.Button>
+        </Form.Group>
         <p>{this.state.error}</p>
-      </div>
+      </Form>
     );
   }
 }

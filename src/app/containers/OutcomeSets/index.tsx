@@ -15,7 +15,7 @@ const ReactGA = require('react-ga');
 
 interface IProps extends IOutcomeMutation, IURLConnector {
   data: IOutcomeResult;
-};
+}
 
 interface IState {
   deleteError?: string;
