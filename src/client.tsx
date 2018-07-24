@@ -6,7 +6,6 @@ import { syncHistoryWithStore } from 'react-router-redux';
 const { ReduxAsyncConnect } = require('redux-connect');
 import { configureStore } from './app/redux/store';
 import { getToken } from 'helpers/auth';
-import 'isomorphic-fetch';
 import routes from './app/routes';
 import Raven = require('raven-js');
 
