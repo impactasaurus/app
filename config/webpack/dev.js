@@ -10,8 +10,8 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 var config = {
-  // Enable sourcemaps for debugging webpack's output.
   devtool: 'source-map',
+  mode: 'development',
 
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
@@ -51,15 +51,11 @@ var config = {
       },
       {
         test: /\.tsx?$/,
-        loader: 'react-hot-loader!awesome-typescript-loader'
+        loader: 'awesome-typescript-loader'
       },
       {
         test: /\.jsx$/,
         loader: 'babel-loader'
-      },
-      {
-        test: /\.json$/,
-        loader: 'json-loader'
       },
       {
         test: /\.css$/,
@@ -181,7 +177,7 @@ const createIfDoesntExist = dest => {
   if (!fs.existsSync(dest)) {
     fs.mkdirSync(dest);
   }
-}
+};
 
 createIfDoesntExist('./build');
 

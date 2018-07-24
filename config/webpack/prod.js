@@ -11,6 +11,7 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 var config = {
   bail: true,
+  mode: 'production',
 
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
@@ -51,10 +52,6 @@ var config = {
         loader: 'babel-loader'
       },
       {
-        test: /\.json$/,
-        loader: 'json-loader'
-      },
-      {
         test: /\.css$/,
         include: path.resolve('./src/app'),
         loaders: [
@@ -84,7 +81,7 @@ var config = {
       {
         test: /\.less$/,
         loader: ExtractTextPlugin.extract({
-          loader: [
+          use: [
             "css-loader",
             "less-loader"
           ],
@@ -94,7 +91,7 @@ var config = {
       {
         test: /\.scss$/,
         loader: ExtractTextPlugin.extract({
-          loader: [
+          use: [
             "css-loader",
             "sass-loader"
           ],
@@ -149,7 +146,6 @@ var config = {
       }
     }),
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.optimize.UglifyJsPlugin({sourceMap: true}),
     new ExtractTextPlugin('css/[name].[hash].css'),
     new ManifestPlugin({
       fileName: 'manifest.json'
@@ -174,7 +170,7 @@ const createIfDoesntExist = dest => {
   if (!fs.existsSync(dest)) {
     fs.mkdirSync(dest);
   }
-}
+};
 
 createIfDoesntExist('./build');
 
