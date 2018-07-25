@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import {combineReducers, Reducer, ReducersMapObject} from 'redux';
 import { routerReducer } from 'react-router-redux';
 import { IStore } from './IStore';
 
@@ -8,7 +8,7 @@ import {reducer as storage} from 'redux/modules/storage';
 
 const { reducer } = require('redux-connect');
 
-export default function getReducers(clientReducers: Redux.ReducersMapObject): Redux.Reducer<IStore> {
+export default function getReducers(clientReducers: ReducersMapObject): Reducer<IStore> {
   const internalReducers = {
     routing: routerReducer,
     reduxAsyncConnect: reducer,

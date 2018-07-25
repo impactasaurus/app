@@ -1,5 +1,4 @@
-const appConfig = require('../../../config/main');
-import { createStore, applyMiddleware, compose } from 'redux';
+import {createStore, applyMiddleware, compose, ReducersMapObject, Middleware} from 'redux';
 import { routerMiddleware } from 'react-router-redux';
 import thunk from 'redux-thunk';
 import getReducers from './reducers';
@@ -7,16 +6,17 @@ import { IStore } from './IStore';
 import * as storage from 'redux-storage';
 import createEngine from 'redux-storage-engine-localstorage';
 import filter from 'redux-storage-decorator-filter';
-const createLogger = require('redux-logger');
+import logger from 'redux-logger';
+const appConfig = require('../../../config/main');
 
-export function configureStore(history, clientReducers: Redux.ReducersMapObject, clientMiddlewares: Redux.Middleware[], initialState?: IStore): Redux.Store<IStore> {
+export function configureStore(history, clientReducers: ReducersMapObject, clientMiddlewares: Middleware[], initialState?: IStore) {
 
   let storeEngine = createEngine('state');
   storeEngine = filter(storeEngine, ['pref']);
   const storageMiddleware = storage.createMiddleware(storeEngine);
   const reducer = storage.reducer(getReducers(clientReducers));
 
-  const middlewares: Redux.Middleware[] = [
+  const middlewares: Middleware[] = [
     routerMiddleware(history),
     thunk,
     storageMiddleware,
@@ -25,7 +25,6 @@ export function configureStore(history, clientReducers: Redux.ReducersMapObject,
 
   /** Add Only Dev. Middlewares */
   if (appConfig.env !== 'production' && process.env.BROWSER) {
-    const logger = createLogger();
     middlewares.push(logger);
   }
 

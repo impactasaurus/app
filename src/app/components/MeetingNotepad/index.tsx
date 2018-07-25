@@ -24,12 +24,14 @@ class MeetingNotepadInner extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
+    let notes: string;
+    if (this.props.record !== undefined && this.props.record.notes !== undefined) {
+      notes = this.props.record.notes;
+    }
     this.state = {
       saving: false,
+      notes,
     };
-    if (this.props.record !== undefined && this.props.record.notes !== undefined) {
-      this.state.notes = this.props.record.notes;
-    }
     this.saveNotes = this.saveNotes.bind(this);
     this.setNotes = this.setNotes.bind(this);
   }

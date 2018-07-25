@@ -1,7 +1,9 @@
+import {Action} from 'redux';
+
 export const SET_USER_DETAILS = 'SET_USER_DETAILS';
 export const SET_LOGIN_STATUS = 'SET_LOGIN_STATUS';
 
-export interface IAction extends Redux.Action {
+export interface IAction extends Action {
   type: string;
   payload: {
     userID?: string;

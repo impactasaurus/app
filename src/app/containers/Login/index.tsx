@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import {setURL} from 'modules/url';
-import { bindActionCreators } from 'redux';
+import {ActionCreator, bindActionCreators} from 'redux';
 import {Auth0Lock} from 'components/Auth0Lock';
 import {isNullOrUndefined} from 'util';
 const { connect } = require('react-redux');
 
 interface IProps {
-  setURL: Redux.ActionCreator<any>;
+  setURL: ActionCreator<any>;
   location: {
     search: string,
   };
