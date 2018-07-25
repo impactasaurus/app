@@ -43,7 +43,7 @@ export function configureStore(history, clientReducers: ReducersMapObject, clien
   }
 
   const load = storage.createLoader(storeEngine);
-  load(store).catch(() => console.error('Failed to load previous state'));
+  load(store);
 
   return store;
 }
