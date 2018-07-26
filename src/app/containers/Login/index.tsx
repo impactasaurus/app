@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import {setURL} from 'modules/url';
+import {setURL} from 'redux/modules/url';
 import {ActionCreator, bindActionCreators} from 'redux';
 import {Auth0Lock} from 'components/Auth0Lock';
 import {isNullOrUndefined} from 'util';
@@ -62,4 +62,4 @@ class Login extends React.Component<IProps, {}> {
   }
 }
 
-export { Login }
+export { Login };

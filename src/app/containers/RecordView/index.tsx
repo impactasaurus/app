@@ -1,10 +1,9 @@
 import * as React from 'react';
 import {Helmet} from 'react-helmet';
 import {Button, Loader, Grid} from 'semantic-ui-react';
-import {IURLConnector} from 'redux/modules/url';
+import {IURLConnector, setURL} from 'redux/modules/url';
 import {getMeeting, IMeetingResult} from 'apollo/modules/meetings';
 import {bindActionCreators} from 'redux';
-import {setURL} from 'redux/modules/url';
 import './style.less';
 import {RecordQuestionSummary} from 'components/RecordQuestionSummary';
 import {getHumanisedDateFromISO} from 'helpers/moment';
@@ -55,12 +54,12 @@ class RecordViewInner extends React.Component<IProps, any> {
 
   private noop(): Promise<void> {
     return Promise.resolve();
-  };
+  }
 
   public render() {
     const wrapper = (inner: JSX.Element): JSX.Element => {
       return (
-        <Grid container columns={1} id="record-view">
+        <Grid container={true} columns={1} id="record-view">
           <Grid.Column>
             <Helmet>
               <title>View Record</title>
@@ -112,4 +111,4 @@ class RecordViewInner extends React.Component<IProps, any> {
 }
 
 const RecordView = getMeeting<IProps>((props) => props.params.id)(RecordViewInner);
-export { RecordView }
+export { RecordView };

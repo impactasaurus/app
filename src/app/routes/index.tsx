@@ -31,6 +31,6 @@ export default (
     <Route path="report/service/:questionSetID/:start/:end" component={containers.ServiceReport} />
     <Route path="report/roc/:questionSetID/:start/:end" component={containers.RateOfChangeReport} />
     <Route path="report/export/:questionSetID/:start/:end" component={containers.ExportReport} />
-    <Route path ="jti/:jti" component={containers.BeneficiaryRedirect} />
+    <Route path="jti/:jti" component={containers.BeneficiaryRedirect} />
   </Route>
 );

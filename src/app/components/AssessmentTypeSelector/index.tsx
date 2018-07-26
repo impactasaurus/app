@@ -44,8 +44,8 @@ class AssessmentTypeSelector extends React.Component<IProps, any> {
               Complete the questionnaire together
             </Card.Description>
           </Card.Content>
-          <Card.Content extra>
-            <Button primary onClick={this.typeClickFn(AssessmentType.live)}>Select</Button>
+          <Card.Content extra={true}>
+            <Button primary={true} onClick={this.typeClickFn(AssessmentType.live)}>Select</Button>
           </Card.Content>
         </Card>
         <Card>
@@ -63,8 +63,8 @@ class AssessmentTypeSelector extends React.Component<IProps, any> {
               Generates a link that you can send to the beneficiary to complete on their own. The link will be valid for {defaultRemoteMeetingLimit} days
             </Card.Description>
           </Card.Content>
-          <Card.Content extra>
-            <Button primary onClick={this.typeClickFn(AssessmentType.remote)}>Select</Button>
+          <Card.Content extra={true}>
+            <Button primary={true} onClick={this.typeClickFn(AssessmentType.remote)}>Select</Button>
           </Card.Content>
         </Card>
         <Card>
@@ -82,8 +82,8 @@ class AssessmentTypeSelector extends React.Component<IProps, any> {
               Enter data gathered historically into the system. For example, if you completed the questionnaire on paper with the beneficiary
             </Card.Description>
           </Card.Content>
-          <Card.Content extra>
-            <Button primary onClick={this.typeClickFn(AssessmentType.historic)}>Select</Button>
+          <Card.Content extra={true}>
+            <Button primary={true} onClick={this.typeClickFn(AssessmentType.historic)}>Select</Button>
           </Card.Content>
         </Card>
       </Card.Group>
@@ -91,4 +91,4 @@ class AssessmentTypeSelector extends React.Component<IProps, any> {
   }
 }
 
-export { AssessmentTypeSelector }
+export { AssessmentTypeSelector };

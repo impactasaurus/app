@@ -25,4 +25,4 @@ class ServiceReportDetails extends React.Component<IProp, any> {
   }
 }
 
-export {ServiceReportDetails}
+export {ServiceReportDetails};

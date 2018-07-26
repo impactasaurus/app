@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { Grid, Button, Menu } from 'semantic-ui-react';
-import {setURL} from 'modules/url';
+import {setURL, IURLConnector} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
 import {IStore} from 'redux/IStore';
-import {IURLConnector} from 'redux/modules/url';
-import {isBeneficiaryUser} from 'modules/user';
+import {isBeneficiaryUser} from 'redux/modules/user';
 import './style.less';
 const { connect } = require('react-redux');
 
@@ -69,7 +68,7 @@ class Review extends React.Component<IProps, any> {
 
   private renderSubMenu(): JSX.Element {
     return (
-      <Menu pointing secondary className="add-margin">
+      <Menu pointing={true} secondary={true} className="add-margin">
         <Menu.Item name="Journey" active={this.props.child === ReviewPage.JOURNEY} onClick={this.innerPageSetter(ReviewPage.JOURNEY)}/>
         <Menu.Item name="Records" active={this.props.child === ReviewPage.RECORDS} onClick={this.innerPageSetter(ReviewPage.RECORDS)}/>
       </Menu>
@@ -83,12 +82,12 @@ class Review extends React.Component<IProps, any> {
 
     let backButton: JSX.Element = (<div />);
     if (this.props.isBeneficiary === false) {
-      backButton = (<Button onClick={this.handleClick('/beneficiary')} content="Back" icon="left arrow" labelPosition="left" primary id="back-button"/>);
+      backButton = (<Button onClick={this.handleClick('/beneficiary')} content="Back" icon="left arrow" labelPosition="left" primary={true} id="back-button"/>);
     }
 
     return (
       <div>
-        <Grid container columns={1}>
+        <Grid container={true} columns={1}>
           <Grid.Column>
             {backButton}
             <div id="review">
@@ -106,4 +105,4 @@ class Review extends React.Component<IProps, any> {
   }
 }
 
-export { Review }
+export { Review };

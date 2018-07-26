@@ -60,4 +60,4 @@ class ServiceReportTable extends React.Component<IProp, any> {
   }
 }
 
-export {ServiceReportTable}
+export {ServiceReportTable};

@@ -181,4 +181,4 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
 }
 
 const AssessmentConfig = allOutcomeSets<IProps>(AssessmentConfigInner);
-export {AssessmentConfig}
+export {AssessmentConfig};

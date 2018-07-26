@@ -1,6 +1,5 @@
 import * as React from 'react';
 import 'url-search-params-polyfill';
-import {GraphQLError} from '@types/graphql';
 import { Helmet } from 'react-helmet';
 import { Grid, Loader, Message } from 'semantic-ui-react';
 import {getROCReport, IROCReportResult} from 'apollo/modules/reports';
@@ -35,10 +34,10 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
   return props.ROCReport.getROCReport.beneficiaries[0].categories.length > 0;
 };
 
-function renderError(error: GraphQLError): JSX.Element {
+function renderError(error: string): JSX.Element {
   return (
-    <p key={error.message}>
-      {error.message}
+    <p key={error}>
+      {error}
     </p>
   );
 }
@@ -61,8 +60,8 @@ class RateOfChangeReportInner extends React.Component<IProp, any> {
     const reportReq = this.props.ROCReport;
     if (reportReq.error) {
       return (
-        <Message error>
-          {renderArray(renderError, reportReq.error.graphQLErrors)}
+        <Message error={true}>
+          {renderArray<string>(renderError, reportReq.error.graphQLErrors.map((e) => e.message))}
         </Message>
       );
     }
@@ -84,7 +83,7 @@ class RateOfChangeReportInner extends React.Component<IProp, any> {
 
   public render() {
     return (
-      <Grid container columns={1} id="roc-report">
+      <Grid container={true} columns={1} id="roc-report">
         <Grid.Column>
           <Helmet>
             <title>Rate of Change Report</title>
@@ -119,4 +118,4 @@ function getTagsFromProps(p: IProp): string[] {
 }
 
 const RateOfChangeReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getROCReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps)(RateOfChangeReportInner));
-export {RateOfChangeReport}
+export {RateOfChangeReport};

@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { getToken, getExpiryDate, getUserID, saveAuth, isBeneficiaryUser } from 'helpers/auth';
-import {setURL} from 'modules/url';
+import {setURL, IURLConnector} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
-import { RouterState } from '@types/react-router-redux';
-import {IURLConnector} from 'redux/modules/url';
+import { RouterState } from 'react-router-redux';
 import { IStore } from 'redux/IStore';
-import {setUserDetails, setLoggedInStatus, SetUserDetailsFunc, SetLoggedInStatusFunc, getUserID as getUserIDFromStore, isUserLoggedIn} from 'modules/user';
+import {setUserDetails, setLoggedInStatus, SetUserDetailsFunc, SetLoggedInStatusFunc, getUserID as getUserIDFromStore, isUserLoggedIn} from 'redux/modules/user';
 import {getWebAuth} from '../../helpers/auth';
 import {WebAuth} from 'auth0-js';
 

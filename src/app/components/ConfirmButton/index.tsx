@@ -41,7 +41,7 @@ class ConfirmButton extends React.Component<IProps, IState> {
       doing: this.state.doing,
       error: this.state.error,
     });
-  };
+  }
 
   private handleCancel() {
     this.setState({
@@ -87,15 +87,17 @@ class ConfirmButton extends React.Component<IProps, IState> {
       tooltip = this.props.tooltip;
     }
     if (this.state.doing) {
-      buttonProps = Object.assign({}, buttonProps, {
+      buttonProps = {
+        ...buttonProps,
         loading: true,
         disabled: true,
-      });
+      };
     }
     if (this.state.error) {
-      buttonProps = Object.assign({}, buttonProps, {
+      buttonProps = {
+        ...buttonProps,
         negative: true,
-      });
+      };
       tooltip = this.state.error;
     }
     const inner = (

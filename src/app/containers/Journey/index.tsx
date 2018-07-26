@@ -2,18 +2,19 @@ import * as React from 'react';
 import { Loader, Message } from 'semantic-ui-react';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import {VizControlPanel} from 'components/VizControlPanel';
-import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import {IStore} from 'redux/IStore';
-import {IURLConnector} from 'redux/modules/url';
-import {Aggregation, Visualisation, getAggregation, getVisualisation, getSelectedQuestionSetID} from 'models/pref';
+import {IURLConnector, setURL} from 'redux/modules/url';
+import {
+  Aggregation, Visualisation, getAggregation, getVisualisation,
+  getSelectedQuestionSetID, SelectedQuestionSetIDKey} from 'models/pref';
 import {getMeetings, IMeetingResult} from 'apollo/modules/meetings';
 import {IMeeting} from 'models/meeting';
 import {MeetingRadar} from 'components/MeetingRadar';
 import {MeetingTable} from 'components/MeetingTable';
-import {isBeneficiaryUser} from 'modules/user';
+import {isBeneficiaryUser} from 'redux/modules/user';
 import {MeetingGraph} from 'components/MeetingGraph';
-import {SelectedQuestionSetIDKey} from 'models/pref';
+
 import {setPref, SetPrefFunc} from 'redux/modules/pref';
 const { connect } = require('react-redux');
 
@@ -201,4 +202,4 @@ class JourneyInner extends React.Component<IProps, any> {
 }
 
 const Journey = getMeetings<IProps>((p) => p.params.id)(JourneyInner);
-export { Journey }
+export { Journey };

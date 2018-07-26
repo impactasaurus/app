@@ -116,7 +116,7 @@ class LikertForm extends React.Component<IProps, IState> {
     let message = (<span />);
     if (this.state.selectedLabel === undefined) {
       props.disabled = true;
-      message = (<Label basic pointing="left">Click a point on the scale to set or edit labels</Label>);
+      message = (<Label basic={true} pointing="left">Click a point on the scale to set or edit labels</Label>);
     }
     const editedLabel = this.props.labels.find((l) => l.value === this.state.selectedLabel);
     return (
@@ -134,9 +134,9 @@ class LikertForm extends React.Component<IProps, IState> {
     return (
       <Form>
         <Form.Group>
-          <Form.Input required label="Left Value" type="number" placeholder="Left Value" width={4} onChange={this.setLeftValue} defaultValue={this.props.leftValue} />
+          <Form.Input required={true} label="Left Value" type="number" placeholder="Left Value" width={4} onChange={this.setLeftValue} defaultValue={this.props.leftValue} />
           <Form.Input className="padding" width={8} />
-          <Form.Input required label="Right Value" type="number" placeholder="Right Value" width={4} onChange={this.setRightValue} defaultValue={this.props.rightValue} />
+          <Form.Input required={true} label="Right Value" type="number" placeholder="Right Value" width={4} onChange={this.setRightValue} defaultValue={this.props.rightValue} />
         </Form.Group>
       </Form>
     );

@@ -38,7 +38,7 @@ class Data extends React.Component<IURLConnector, IState> {
 
   public render() {
     return (
-      <Grid container columns={1} id="data">
+      <Grid container={true} columns={1} id="data">
         <Grid.Column>
           <Helmet>
             <title>Data</title>
@@ -56,4 +56,4 @@ class Data extends React.Component<IURLConnector, IState> {
   }
 }
 
-export { Data }
+export { Data };

@@ -58,4 +58,4 @@ class RecordsInner extends React.Component<IProps, any> {
 }
 
 const Records = getAllMeetings<IProps>((p) => p.params.id)(RecordsInner);
-export { Records }
+export { Records };

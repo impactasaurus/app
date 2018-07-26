@@ -18,8 +18,7 @@ var config = {
     modules: [
       path.resolve(__dirname),
       'node_modules',
-      'app',
-      'app/redux'
+      'app'
     ],
     alias: {
       // for semantic: redirect theme access to our custom theme (https://medium.com/webmonkeys/webpack-2-semantic-ui-theming-a216ddf60daf)

@@ -15,7 +15,7 @@ var config = {
 
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
-    modules: [path.resolve(__dirname), 'node_modules', 'app', 'app/redux'],
+    modules: [path.resolve(__dirname), 'node_modules', 'app'],
     alias: {
       // for semantic: redirect theme access to our custom theme (https://medium.com/webmonkeys/webpack-2-semantic-ui-theming-a216ddf60daf)
       '../../theme.config$': path.join(__dirname, '../../src/app/theme/theme.config')

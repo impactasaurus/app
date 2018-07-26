@@ -26,7 +26,7 @@ class ExportQuestionnaireInner extends React.Component<IProps, any> {
       inner = (<span>Download started</span>);
     }
     return (
-      <Grid container columns={1} id="data">
+      <Grid container={true} columns={1} id="data">
         <Grid.Column>
           <Helmet>
             <title>Questionnaire Export</title>
@@ -39,4 +39,4 @@ class ExportQuestionnaireInner extends React.Component<IProps, any> {
 }
 
 const ExportQuestionnaire = exportMeetings((p: IProps) => p.params.id)(ExportQuestionnaireInner);
-export { ExportQuestionnaire }
+export { ExportQuestionnaire };

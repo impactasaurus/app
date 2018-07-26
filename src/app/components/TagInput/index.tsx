@@ -45,9 +45,9 @@ class TagInput extends React.Component<IProps, any> {
   private renderInput(props) {
     const {onChange, value, ...other} = props;
     return (
-      <Input icon type="text" placeholder="Add tag" onChange={onChange} value={value} {...other}>
+      <Input icon={true} type="text" placeholder="Add tag" onChange={onChange} value={value} {...other}>
         <input />
-        <Icon name="add" link />
+        <Icon name="add" link={true} />
       </Input>
     );
   }

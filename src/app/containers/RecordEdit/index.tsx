@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import {Button, Loader, Grid, ButtonProps, Label} from 'semantic-ui-react';
-import {IURLConnector} from 'redux/modules/url';
+import {IURLConnector, setURL} from 'redux/modules/url';
 import {
   editMeetingDate, editMeetingTags, getMeeting, IEditMeetingDate, IEditMeetingTags,
   IMeetingResult,
@@ -11,7 +11,6 @@ import {DateTimePicker} from 'components/DateTimePicker';
 import {Hint} from 'components/Hint';
 import * as moment from 'moment';
 import {bindActionCreators} from 'redux';
-import {setURL} from 'redux/modules/url';
 import {renderArray} from 'helpers/react';
 import './style.less';
 const strings = require('./../../../strings.json');
@@ -143,7 +142,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
   }
 
   private renderEditButton(onClick: ()=>void): JSX.Element {
-    return (<Button className="field-edit" onClick={onClick} compact size="tiny" primary>Edit</Button>);
+    return (<Button className="field-edit" onClick={onClick} compact={true} size="tiny" primary={true}>Edit</Button>);
   }
 
   private renderDateSection(dateEditing: boolean): JSX.Element {
@@ -207,7 +206,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
   public render() {
     const wrapper = (inner: JSX.Element): JSX.Element => {
       return (
-        <Grid container columns={1} id="record-edit">
+        <Grid container={true} columns={1} id="record-edit">
           <Grid.Column>
             <Helmet>
               <title>Edit Record</title>
@@ -265,4 +264,4 @@ class RecordEditInner extends React.Component<IProps, IState> {
 }
 
 const RecordEdit = editMeetingTags<IProps>(editMeetingDate<IProps>(getMeeting<IProps>((props) => props.params.id)(RecordEditInner)));
-export { RecordEdit }
+export { RecordEdit };

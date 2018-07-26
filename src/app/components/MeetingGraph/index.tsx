@@ -102,4 +102,4 @@ class MeetingGraph extends React.Component<IProp, any> {
   }
 }
 
-export { MeetingGraph }
+export { MeetingGraph };

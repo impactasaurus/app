@@ -64,9 +64,10 @@ class OrganisationSettingsInner extends React.Component<IProps, IState> {
 
   private benTypeaheadChanged(_, e) {
     this.setState({
-      settings: Object.assign({}, this.state.settings, {
+      settings: {
+        ...this.state.settings,
         beneficiaryTypeAhead: e.checked,
-      }),
+      },
     });
   }
 

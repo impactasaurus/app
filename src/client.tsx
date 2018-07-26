@@ -32,9 +32,9 @@ const networkInterface = createNetworkInterface({
   uri: appConfig.app.api + '/v1/graphql',
 });
 networkInterface.use([{
-  applyMiddleware(req, next) {
+  applyMiddleware(req: any, next) {
     if (!req.options.headers) {
-      req.options.headers = {};  // Create the header object if needed.
+      req.options.headers = {};
     }
     req.options.headers.authorization = getToken() ? `Bearer ${getToken()}` : null;
     next();
@@ -44,9 +44,7 @@ const client = new ApolloClient({networkInterface});
 
 const store = configureStore(
   browserHistory,
-  {
-    apollo: client.reducer(),
-  },
+  client.reducer(),
   [client.middleware()],
   window.__INITIAL_STATE__,
 );

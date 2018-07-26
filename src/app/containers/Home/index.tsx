@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { FancyBox } from 'components/FancyBox';
-import {IURLConnector} from 'redux/modules/url';
-import {setURL} from 'modules/url';
+import {IURLConnector, setURL} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
 import { Grid } from 'semantic-ui-react';
 const { connect } = require('react-redux');
@@ -20,7 +19,7 @@ class Home extends React.Component<IURLConnector, any> {
 
   public render() {
     return (
-      <Grid container columns={1} id="home">
+      <Grid container={true} columns={1} id="home">
         <Grid.Column>
           <Helmet>
             <title>Home</title>
@@ -34,4 +33,4 @@ class Home extends React.Component<IURLConnector, any> {
   }
 }
 
-export { Home }
+export { Home };

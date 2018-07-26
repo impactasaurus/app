@@ -25,15 +25,17 @@ const initialState: IState = {
 export function reducer(state: IState = initialState, action: IAction) {
   switch (action.type) {
     case SET_USER_DETAILS:
-      return Object.assign({}, state, {
+      return {
+        ...state,
         userID: action.payload.userID,
         beneficiaryUser: action.payload.beneficiaryUser,
-      });
+      };
 
     case SET_LOGIN_STATUS:
-      return Object.assign({}, state, {
+      return {
+        ...state,
         loggedIn: action.payload.loggedIn,
-      });
+      };
 
     default:
       return state;

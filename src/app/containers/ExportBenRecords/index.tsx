@@ -27,7 +27,7 @@ class ExportBenRecordsInner extends React.Component<IProps, any> {
       inner = (<span>Download started</span>);
     }
     return (
-      <Grid container columns={1} id="data">
+      <Grid container={true} columns={1} id="data">
         <Grid.Column>
           <Helmet>
             <title>Beneficiary Record Export</title>
@@ -40,4 +40,4 @@ class ExportBenRecordsInner extends React.Component<IProps, any> {
 }
 
 const ExportBenRecords = exportBenMeetings((p: IProps) => p.params.qid, (p: IProps) => p.params.id)(ExportBenRecordsInner);
-export { ExportBenRecords }
+export { ExportBenRecords };

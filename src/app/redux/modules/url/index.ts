@@ -16,4 +16,4 @@ export function setURL(url: string, search?: string) {
 
 export interface IURLConnector {
     setURL?(url: string, search?: string);
-};
+}

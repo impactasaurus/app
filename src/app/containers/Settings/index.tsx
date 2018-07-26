@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { Menu } from 'semantic-ui-react';
-import {IURLConnector} from 'redux/modules/url';
-import {setURL} from 'modules/url';
+import {IURLConnector, setURL} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
 import {IStore} from 'redux/IStore';
 const { connect } = require('react-redux');
@@ -42,7 +41,7 @@ class Settings extends React.Component<IProps, any> {
         <Helmet>
           <title>Settings</title>
         </Helmet>
-        <Menu pointing secondary>
+        <Menu pointing={true} secondary={true}>
           <Menu.Item name="Account" active={this.isSelected('/settings/account')} onClick={this.handleClick('/settings/account')} />
           <Menu.Item name="Data" active={this.isSelected('/settings/data')} onClick={this.handleClick('/settings/data')} />
           <Menu.Item name="Organisation" active={this.isSelected('/settings/organisation')} onClick={this.handleClick('/settings/organisation')} />
@@ -55,4 +54,4 @@ class Settings extends React.Component<IProps, any> {
   }
 }
 
-export { Settings }
+export { Settings };

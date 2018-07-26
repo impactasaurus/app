@@ -31,4 +31,4 @@ class App extends React.Component<IProps, any> {
   }
 }
 
-export { App }
+export { App };

@@ -94,7 +94,7 @@ class MeetingRadar extends React.Component<IProp, any> {
       return (<span />);
     }
     return (
-      <Message compact>
+      <Message compact={true}>
         <Icon name="info" /> By default, three records are shown on the radar chart. To view more, click the corresponding legend entries.
       </Message>
     );
@@ -118,4 +118,4 @@ class MeetingRadar extends React.Component<IProp, any> {
   }
 }
 
-export { MeetingRadar }
+export { MeetingRadar };

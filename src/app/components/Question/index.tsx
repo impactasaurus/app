@@ -1,13 +1,12 @@
 import * as React from 'react';
-import {addLikertAnswer} from 'apollo/modules/meetings';
+import {addLikertAnswer, IMeetingMutation} from 'apollo/modules/meetings';
 import {IQuestion, Question as QuestionType} from 'models/question';
 import {Likert} from 'components/Likert';
 import {Notepad} from 'components/Notepad';
 import 'rc-slider/assets/index.css';
 import { Button, ButtonProps } from 'semantic-ui-react';
 import {IIntAnswer, Answer, IAnswer} from 'models/answer';
-import {IMeeting} from '../../models/meeting';
-import {IMeetingMutation} from 'apollo/modules/meetings';
+import {IMeeting} from 'models/meeting';
 const ReactGA = require('react-ga');
 
 interface IProps extends IMeetingMutation {
@@ -167,4 +166,4 @@ class QuestionInner extends React.Component<IProps, IState> {
   }
 }
 const Question = addLikertAnswer<IProps>(QuestionInner);
-export { Question }
+export { Question };

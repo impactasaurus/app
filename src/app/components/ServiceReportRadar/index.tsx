@@ -89,4 +89,4 @@ class ServiceReportRadar extends React.Component<IProp, any> {
   }
 }
 
-export {ServiceReportRadar}
+export {ServiceReportRadar};

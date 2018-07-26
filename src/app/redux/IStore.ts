@@ -1,4 +1,4 @@
-import { RouterState } from '@types/react-router-redux';
+import { RouterState } from 'react-router-redux';
 import {IState as PrefState} from 'redux/modules/pref';
 import {IState as UserState} from 'redux/modules/user';
 import {IState as StorageState} from 'redux/modules/storage';
@@ -10,4 +10,4 @@ export interface IStore {
   pref: PrefState;
   user: UserState;
   storage: StorageState;
-};
+}

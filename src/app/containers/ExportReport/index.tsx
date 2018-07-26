@@ -32,7 +32,7 @@ class ExportReportInner extends React.Component<IProp, any> {
       inner = (<span>Download started</span>);
     }
     return (
-      <Grid container columns={1} id="data">
+      <Grid container={true} columns={1} id="data">
         <Grid.Column>
           <Helmet>
             <title>Questionnaire Export</title>
@@ -76,4 +76,4 @@ function getOpenFromProps(p: IProp): boolean {
 }
 
 const ExportReport = exportReport(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenFromProps)(ExportReportInner);
-export { ExportReport }
+export { ExportReport };

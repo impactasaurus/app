@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import {IURLConnector} from 'redux/modules/url';
-import {setURL} from 'modules/url';
+import {IURLConnector, setURL} from 'redux/modules/url';
 import { Button, Grid, Message, Radio } from 'semantic-ui-react';
 import {DateRangePicker} from 'components/DateRangePicker';
 import {Hint} from 'components/Hint';
@@ -158,13 +157,13 @@ class Report extends React.Component<IURLConnector, IState> {
 
   public render() {
     return (
-      <Grid container columns={1} id="report-picker">
+      <Grid container={true} columns={1} id="report-picker">
         <Grid.Column>
           <Helmet>
             <title>Service Report</title>
           </Helmet>
           <h1>Service Report</h1>
-          <Message info>
+          <Message info={true}>
             <Message.Header>What does this report provide?</Message.Header>
 
             <p>The service report quantifies your organisation's impact on your beneficiaries.</p>
@@ -181,4 +180,4 @@ class Report extends React.Component<IURLConnector, IState> {
   }
 }
 
-export {Report}
+export {Report};

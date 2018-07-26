@@ -48,10 +48,10 @@ class CategoryPillInner extends React.Component<IProps, IState> {
   private renderPill(className: string, text: string, saving=false): JSX.Element {
     let leftComponent = (<span />);
     if (saving) {
-      leftComponent = (<Loader active={true} inline size="mini" />);
+      leftComponent = (<Loader active={true} inline={true} size="mini" />);
     }
     return (
-      <Label as="a" className={`category-pill ${className} ${this.props.cssClass || ''}`} horizontal onClick={this.setEditMode}>
+      <Label as="a" className={`category-pill ${className} ${this.props.cssClass || ''}`} horizontal={true} onClick={this.setEditMode}>
         {leftComponent} {text}
       </Label>
     );
@@ -181,4 +181,4 @@ class CategoryPillInner extends React.Component<IProps, IState> {
 }
 
 const CategoryPill = setCategory<IProps>(CategoryPillInner);
-export { CategoryPill }
+export { CategoryPill };

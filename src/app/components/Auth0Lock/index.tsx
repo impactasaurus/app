@@ -56,7 +56,7 @@ class Auth0Lock extends React.Component<IProps, IState> {
   public render() {
     if (this.state.error !== undefined) {
       return (
-        <Message warning>
+        <Message warning={true}>
           <Message.Header>Error {this.state.error.code}</Message.Header>
           <Message.Content>Please try refreshing the page.</Message.Content>
         </Message>
@@ -68,4 +68,4 @@ class Auth0Lock extends React.Component<IProps, IState> {
   }
 }
 
-export { Auth0Lock }
+export { Auth0Lock };

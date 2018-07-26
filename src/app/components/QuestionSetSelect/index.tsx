@@ -2,7 +2,7 @@ import * as React from 'react';
 import {IOutcomeResult, allOutcomeSets} from 'apollo/modules/outcomeSets';
 import {IOutcomeSet} from 'models/outcomeSet';
 import { Select, DropdownItemProps } from 'semantic-ui-react';
-import {setPref, SetPrefFunc} from 'modules/pref';
+import {setPref, SetPrefFunc} from 'redux/modules/pref';
 import {IStore} from 'redux/IStore';
 const { connect } = require('react-redux');
 import { bindActionCreators } from 'redux';
@@ -116,4 +116,4 @@ class QuestionSetSelectInner extends React.Component<IProp, any> {
 }
 
 const QuestionSetSelect = allOutcomeSets<IProp>(QuestionSetSelectInner);
-export {QuestionSetSelect}
+export {QuestionSetSelect};

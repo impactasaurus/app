@@ -34,7 +34,7 @@ class EditLikertQuestionInner extends React.Component<IProps, any> {
 
     return (
       <LikertQuestionForm
-        edit
+        edit={true}
         newQuestion={q.question}
         categoryID={q.categoryID}
         description={q.description}

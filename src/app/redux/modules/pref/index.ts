@@ -19,9 +19,10 @@ const initialState = {};
 export function reducer(state: IState = initialState, action: IAction) {
   switch (action.type) {
     case SET_PREF:
-      return Object.assign({}, state, {
+      return {
+        ...state,
         [action.payload.key]: action.payload.value,
-      });
+      };
 
     default:
       return state;

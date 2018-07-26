@@ -127,4 +127,4 @@ class RadarChart extends React.Component<IProp, IState> {
   }
 }
 
-export { RadarChart }
+export { RadarChart };

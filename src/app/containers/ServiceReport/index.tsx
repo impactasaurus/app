@@ -1,6 +1,5 @@
 import * as React from 'react';
 import 'url-search-params-polyfill';
-import {GraphQLError} from '@types/graphql';
 import { Helmet } from 'react-helmet';
 import { Grid, Loader, Message } from 'semantic-ui-react';
 import {getJOCServiceReport, IJOCReportResult} from 'apollo/modules/reports';
@@ -61,10 +60,10 @@ class ServiceReportInner extends React.Component<IProp, any> {
     this.exportReportData = this.exportReportData.bind(this);
   }
 
-  private renderError(error: GraphQLError): JSX.Element {
+  private renderError(error: string): JSX.Element {
     return (
-      <p key={error.message}>
-        {error.message}
+      <p key={error}>
+        {error}
       </p>
     );
   }
@@ -90,7 +89,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
   public render() {
     const wrapper = (inner: JSX.Element): JSX.Element => {
       return (
-        <Grid container columns={1} id="service-report">
+        <Grid container={true} columns={1} id="service-report">
           <Grid.Column>
             <Helmet>
               <title>Service Report</title>
@@ -104,8 +103,8 @@ class ServiceReportInner extends React.Component<IProp, any> {
     };
     if (this.props.JOCServiceReport.error) {
       return wrapper((
-        <Message error>
-          {renderArray(this.renderError, this.props.JOCServiceReport.error.graphQLErrors)}
+        <Message error={true}>
+          {renderArray<string>(this.renderError, this.props.JOCServiceReport.error.graphQLErrors.map((e) => e.message))}
         </Message>
       ));
     }
@@ -154,4 +153,4 @@ function getOpenStartFromProps(p: IProp): boolean {
 }
 
 const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenStartFromProps)(ServiceReportInner));
-export {ServiceReport}
+export {ServiceReport};

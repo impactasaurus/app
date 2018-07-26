@@ -56,7 +56,7 @@ class QuestionnaireReviewInner extends React.Component<IProps, IState> {
   private navigateToQuestion(selectedQ: IQuestion, _: number): Promise<void> {
     this.props.onQuestionClick(selectedQ.id);
     return Promise.resolve();
-  };
+  }
 
   private renderAnswerReview(): JSX.Element {
     return (
@@ -91,4 +91,4 @@ class QuestionnaireReviewInner extends React.Component<IProps, IState> {
   }
 }
 const QuestionnaireReview = completeMeeting<IProps>(QuestionnaireReviewInner);
-export { QuestionnaireReview }
+export { QuestionnaireReview };

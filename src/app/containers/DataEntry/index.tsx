@@ -1,17 +1,15 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import {IMeetingResult, getMeeting} from 'apollo/modules/meetings';
+import {IMeetingResult, getMeeting, completeMeeting, IMeetingMutation} from 'apollo/modules/meetings';
 import 'rc-slider/assets/index.css';
 import {ButtonProps, Grid, Loader, Button} from 'semantic-ui-react';
-import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
-import {IURLConnector} from 'redux/modules/url';
+import {IURLConnector, setURL} from 'redux/modules/url';
 import {IAnswer} from 'models/answer';
 import {IQuestion, Question} from 'models/question';
 import {QuestionInline} from 'components/QuestionInline';
 import {renderArray} from 'helpers/react';
 import {getHumanisedDateFromISO} from 'helpers/moment';
-import {completeMeeting, IMeetingMutation} from 'apollo/modules/meetings';
 import {QuestionnaireReview} from 'components/QuestionnaireReview';
 import {MeetingNotepad} from 'components/MeetingNotepad';
 const { connect } = require('react-redux');
@@ -156,7 +154,7 @@ class DataEntryInner extends React.Component<IProps, IState> {
   public render() {
     const wrapper = (inner: JSX.Element): JSX.Element => {
       return (
-        <Grid container columns={1} id="data-entry">
+        <Grid container={true} columns={1} id="data-entry">
           <Grid.Column>
             <Helmet>
               <title>Data Entry</title>
@@ -184,4 +182,4 @@ class DataEntryInner extends React.Component<IProps, IState> {
   }
 }
 const DataEntry = completeMeeting<IProps>(getMeeting<IProps>((props) => props.params.id)(DataEntryInner));
-export { DataEntry }
+export { DataEntry };

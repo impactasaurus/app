@@ -1,4 +1,4 @@
-import {createStore, applyMiddleware, compose, ReducersMapObject, Middleware} from 'redux';
+import {createStore, applyMiddleware, compose, Middleware} from 'redux';
 import { routerMiddleware } from 'react-router-redux';
 import thunk from 'redux-thunk';
 import getReducers from './reducers';
@@ -9,12 +9,12 @@ import filter from 'redux-storage-decorator-filter';
 import logger from 'redux-logger';
 const appConfig = require('../../../config/main');
 
-export function configureStore(history, clientReducers: ReducersMapObject, clientMiddlewares: Middleware[], initialState?: IStore) {
+export function configureStore(history, apolloReducer, clientMiddlewares: Middleware[], initialState?: IStore) {
 
   let storeEngine = createEngine('state');
   storeEngine = filter(storeEngine, ['pref']);
   const storageMiddleware = storage.createMiddleware(storeEngine);
-  const reducer = storage.reducer(getReducers(clientReducers));
+  const reducer = storage.reducer(getReducers(apolloReducer));
 
   const middlewares: Middleware[] = [
     routerMiddleware(history),

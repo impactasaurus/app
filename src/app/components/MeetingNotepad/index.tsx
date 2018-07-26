@@ -97,4 +97,4 @@ class MeetingNotepadInner extends React.Component<IProps, IState> {
   }
 }
 const MeetingNotepad = setMeetingNotes<IProps>(MeetingNotepadInner);
-export { MeetingNotepad }
+export { MeetingNotepad };
