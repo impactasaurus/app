@@ -1,6 +1,5 @@
 import * as React from 'react';
 import 'url-search-params-polyfill';
-import {GraphQLError} from '@types/graphql';
 import { Helmet } from 'react-helmet';
 import { Grid, Loader, Message } from 'semantic-ui-react';
 import {getROCReport, IROCReportResult} from 'apollo/modules/reports';
@@ -15,10 +14,12 @@ const { connect } = require('react-redux');
 
 interface IProp extends IROCReportResult {
   data: IOutcomeResult;
-  params: {
-    questionSetID: string,
-    start: string,
-    end: string,
+  match: {
+    params: {
+      questionSetID: string,
+      start: string,
+      end: string,
+    },
   };
   location: {
     search: string,
@@ -35,10 +36,10 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
   return props.ROCReport.getROCReport.beneficiaries[0].categories.length > 0;
 };
 
-function renderError(error: GraphQLError): JSX.Element {
+function renderError(error: string): JSX.Element {
   return (
-    <p key={error.message}>
-      {error.message}
+    <p key={error}>
+      {error}
     </p>
   );
 }
@@ -61,8 +62,8 @@ class RateOfChangeReportInner extends React.Component<IProp, any> {
     const reportReq = this.props.ROCReport;
     if (reportReq.error) {
       return (
-        <Message error>
-          {renderArray(renderError, reportReq.error.graphQLErrors)}
+        <Message error={true}>
+          {renderArray<string>(renderError, reportReq.error.graphQLErrors.map((e) => e.message))}
         </Message>
       );
     }
@@ -84,7 +85,7 @@ class RateOfChangeReportInner extends React.Component<IProp, any> {
 
   public render() {
     return (
-      <Grid container columns={1} id="roc-report">
+      <Grid container={true} columns={1} id="roc-report">
         <Grid.Column>
           <Helmet>
             <title>Rate of Change Report</title>
@@ -98,15 +99,15 @@ class RateOfChangeReportInner extends React.Component<IProp, any> {
 }
 
 function getQuestionSetIDFromProps(p: IProp): string {
-  return p.params.questionSetID;
+  return p.match.params.questionSetID;
 }
 
 function getStartDateFromProps(p: IProp): string {
-  return p.params.start;
+  return p.match.params.start;
 }
 
 function getEndDateFromProps(p: IProp): string {
-  return p.params.end;
+  return p.match.params.end;
 }
 
 function getTagsFromProps(p: IProp): string[] {
@@ -119,4 +120,4 @@ function getTagsFromProps(p: IProp): string[] {
 }
 
 const RateOfChangeReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getROCReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps)(RateOfChangeReportInner));
-export {RateOfChangeReport}
+export {RateOfChangeReport};

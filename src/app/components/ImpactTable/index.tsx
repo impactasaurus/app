@@ -218,4 +218,4 @@ class ImpactTable extends React.Component<IProp, IState> {
   }
 }
 
-export {ImpactTable, IRow}
+export {ImpactTable, IRow};

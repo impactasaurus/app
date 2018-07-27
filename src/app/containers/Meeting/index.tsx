@@ -5,9 +5,8 @@ import {Question} from 'components/Question';
 import 'rc-slider/assets/index.css';
 import { Grid, Loader, Progress } from 'semantic-ui-react';
 import './style.less';
-import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
-import {IURLConnector} from 'redux/modules/url';
+import {IURLConnector, setURL} from 'redux/modules/url';
 import {IAnswer} from 'models/answer';
 import {IQuestion} from 'models/question';
 import {QuestionnaireReview} from 'components/QuestionnaireReview';
@@ -20,8 +19,10 @@ const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
   data: IMeetingResult;
-  params: {
+  match: {
+    params: {
       id: string,
+    },
   };
   questions?: IQuestion[];
   answers?: IAnswer[];
@@ -169,7 +170,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       return (
         <div id="meeting">
           {progress}
-          <Grid container columns={1}>
+          <Grid container={true} columns={1}>
             <Grid.Column>
               <Helmet>
                 <title>Questionnaire</title>
@@ -200,15 +201,17 @@ class MeetingInner extends React.Component<IProps, IState> {
     if (currentQuestionID === undefined) {
       return wrapper(<Loader active={true} inline="centered" />);
     }
-    return wrapper(<Question
-      key={currentQuestionID}
-      record={meeting}
-      questionID={currentQuestionID}
-      showPrevious={this.canGoToPrevious()}
-      onPrevious={this.goToPreviousScreen}
-      onNext={this.goToNextScreen}
-    />, this.renderProgressBar());
+    return wrapper((
+        <Question
+        key={currentQuestionID}
+        record={meeting}
+        questionID={currentQuestionID}
+        showPrevious={this.canGoToPrevious()}
+        onPrevious={this.goToPreviousScreen}
+        onNext={this.goToNextScreen}
+      />
+    ), this.renderProgressBar());
   }
 }
-const Meeting = getMeeting<IProps>((props) => props.params.id)(MeetingInner);
-export { Meeting }
+const Meeting = getMeeting<IProps>((props) => props.match.params.id)(MeetingInner);
+export { Meeting };

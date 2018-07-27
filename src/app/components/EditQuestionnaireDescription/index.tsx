@@ -89,10 +89,10 @@ class EditQuestionnaireDescriptionInner extends React.Component<IProps, IState> 
           onKeyPress={this.onNewDescriptionInputKeyPress}
           defaultValue={this.state.description}
           onFocus={this.moveCaretAtEnd}
-          autoFocus
+          autoFocus={true}
         />
         <Button onClick={this.props.afterSubmit}>Cancel</Button>
-        <Button primary onClick={this.submitNewDescription} loading={this.state.isBeingSubmitted}>Save</Button>
+        <Button primary={true} onClick={this.submitNewDescription} loading={this.state.isBeingSubmitted}>Save</Button>
         <p>{this.state.error}</p>
       </div>
     );
@@ -101,4 +101,4 @@ class EditQuestionnaireDescriptionInner extends React.Component<IProps, IState> 
 
 const EditQuestionnaireDescription = editQuestionSet<IProps>(EditQuestionnaireDescriptionInner);
 
-export { EditQuestionnaireDescription }
+export { EditQuestionnaireDescription };

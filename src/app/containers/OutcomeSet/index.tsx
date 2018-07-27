@@ -14,16 +14,18 @@ import './style.less';
 
 interface IProps extends IOutcomeMutation, IQuestionMutation {
   data: IOutcomeResult;
-  params: {
+  match: {
+    params: {
       id: string,
+    },
   };
-};
+}
 
 interface IState {
   displayEditNameControl?: boolean;
   displayEditDescriptionControl?: boolean;
   editingInstructions?: boolean;
-};
+}
 
 class OutcomeSetInner extends React.Component<IProps, IState> {
   constructor(props) {
@@ -61,7 +63,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
 
   private renderEditButton(onClick: () => void): JSX.Element {
     return (
-      <Button icon basic circular size="mini" onClick={onClick}>
+      <Button icon={true} basic={true} circular={true} size="mini" onClick={onClick}>
         <Icon name="pencil"/>
       </Button>
     );
@@ -70,7 +72,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
   public render() {
     const wrapper = (inner: JSX.Element): JSX.Element => {
       return (
-        <Grid container columns={1} id="question-set">
+        <Grid container={true} columns={1} id="question-set">
           <Grid.Column>
             <Helmet>
               <title>Questionnaire</title>
@@ -82,7 +84,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
         </Grid>
       );
     };
-    const { data, params } = this.props;
+    const { data, match: {params} } = this.props;
     const { displayEditNameControl, displayEditDescriptionControl, editingInstructions } = this.state;
     if (data.loading) {
       return wrapper(<Loader active={true} inline="centered" />);
@@ -118,5 +120,5 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
   }
 }
 
-const OutcomeSet = getOutcomeSet<IProps>((props) => props.params.id)(deleteQuestion<IProps>(OutcomeSetInner));
-export { OutcomeSet }
+const OutcomeSet = getOutcomeSet<IProps>((props) => props.match.params.id)(deleteQuestion<IProps>(OutcomeSetInner));
+export { OutcomeSet };

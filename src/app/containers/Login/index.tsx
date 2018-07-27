@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import {setURL} from 'modules/url';
-import { bindActionCreators } from 'redux';
+import {setURL} from 'redux/modules/url';
+import {ActionCreator, bindActionCreators} from 'redux';
 import {Auth0Lock} from 'components/Auth0Lock';
 import {isNullOrUndefined} from 'util';
 const { connect } = require('react-redux');
 
 interface IProps {
-  setURL: Redux.ActionCreator<any>;
+  setURL: ActionCreator<any>;
   location: {
     search: string,
   };
@@ -46,7 +46,7 @@ class Login extends React.Component<IProps, {}> {
       const query: string|undefined = components.length > 1 ? '?' + components[1] : undefined;
       this.props.setURL(components[0], query);
     } else {
-      this.props.setURL('');
+      this.props.setURL('/');
     }
   }
 
@@ -62,4 +62,4 @@ class Login extends React.Component<IProps, {}> {
   }
 }
 
-export { Login }
+export { Login };

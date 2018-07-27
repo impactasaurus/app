@@ -72,10 +72,6 @@ module.exports = function (config) {
             loader: 'url-loader?limit=1000&name=[hash].[ext]'
           },
           {
-            test: /\.json$/,
-            loader: 'json-loader'
-          },
-          {
             test: /\.css$/,
             include: path.resolve('./src/app'),
             loaders: [

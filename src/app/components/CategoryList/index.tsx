@@ -76,7 +76,7 @@ class CategoryListInner extends React.Component<IProps, IState> {
 
     const editButton = (
         <span>
-          <Button onClick={this.setEditedCategoryId(c.id)} icon="edit" tooltip="Edit" compact size="tiny" />
+          <Button onClick={this.setEditedCategoryId(c.id)} icon="edit" tooltip="Edit" compact={true} size="tiny" />
         </span>
     );
 
@@ -130,7 +130,7 @@ class CategoryListInner extends React.Component<IProps, IState> {
         return (<div />);
     }
     return (
-      <List divided relaxed verticalAlign="middle" className="list">
+      <List divided={true} relaxed={true} verticalAlign="middle" className="list">
         {renderArray(this.renderCategory, os.categories)}
         {this.renderNewCategoryControl()}
       </List>
@@ -138,4 +138,4 @@ class CategoryListInner extends React.Component<IProps, IState> {
   }
 }
 const CategoryList = deleteCategory<IProps>(CategoryListInner);
-export { CategoryList }
+export { CategoryList };

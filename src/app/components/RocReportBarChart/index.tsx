@@ -127,4 +127,4 @@ class RocReportBarChart extends React.Component<IProp, any> {
   }
 }
 
-export {RocReportBarChart}
+export {RocReportBarChart};

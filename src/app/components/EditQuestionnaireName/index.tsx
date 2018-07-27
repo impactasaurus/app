@@ -90,10 +90,10 @@ class EditQuestionnaireNameInner extends React.Component<IProps, IState> {
           onKeyPress={this.onNewNameInputKeyPress}
           value={this.state.name}
           onFocus={this.moveCaretAtEnd}
-          autoFocus
+          autoFocus={true}
         />
         <Button onClick={this.props.afterSubmit} size="large">Cancel</Button>
-        <Button primary onClick={this.submitNewName} size="large" loading={this.state.isBeingSubmitted}>Save</Button>
+        <Button primary={true} onClick={this.submitNewName} size="large" loading={this.state.isBeingSubmitted}>Save</Button>
         <p>{this.state.error}</p>
       </div>
     );
@@ -102,4 +102,4 @@ class EditQuestionnaireNameInner extends React.Component<IProps, IState> {
 
 const EditQuestionnaireName = editQuestionSet<IProps>(EditQuestionnaireNameInner);
 
-export { EditQuestionnaireName }
+export { EditQuestionnaireName };

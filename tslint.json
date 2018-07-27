@@ -32,6 +32,8 @@
     ],
     "whitespace": [false],
     "jsx-no-multiline-js": false,
-    "one-variable-per-declaration": false
+    "one-variable-per-declaration": false,
+    "no-submodule-imports": [true, "apollo", "components", "containers", "helpers", "models", "redux", "routes", "theme", "rc-slider", "semantic-ui-less"],
+    "no-implicit-dependencies": [true, "dev", ["apollo", "components", "containers", "helpers", "models", "redux", "routes", "theme"]]
   }
 }

@@ -2,9 +2,8 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import {IOutcomeResult, IOutcomeMutation, allOutcomeSets, newQuestionSet, deleteQuestionSet} from 'apollo/modules/outcomeSets';
 import {IOutcomeSet} from 'models/outcomeSet';
-import {IURLConnector} from 'redux/modules/url';
+import {IURLConnector, setURL} from 'redux/modules/url';
 import {renderArray} from 'helpers/react';
-import {setURL} from 'modules/url';
 import { bindActionCreators } from 'redux';
 import { Button, Input, List, Icon, Grid, Loader, ButtonProps } from 'semantic-ui-react';
 import {ConfirmButton} from 'components/ConfirmButton';
@@ -14,7 +13,7 @@ const ReactGA = require('react-ga');
 
 interface IProps extends IOutcomeMutation, IURLConnector {
   data: IOutcomeResult;
-};
+}
 
 interface IState {
   createError?: string;
@@ -41,7 +40,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     this.navigateToOutcomeSet = this.navigateToOutcomeSet.bind(this);
     this.renderOutcomeSet = this.renderOutcomeSet.bind(this);
     this.renderNewControl = this.renderNewControl.bind(this);
-    this.setNewName = this.setNewName.bind(this);;
+    this.setNewName = this.setNewName.bind(this);
     this.setNewDescription = this.setNewDescription.bind(this);
     this.setNewClicked = this.setNewClicked.bind(this);
   }
@@ -143,7 +142,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
             <Input type="text" placeholder="Name" onChange={this.setNewName}/>
             <Input type="text" placeholder="Description" onChange={this.setNewDescription}/>
             <Button onClick={this.setNewClicked(false)}>Cancel</Button>
-            <Button {...addProps} primary onClick={this.createQS}>Create</Button>
+            <Button {...addProps} primary={true} onClick={this.createQS}>Create</Button>
             <p>{this.state.createError}</p>
           </List.Content>
         </List.Item>
@@ -168,14 +167,14 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     } else {
       const { data } = this.props;
       inner = (
-        <List divided relaxed verticalAlign="middle" className="list">
+        <List divided={true} relaxed={true} verticalAlign="middle" className="list">
           {renderArray(this.renderOutcomeSet, data.allOutcomeSets)}
           {this.renderNewControl()}
         </List>
       );
     }
     return (
-      <Grid container columns={1} id="question-sets">
+      <Grid container={true} columns={1} id="question-sets">
         <Grid.Column>
           <Helmet>
             <title>Questionnaires</title>
@@ -188,4 +187,4 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
   }
 }
 const OutcomeSets = allOutcomeSets<IProps>(deleteQuestionSet(newQuestionSet(SettingQuestionsInner)));
-export {OutcomeSets }
+export {OutcomeSets };

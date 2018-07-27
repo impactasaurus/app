@@ -1,7 +1,5 @@
 const appConfig = require('../config/main');
 
-import * as e6p from 'es6-promise';
-(e6p as any).polyfill();
 import 'isomorphic-fetch';
 
 const express = require('express');
@@ -34,7 +32,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
-app.get('*', function(_, res){
+app.get('*', (_, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 

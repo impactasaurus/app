@@ -2,8 +2,7 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { Grid } from 'semantic-ui-react';
 import {AssessmentTypeSelector} from 'components/AssessmentTypeSelector';
-import {IURLConnector} from 'redux/modules/url';
-import {setURL} from 'modules/url';
+import {IURLConnector, setURL} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
 import './style.less';
 import { AssessmentType } from 'models/assessment';
@@ -25,7 +24,7 @@ class AssessmentTypeSelect extends React.Component<IURLConnector, any> {
 
   public render() {
     return (
-      <Grid container columns={1} id="conduct">
+      <Grid container={true} columns={1} id="conduct">
         <Grid.Column>
           <Helmet title="Record"/>
           <h1>Create Record</h1>
@@ -36,4 +35,4 @@ class AssessmentTypeSelect extends React.Component<IURLConnector, any> {
   }
 }
 
-export { AssessmentTypeSelect }
+export { AssessmentTypeSelect };

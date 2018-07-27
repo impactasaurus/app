@@ -112,7 +112,8 @@ export interface IExportBenMeetingsResult extends QueryProps {
   exportBenMeetings?: string;
 }
 
-export const newMeeting = graphql(gql`
+export function newMeeting <T>(component) {
+  return graphql<any, T>(gql`
   mutation ($beneficiaryID: String!, $outcomeSetID: String!, $conducted: String!, $tags: [String]) {
     newMeeting: AddMeeting(beneficiaryID:$beneficiaryID, outcomeSetID:$outcomeSetID, conducted:$conducted, tags:$tags) {
       ...defaultMeeting
@@ -140,9 +141,11 @@ export const newMeeting = graphql(gql`
         }],
       }).then(mutationResultExtractor<IMeeting>('newMeeting')),
     }),
-  });
+  })(component);
+}
 
-export const newRemoteMeeting = graphql(gql`
+export function newRemoteMeeting <T>(component) {
+  return graphql<any, T>(gql`
   mutation($beneficiaryID: String!, $outcomeSetID: String!, $daysToComplete: Int!, $tags: [String]) {
     newRemoteMeeting: AddRemoteMeeting(beneficiaryID:$beneficiaryID, outcomeSetID:$outcomeSetID, daysToComplete:$daysToComplete, tags:$tags){
       JTI
@@ -171,9 +174,10 @@ export const newRemoteMeeting = graphql(gql`
       }).then(mutationResultExtractor<{
         JTI: string,
       }>('newRemoteMeeting'))
-      .then((x) => x.JTI),
+        .then((x) => x.JTI),
     }),
-  });
+  })(component);
+}
 
 export function addLikertAnswer<T>(component) {
   return graphql<any, T>(gql`

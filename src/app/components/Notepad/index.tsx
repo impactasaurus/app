@@ -55,7 +55,7 @@ class Notepad extends React.Component<IProps, IState> {
     const notesNotNull: string | undefined = this.props.notes ? this.props.notes : undefined;
     return (
       <Form>
-        <TextArea disabled={this.props.disabled === true} autoHeight placeholder={placeholder} rows={2} onChange={this.onChange} value={notesNotNull} onBlur={this.props.onBlur} />
+        <TextArea disabled={this.props.disabled === true} autoHeight={true} placeholder={placeholder} rows={2} onChange={this.onChange} value={notesNotNull} onBlur={this.props.onBlur} />
       </Form>
     );
   }

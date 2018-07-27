@@ -42,7 +42,7 @@ class RecordTagInputInner extends React.Component<IProps, any> {
         description: 'Click here or the plus icon',
         addValue: true,
       });
-      icon = (<Icon name="add" link onClick={addTagWithVal} />);
+      icon = (<Icon name="add" link={true} onClick={addTagWithVal} />);
     }
 
     return (

@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { saveAuth, isBeneficiaryUser, getBeneficiaryScope, getExpiryDateOfToken } from 'helpers/auth';
-import {isUserLoggedIn, isBeneficiaryUser as isCurrentUserABeneficiary} from 'modules/user';
+import {isUserLoggedIn, isBeneficiaryUser as isCurrentUserABeneficiary} from 'redux/modules/user';
 import { IStore } from 'redux/IStore';
-import {IURLConnector} from 'redux/modules/url';
-import {setURL} from 'modules/url';
+import {IURLConnector, setURL} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
 import {getJWT, IJWTResult} from 'apollo/modules/jwt';
 import { Message, Loader, Grid, Button } from 'semantic-ui-react';
@@ -11,13 +10,15 @@ const { connect } = require('react-redux');
 const ReactGA = require('react-ga');
 
 interface IProps extends IURLConnector {
-  params: {
+  match: {
+    params: {
       jti: string,
+    },
   };
   isLoggedIn?: boolean;
   isBeneficiary?: boolean;
   data: IJWTResult;
-};
+}
 
 interface IState {
   error: boolean;
@@ -125,7 +126,7 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
   public render() {
     const wrapper = (inner: JSX.Element): JSX.Element => {
       return (
-        <Grid container columns={1} id="benRedirect">
+        <Grid container={true} columns={1} id="benRedirect">
           <Grid.Column>
             {inner}
           </Grid.Column>
@@ -145,5 +146,5 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
   }
 }
 
-const BeneficiaryRedirect = getJWT<IProps>((props) => props.params.jti)(BeneficiaryRedirectInner);
-export { BeneficiaryRedirect }
+const BeneficiaryRedirect = getJWT<IProps>((props) => props.match.params.jti)(BeneficiaryRedirectInner);
+export { BeneficiaryRedirect };

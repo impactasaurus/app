@@ -142,7 +142,7 @@ class MeetingTable extends React.Component<IProp, IState> {
     const { meetings } = this.props;
 
     this.setState((prevState) => ({
-      ...prevState, firstMeeting: meetings.find((meeting) => meeting.id === value ),
+      ...prevState, firstMeeting: meetings.find((meeting) => meeting.id === value),
     }));
   }
 
@@ -150,7 +150,7 @@ class MeetingTable extends React.Component<IProp, IState> {
     const { meetings } = this.props;
 
     this.setState((prevState) => ({
-      ...prevState, secondMeeting: meetings.find((meeting) => meeting.id === value ),
+      ...prevState, secondMeeting: meetings.find((meeting) => meeting.id === value),
     }));
   }
 
@@ -198,7 +198,7 @@ class MeetingTable extends React.Component<IProp, IState> {
 
     return (
       <div>
-        {areMeetingsSame && <Message info>You are currently comparing the same record.</Message>}
+        {areMeetingsSame && <Message info={true}>You are currently comparing the same record.</Message>}
         <ImpactTable
           data={rows}
           nameColName={isCat ? 'Category' : 'Question'}
@@ -227,4 +227,4 @@ class MeetingTable extends React.Component<IProp, IState> {
   }
 }
 
-export {MeetingTable}
+export {MeetingTable};

@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { Menu } from 'semantic-ui-react';
-import {IURLConnector} from 'redux/modules/url';
-import {setURL} from 'modules/url';
+import {IURLConnector, setURL} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
 import { IStore } from 'redux/IStore';
 import { clearAuth } from 'helpers/auth';
-import {isUserLoggedIn, isBeneficiaryUser} from 'modules/user';
+import {isUserLoggedIn, isBeneficiaryUser} from 'redux/modules/user';
 import './style.less';
 const { connect } = require('react-redux');
 const TwitterIcon = require('./twitter.inline.svg');
@@ -20,7 +19,7 @@ interface IProps extends IURLConnector  {
 @connect((state: IStore) => ({
   isLoggedIn: isUserLoggedIn(state.user),
   isBeneficiary: isBeneficiaryUser(state.user),
-  currentURL: state.routing.locationBeforeTransitions.pathname,
+  currentURL: state.router.location.pathname,
 }), (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))

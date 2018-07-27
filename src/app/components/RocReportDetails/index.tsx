@@ -25,4 +25,4 @@ class RocReportDetails extends React.Component<IProp, any> {
   }
 }
 
-export {RocReportDetails}
+export {RocReportDetails};

@@ -1,4 +1,4 @@
-import {IState as PrefState} from 'modules/pref';
+import {IState as PrefState} from 'redux/modules/pref';
 
 export const VisualisationKey = 'vis';
 export enum Visualisation {

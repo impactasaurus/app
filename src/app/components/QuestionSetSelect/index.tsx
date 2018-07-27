@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {IOutcomeResult, allOutcomeSets} from 'apollo/modules/outcomeSets';
 import {IOutcomeSet} from 'models/outcomeSet';
-import { Select, SelectProps, DropdownItemProps } from 'semantic-ui-react';
-import {setPref, SetPrefFunc} from 'modules/pref';
+import { Select, DropdownItemProps } from 'semantic-ui-react';
+import {setPref, SetPrefFunc} from 'redux/modules/pref';
 import {IStore} from 'redux/IStore';
 const { connect } = require('react-redux');
 import { bindActionCreators } from 'redux';
@@ -97,7 +97,7 @@ class QuestionSetSelectInner extends React.Component<IProp, any> {
   }
 
   public render() {
-    const selectProps: SelectProps = {};
+    const selectProps: any = {};
     if (this.props.data.loading) {
       selectProps.loading = true;
       selectProps.disabled = true;
@@ -116,4 +116,4 @@ class QuestionSetSelectInner extends React.Component<IProp, any> {
 }
 
 const QuestionSetSelect = allOutcomeSets<IProp>(QuestionSetSelectInner);
-export {QuestionSetSelect}
+export {QuestionSetSelect};

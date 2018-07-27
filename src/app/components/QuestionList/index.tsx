@@ -26,7 +26,7 @@ interface IState {
 }
 
 function assignCategoriesClasses(current: {[catID: string]: string}, data: IOutcomeResult): {[catID: string]: string} {
-  const assignments = Object.assign({}, current);
+  const assignments = {...current};
   if (isNullOrUndefined(data.getOutcomeSet) || !Array.isArray(data.getOutcomeSet.questions)) {
     return assignments;
   }
@@ -141,7 +141,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
       return this.renderEditQuestionForm(q);
     }
 
-    const editButton = <Button onClick={this.setEditedQuestionId(q.id)} icon="edit" tooltip="Edit" compact size="tiny" />;
+    const editButton = <Button onClick={this.setEditedQuestionId(q.id)} icon="edit" tooltip="Edit" compact={true} size="tiny" />;
 
     return (
       <List.Item className="question" key={q.id}>
@@ -203,7 +203,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
         return (<div />);
     }
     return (
-      <List divided relaxed verticalAlign="middle" className="list question">
+      <List divided={true} relaxed={true} verticalAlign="middle" className="list question">
         {renderArray(this.renderQuestion, getQuestions(os))}
         {this.renderNewQuestionControl()}
       </List>
@@ -211,4 +211,4 @@ class QuestionListInner extends React.Component<IProps, IState> {
   }
 }
 const QuestionList = deleteQuestion<IProps>(QuestionListInner);
-export { QuestionList }
+export { QuestionList };

@@ -108,11 +108,11 @@ class QuestionCategoryForm extends React.Component<IProps, IState> {
     }
     return (
       <div>
-        <Input autoFocus type="text" placeholder="Name" onChange={this.setName} value={this.state.name} />
+        <Input autoFocus={true} type="text" placeholder="Name" onChange={this.setName} value={this.state.name} />
         <Input type="text" placeholder="Description" onChange={this.setDescription} value={this.state.description} />
         <Select placeholder="Aggregation" options={this.getAggregationOptions()} value={this.state.aggregation} onChange={this.setAggregation} />
         <Button onClick={this.props.OnCancel}>Cancel</Button>
-        <Button {...submitProps} primary onClick={this.onSubmitButtonClick}>{this.props.submitButtonText}</Button>
+        <Button {...submitProps} primary={true} onClick={this.onSubmitButtonClick}>{this.props.submitButtonText}</Button>
         <p>{this.state.error}</p>
       </div>
     );

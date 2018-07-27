@@ -1,22 +1,22 @@
-const appConfig = require('../../../config/main');
-import { createStore, applyMiddleware, compose } from 'redux';
-import { routerMiddleware } from 'react-router-redux';
+import {createStore, applyMiddleware, compose, Middleware} from 'redux';
+import { routerMiddleware } from 'connected-react-router';
 import thunk from 'redux-thunk';
 import getReducers from './reducers';
 import { IStore } from './IStore';
 import * as storage from 'redux-storage';
 import createEngine from 'redux-storage-engine-localstorage';
 import filter from 'redux-storage-decorator-filter';
-const createLogger = require('redux-logger');
+import logger from 'redux-logger';
+const appConfig = require('../../../config/main');
 
-export function configureStore(history, clientReducers: Redux.ReducersMapObject, clientMiddlewares: Redux.Middleware[], initialState?: IStore): Redux.Store<IStore> {
+export function configureStore(history, apolloReducer, clientMiddlewares: Middleware[], initialState?: IStore) {
 
   let storeEngine = createEngine('state');
   storeEngine = filter(storeEngine, ['pref']);
   const storageMiddleware = storage.createMiddleware(storeEngine);
-  const reducer = storage.reducer(getReducers(clientReducers));
+  const reducer = storage.reducer(getReducers(apolloReducer, history));
 
-  const middlewares: Redux.Middleware[] = [
+  const middlewares: Middleware[] = [
     routerMiddleware(history),
     thunk,
     storageMiddleware,
@@ -25,7 +25,6 @@ export function configureStore(history, clientReducers: Redux.ReducersMapObject,
 
   /** Add Only Dev. Middlewares */
   if (appConfig.env !== 'production' && process.env.BROWSER) {
-    const logger = createLogger();
     middlewares.push(logger);
   }
 
@@ -33,7 +32,7 @@ export function configureStore(history, clientReducers: Redux.ReducersMapObject,
     typeof window === 'object' &&
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
-  const store = createStore(reducer, initialState, composeEnhancers(
+  const store = createStore<IStore, any, any, any>(reducer, initialState, composeEnhancers(
     applyMiddleware(...middlewares),
   ));
 
@@ -44,7 +43,9 @@ export function configureStore(history, clientReducers: Redux.ReducersMapObject,
   }
 
   const load = storage.createLoader(storeEngine);
-  load(store).catch(() => console.error('Failed to load previous state'));
+  load(store).then(undefined, (e) => {
+    console.error('Failed to load previous state: ' + e);
+  });
 
   return store;
 }
