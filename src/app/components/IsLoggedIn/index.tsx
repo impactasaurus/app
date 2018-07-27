@@ -2,7 +2,7 @@ import * as React from 'react';
 import { getToken, getExpiryDate, getUserID, saveAuth, isBeneficiaryUser } from 'helpers/auth';
 import {setURL, IURLConnector} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
-import { RouterState } from 'react-router-redux';
+import { RouterState } from 'connected-react-router';
 import { IStore } from 'redux/IStore';
 import {setUserDetails, setLoggedInStatus, SetUserDetailsFunc, SetLoggedInStatusFunc, getUserID as getUserIDFromStore, isUserLoggedIn} from 'redux/modules/user';
 import {getWebAuth} from '../../helpers/auth';
@@ -25,7 +25,7 @@ interface IState {
 }
 
 @connect((state: IStore) => ({
-  routeState: state.routing,
+  routeState: state.router,
   lastUserID: getUserIDFromStore(state.user),
   isLoggedIn: isUserLoggedIn(state.user),
 }), (dispatch) => ({
@@ -59,7 +59,7 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
 
   private isPublicPage(): boolean {
     for (const p of config.publicPages) {
-      if (p.test(this.props.routeState.locationBeforeTransitions.pathname)) {
+      if (p.test(this.props.routeState.location.pathname)) {
         return true;
       }
     }
@@ -67,7 +67,7 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
   }
 
   private sendToLogin() {
-    const redirectURL = this.props.routeState.locationBeforeTransitions.pathname + this.props.routeState.locationBeforeTransitions.search;
+    const redirectURL = this.props.routeState.location.pathname + this.props.routeState.location.search;
     this.props.setURL('/login', '?redirect=' + encodeURIComponent(redirectURL));
   }
 

@@ -10,8 +10,10 @@ const { connect } = require('react-redux');
 const ReactGA = require('react-ga');
 
 interface IProps extends IURLConnector {
-  params: {
+  match: {
+    params: {
       jti: string,
+    },
   };
   isLoggedIn?: boolean;
   isBeneficiary?: boolean;
@@ -144,5 +146,5 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
   }
 }
 
-const BeneficiaryRedirect = getJWT<IProps>((props) => props.params.jti)(BeneficiaryRedirectInner);
+const BeneficiaryRedirect = getJWT<IProps>((props) => props.match.params.jti)(BeneficiaryRedirectInner);
 export { BeneficiaryRedirect };

@@ -19,10 +19,12 @@ const { connect } = require('react-redux');
 
 interface IProp extends IJOCReportResult, IURLConnector {
   data: IOutcomeResult;
-  params: {
+  match: {
+    params: {
       questionSetID: string,
       start: string,
       end: string,
+    },
   };
   location: {
     search: string,
@@ -81,7 +83,8 @@ class ServiceReportInner extends React.Component<IProp, any> {
   }
 
   private exportReportData() {
-    const url = constructReportURL('export', new Date(this.props.params.start), new Date(this.props.params.end), this.props.params.questionSetID);
+    const {start, end, questionSetID} = this.props.match.params;
+    const url = constructReportURL('export', new Date(start), new Date(end), questionSetID);
     const qp = constructReportQueryParams(getTagsFromProps(this.props), true);
     this.props.setURL(url, qp);
   }
@@ -123,15 +126,15 @@ class ServiceReportInner extends React.Component<IProp, any> {
 }
 
 function getQuestionSetIDFromProps(p: IProp): string {
-  return p.params.questionSetID;
+  return p.match.params.questionSetID;
 }
 
 function getStartDateFromProps(p: IProp): string {
-  return p.params.start;
+  return p.match.params.start;
 }
 
 function getEndDateFromProps(p: IProp): string {
-  return p.params.end;
+  return p.match.params.end;
 }
 
 function getTagsFromProps(p: IProp): string[] {

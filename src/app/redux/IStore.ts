@@ -1,11 +1,10 @@
-import { RouterState } from 'react-router-redux';
+import { RouterState } from 'connected-react-router';
 import {IState as PrefState} from 'redux/modules/pref';
 import {IState as UserState} from 'redux/modules/user';
 import {IState as StorageState} from 'redux/modules/storage';
 
 export interface IStore {
-  routing: RouterState;
-  reduxAsyncConnect: any;
+  router: RouterState;
   apollo: any;
   pref: PrefState;
   user: UserState;

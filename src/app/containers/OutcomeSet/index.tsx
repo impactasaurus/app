@@ -14,8 +14,10 @@ import './style.less';
 
 interface IProps extends IOutcomeMutation, IQuestionMutation {
   data: IOutcomeResult;
-  params: {
+  match: {
+    params: {
       id: string,
+    },
   };
 }
 
@@ -82,7 +84,7 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
         </Grid>
       );
     };
-    const { data, params } = this.props;
+    const { data, match: {params} } = this.props;
     const { displayEditNameControl, displayEditDescriptionControl, editingInstructions } = this.state;
     if (data.loading) {
       return wrapper(<Loader active={true} inline="centered" />);
@@ -118,5 +120,5 @@ class OutcomeSetInner extends React.Component<IProps, IState> {
   }
 }
 
-const OutcomeSet = getOutcomeSet<IProps>((props) => props.params.id)(deleteQuestion<IProps>(OutcomeSetInner));
+const OutcomeSet = getOutcomeSet<IProps>((props) => props.match.params.id)(deleteQuestion<IProps>(OutcomeSetInner));
 export { OutcomeSet };

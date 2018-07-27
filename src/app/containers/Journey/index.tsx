@@ -19,8 +19,10 @@ import {setPref, SetPrefFunc} from 'redux/modules/pref';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
-  params: {
-    id: string,
+  match: {
+    params: {
+      id: string,
+    },
   };
   location: {
     // can provide a ?q=GUID, this will set the questionnaire being viewed to the provided GUID if valid
@@ -149,7 +151,7 @@ class JourneyInner extends React.Component<IProps, any> {
   }
 
   private exportBeneficiaryRecords() {
-    this.props.setURL(`/beneficiary/${this.props.params.id}/export/${this.props.selectedQuestionSetID}`);
+    this.props.setURL(`/beneficiary/${this.props.match.params.id}/export/${this.props.selectedQuestionSetID}`);
   }
 
   private renderJourney(): JSX.Element {
@@ -168,7 +170,7 @@ class JourneyInner extends React.Component<IProps, any> {
     }
     if (!Array.isArray(this.props.data.getMeetings) || this.props.data.getMeetings.length === 0) {
       return (
-        <p>No complete meetings found for beneficiary {this.props.params.id}</p>
+        <p>No complete meetings found for beneficiary {this.props.match.params.id}</p>
       );
     }
     return (
@@ -189,7 +191,7 @@ class JourneyInner extends React.Component<IProps, any> {
   }
 
   public render() {
-    if(this.props.params.id === undefined) {
+    if(this.props.match.params.id === undefined) {
       return (<div />);
     }
 
@@ -201,5 +203,5 @@ class JourneyInner extends React.Component<IProps, any> {
   }
 }
 
-const Journey = getMeetings<IProps>((p) => p.params.id)(JourneyInner);
+const Journey = getMeetings<IProps>((p) => p.match.params.id)(JourneyInner);
 export { Journey };

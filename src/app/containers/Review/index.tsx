@@ -6,11 +6,16 @@ import { bindActionCreators } from 'redux';
 import {IStore} from 'redux/IStore';
 import {isBeneficiaryUser} from 'redux/modules/user';
 import './style.less';
+import { Switch, Route } from 'react-router-dom';
+import * as containers from 'containers';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
-  params: {
+  match: {
+    params: {
       id: string,
+    },
+    path: string,
   };
   isBeneficiary: boolean;
   child: ReviewPage;
@@ -24,7 +29,7 @@ export enum ReviewPage {
 @connect((state: IStore) => {
   return {
     isBeneficiary: isBeneficiaryUser(state.user),
-    child: state.routing.locationBeforeTransitions.pathname.endsWith('records') ? ReviewPage.RECORDS : ReviewPage.JOURNEY,
+    child: state.router.location.pathname.endsWith('records') ? ReviewPage.RECORDS : ReviewPage.JOURNEY,
   };
 }, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
@@ -62,7 +67,7 @@ class Review extends React.Component<IProps, any> {
           break;
         }
       }
-      this.handleClick(`/beneficiary/${this.props.params.id}/${subPage}`)();
+      this.handleClick(`/beneficiary/${this.props.match.params.id}/${subPage}`)();
     };
   }
 
@@ -76,7 +81,7 @@ class Review extends React.Component<IProps, any> {
   }
 
   public render() {
-    if(this.props.params.id === undefined) {
+    if(this.props.match.params.id === undefined) {
       return (<div />);
     }
 
@@ -85,6 +90,8 @@ class Review extends React.Component<IProps, any> {
       backButton = (<Button onClick={this.handleClick('/beneficiary')} content="Back" icon="left arrow" labelPosition="left" primary={true} id="back-button"/>);
     }
 
+    const match = this.props.match.path;
+
     return (
       <div>
         <Grid container={true} columns={1}>
@@ -92,11 +99,17 @@ class Review extends React.Component<IProps, any> {
             {backButton}
             <div id="review">
               <Helmet>
-                <title>{this.props.params.id + ' Review'}</title>
+                <title>{this.props.match.params.id + ' Review'}</title>
               </Helmet>
-              <h1>{this.props.params.id}</h1>
+              <h1>{this.props.match.params.id}</h1>
               {this.renderSubMenu()}
-              {this.props.children}
+
+              <Switch>
+                <Route exact={true} path={`${match}/`} component={containers.Journey} />
+                <Route path={`${match}/journey`} component={containers.Journey} />
+                <Route path={`${match}/records`} component={containers.Records} />
+              </Switch>
+
             </div>
           </Grid.Column>
         </Grid>

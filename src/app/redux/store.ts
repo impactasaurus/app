@@ -1,5 +1,5 @@
 import {createStore, applyMiddleware, compose, Middleware} from 'redux';
-import { routerMiddleware } from 'react-router-redux';
+import { routerMiddleware } from 'connected-react-router';
 import thunk from 'redux-thunk';
 import getReducers from './reducers';
 import { IStore } from './IStore';
@@ -14,7 +14,7 @@ export function configureStore(history, apolloReducer, clientMiddlewares: Middle
   let storeEngine = createEngine('state');
   storeEngine = filter(storeEngine, ['pref']);
   const storageMiddleware = storage.createMiddleware(storeEngine);
-  const reducer = storage.reducer(getReducers(apolloReducer));
+  const reducer = storage.reducer(getReducers(apolloReducer, history));
 
   const middlewares: Middleware[] = [
     routerMiddleware(history),
@@ -32,7 +32,7 @@ export function configureStore(history, apolloReducer, clientMiddlewares: Middle
     typeof window === 'object' &&
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
-  const store = createStore(reducer, initialState, composeEnhancers(
+  const store = createStore<IStore, any, any, any>(reducer, initialState, composeEnhancers(
     applyMiddleware(...middlewares),
   ));
 

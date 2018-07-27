@@ -19,7 +19,7 @@ interface IProps extends IURLConnector  {
 @connect((state: IStore) => ({
   isLoggedIn: isUserLoggedIn(state.user),
   isBeneficiary: isBeneficiaryUser(state.user),
-  currentURL: state.routing.locationBeforeTransitions.pathname,
+  currentURL: state.router.location.pathname,
 }), (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))

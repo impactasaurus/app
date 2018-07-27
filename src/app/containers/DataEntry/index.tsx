@@ -16,8 +16,10 @@ const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector, IMeetingMutation {
   data: IMeetingResult;
-  params: {
+  match: {
+    params: {
       id: string,
+    },
   };
   questions?: IQuestion[];
   answers?: IAnswer[];
@@ -181,5 +183,5 @@ class DataEntryInner extends React.Component<IProps, IState> {
     return wrapper(this.renderQuestionPage());
   }
 }
-const DataEntry = completeMeeting<IProps>(getMeeting<IProps>((props) => props.params.id)(DataEntryInner));
+const DataEntry = completeMeeting<IProps>(getMeeting<IProps>((props) => props.match.params.id)(DataEntryInner));
 export { DataEntry };

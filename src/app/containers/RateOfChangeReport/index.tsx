@@ -14,10 +14,12 @@ const { connect } = require('react-redux');
 
 interface IProp extends IROCReportResult {
   data: IOutcomeResult;
-  params: {
-    questionSetID: string,
-    start: string,
-    end: string,
+  match: {
+    params: {
+      questionSetID: string,
+      start: string,
+      end: string,
+    },
   };
   location: {
     search: string,
@@ -97,15 +99,15 @@ class RateOfChangeReportInner extends React.Component<IProp, any> {
 }
 
 function getQuestionSetIDFromProps(p: IProp): string {
-  return p.params.questionSetID;
+  return p.match.params.questionSetID;
 }
 
 function getStartDateFromProps(p: IProp): string {
-  return p.params.start;
+  return p.match.params.start;
 }
 
 function getEndDateFromProps(p: IProp): string {
-  return p.params.end;
+  return p.match.params.end;
 }
 
 function getTagsFromProps(p: IProp): string[] {

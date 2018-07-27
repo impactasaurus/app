@@ -10,8 +10,10 @@ import {getHumanisedDateFromISO} from 'helpers/moment';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
-  params: {
-    id: string,
+  match: {
+    params: {
+      id: string,
+    },
   };
   location: {
     // can provide a ?next=relativeURL which the user will be taken to on cancel or successful save
@@ -73,7 +75,7 @@ class RecordViewInner extends React.Component<IProps, any> {
       );
     };
 
-    if(this.props.params.id === undefined) {
+    if(this.props.match.params.id === undefined) {
       return wrapper(<div />);
     }
 
@@ -99,7 +101,7 @@ class RecordViewInner extends React.Component<IProps, any> {
           </div>
         </div>
         <RecordQuestionSummary
-          recordID={this.props.params.id}
+          recordID={this.props.match.params.id}
           onQuestionClick={this.noop}
         />
         <div>
@@ -110,5 +112,5 @@ class RecordViewInner extends React.Component<IProps, any> {
   }
 }
 
-const RecordView = getMeeting<IProps>((props) => props.params.id)(RecordViewInner);
+const RecordView = getMeeting<IProps>((props) => props.match.params.id)(RecordViewInner);
 export { RecordView };

@@ -17,8 +17,10 @@ const strings = require('./../../../strings.json');
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector, IEditMeetingDate, IEditMeetingTags {
-  params: {
-    id: string,
+  match: {
+    params: {
+      id: string,
+    },
   };
   location: {
     // can provide a ?next=relativeURL which the user will be taken to on cancel or successful save
@@ -220,7 +222,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
       );
     };
 
-    if(this.props.params.id === undefined) {
+    if(this.props.match.params.id === undefined) {
       return wrapper(<div />);
     }
 
@@ -263,5 +265,5 @@ class RecordEditInner extends React.Component<IProps, IState> {
   }
 }
 
-const RecordEdit = editMeetingTags<IProps>(editMeetingDate<IProps>(getMeeting<IProps>((props) => props.params.id)(RecordEditInner)));
+const RecordEdit = editMeetingTags<IProps>(editMeetingDate<IProps>(getMeeting<IProps>((props) => props.match.params.id)(RecordEditInner)));
 export { RecordEdit };

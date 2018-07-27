@@ -11,8 +11,10 @@ const config = require('../../../../config/main');
 const ReactGA = require('react-ga');
 
 interface IProp extends IMeetingMutation, IURLConnector {
-  params: {
-    type: string,
+  match: {
+    params: {
+      type: string,
+    },
   };
 }
 
@@ -38,14 +40,14 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
   }
 
   private getType(): AssessmentType {
-    return AssessmentType[this.props.params.type];
+    return AssessmentType[this.props.match.params.type];
   }
 
   private recordMeetingStarted() {
     ReactGA.event({
       category: 'assessment',
       action: 'started',
-      label: this.props.params.type,
+      label: this.props.match.params.type,
     });
   }
 

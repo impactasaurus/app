@@ -19,8 +19,10 @@ const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
   data: IMeetingResult;
-  params: {
+  match: {
+    params: {
       id: string,
+    },
   };
   questions?: IQuestion[];
   answers?: IAnswer[];
@@ -211,5 +213,5 @@ class MeetingInner extends React.Component<IProps, IState> {
     ), this.renderProgressBar());
   }
 }
-const Meeting = getMeeting<IProps>((props) => props.params.id)(MeetingInner);
+const Meeting = getMeeting<IProps>((props) => props.match.params.id)(MeetingInner);
 export { Meeting };

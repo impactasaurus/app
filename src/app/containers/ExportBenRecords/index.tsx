@@ -7,9 +7,11 @@ const appConfig = require('../../../../config/main');
 
 interface IProps  {
   data: IExportBenMeetingsResult;
-  params: {
-    id: string,
-    qid: string,
+  match: {
+    params: {
+      id: string,
+      qid: string,
+    },
   };
 }
 
@@ -39,5 +41,5 @@ class ExportBenRecordsInner extends React.Component<IProps, any> {
   }
 }
 
-const ExportBenRecords = exportBenMeetings((p: IProps) => p.params.qid, (p: IProps) => p.params.id)(ExportBenRecordsInner);
+const ExportBenRecords = exportBenMeetings((p: IProps) => p.match.params.qid, (p: IProps) => p.match.params.id)(ExportBenRecordsInner);
 export { ExportBenRecords };
