@@ -8,6 +8,7 @@ import 'theme/form.less';
 import {IStore} from 'redux/IStore';
 import { Route, Switch } from 'react-router-dom';
 import * as containers from 'containers';
+import {Loader} from 'semantic-ui-react';
 const { connect } = require('react-redux');
 const appConfig = require('../../../../config/main');
 
@@ -21,13 +22,25 @@ interface IProps {
   };
 })
 class App extends React.Component<IProps, any> {
-  public render() {
-    return (
-      <section id="impactasaurus">
-        <Helmet {...appConfig.app} {...appConfig.app.head}/>
-        <Header/>
-        <IsLoggedIn/>
 
+  public render() {
+    const wrapper = (inner: JSX.Element): JSX.Element => {
+      return (
+        <section id="impactasaurus">
+          <Helmet {...appConfig.app} {...appConfig.app.head} />
+          <Header/>
+          {inner}
+        </section>
+      );
+    };
+
+    if (this.props.storeLoaded !== true) {
+      return wrapper(<Loader active={true} inline="centered" />);
+    }
+
+    return wrapper((
+      <div>
+        <IsLoggedIn/>
         <Switch>
           <Route exact={true} path="/" component={containers.Home} />
           <Route path="/record/:type" component={containers.AssessmentConfig} />
@@ -47,8 +60,8 @@ class App extends React.Component<IProps, any> {
           <Route path="/report" component={containers.Report} />
           <Route path="/jti/:jti" component={containers.BeneficiaryRedirect} />
         </Switch>
-      </section>
-    );
+      </div>
+    ));
   }
 }
 

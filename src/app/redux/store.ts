@@ -43,7 +43,9 @@ export function configureStore(history, apolloReducer, clientMiddlewares: Middle
   }
 
   const load = storage.createLoader(storeEngine);
-  load(store);
+  load(store).then(undefined, (e) => {
+    console.error('Failed to load previous state: ' + e);
+  });
 
   return store;
 }

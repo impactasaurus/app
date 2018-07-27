@@ -46,7 +46,7 @@ class Login extends React.Component<IProps, {}> {
       const query: string|undefined = components.length > 1 ? '?' + components[1] : undefined;
       this.props.setURL(components[0], query);
     } else {
-      this.props.setURL('');
+      this.props.setURL('/');
     }
   }
 
