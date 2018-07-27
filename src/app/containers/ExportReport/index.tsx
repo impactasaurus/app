@@ -7,10 +7,12 @@ const appConfig = require('../../../../config/main');
 
 interface IProp  {
   data: IExportReportResult;
-  params: {
-    questionSetID: string,
-    start: string,
-    end: string,
+  match: {
+    params: {
+      questionSetID: string,
+      start: string,
+      end: string,
+    },
   };
   location: {
     search: string,
@@ -32,7 +34,7 @@ class ExportReportInner extends React.Component<IProp, any> {
       inner = (<span>Download started</span>);
     }
     return (
-      <Grid container columns={1} id="data">
+      <Grid container={true} columns={1} id="data">
         <Grid.Column>
           <Helmet>
             <title>Questionnaire Export</title>
@@ -45,15 +47,15 @@ class ExportReportInner extends React.Component<IProp, any> {
 }
 
 function getQuestionSetIDFromProps(p: IProp): string {
-  return p.params.questionSetID;
+  return p.match.params.questionSetID;
 }
 
 function getStartDateFromProps(p: IProp): string {
-  return p.params.start;
+  return p.match.params.start;
 }
 
 function getEndDateFromProps(p: IProp): string {
-  return p.params.end;
+  return p.match.params.end;
 }
 
 function getTagsFromProps(p: IProp): string[] {
@@ -76,4 +78,4 @@ function getOpenFromProps(p: IProp): boolean {
 }
 
 const ExportReport = exportReport(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenFromProps)(ExportReportInner);
-export { ExportReport }
+export { ExportReport };

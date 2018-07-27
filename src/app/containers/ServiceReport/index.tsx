@@ -1,6 +1,5 @@
 import * as React from 'react';
 import 'url-search-params-polyfill';
-import {GraphQLError} from '@types/graphql';
 import { Helmet } from 'react-helmet';
 import { Grid, Loader, Message } from 'semantic-ui-react';
 import {getJOCServiceReport, IJOCReportResult} from 'apollo/modules/reports';
@@ -20,10 +19,12 @@ const { connect } = require('react-redux');
 
 interface IProp extends IJOCReportResult, IURLConnector {
   data: IOutcomeResult;
-  params: {
+  match: {
+    params: {
       questionSetID: string,
       start: string,
       end: string,
+    },
   };
   location: {
     search: string,
@@ -61,10 +62,10 @@ class ServiceReportInner extends React.Component<IProp, any> {
     this.exportReportData = this.exportReportData.bind(this);
   }
 
-  private renderError(error: GraphQLError): JSX.Element {
+  private renderError(error: string): JSX.Element {
     return (
-      <p key={error.message}>
-        {error.message}
+      <p key={error}>
+        {error}
       </p>
     );
   }
@@ -82,7 +83,8 @@ class ServiceReportInner extends React.Component<IProp, any> {
   }
 
   private exportReportData() {
-    const url = constructReportURL('export', new Date(this.props.params.start), new Date(this.props.params.end), this.props.params.questionSetID);
+    const {start, end, questionSetID} = this.props.match.params;
+    const url = constructReportURL('export', new Date(start), new Date(end), questionSetID);
     const qp = constructReportQueryParams(getTagsFromProps(this.props), true);
     this.props.setURL(url, qp);
   }
@@ -90,7 +92,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
   public render() {
     const wrapper = (inner: JSX.Element): JSX.Element => {
       return (
-        <Grid container columns={1} id="service-report">
+        <Grid container={true} columns={1} id="service-report">
           <Grid.Column>
             <Helmet>
               <title>Service Report</title>
@@ -104,8 +106,8 @@ class ServiceReportInner extends React.Component<IProp, any> {
     };
     if (this.props.JOCServiceReport.error) {
       return wrapper((
-        <Message error>
-          {renderArray(this.renderError, this.props.JOCServiceReport.error.graphQLErrors)}
+        <Message error={true}>
+          {renderArray<string>(this.renderError, this.props.JOCServiceReport.error.graphQLErrors.map((e) => e.message))}
         </Message>
       ));
     }
@@ -124,15 +126,15 @@ class ServiceReportInner extends React.Component<IProp, any> {
 }
 
 function getQuestionSetIDFromProps(p: IProp): string {
-  return p.params.questionSetID;
+  return p.match.params.questionSetID;
 }
 
 function getStartDateFromProps(p: IProp): string {
-  return p.params.start;
+  return p.match.params.start;
 }
 
 function getEndDateFromProps(p: IProp): string {
-  return p.params.end;
+  return p.match.params.end;
 }
 
 function getTagsFromProps(p: IProp): string[] {
@@ -154,4 +156,4 @@ function getOpenStartFromProps(p: IProp): boolean {
 }
 
 const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenStartFromProps)(ServiceReportInner));
-export {ServiceReport}
+export {ServiceReport};

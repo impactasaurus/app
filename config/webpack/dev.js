@@ -10,16 +10,15 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 var config = {
-  // Enable sourcemaps for debugging webpack's output.
   devtool: 'source-map',
+  mode: 'development',
 
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
     modules: [
       path.resolve(__dirname),
       'node_modules',
-      'app',
-      'app/redux'
+      'app'
     ],
     alias: {
       // for semantic: redirect theme access to our custom theme (https://medium.com/webmonkeys/webpack-2-semantic-ui-theming-a216ddf60daf)
@@ -51,15 +50,11 @@ var config = {
       },
       {
         test: /\.tsx?$/,
-        loader: 'react-hot-loader!awesome-typescript-loader'
+        loader: 'awesome-typescript-loader'
       },
       {
         test: /\.jsx$/,
         loader: 'babel-loader'
-      },
-      {
-        test: /\.json$/,
-        loader: 'json-loader'
       },
       {
         test: /\.css$/,
@@ -181,7 +176,7 @@ const createIfDoesntExist = dest => {
   if (!fs.existsSync(dest)) {
     fs.mkdirSync(dest);
   }
-}
+};
 
 createIfDoesntExist('./build');
 

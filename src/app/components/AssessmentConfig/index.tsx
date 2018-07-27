@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Select, ButtonProps, SelectProps } from 'semantic-ui-react';
+import { Button, Select, ButtonProps } from 'semantic-ui-react';
 import {DateTimePicker} from 'components/DateTimePicker';
 import {Hint} from 'components/Hint';
 import {RecordTagInputWithSuggestions} from 'components/RecordTagInputWithSuggestions';
@@ -155,7 +155,7 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
       startProps.loading = true;
       startProps.disabled = true;
     }
-    const selectProps: SelectProps = {};
+    const selectProps: any = {};
     if (this.props.data.loading) {
       selectProps.loading = true;
       selectProps.disabled = true;
@@ -181,4 +181,4 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
 }
 
 const AssessmentConfig = allOutcomeSets<IProps>(AssessmentConfigInner);
-export {AssessmentConfig}
+export {AssessmentConfig};

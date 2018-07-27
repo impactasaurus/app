@@ -31,6 +31,7 @@ function getConfig(data: OutcomeGraphData, min, max) {
         mode: 'point',
         enabled: true,
       },
+      aspectRatio: 1,
     },
   };
 }

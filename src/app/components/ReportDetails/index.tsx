@@ -102,7 +102,7 @@ class ReportDetails extends React.Component<IProp, any> {
       return (<div />);
     }
     return (
-      <Message warning>
+      <Message warning={true}>
         <Message.Header>Warnings</Message.Header>
         {renderArray<string>(this.renderWarning, warnings)}
       </Message>
@@ -119,4 +119,4 @@ class ReportDetails extends React.Component<IProp, any> {
   }
 }
 
-export {ReportDetails}
+export {ReportDetails};

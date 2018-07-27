@@ -81,14 +81,14 @@ class EditQuestionnaireInstructionsInner extends React.Component<IProps, IState>
             onChange={this.onChange}
             defaultValue={this.state.instructions}
             onFocus={this.moveCaretAtEnd}
-            autoFocus
-            autoHeight
+            autoFocus={true}
+            autoHeight={true}
             rows={3}
           />
         </Form>
         <div>
           <Button onClick={this.props.afterSubmit}>Cancel</Button>
-          <Button primary onClick={this.submitNewInstructions} loading={this.state.isBeingSubmitted}>Save</Button>
+          <Button primary={true} onClick={this.submitNewInstructions} loading={this.state.isBeingSubmitted}>Save</Button>
           <p>{this.state.error}</p>
         </div>
       </div>
@@ -98,4 +98,4 @@ class EditQuestionnaireInstructionsInner extends React.Component<IProps, IState>
 
 const EditQuestionnaireInstructions = editQuestionSet<IProps>(EditQuestionnaireInstructionsInner);
 
-export { EditQuestionnaireInstructions }
+export { EditQuestionnaireInstructions };

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button, Popup } from 'semantic-ui-react';
 import './style.less';
 import { bindActionCreators } from 'redux';
-import {setPref, SetPrefFunc} from 'modules/pref';
+import {setPref, SetPrefFunc} from 'redux/modules/pref';
 import {IStore} from 'redux/IStore';
 import {Aggregation, AggregationKey, Visualisation, VisualisationKey, getAggregation, getVisualisation} from 'models/pref';
 import {isNullOrUndefined} from 'util';
@@ -146,4 +146,4 @@ class VizControlPanel extends React.Component<IProps, any> {
   }
 }
 
-export { VizControlPanel }
+export { VizControlPanel };

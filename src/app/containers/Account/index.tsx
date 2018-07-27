@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { Grid } from 'semantic-ui-react';
+import { Grid, Button, Message } from 'semantic-ui-react';
 import {getUserEmail, getWebAuth} from '../../helpers/auth';
-import {Button, Message} from 'semantic-ui-react';
 const config = require('../../../../config/main').app.auth;
 
 const ReactGA = require('react-ga');
@@ -85,14 +84,14 @@ class Account extends React.Component<any, IState> {
     }
     if (this.state.changePasswordError === null) {
       return (
-        <Message positive>
+        <Message positive={true}>
           <Message.Header>Success</Message.Header>
           <Message.Content>You will shortly receive an email which will allow you to reset your password</Message.Content>
         </Message>
       );
     }
     return (
-      <Message warning>
+      <Message warning={true}>
         <Message.Header>Error</Message.Header>
         <Message.Content>{this.state.changePasswordError}</Message.Content>
       </Message>
@@ -102,7 +101,7 @@ class Account extends React.Component<any, IState> {
 
   public render() {
     return (
-      <Grid container columns={1} id="Account">
+      <Grid container={true} columns={1} id="Account">
         <Grid.Column>
           <Helmet>
             <title>Account</title>
@@ -118,4 +117,4 @@ class Account extends React.Component<any, IState> {
   }
 }
 
-export { Account }
+export { Account };

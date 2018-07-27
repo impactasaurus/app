@@ -7,7 +7,7 @@ class Organisation extends React.Component<any, any> {
 
   public render() {
     return (
-      <Grid container columns={1} id="organisation">
+      <Grid container={true} columns={1} id="organisation">
         <Grid.Column>
           <Helmet>
             <title>Organisation</title>
@@ -24,4 +24,4 @@ class Organisation extends React.Component<any, any> {
   }
 }
 
-export { Organisation }
+export { Organisation };

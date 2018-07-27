@@ -1,14 +1,12 @@
 import * as React from 'react';
 import {Loader, Icon} from 'semantic-ui-react';
-import {IQuestion} from 'models/question';
-import {getMeeting} from 'apollo/modules/meetings';
-import {IMeetingResult} from 'apollo/modules/meetings';
+import {IQuestion, Question} from 'models/question';
+import {getMeeting, IMeetingResult} from 'apollo/modules/meetings';
 import {Answer, IAnswer} from 'models/answer';
-import {Question} from 'models/question';
 import {getQuestions} from 'helpers/questionnaire';
 import {renderArray} from 'helpers/react';
 import {Likert} from 'components/Likert';
-import {IMeeting} from '../../models/meeting';
+import {IMeeting} from 'models/meeting';
 import {isNullOrUndefined} from 'util';
 const { connect } = require('react-redux');
 

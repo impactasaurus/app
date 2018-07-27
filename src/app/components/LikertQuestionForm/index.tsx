@@ -2,10 +2,9 @@ import * as React from 'react';
 import { Button, ButtonProps, Message, Form, Input } from 'semantic-ui-react';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
-import {ILabel, ILikertQuestionForm} from 'models/question';
+import {ILabel, ILikertQuestionForm, ILikertForm} from 'models/question';
 import {LikertForm} from 'components/LikertForm';
 import {Hint} from 'components/Hint';
-import {ILikertForm} from 'models/question';
 import './style.less';
 import {isNullOrUndefined} from 'util';
 const ReactGA = require('react-ga');
@@ -194,7 +193,7 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
           <Message.Header>{this.props.edit ? 'Edit Likert Question' : 'New Likert Question'}</Message.Header>
           <Form>
             <Form.Group>
-              <Form.Input required label="Question" placeholder="Question" width={12} onChange={this.setNewQuestion} value={this.state.newQuestion} />
+              <Form.Input required={true} label="Question" placeholder="Question" width={12} onChange={this.setNewQuestion} value={this.state.newQuestion} />
               <Form.Field width={4}>
                 <label>Shortened Form <Hint text="Shortened form of the question. Used instead of the question, when reviewing data in visualisations and exports"/></label>
                 <Input placeholder="Shortened Form" onChange={this.setShort} value={this.state.short} />
@@ -216,7 +215,7 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
             />
             <div className="controls">
               <Button onClick={this.props.onCancel}>Cancel</Button>
-              <Button {...addProps} primary onClick={this.onSubmitButtonClick}>{this.props.submitButtonText}</Button>
+              <Button {...addProps} primary={true} onClick={this.onSubmitButtonClick}>{this.props.submitButtonText}</Button>
               <p>{this.state.newQuestionError}</p>
             </div>
           </div>

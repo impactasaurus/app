@@ -36,11 +36,9 @@ export function SessionsConverter() {
     // data set item for session
     const convertedSession: any = {};
 
-    if (moment(session.timestamp).isValid()) {
-      convertedSession.label = getHumanisedDateFromISO(session.timestamp);
-    } else {
-      convertedSession.label = session.timestamp;
-    }
+    convertedSession.label =  moment(session.timestamp).isValid() ?
+      getHumanisedDateFromISO(session.timestamp) :
+      session.timestamp;
 
     // adding the values map to converted session for developer to view for possible debugging
     convertedSession.valuesMap = getValuesMapsFromOutcomes(outcomes);
@@ -127,4 +125,4 @@ export function SessionsConverter() {
       };
     },
   };
-};
+}

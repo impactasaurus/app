@@ -2,9 +2,8 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { Button, Grid, Form } from 'semantic-ui-react';
 import {BeneficiaryInput} from 'components/BeneficiaryInput';
-import { setURL } from 'modules/url';
 import { bindActionCreators } from 'redux';
-import { IURLConnector } from 'redux/modules/url';
+import { IURLConnector, setURL } from 'redux/modules/url';
 import { Hint } from 'components/Hint';
 import './style.less';
 import {isNullOrUndefined} from 'util';
@@ -45,7 +44,7 @@ class ReviewSelector extends React.Component<IURLConnector, IState> {
 
   public render() {
     return (
-      <Grid container columns={1} >
+      <Grid container={true} columns={1} >
         <Grid.Column>
         <div id="reviewselector">
           <Helmet>
@@ -66,4 +65,4 @@ class ReviewSelector extends React.Component<IURLConnector, IState> {
   }
 }
 
-export { ReviewSelector }
+export { ReviewSelector };

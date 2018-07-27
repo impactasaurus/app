@@ -1,10 +1,9 @@
 import * as React from 'react';
-import {addLikertAnswer} from 'apollo/modules/meetings';
+import {addLikertAnswer, IMeetingMutation} from 'apollo/modules/meetings';
 import {IQuestion, Question as QuestionType} from 'models/question';
 import {Notepad} from 'components/Notepad';
 import {IIntAnswer, Answer} from 'models/answer';
 import {IMeeting} from 'models/meeting';
-import {IMeetingMutation} from 'apollo/modules/meetings';
 import { Loader } from 'semantic-ui-react';
 import {LikertDebounced} from '../LikertDebounced';
 import './style.less';
@@ -101,9 +100,10 @@ class QuestionInlineInner extends React.Component<IProps, IState> {
   }
 
   private setAnswer(value: number) {
-    this.save(Object.assign({}, this.state, {
+    this.save({
+      ...this.state,
       value,
-    }));
+    });
   }
 
   private setNotes(notes: string) {
@@ -158,7 +158,7 @@ class QuestionInlineInner extends React.Component<IProps, IState> {
     const q = question as QuestionType;
     let spinner = (<span />);
     if (this.state.saving) {
-      spinner = (<Loader active inline size="mini" />);
+      spinner = (<Loader active={true} inline={true} size="mini" />);
     }
     const numbering = this.props.index ? `${this.props.index}. ` : '';
     return (
@@ -172,4 +172,4 @@ class QuestionInlineInner extends React.Component<IProps, IState> {
   }
 }
 const QuestionInline = addLikertAnswer<IProps>(QuestionInlineInner);
-export { QuestionInline }
+export { QuestionInline };

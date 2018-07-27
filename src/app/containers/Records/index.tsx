@@ -5,8 +5,10 @@ import {getAllMeetings, IGetAllMeetingsResult} from 'apollo/modules/meetings';
 import {RecordList} from 'components/RecordList';
 
 interface IProps extends IURLConnector {
-  params: {
-    id: string,
+  match: {
+    params: {
+      id: string,
+    },
   };
   data?: IGetAllMeetingsResult;
 }
@@ -36,7 +38,7 @@ class RecordsInner extends React.Component<IProps, any> {
     const noIncompleteMeetings = !Array.isArray(this.props.data.getIncompleteMeetings) || this.props.data.getIncompleteMeetings.length === 0;
     if (noCompleteMeetings && noIncompleteMeetings) {
       return (
-        <p>No meetings found for beneficiary {this.props.params.id}</p>
+        <p>No meetings found for beneficiary {this.props.match.params.id}</p>
       );
     }
     return (
@@ -45,7 +47,7 @@ class RecordsInner extends React.Component<IProps, any> {
   }
 
   public render() {
-    if(this.props.params.id === undefined) {
+    if(this.props.match.params.id === undefined) {
       return (<div />);
     }
 
@@ -57,5 +59,5 @@ class RecordsInner extends React.Component<IProps, any> {
   }
 }
 
-const Records = getAllMeetings<IProps>((p) => p.params.id)(RecordsInner);
-export { Records }
+const Records = getAllMeetings<IProps>((p) => p.match.params.id)(RecordsInner);
+export { Records };

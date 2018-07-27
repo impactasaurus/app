@@ -1,6 +1,8 @@
+import {Action} from 'redux';
+
 export const SET_PREF = 'SET_PREF';
 
-export interface IAction extends Redux.Action {
+export interface IAction extends Action {
   type: string;
   payload: {
     key: string;
@@ -17,9 +19,10 @@ const initialState = {};
 export function reducer(state: IState = initialState, action: IAction) {
   switch (action.type) {
     case SET_PREF:
-      return Object.assign({}, state, {
+      return {
+        ...state,
         [action.payload.key]: action.payload.value,
-      });
+      };
 
     default:
       return state;

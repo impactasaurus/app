@@ -1,7 +1,9 @@
+import {Action} from 'redux';
+
 export const SET_USER_DETAILS = 'SET_USER_DETAILS';
 export const SET_LOGIN_STATUS = 'SET_LOGIN_STATUS';
 
-export interface IAction extends Redux.Action {
+export interface IAction extends Action {
   type: string;
   payload: {
     userID?: string;
@@ -23,15 +25,17 @@ const initialState: IState = {
 export function reducer(state: IState = initialState, action: IAction) {
   switch (action.type) {
     case SET_USER_DETAILS:
-      return Object.assign({}, state, {
+      return {
+        ...state,
         userID: action.payload.userID,
         beneficiaryUser: action.payload.beneficiaryUser,
-      });
+      };
 
     case SET_LOGIN_STATUS:
-      return Object.assign({}, state, {
+      return {
+        ...state,
         loggedIn: action.payload.loggedIn,
-      });
+      };
 
     default:
       return state;

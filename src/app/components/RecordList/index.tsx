@@ -4,8 +4,7 @@ import './style.less';
 import {IMeeting, sortMeetingsByConducted} from '../../models/meeting';
 import {renderArray, renderArrayForArray} from '../../helpers/react';
 import {getHumanisedDate} from '../../helpers/moment';
-import {IURLConnector} from 'redux/modules/url';
-import {setURL} from 'redux/modules/url';
+import {IURLConnector, setURL} from 'redux/modules/url';
 import {bindActionCreators} from 'redux';
 import {deleteMeeting, IDeleteMeetingMutation} from 'apollo/modules/meetings';
 import {ConfirmButton} from 'components/ConfirmButton';
@@ -62,11 +61,11 @@ class RecordListInner extends React.Component<IProp, any> {
   private renderActions(r: IMeeting): JSX.Element[] {
     const actions: JSX.Element[] = [];
     actions.push((<ConfirmButton key="delete" onConfirm={this.delete(r)} promptText="Are you sure you want to delete this record?" buttonProps={{icon: 'delete', compact:true, size:'tiny'}} tooltip="Delete" />));
-    actions.push((<Popup key="edit" trigger={<Button onClick={this.edit(r)} icon="edit" compact size="tiny" />} content="Edit" />));
+    actions.push((<Popup key="edit" trigger={<Button onClick={this.edit(r)} icon="edit" compact={true} size="tiny" />} content="Edit" />));
     if (r.incomplete) {
-      actions.push((<Popup key="continue" trigger={<Button onClick={this.resume(r)} icon="arrow right" compact size="tiny" />} content="Continue" />));
+      actions.push((<Popup key="continue" trigger={<Button onClick={this.resume(r)} icon="arrow right" compact={true} size="tiny" />} content="Continue" />));
     } else {
-      actions.push((<Popup key="view" trigger={<Button onClick={this.view(r)} icon="eye" compact size="tiny" />} content="View" />));
+      actions.push((<Popup key="view" trigger={<Button onClick={this.view(r)} icon="eye" compact={true} size="tiny" />} content="View" />));
     }
     return actions;
   }
@@ -74,9 +73,9 @@ class RecordListInner extends React.Component<IProp, any> {
   private renderRecord(r: IMeeting): JSX.Element[] {
     let incomplete = (<span/>);
     if (r.incomplete) {
-      incomplete = (<Popup trigger={<Icon name="hourglass half"/>} content="Incomplete" /> );
+      incomplete = (<Popup trigger={<Icon name="hourglass half"/>} content="Incomplete" />);
     }
-    return [
+    return [(
       <Table.Row key={r.id}>
         <Table.Cell>
           {incomplete}
@@ -86,8 +85,8 @@ class RecordListInner extends React.Component<IProp, any> {
         <Table.Cell>{renderArray(this.renderTag, r.tags)}</Table.Cell>
         <Table.Cell>{r.user}</Table.Cell>
         <Table.Cell className="actions">{this.renderActions(r)}</Table.Cell>
-      </Table.Row>,
-    ];
+      </Table.Row>
+    )];
   }
 
   public render() {

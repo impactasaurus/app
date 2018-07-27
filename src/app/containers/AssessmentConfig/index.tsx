@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import {IMeetingMutation, newMeeting, newRemoteMeeting} from 'apollo/modules/meetings';
-import {IURLConnector} from 'redux/modules/url';
-import {setURL} from 'modules/url';
+import {IURLConnector, setURL} from 'redux/modules/url';
 import { AssessmentType, IAssessmentConfig, defaultRemoteMeetingLimit } from 'models/assessment';
 import { bindActionCreators } from 'redux';
 import { Grid, Message } from 'semantic-ui-react';
@@ -12,8 +11,10 @@ const config = require('../../../../config/main');
 const ReactGA = require('react-ga');
 
 interface IProp extends IMeetingMutation, IURLConnector {
-  params: {
-    type: string,
+  match: {
+    params: {
+      type: string,
+    },
   };
 }
 
@@ -39,14 +40,14 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
   }
 
   private getType(): AssessmentType {
-    return AssessmentType[this.props.params.type];
+    return AssessmentType[this.props.match.params.type];
   }
 
   private recordMeetingStarted() {
     ReactGA.event({
       category: 'assessment',
       action: 'started',
-      label: this.props.params.type,
+      label: this.props.match.params.type,
     });
   }
 
@@ -121,7 +122,7 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
 
   public render() {
     return (
-      <Grid container columns={1} id="conduct">
+      <Grid container={true} columns={1} id="conduct">
         <Grid.Column>
           <Helmet title="Record"/>
           <h1>Create Record</h1>
@@ -132,5 +133,5 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
   }
 }
 
-const AssessmentConfig = newRemoteMeeting(newMeeting(AssessmentConfigInner));
-export { AssessmentConfig }
+const AssessmentConfig = newRemoteMeeting<IProp>(newMeeting<IProp>(AssessmentConfigInner));
+export { AssessmentConfig };
