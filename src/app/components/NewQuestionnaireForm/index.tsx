@@ -1,82 +1,67 @@
 import * as React from 'react';
-import {ButtonProps, Form} from 'semantic-ui-react';
+import {ButtonProps, Form, Input} from 'semantic-ui-react';
 import './style.less';
+import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
+import {FormField} from 'components/FormField';
 
 export interface INewQuestionnaire {
   name: string;
   description: string;
 }
 
-interface IProps {
-  onCancel: () => void;
+interface IProps extends IOnCancel {
   submit: (INewQuestionnaire) => Promise<any>;
 }
 
-interface IState extends INewQuestionnaire {
-  error?: string;
-  saving: boolean;
+interface IOnCancel {
+  onCancel: () => void;
 }
 
-class NewQuestionnaireForm extends React.Component<IProps, IState> {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: '',
-      description: '',
-      saving: false,
-    };
-    this.onSubmit = this.onSubmit.bind(this);
-    this.handleChange = this.handleChange.bind(this);
+const InnerForm = (props: InjectedFormikProps<IOnCancel, INewQuestionnaire>) => {
+  const { errors, isSubmitting, handleChange, onCancel, submitForm, handleBlur, isValid } = props;
+  const submitProps: ButtonProps = {};
+  if (isSubmitting) {
+    submitProps.loading = true;
+    submitProps.disabled = true;
   }
 
-  private onSubmit() {
-    this.setState({
-      ...this.state,
-      saving: true,
-      error: undefined,
-    });
-    this.props.submit(this.state)
+  return (
+    <Form className="new-questionnaire-form" onSubmit={submitForm} >
+      <FormField error={errors.name as string} inputID="nqf-name" label="Name">
+        <Input id="nqf-name" name="name" type="text" placeholder="Name" onChange={handleChange} onBlur={handleBlur} />
+      </FormField>
+      <FormField error={errors.description as string} inputID="nqf-description" label="Description">
+        <Input id="nqf-description" name="description" type="text" placeholder="Description" onChange={handleChange} onBlur={handleBlur} />
+      </FormField>
+      <Form.Group>
+        <Form.Button onClick={onCancel}>Cancel</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!isValid} {...submitProps}>Create</Form.Button>
+      </Form.Group>
+    </Form>
+  );
+};
+
+const NewQuestionnaireForm = withFormik<IProps, INewQuestionnaire>({
+  validate: (values: INewQuestionnaire) => {
+    const errors: FormikErrors<INewQuestionnaire> = {};
+    if (!values.name) {
+      errors.name = 'Name is required';
+    }
+    return errors;
+  },
+
+  handleSubmit: (v: FormikValues, formikBag: FormikBag<IProps, INewQuestionnaire>): void => {
+    formikBag.setSubmitting(true);
+    formikBag.setError(undefined);
+    formikBag.props.submit(v)
       .then(() => {
-        this.setState({
-          ...this.state,
-          saving: false,
-        });
+        formikBag.setSubmitting(false);
       })
       .catch((e: Error) => {
-        this.setState({
-          ...this.state,
-          saving: false,
-          error: e.message,
-        });
+        formikBag.setSubmitting(false);
+        formikBag.setError(e);
       });
-  }
-
-  private handleChange(_, { name, value }) {
-    this.setState({
-      ...this.state,
-      [name]: value,
-    });
-  }
-
-  public render() {
-    const submitProps: ButtonProps = {};
-    if (this.state.saving) {
-      submitProps.loading = true;
-      submitProps.disabled = true;
-    }
-    return (
-      <Form onSubmit={this.onSubmit} className="new-questionnaire-form">
-        <Form.Group>
-          <Form.Input name="name" type="text" placeholder="Name" onChange={this.handleChange} />
-          <Form.Input name="description" type="text" placeholder="Description" onChange={this.handleChange} />
-          <Form.Button onClick={this.props.onCancel}>Cancel</Form.Button>
-          <Form.Button type="submit" primary {...submitProps}>Create</Form.Button>
-        </Form.Group>
-        <p>{this.state.error}</p>
-      </Form>
-    );
-  }
-}
+  },
+})(InnerForm);
 
 export {NewQuestionnaireForm};

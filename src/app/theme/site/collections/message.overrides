@@ -1,0 +1,8 @@
+@import (reference) './../../variables.less';
+
+.ui.message.form-container {
+  .header{
+    font-weight: normal !important;
+    color: #935D8C;
+  }
+}

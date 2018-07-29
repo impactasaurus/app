@@ -14,4 +14,19 @@
   {
       color: @placeholder;
   }
+
+  label {
+    font-weight: normal !important;
+  }
+
+  .field {
+    text-align: left;
+
+    &.error {
+      color: @error;
+    }
+    .error.validation {
+      line-height: 2rem;
+    }
+  }
 }

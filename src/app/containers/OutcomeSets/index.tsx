@@ -5,7 +5,7 @@ import {IOutcomeSet} from 'models/outcomeSet';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {renderArray} from 'helpers/react';
 import { bindActionCreators } from 'redux';
-import { List, Icon, Grid, Loader } from 'semantic-ui-react';
+import { List, Icon, Grid, Loader, Message } from 'semantic-ui-react';
 import {INewQuestionnaire, NewQuestionnaireForm} from 'components/NewQuestionnaireForm';
 import {ConfirmButton} from 'components/ConfirmButton';
 import './style.less';
@@ -98,14 +98,15 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
   private renderNewControl(): JSX.Element {
     if (this.state.newClicked) {
       return (
-        <List.Item className="new-control" key="new">
-          <List.Content>
+        <Message className="form-container">
+          <Message.Header>New Questionnaire</Message.Header>
+          <Message.Content>
             <NewQuestionnaireForm
               onCancel={this.setNewClicked(false)}
               submit={this.createQS}
             />
-          </List.Content>
-        </List.Item>
+          </Message.Content>
+        </Message>
       );
     } else {
       return (
