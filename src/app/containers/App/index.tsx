@@ -30,6 +30,7 @@ class App extends React.Component<IProps, any> {
           <Helmet {...appConfig.app} {...appConfig.app.head} />
           <Header/>
           {inner}
+          <div id="bottom-padding" />
         </section>
       );
     };
