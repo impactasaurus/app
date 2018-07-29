@@ -15,12 +15,11 @@ class EditQuestionCategoryInner extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
-
     this.onSubmitButtonPress = this.onSubmitButtonPress.bind(this);
   }
 
-  private onSubmitButtonPress(QuestionSetID: string, name: string, aggregation: string, description: string): Promise<IOutcomeSet> {
-    return this.props.editCategory(QuestionSetID, this.props.category.id, name, aggregation, description);
+  private onSubmitButtonPress(name: string, aggregation: string, description: string): Promise<IOutcomeSet> {
+    return this.props.editCategory(this.props.QuestionSetID, this.props.category.id, name, aggregation, description);
   }
 
   public render() {
@@ -29,11 +28,12 @@ class EditQuestionCategoryInner extends React.Component<IProps, any> {
         OnSuccess={this.props.OnSuccess}
         OnCancel={this.props.OnCancel}
         onSubmitButtonPress={this.onSubmitButtonPress}
-        QuestionSetID={this.props.QuestionSetID}
         submitButtonText="Save changes"
-        name={this.props.category.name}
-        description={this.props.category.description}
-        aggregation={this.props.category.aggregation}
+        values={{
+          name: this.props.category.name,
+          description: this.props.category.description,
+          aggregation: this.props.category.aggregation,
+        }}
       />
     );
   }

@@ -13,12 +13,11 @@ class NewQuestionCategoryInner extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
-
     this.onSubmitButtonPress = this.onSubmitButtonPress.bind(this);
   }
 
-  private onSubmitButtonPress(QuestionSetID: string, name: string, aggregation: string, description: string): Promise<IOutcomeSet> {
-    return this.props.addCategory(QuestionSetID, name, aggregation, description);
+  private onSubmitButtonPress(name: string, aggregation: string, description: string): Promise<IOutcomeSet> {
+    return this.props.addCategory(this.props.QuestionSetID, name, aggregation, description);
   }
 
   public render() {
@@ -27,7 +26,6 @@ class NewQuestionCategoryInner extends React.Component<IProps, any> {
         OnSuccess={this.props.OnSuccess}
         OnCancel={this.props.OnCancel}
         onSubmitButtonPress={this.onSubmitButtonPress}
-        QuestionSetID={this.props.QuestionSetID}
         submitButtonText="Add"
       />
     );
