@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {ButtonProps, Form, Input} from 'semantic-ui-react';
+import {ButtonProps, Form, Input, Icon} from 'semantic-ui-react';
 import './style.less';
 import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
 import {FormField} from 'components/FormField';
@@ -18,7 +18,7 @@ interface IOnCancel {
 }
 
 const InnerForm = (props: InjectedFormikProps<IOnCancel, INewQuestionnaire>) => {
-  const { errors, isSubmitting, handleChange, onCancel, submitForm, handleBlur, isValid } = props;
+  const { error, errors, isSubmitting, handleChange, onCancel, submitForm, handleBlur, isValid } = props;
   const submitProps: ButtonProps = {};
   if (isSubmitting) {
     submitProps.loading = true;
@@ -37,6 +37,7 @@ const InnerForm = (props: InjectedFormikProps<IOnCancel, INewQuestionnaire>) => 
         <Form.Button onClick={onCancel}>Cancel</Form.Button>
         <Form.Button type="submit" primary={true} disabled={!isValid} {...submitProps}>Create</Form.Button>
       </Form.Group>
+      {error && <span className="submit-error"><Icon name="exclamation" />Creating the questionnaire failed. Please refresh and try again, if that doesn't get it, please drop us an email at support@impactasaurus.org</span>}
     </Form>
   );
 };
@@ -45,7 +46,7 @@ const NewQuestionnaireForm = withFormik<IProps, INewQuestionnaire>({
   validate: (values: INewQuestionnaire) => {
     const errors: FormikErrors<INewQuestionnaire> = {};
     if (!values.name) {
-      errors.name = 'Name is required';
+      errors.name = 'Please enter a name for the new questionnaire';
     }
     return errors;
   },
@@ -59,7 +60,7 @@ const NewQuestionnaireForm = withFormik<IProps, INewQuestionnaire>({
       })
       .catch((e: Error) => {
         formikBag.setSubmitting(false);
-        formikBag.setError(e);
+        formikBag.setError(e.message);
       });
   },
 })(InnerForm);
