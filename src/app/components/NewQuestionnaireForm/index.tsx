@@ -3,6 +3,7 @@ import {ButtonProps, Form, Input, Icon} from 'semantic-ui-react';
 import './style.less';
 import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
 import {FormField} from 'components/FormField';
+const formFailureGeneric = require('../../../strings.json').formFailureGeneric;
 
 export interface INewQuestionnaire {
   name: string;
@@ -18,7 +19,7 @@ interface IOnCancel {
 }
 
 const InnerForm = (props: InjectedFormikProps<IOnCancel, INewQuestionnaire>) => {
-  const { error, errors, isSubmitting, handleChange, onCancel, submitForm, handleBlur, isValid } = props;
+  const { touched, error, errors, isSubmitting, handleChange, onCancel, submitForm, handleBlur, isValid } = props;
   const submitProps: ButtonProps = {};
   if (isSubmitting) {
     submitProps.loading = true;
@@ -27,17 +28,17 @@ const InnerForm = (props: InjectedFormikProps<IOnCancel, INewQuestionnaire>) => 
 
   return (
     <Form className="new-questionnaire-form" onSubmit={submitForm} >
-      <FormField error={errors.name as string} inputID="nqf-name" label="Name">
+      <FormField error={errors.name as string} touched={touched.name} inputID="nqf-name" label="Name" required={true}>
         <Input id="nqf-name" name="name" type="text" placeholder="Name" onChange={handleChange} onBlur={handleBlur} />
       </FormField>
-      <FormField error={errors.description as string} inputID="nqf-description" label="Description">
+      <FormField error={errors.description as string} touched={touched.description} inputID="nqf-description" label="Description">
         <Input id="nqf-description" name="description" type="text" placeholder="Description" onChange={handleChange} onBlur={handleBlur} />
       </FormField>
       <Form.Group>
         <Form.Button onClick={onCancel}>Cancel</Form.Button>
-        <Form.Button type="submit" primary={true} disabled={!isValid} {...submitProps}>Create</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} {...submitProps}>Create</Form.Button>
       </Form.Group>
-      {error && <span className="submit-error"><Icon name="exclamation" />Creating the questionnaire failed. Please refresh and try again, if that doesn't get it, please drop us an email at support@impactasaurus.org</span>}
+      {error && <span className="submit-error"><Icon name="exclamation" />Creating the questionnaire failed. {formFailureGeneric}</span>}
     </Form>
   );
 };

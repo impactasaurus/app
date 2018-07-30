@@ -4,7 +4,7 @@ import {ICategoryMutation, deleteCategory} from 'apollo/modules/categories';
 import {renderArray} from 'helpers/react';
 import {ICategory} from 'models/category';
 import {IOutcomeSet} from 'models/outcomeSet';
-import { List, Loader, Button, Popup } from 'semantic-ui-react';
+import { List, Loader, Button, Popup, Message } from 'semantic-ui-react';
 import {NewQuestionCategory} from 'components/NewQuestionCategory';
 import {EditQuestionCategory} from 'components/EditQuestionCategory';
 import {ConfirmButton} from 'components/ConfirmButton';
@@ -18,6 +18,15 @@ interface IState {
   newCategoryClicked?: boolean;
   editedCategoryId?: string;
 }
+
+const wrapCategoryForm = (title: string, inner: JSX.Element): JSX.Element => ((
+  <Message className="form-container">
+    <Message.Header>{title}</Message.Header>
+    <Message.Content>
+      {inner}
+    </Message.Content>
+  </Message>
+));
 
 class CategoryListInner extends React.Component<IProps, IState> {
 
@@ -46,6 +55,7 @@ class CategoryListInner extends React.Component<IProps, IState> {
     return () => {
       this.setState({
         newCategoryClicked: newValue,
+        editedCategoryId: undefined,
       });
     };
   }
@@ -54,6 +64,7 @@ class CategoryListInner extends React.Component<IProps, IState> {
     return () => {
       this.setState({
         editedCategoryId: categoryId,
+        newCategoryClicked: false,
       });
     };
   }
@@ -63,12 +74,14 @@ class CategoryListInner extends React.Component<IProps, IState> {
       return (
         <List.Item className="edit-control" key={c.id}>
           <List.Content>
-            <EditQuestionCategory
-              category={c}
-              QuestionSetID={this.props.outcomeSetID}
-              OnSuccess={this.setEditedCategoryId(null)}
-              OnCancel={this.setEditedCategoryId(null)}
-            />
+            {wrapCategoryForm('Edit Question Category', (
+              <EditQuestionCategory
+                category={c}
+                QuestionSetID={this.props.outcomeSetID}
+                OnSuccess={this.setEditedCategoryId(null)}
+                OnCancel={this.setEditedCategoryId(null)}
+              />
+            ))}
           </List.Content>
         </List.Item>
       );
@@ -99,11 +112,13 @@ class CategoryListInner extends React.Component<IProps, IState> {
       return (
         <List.Item className="new-control">
           <List.Content>
-            <NewQuestionCategory
-              QuestionSetID={this.props.outcomeSetID}
-              OnSuccess={this.setNewCategoryClicked(false)}
-              OnCancel={this.setNewCategoryClicked(false)}
-            />
+            {wrapCategoryForm('New Question Category', (
+              <NewQuestionCategory
+                QuestionSetID={this.props.outcomeSetID}
+                OnSuccess={this.setNewCategoryClicked(false)}
+                OnCancel={this.setNewCategoryClicked(false)}
+              />
+            ))}
           </List.Content>
         </List.Item>
       );
