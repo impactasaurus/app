@@ -132,13 +132,11 @@ class LikertForm extends React.Component<IProps, IState> {
       return (<Message content={strings.valuesNotEditable} info={true}/>);
     }
     return (
-      <Form>
-        <Form.Group>
-          <Form.Input required={true} label="Left Value" type="number" placeholder="Left Value" width={4} onChange={this.setLeftValue} defaultValue={this.props.leftValue} />
-          <Form.Input className="padding" width={8} />
-          <Form.Input required={true} label="Right Value" type="number" placeholder="Right Value" width={4} onChange={this.setRightValue} defaultValue={this.props.rightValue} />
-        </Form.Group>
-      </Form>
+      <Form.Group>
+        <Form.Input required={true} label="Left Value" type="number" placeholder="Left Value" width={4} onChange={this.setLeftValue} defaultValue={this.props.leftValue} />
+        <Form.Input className="padding" width={8} />
+        <Form.Input required={true} label="Right Value" type="number" placeholder="Right Value" width={4} onChange={this.setRightValue} defaultValue={this.props.rightValue} />
+      </Form.Group>
     );
   }
 

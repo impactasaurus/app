@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, ButtonProps, Form, Input } from 'semantic-ui-react';
+import { ButtonProps, Form, Input } from 'semantic-ui-react';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import {ILabel, ILikertQuestionForm, ILikertForm} from 'models/question';
@@ -181,36 +181,31 @@ class LikertQuestionFormInner extends React.Component<IProps, IState> {
       addProps.disabled = true;
     }
     return (
-      <div>
-        <Form>
-          <Form.Group>
-            <Form.Input required={true} label="Question" placeholder="Question" width={12} onChange={this.setNewQuestion} value={this.state.newQuestion} />
-            <Form.Field width={4}>
-              <label>Shortened Form <Hint text="Shortened form of the question. Used instead of the question, when reviewing data in visualisations and exports"/></label>
-              <Input placeholder="Shortened Form" onChange={this.setShort} value={this.state.short} />
-            </Form.Field>
-          </Form.Group>
-          <Form.Group>
-            <Form.Input label="Description" placeholder="Description" width={12} onChange={this.setDescription} value={this.state.description} />
-            <Form.Select label="Category" placeholder="Category" options={this.getCategoryOptions()} width={4} onChange={this.setCategory} defaultValue={this.state.categoryID} />
-          </Form.Group>
-        </Form>
-
-        <div className="likert-question-form">
-          <LikertForm
-            edit={this.props.edit}
-            labels={this.state.labels}
-            leftValue={this.state.leftValue}
-            rightValue={this.state.rightValue}
-            onChange={this.setLikertOptions}
-          />
-          <div className="controls">
-            <Button onClick={this.props.onCancel}>Cancel</Button>
-            <Button {...addProps} primary={true} onClick={this.onSubmitButtonClick}>{this.props.submitButtonText}</Button>
-            <p>{this.state.newQuestionError}</p>
-          </div>
-        </div>
-      </div>
+      <Form>
+        <Form.Group>
+          <Form.Input required={true} label="Question" placeholder="Question" width={12} onChange={this.setNewQuestion} value={this.state.newQuestion} />
+          <Form.Field width={4}>
+            <label>Shortened Form <Hint text="Shortened form of the question. Used instead of the question, when reviewing data in visualisations and exports"/></label>
+            <Input placeholder="Shortened Form" onChange={this.setShort} value={this.state.short} />
+          </Form.Field>
+        </Form.Group>
+        <Form.Group>
+          <Form.Input label="Description" placeholder="Description" width={12} onChange={this.setDescription} value={this.state.description} />
+          <Form.Select label="Category" placeholder="Category" options={this.getCategoryOptions()} width={4} onChange={this.setCategory} defaultValue={this.state.categoryID} />
+        </Form.Group>
+        <LikertForm
+          edit={this.props.edit}
+          labels={this.state.labels}
+          leftValue={this.state.leftValue}
+          rightValue={this.state.rightValue}
+          onChange={this.setLikertOptions}
+        />
+        <Form.Group>
+          <Form.Button onClick={this.props.onCancel}>Cancel</Form.Button>
+          <Form.Button {...addProps} type="submit" primary={true} onClick={this.onSubmitButtonClick}>{this.props.submitButtonText}</Form.Button>
+        </Form.Group>
+        <p>{this.state.newQuestionError}</p>
+      </Form>
     );
   }
 }
