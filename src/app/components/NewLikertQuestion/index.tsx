@@ -23,15 +23,20 @@ class NewLikertQuestionInner extends React.Component<IProps, any> {
   }
 
   public render() {
-    const defaults: ILikertForm = this.props.Defaults || {};
+    const defaults: ILikertForm = this.props.Defaults || {
+      leftValue: 1,
+      rightValue: 5,
+      labels: [],
+    };
     return (
       <LikertQuestionForm
         onSubmitButtonClick={this.addQuestion}
         submitButtonText="Add"
         onCancel={this.props.OnCancel}
-        labels={defaults.labels}
-        leftValue={defaults.leftValue}
-        rightValue={defaults.rightValue}
+        values={{
+          ...defaults,
+          question: '',
+        }}
         {...this.props}
       />
     );

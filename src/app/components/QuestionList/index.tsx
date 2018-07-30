@@ -4,7 +4,7 @@ import {IQuestionMutation, deleteQuestion} from 'apollo/modules/questions';
 import {renderArray} from 'helpers/react';
 import {ILikertForm, Question} from 'models/question';
 import {IOutcomeSet} from 'models/outcomeSet';
-import { List, Loader, Button, Popup } from 'semantic-ui-react';
+import { List, Loader, Button, Popup, Message } from 'semantic-ui-react';
 import {NewLikertQuestion} from 'components/NewLikertQuestion';
 import {ConfirmButton} from 'components/ConfirmButton';
 import {CategoryPill} from 'components/CategoryPill';
@@ -43,6 +43,15 @@ function assignCategoriesClasses(current: {[catID: string]: string}, data: IOutc
   });
   return assignments;
 }
+
+const wrapQuestionForm = (title: string, inner: JSX.Element): JSX.Element => ((
+  <Message className="form-container likert-form-container">
+    <Message.Header>{title}</Message.Header>
+    <Message.Content>
+      {inner}
+    </Message.Content>
+  </Message>
+));
 
 class QuestionListInner extends React.Component<IProps, IState> {
 
@@ -88,6 +97,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
     return () => {
       this.setState({
         newQuestionClicked: newValue,
+        editedQuestionId: undefined,
       });
     };
   }
@@ -95,6 +105,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
   private setEditedQuestionId(questionId: string): ()=>void {
     return () => {
       this.setState({
+        newQuestionClicked: false,
         editedQuestionId: questionId,
       });
     };
@@ -120,7 +131,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
   }
 
   private renderEditQuestionForm(q: Question): JSX.Element {
-    return (
+    return wrapQuestionForm('Edit Likert Question', (
       <EditLikertQuestion
         key={q.id}
         question={q}
@@ -128,7 +139,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
         OnSuccess={this.setEditedQuestionId(null)}
         OnCancel={this.setEditedQuestionId(null)}
       />
-    );
+    ));
   }
 
   private getCategoryPillClass(catID?: string): string|undefined {
@@ -160,23 +171,27 @@ class QuestionListInner extends React.Component<IProps, IState> {
 
   private renderNewQuestionControl(): JSX.Element {
     if (this.state.newQuestionClicked === true) {
-      const defaults: ILikertForm = {};
+      let defaults: ILikertForm;
       const qs = getQuestions(this.props.data.getOutcomeSet) || [];
       if (qs.length > 0) {
         const last = qs[qs.length-1] as Question;
-        defaults.labels = last.labels;
-        defaults.rightValue = last.rightValue;
-        defaults.leftValue = last.leftValue;
+        defaults = {
+          labels: last.labels,
+          rightValue: last.rightValue,
+          leftValue: last.leftValue,
+        };
       }
       return (
         <List.Item className="new-control">
           <List.Content>
-            <NewLikertQuestion
-              QuestionSetID={this.props.outcomeSetID}
-              OnSuccess={this.setNewQuestionClicked(false)}
-              OnCancel={this.setNewQuestionClicked(false)}
-              Defaults={defaults}
-            />
+            {wrapQuestionForm('New Likert Question', (
+              <NewLikertQuestion
+                QuestionSetID={this.props.outcomeSetID}
+                OnSuccess={this.setNewQuestionClicked(false)}
+                OnCancel={this.setNewQuestionClicked(false)}
+                Defaults={defaults}
+              />
+            ))}
           </List.Content>
         </List.Item>
       );

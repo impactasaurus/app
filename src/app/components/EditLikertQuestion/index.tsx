@@ -35,13 +35,15 @@ class EditLikertQuestionInner extends React.Component<IProps, any> {
     return (
       <LikertQuestionForm
         edit={true}
-        newQuestion={q.question}
-        categoryID={q.categoryID}
-        description={q.description}
-        short={q.short}
-        labels={q.labels}
-        leftValue={q.leftValue}
-        rightValue={q.rightValue}
+        values={{
+          question:q.question,
+          categoryID: q.categoryID,
+          description: q.description,
+          short: q.short,
+          labels: q.labels,
+          leftValue: q.leftValue,
+          rightValue: q.rightValue,
+        }}
         submitButtonText="Save changes"
         onSubmitButtonClick={this.editQuestion}
         onCancel={this.props.OnCancel}
