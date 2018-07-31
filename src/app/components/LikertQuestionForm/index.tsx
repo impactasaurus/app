@@ -3,7 +3,7 @@ import { Icon, Form, Input, Select, DropdownItemProps } from 'semantic-ui-react'
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import {ILabel, ILikertQuestionForm, ILikertForm} from 'models/question';
-import {LikertForm} from 'components/LikertForm';
+import {LikertFormField} from 'components/LikertFormField';
 import {FormField} from 'components/FormField';
 import {Hint} from 'components/Hint';
 import './style.less';
@@ -33,9 +33,9 @@ interface IProps extends IExternalProps {
 
 const shortenedLabel: JSX.Element = (
   <span>
-      Shortened Form
-      <Hint text="Shortened form of the question. Used instead of the question, when reviewing data in visualisations and exports"/>
-    </span>
+    Shortened Form
+    <Hint text="Shortened form of the question. Used instead of the question, when reviewing data in visualisations and exports"/>
+  </span>
 );
 
 const InnerForm = (props: InjectedFormikProps<IInnerFormProps, ILikertQuestionForm>) => {
@@ -75,7 +75,7 @@ const InnerForm = (props: InjectedFormikProps<IInnerFormProps, ILikertQuestionFo
           <Select id="lqf-cat" name="categoryID" options={categoryOptions} placeholder="Category" value={values.categoryID} {...standardActions} />
         </FormField>
       </Form.Group>
-      <LikertForm
+      <LikertFormField
         edit={edit}
         labels={values.labels}
         leftValue={values.leftValue}
@@ -94,17 +94,16 @@ const InnerForm = (props: InjectedFormikProps<IInnerFormProps, ILikertQuestionFo
   );
 };
 
-// TODO generate category options
 const LikertQuestionFormInner = withFormik<IProps, ILikertQuestionForm>({
   validate: (values: ILikertQuestionForm) => {
     const errors: FormikErrors<ILikertQuestionForm> = {};
     if (!values.question || typeof values.question !== 'string' || values.question.length === 0) {
       errors.question = 'Please enter a question';
     }
-    if (!values.leftValue) {
+    if (values.leftValue === undefined || typeof values.leftValue !== 'number') {
       errors.leftValue = 'Please enter a value for the left extreme of the scale' as any;
     }
-    if (!values.rightValue) {
+    if (values.rightValue === undefined || typeof values.rightValue !== 'number') {
       errors.leftValue = 'Please enter a value for the right extreme of the scale' as any;
     }
     if (values.leftValue === values.rightValue) {
@@ -112,7 +111,7 @@ const LikertQuestionFormInner = withFormik<IProps, ILikertQuestionForm>({
     }
     const findLabelForValue = (val: number): ILabel|undefined => values.labels.find((l) => l.value === val);
     if (findLabelForValue(values.leftValue) === undefined || findLabelForValue(values.rightValue) === undefined) {
-      errors.labels = 'Please set labels for the left and right extremes of the scale'  as any;
+      errors.labels = 'Please set labels for the left and right extremes of the scale' as any;
     }
     return errors;
   },

@@ -37,7 +37,7 @@ const replaceLabel = (oldVal: number, newVal: number, label: string, labels: ILa
   }, removedOldLabel);
 };
 
-class LikertForm extends React.Component<IProps, IState> {
+class LikertFormField extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
@@ -165,4 +165,4 @@ class LikertForm extends React.Component<IProps, IState> {
   }
 }
 
-export { LikertForm };
+export { LikertFormField };
