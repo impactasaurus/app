@@ -1,20 +1,21 @@
 import * as React from 'react';
-import {Icon, Form} from 'semantic-ui-react';
+import {Icon, Form, SemanticWIDTHS} from 'semantic-ui-react';
 
 interface IProps {
   error?: string;
   inputID: string;
-  label: string;
+  label: string|JSX.Element;
   touched: boolean;
   required?: boolean;
+  width?: SemanticWIDTHS;
 }
 
 export class FormField extends React.Component<IProps, any> {
   public render() {
-    const {error, inputID, label, touched, required} = this.props;
+    const {error, inputID, label, touched, required, width} = this.props;
     const errored = touched && error !== undefined;
     return (
-      <Form.Field error={errored} required={required}>
+      <Form.Field error={errored} required={required} width={width}>
         <label htmlFor={inputID}>{label}</label>
         {this.props.children}
         {errored && <span className="error validation"><Icon name="exclamation" />{error}</span>}
