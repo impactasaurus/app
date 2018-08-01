@@ -26,6 +26,7 @@ const addOrEditLabel = (l: ILabel, ls: ILabel[]): ILabel[] => {
   }
   return base;
 };
+
 const replaceLabel = (oldVal: number, newVal: number, label: string, labels: ILabel[]): ILabel[] => {
   const removedOldLabel = addOrEditLabel({
     label: undefined,

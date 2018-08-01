@@ -33,8 +33,7 @@ interface IProps extends IExternalProps {
 
 const shortenedLabel: JSX.Element = (
   <span>
-    Shortened Form
-    <Hint text="Shortened form of the question. Used instead of the question, when reviewing data in visualisations and exports"/>
+    Shortened Form <Hint text="Shortened form of the question. Used instead of the question, when reviewing data in visualisations and exports"/>
   </span>
 );
 

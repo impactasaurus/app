@@ -33,4 +33,13 @@
   .submit-error {
     color: @error;
   }
+
+  .fields {
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .padding {
+    visibility: hidden;
+  }
 }
