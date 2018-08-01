@@ -76,14 +76,23 @@ const InnerForm = (props: InjectedFormikProps<IInnerFormProps, ILikertQuestionFo
       </Form.Group>
       <LikertFormField
         edit={edit}
-        labels={values.labels}
-        leftValue={values.leftValue}
-        rightValue={values.rightValue}
+        values={{
+          labels: values.labels,
+          leftValue: values.leftValue,
+          rightValue: values.rightValue,
+        }}
+        errors={{
+          labels: errors.labels as string,
+          leftValue: errors.leftValue as string,
+          rightValue: errors.rightValue as string,
+        }}
+        touched={{
+          labels: !!touched.labels,
+          leftValue: touched.leftValue as boolean,
+          rightValue: touched.rightValue as boolean,
+        }}
         onChange={setLikertOptions}
       />
-      {errors.leftValue && <div className="error validation"><Icon name="exclamation" />{errors.leftValue}</div>}
-      {errors.rightValue && <div className="error validation"><Icon name="exclamation" />{errors.rightValue}</div>}
-      {errors.labels && <div className="error validation"><Icon name="exclamation" />{errors.labels}</div>}
       <Form.Group>
         <Form.Button onClick={onCancel}>Cancel</Form.Button>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>{submitButtonText}</Form.Button>

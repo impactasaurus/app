@@ -25,9 +25,6 @@
     &.error {
       color: @error;
     }
-    .error.validation {
-      line-height: 2rem;
-    }
   }
 
   .submit-error {
@@ -41,5 +38,9 @@
 
   .padding {
     visibility: hidden;
+  }
+
+  .error.validation {
+    line-height: 2rem;
   }
 }
