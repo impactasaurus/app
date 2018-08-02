@@ -88,7 +88,7 @@ class RecordViewInner extends React.Component<IProps, any> {
       <div>
         <div className="impactform">
           <div>
-            <h4 className="label inline">Beneficiary ID</h4>
+            <h4 className="label inline">Beneficiary</h4>
             <span>{record.beneficiary}</span>
           </div>
           <div>

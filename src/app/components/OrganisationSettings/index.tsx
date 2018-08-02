@@ -3,6 +3,7 @@ import {Form, Button, ButtonProps} from 'semantic-ui-react';
 import {getOrganisation, IGetOrgResult, IUpdateOrgSettings, updateOrgSetting} from 'apollo/modules/organisation';
 import {isNullOrUndefined} from 'util';
 import {IOrgSettings} from '../../models/organisation';
+import './style.less';
 
 interface IProps extends IUpdateOrgSettings {
   org?: IGetOrgResult;
@@ -83,8 +84,8 @@ class OrganisationSettingsInner extends React.Component<IProps, IState> {
     }
 
     return (
-      <Form loading={this.props.org.loading} >
-        <Form.Checkbox checked={settings.beneficiaryTypeAhead} label="Show suggestions when entering beneficiary IDs" onChange={this.benTypeaheadChanged} />
+      <Form loading={this.props.org.loading} id="organisation-settings">
+        <Form.Checkbox checked={settings.beneficiaryTypeAhead} label="Show beneficiary suggestions" onChange={this.benTypeaheadChanged} />
         <Button {...startProps} onClick={this.save}>Save</Button>
         <p>{this.state.error}</p>
       </Form>
