@@ -50,7 +50,7 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
 
   private validateStartMeetingOptions(beneficiaryID?: string, outcomeSetID?: string): string|null {
     if (!beneficiaryID || beneficiaryID === '') {
-      return 'Beneficiary ID is required';
+      return 'Beneficiary is required';
     }
     if (!outcomeSetID || beneficiaryID === '') {
       return 'Question set must be selected';
@@ -162,7 +162,7 @@ class AssessmentConfigInner extends React.Component<IProps, IState> {
     }
     return (
       <div className="impactform assessment-config">
-        <h3 className="label"><Hint text={strings.beneficiaryIDExplanation} />Beneficiary ID</h3>
+        <h3 className="label"><Hint text={strings.beneficiaryIDExplanation} />Beneficiary</h3>
         <BeneficiaryInput onChange={this.setBenID} onBlur={this.setDebounceBenID} onFocus={this.clearDebouncedID} allowUnknown={true} />
         <h3 className="label">Questionnaire</h3>
         <Select {...selectProps} placeholder="Questionnaire" onChange={this.setOS} options={this.getOptions(outcomeSets)} />
