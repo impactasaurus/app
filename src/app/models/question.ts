@@ -6,7 +6,7 @@ export interface IQuestion {
   description?: string;
   short?: string;
   archived?: boolean;
-  categoryID: string;
+  categoryID?: string;
 }
 
 export interface ILabel {
@@ -17,7 +17,7 @@ export interface ILabel {
 export interface ILikertScale extends IQuestion {
   leftLabel?: string;
   rightLabel?: string;
-  leftValue?: number;
+  leftValue: number;
   rightValue: number;
   labels: ILabel[];
 }
@@ -25,19 +25,19 @@ export interface ILikertScale extends IQuestion {
 export type Question = ILikertScale;
 
 export interface ILikertQuestionForm {
-  question?: string;
+  question: string;
   categoryID?: string;
   description?: string;
   short?: string;
-  labels?: ILabel[];
-  leftValue?: number;
-  rightValue?: number;
+  labels: ILabel[];
+  leftValue: number;
+  rightValue: number;
 }
 
 export interface ILikertForm {
-  leftValue?: number;
-  rightValue?: number;
-  labels?: ILabel[];
+  leftValue: number;
+  rightValue: number;
+  labels: ILabel[];
 }
 
 export const fragment = gql`

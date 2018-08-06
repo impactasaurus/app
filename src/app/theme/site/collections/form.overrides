@@ -25,12 +25,22 @@
     &.error {
       color: @error;
     }
-    .error.validation {
-      line-height: 2rem;
-    }
   }
 
   .submit-error {
     color: @error;
+  }
+
+  .fields {
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .padding {
+    visibility: hidden;
+  }
+
+  .error.validation {
+    line-height: 2rem;
   }
 }

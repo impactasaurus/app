@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ButtonProps, Select, Input, Form, Icon } from 'semantic-ui-react';
+import { Select, Input, Form, Icon } from 'semantic-ui-react';
 import {ICategoryMutation} from 'apollo/modules/categories';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {FormField} from 'components/FormField';
@@ -41,12 +41,6 @@ const InnerForm = (props: InjectedFormikProps<IInnerFormProps, IQuestionCategory
   const { touched, values, error, errors, isSubmitting, handleChange, OnCancel,
           submitForm, handleBlur, isValid, submitButtonText, setFieldValue, setFieldTouched } = props;
 
-  const submitProps: ButtonProps = {};
-  if (isSubmitting) {
-    submitProps.loading = true;
-    submitProps.disabled = true;
-  }
-
   const standardProps = {
     onChange: handleChange,
     onBlur: handleBlur,
@@ -69,7 +63,7 @@ const InnerForm = (props: InjectedFormikProps<IInnerFormProps, IQuestionCategory
 
       <Form.Group>
         <Form.Button onClick={OnCancel}>Cancel</Form.Button>
-        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} {...submitProps}>{submitButtonText}</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>{submitButtonText}</Form.Button>
       </Form.Group>
       {error && <span className="submit-error"><Icon name="exclamation" />Saving the question category failed. {formFailureGeneric}</span>}
     </Form>
