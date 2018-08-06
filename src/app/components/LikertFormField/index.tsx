@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Message, Input, Label, InputProps, Form} from 'semantic-ui-react';
+import {Message, Input, InputProps, Form} from 'semantic-ui-react';
 import {FormField} from 'components/FormField';
 import { Likert } from 'components/Likert';
 import './style.less';
@@ -121,19 +121,15 @@ class LikertFormField extends React.Component<IProps, IState> {
 
   private renderLabelControl(): JSX.Element {
     const props: InputProps = {};
-    let message = (<span />);
     if (this.state.selectedLabel === undefined) {
       props.disabled = true;
-      message = (<Label basic={true} pointing="left">Click a point on the scale to set or edit labels</Label>);
     }
     const editedLabel = this.props.values.labels.find((l) => l.value === this.state.selectedLabel);
     const {errors, touched} = this.props;
+    const desc = 'Click a point on the scale to set or edit labels';
     return (
-      <FormField key={this.state.selectedLabel} error={errors.labels as string} touched={touched.labels} inputID="lff-labels" label="Scale Labels" required={true} width={4}>
-        <span>
-          <Input {...props} id="lff-labels" name="labels" placeholder="Label for highlighted point" value={editedLabel ? editedLabel.label : undefined} onChange={this.setLabel} />
-          {message}
-        </span>
+      <FormField description={desc} key={'fflc-'+this.state.selectedLabel} error={errors.labels as string} touched={touched.labels} inputID="lff-labels" label="Scale Labels" required={true}>
+        <Input {...props} id="lff-labels" name="labels" placeholder="Label for highlighted point" value={editedLabel ? editedLabel.label : ''} onChange={this.setLabel} />
       </FormField>
     );
   }

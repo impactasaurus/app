@@ -56,6 +56,16 @@ const InnerForm = (props: InjectedFormikProps<IInnerFormProps, ILikertQuestionFo
     setFieldTouched('labels');
   };
 
+  // standardActions don't work as it is not a normal input component
+  // and formik doesn't get a name attribute to work with
+  const onCategoryChanged = (_, v) => {
+    setFieldValue('categoryID', v.value);
+  };
+
+  const onCategoryBlur = () => {
+    setFieldTouched('categoryID');
+  };
+
   return (
     <Form onSubmit={submitForm}>
       <Form.Group>
@@ -71,7 +81,7 @@ const InnerForm = (props: InjectedFormikProps<IInnerFormProps, ILikertQuestionFo
           <Input id="lqf-desc" name="description" type="text" placeholder="Description" value={values.description} {...standardActions} />
         </FormField>
         <FormField error={errors.categoryID as string} touched={touched.categoryID} inputID="lqf-cat" label="Category" width={4}>
-          <Select id="lqf-cat" name="categoryID" options={categoryOptions} placeholder="Category" value={values.categoryID} {...standardActions} />
+          <Select id="lqf-cat" options={categoryOptions} placeholder="Category" value={values.categoryID} onChange={onCategoryChanged} onBlur={onCategoryBlur} />
         </FormField>
       </Form.Group>
       <LikertFormField
@@ -119,7 +129,7 @@ const LikertQuestionFormInner = withFormik<IProps, ILikertQuestionForm>({
     }
     const findLabelForValue = (val: number): ILabel|undefined => values.labels.find((l) => l.value === val);
     if (findLabelForValue(values.leftValue) === undefined || findLabelForValue(values.rightValue) === undefined) {
-      errors.labels = 'Please set labels for the left and right extremes of the scale' as any;
+      errors.labels = 'Please set labels for at least the left and right extremes of the scale' as any;
     }
     return errors;
   },
