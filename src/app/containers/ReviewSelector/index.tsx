@@ -30,7 +30,7 @@ class ReviewSelector extends React.Component<IURLConnector, IState> {
   private review() {
     const benID = this.state.enteredBenID;
     if (isNullOrUndefined(benID) || benID === '') {
-      return this.setState({error: 'Please enter a beneficiary ID'});
+      return this.setState({error: 'Please enter a beneficiary'});
     }
     this.props.setURL(`/beneficiary/${benID}`);
   }
@@ -52,7 +52,7 @@ class ReviewSelector extends React.Component<IURLConnector, IState> {
           </Helmet>
           <h1>Review</h1>
           <Form onSubmit={this.review}>
-            <h3 className="label"><Hint text={strings.beneficiaryIDExplanation} />Beneficiary ID</h3>
+            <h3 className="label"><Hint text={strings.beneficiaryIDExplanation} />Beneficiary</h3>
             <BeneficiaryInput onChange={this.setBenID}/>
             <Button className="submit" type="submit">Review</Button>
             <span>{this.state.error}</span>

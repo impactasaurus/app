@@ -112,13 +112,13 @@ class BeneficiaryInputInner extends React.Component<IProps, IState> {
             fluid={true}
             showNoResults={true}
             noResultsMessage="Unknown beneficiary"
-            input={<Input type="text" placeholder="Beneficiary ID" icon={false}/>}
+            input={<Input type="text" placeholder="Beneficiary" icon={false}/>}
           />
         </div>
       );
     }
     return (
-      <Input type="text" placeholder="Beneficiary ID" onChange={this.onInputChange} onBlur={this.onBlur} onFocus={this.props.onFocus} />
+      <Input type="text" placeholder="Beneficiary" onChange={this.onInputChange} onBlur={this.onBlur} onFocus={this.props.onFocus} />
     );
   }
 }
