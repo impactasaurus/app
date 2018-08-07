@@ -1,46 +1,54 @@
 @import (reference) './../../variables.less';
+@import (reference) './../../typo.less';
 
 #impactasaurus {
-  // need to be separate for each prefix to work correctly
-  .ui.form ::-webkit-input-placeholder
-  {
-      color: @placeholder;
-  }
-  .ui.form :-ms-input-placeholder
-  {
-      color: @placeholder;
-  }
-  .ui.form ::-moz-placeholder
-  {
-      color: @placeholder;
-  }
+  .ui.form {
+    // need to be separate for each prefix to work correctly
+    :-ms-input-placeholder {
+        color: @placeholder;
+    }
+    ::-moz-placeholder {
+        color: @placeholder;
+    }
+    ::-webkit-input-placeholder {
+        color: @placeholder;
+    }
 
-  label {
-    font-weight: normal !important;
-  }
+    .field {
+      text-align: left;
 
-  .field {
-    text-align: left;
+      &.error {
+        color: @error;
+      }
 
-    &.error {
+      &.padding {
+        visibility: hidden;
+      }
+
+      label {
+        font-weight: normal;
+      }
+    }
+
+    .submit-error {
       color: @error;
     }
-  }
 
-  .submit-error {
-    color: @error;
-  }
+    .fields {
+      align-items: flex-start;
+      justify-content: center;
+    }
 
-  .fields {
-    align-items: flex-start;
-    justify-content: center;
-  }
+    .error.validation {
+      line-height: 2rem;
+    }
 
-  .padding {
-    visibility: hidden;
-  }
-
-  .error.validation {
-    line-height: 2rem;
+    &.screen {
+      .field {
+        label {
+          &:extend(#impactasaurus h3);
+        }
+      }
+    }
   }
 }
