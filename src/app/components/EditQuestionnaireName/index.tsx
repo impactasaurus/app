@@ -1,105 +1,74 @@
 import * as React from 'react';
-import { Input, Button } from 'semantic-ui-react';
+import {Input, Icon, Form} from 'semantic-ui-react';
 import { editQuestionSet, IOutcomeMutation } from 'apollo/modules/outcomeSets';
 import { IOutcomeResult } from '../../apollo/modules/outcomeSets';
+import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
+import {FormField} from 'components/FormField';
+import {IOutcomeSet} from '../../models/outcomeSet';
 import './style.less';
+const formFailureGeneric = require('../../../strings.json').formFailureGeneric;
 
-interface IProps extends IOutcomeMutation {
-  data?: IOutcomeResult;
+interface IExternalProps {
   outcomeSetID: string;
   afterSubmit: ()=>void;
 }
 
-interface IState {
-  isBeingSubmitted: boolean;
-  error: string;
-  name: string;
+interface IProps extends IOutcomeMutation, IExternalProps {
+  data?: IOutcomeResult;
 }
 
-class EditQuestionnaireNameInner extends React.Component<IProps, IState> {
-  constructor(props) {
-    super(props);
+const InnerForm = (props: InjectedFormikProps<any, IOutcomeSet>) => {
+  const { touched, error, errors, isSubmitting, handleChange, submitForm, handleBlur, isValid, values } = props;
+  const onCancel = (values as any).onCancel;
 
-    this.state = {
-      isBeingSubmitted: false,
-      error: '',
-      name: this.props.data.getOutcomeSet.name,
+  return (
+    <Form className="edit-control questionnaire name" onSubmit={submitForm} >
+      <FormField error={errors.name as string} touched={touched.name} inputID="eqf-name" label="Name" required={true}>
+        <Input id="eqf-name" value={values.name} name="name" type="text" placeholder="Name" onChange={handleChange} onBlur={handleBlur} />
+      </FormField>
+      <Form.Group>
+        <Form.Button onClick={onCancel}>Cancel</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Create</Form.Button>
+      </Form.Group>
+      {error && <span className="submit-error"><Icon name="exclamation" />Editing the questionnaire failed. {formFailureGeneric}</span>}
+    </Form>
+  );
+};
+
+const EditQuestionnaireNameInner = withFormik<IProps, IOutcomeSet>({
+  validate: (values: IOutcomeSet) => {
+    const errors: FormikErrors<IOutcomeSet> = {};
+    if (!values.name) {
+      errors.name = 'Please enter a new name for the questionnaire';
+    }
+    return errors;
+  },
+
+  mapPropsToValues: (p: IProps) => {
+    return {
+      ...p.data.getOutcomeSet,
+      onCancel: p.afterSubmit,
     };
-    this.submitNewName = this.submitNewName.bind(this);
-    this.onNewNameInputKeyPress = this.onNewNameInputKeyPress.bind(this);
-    this.onNameInputChange = this.onNameInputChange.bind(this);
-  }
+  },
 
-  private submitNewName() {
-    this.setState({
-      ...this.state,
-      isBeingSubmitted: true,
-    });
-
-    this.props.editQuestionSet(
-      this.props.outcomeSetID,
-      this.state.name,
-      this.props.data.getOutcomeSet.description,
-      this.props.data.getOutcomeSet.instructions,
+  handleSubmit: (v: FormikValues, formikBag: FormikBag<IProps, IOutcomeSet>): void => {
+    formikBag.setSubmitting(true);
+    formikBag.setError(undefined);
+    formikBag.props.editQuestionSet(
+      formikBag.props.outcomeSetID,
+      v.name,
+      formikBag.props.data.getOutcomeSet.description,
+      formikBag.props.data.getOutcomeSet.instructions,
     )
       .then(() => {
-        this.setState({
-          ...this.state,
-          error: undefined,
-          isBeingSubmitted: false,
-        });
-
-        this.props.afterSubmit();
+        formikBag.setSubmitting(false);
+        formikBag.props.afterSubmit();
       })
-      .catch((e: Error)=> {
-        this.setState({
-          ...this.state,
-          error: e.message,
-          isBeingSubmitted: false,
-        });
+      .catch((e: Error) => {
+        formikBag.setSubmitting(false);
+        formikBag.setError(e.message);
       });
-  }
+  },
+})(InnerForm);
 
-  private onNewNameInputKeyPress(e) {
-    if (e.charCode === 13) {
-      this.submitNewName();
-    }
-  }
-
-  private moveCaretAtEnd(e) {
-    const tempValue = e.target.value;
-    e.target.value = '';
-    e.target.value = tempValue;
-  }
-
-  private onNameInputChange(_, { value }: { value: string }) {
-    this.setState({
-      ...this.state,
-      name: value,
-    });
-  }
-
-  public render() {
-    return (
-      <div className="edit-control questionnaire name">
-        <Input
-          type="text"
-          placeholder="Name"
-          size="large"
-          onChange={this.onNameInputChange}
-          onKeyPress={this.onNewNameInputKeyPress}
-          value={this.state.name}
-          onFocus={this.moveCaretAtEnd}
-          autoFocus={true}
-        />
-        <Button onClick={this.props.afterSubmit} size="large">Cancel</Button>
-        <Button primary={true} onClick={this.submitNewName} size="large" loading={this.state.isBeingSubmitted}>Save</Button>
-        <p>{this.state.error}</p>
-      </div>
-    );
-  }
-}
-
-const EditQuestionnaireName = editQuestionSet<IProps>(EditQuestionnaireNameInner);
-
-export { EditQuestionnaireName };
+export const EditQuestionnaireName = editQuestionSet<IProps>(EditQuestionnaireNameInner);
