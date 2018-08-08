@@ -12,7 +12,7 @@
 
     &.awaiting-input {
       .rc-slider-dot {
-        border-color: @placeholder;
+        border-color: @primaryll;
       }
     }
   }
@@ -22,11 +22,12 @@
   }
 
   .rc-slider-track {
-    background-color: @primary;
+    background-color: transparent;
   }
 
   .rc-slider-handle {
     border-color: @primary;
+    background-color: @primary;
 
     &:active {
       box-shadow: 0 0 5px lighten(@primary, 10%);
@@ -38,7 +39,14 @@
   }
 
   .rc-slider-dot-active {
-    border-color: @primary;
+    border-color: @primaryll;
+  }
+  .rc-slider-dot {
+    border-color: @primaryll;
+    width: 22px;
+    height: 22px;
+    bottom: -9px;
+    margin-left: -11px;
   }
 
   &.awaiting-input {
