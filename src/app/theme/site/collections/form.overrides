@@ -41,12 +41,21 @@
 
     .error.validation {
       line-height: 2rem;
+      display: block;
     }
 
     &.screen {
+      max-width: 400px;
+      margin: 0px auto;
+
       .field {
+
+        text-align: center;
+
         label {
-          &:extend(#impactasaurus h3);
+          &:extend(h3, #impactasaurus h3);
+          margin-top: 25px;
+          margin-bottom: 10px;
         }
       }
     }

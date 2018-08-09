@@ -31,7 +31,7 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOuput>) => {
         <BeneficiaryInput inputID="rsf-ben" onChange={onChange} onBlur={onBlur}/>
       </FormField>
       <Form.Group>
-        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Create</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Review</Form.Button>
       </Form.Group>
       {error && <span className="submit-error"><Icon name="exclamation" />Editing the questionnaire failed. {formFailureGeneric}</span>}
     </Form>
