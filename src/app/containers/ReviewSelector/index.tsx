@@ -1,64 +1,83 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { Button, Grid, Form } from 'semantic-ui-react';
+import { Icon, Grid, Form } from 'semantic-ui-react';
 import {BeneficiaryInput} from 'components/BeneficiaryInput';
+import {FormField} from 'components/FormField';
 import { bindActionCreators } from 'redux';
 import { IURLConnector, setURL } from 'redux/modules/url';
 import { Hint } from 'components/Hint';
 import './style.less';
-import {isNullOrUndefined} from 'util';
+import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
+const formFailureGeneric = require('../../../strings.json').formFailureGeneric;
 const { connect } = require('react-redux');
 const strings = require('./../../../strings.json');
 
-interface IState {
-  enteredBenID?: string;
-  error?: string;
+interface IFormOuput {
+  beneficiaryID: string;
 }
+
+interface IFormProps {
+  onBeneficiarySelect(benID: string): void;
+}
+
+const InnerForm = (props: InjectedFormikProps<any, IFormOuput>) => {
+  const { touched, error, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid } = props;
+  const onChange = (benID: string) => setFieldValue('beneficiaryID', benID);
+  const onBlur = () => setFieldTouched('beneficiaryID');
+  const label = <span><Hint text={strings.beneficiaryIDExplanation} />Beneficiary</span>;
+  return (
+    <Form className="screen" onSubmit={submitForm}>
+      <FormField error={errors.beneficiaryID as string} touched={touched.beneficiaryID} inputID="rsf-ben" required={true} label={label}>
+        <BeneficiaryInput inputID="rsf-ben" onChange={onChange} onBlur={onBlur}/>
+      </FormField>
+      <Form.Group>
+        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Review</Form.Button>
+      </Form.Group>
+      {error && <span className="submit-error"><Icon name="exclamation" />Editing the questionnaire failed. {formFailureGeneric}</span>}
+    </Form>
+  );
+};
+
+const BeneficairyForm = withFormik<IFormProps, IFormOuput>({
+  validate: (values: IFormOuput) => {
+    const errors: FormikErrors<IFormOuput> = {};
+    if (!values.beneficiaryID) {
+      errors.beneficiaryID = 'Please select a beneficiary';
+    }
+    return errors;
+  },
+  handleSubmit: (v: FormikValues, formikBag: FormikBag<IFormProps, IFormOuput>): void => {
+    formikBag.setSubmitting(true);
+    formikBag.props.onBeneficiarySelect(v.beneficiaryID);
+  },
+})(InnerForm);
 
 @connect(undefined, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
-class ReviewSelector extends React.Component<IURLConnector, IState> {
+class ReviewSelector extends React.Component<IURLConnector, any> {
 
   constructor(props) {
     super(props);
-    this.state = {};
     this.review = this.review.bind(this);
-    this.setBenID = this.setBenID.bind(this);
   }
 
-  private review() {
-    const benID = this.state.enteredBenID;
-    if (isNullOrUndefined(benID) || benID === '') {
-      return this.setState({error: 'Please enter a beneficiary'});
-    }
+  private review(benID: string) {
     this.props.setURL(`/beneficiary/${benID}`);
-  }
-
-  private setBenID(benID) {
-    this.setState({
-      enteredBenID: benID,
-      error: undefined,
-    });
   }
 
   public render() {
     return (
       <Grid container={true} columns={1} >
         <Grid.Column>
-        <div id="reviewselector">
-          <Helmet>
-            <title>Review</title>
-          </Helmet>
-          <h1>Review</h1>
-          <Form onSubmit={this.review}>
-            <h3 className="label"><Hint text={strings.beneficiaryIDExplanation} />Beneficiary</h3>
-            <BeneficiaryInput onChange={this.setBenID}/>
-            <Button className="submit" type="submit">Review</Button>
-            <span>{this.state.error}</span>
-          </Form>
-        </div>
-        {this.props.children}
+          <div id="reviewselector">
+            <Helmet>
+              <title>Review</title>
+            </Helmet>
+            <h1>Review</h1>
+            <BeneficairyForm onBeneficiarySelect={this.review} />
+          </div>
+          {this.props.children}
         </Grid.Column>
       </Grid>
     );

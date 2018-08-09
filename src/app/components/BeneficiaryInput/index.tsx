@@ -10,6 +10,7 @@ interface IProps {
   onBlur?: (ben: string) => void;
   onFocus?: () => void;
   allowUnknown?: boolean; // defaults to false
+  inputID?: string;
 
   bens?: IBeneficiaryResult;
   data?: IGetOrgResult;
@@ -113,6 +114,7 @@ class BeneficiaryInputInner extends React.Component<IProps, IState> {
             showNoResults={true}
             noResultsMessage="Unknown beneficiary"
             input={<Input type="text" placeholder="Beneficiary" icon={false}/>}
+            id={this.props.inputID}
           />
         </div>
       );
