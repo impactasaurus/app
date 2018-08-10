@@ -111,7 +111,7 @@ class VizControlPanel extends React.Component<IProps, any> {
       return undefined;
     }
     return (
-      <Button.Group>
+      <Button.Group key="export">
         {cpItems}
       </Button.Group>
     );
@@ -121,9 +121,9 @@ class VizControlPanel extends React.Component<IProps, any> {
     const cpItems: JSX.Element[] = [];
     cpItems.push((
       <Button.Group key="agg">
-        <Button active={this.isAggActive(Aggregation.QUESTION)} onClick={this.setAggPref(Aggregation.QUESTION)}>Questions</Button>
-        <Button.Or />
-        <Button disabled={!this.props.canCategoryAg} active={this.isAggActive(Aggregation.CATEGORY)} onClick={this.setAggPref(Aggregation.CATEGORY)}>Categories</Button>
+        <Button key="agg-q" active={this.isAggActive(Aggregation.QUESTION)} onClick={this.setAggPref(Aggregation.QUESTION)}>Questions</Button>
+        <Button.Or key="agg-or" />
+        <Button key="agg-cat" disabled={!this.props.canCategoryAg} active={this.isAggActive(Aggregation.CATEGORY)} onClick={this.setAggPref(Aggregation.CATEGORY)}>Categories</Button>
       </Button.Group>
     ));
     if (this.props.showVizOptions !== false) {
