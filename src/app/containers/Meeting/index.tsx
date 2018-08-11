@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import {IMeetingResult, getMeeting} from 'apollo/modules/meetings';
 import {Question} from 'components/Question';
 import 'rc-slider/assets/index.css';
-import { Grid, Loader, Progress } from 'semantic-ui-react';
+import { Grid, Loader, Progress, Message } from 'semantic-ui-react';
 import './style.less';
 import { bindActionCreators } from 'redux';
 import {IURLConnector, setURL} from 'redux/modules/url';
@@ -184,8 +184,15 @@ class MeetingInner extends React.Component<IProps, IState> {
       );
     };
 
-    const meeting = this.props.data.getMeeting;
-    if (meeting === undefined) {
+    if (this.props.data.error !== undefined) {
+      return wrapper((
+        <Message error={true}>
+          <Message.Header>Error</Message.Header>
+          <div>Failed to load. Please try refreshing</div>
+        </Message>
+      ));
+    }
+    if (this.props.data.loading || this.props.data.getMeeting === undefined) {
         return wrapper(<Loader active={true} inline="centered" />);
     }
     if (this.state.screen === Screen.REVIEW) {
@@ -201,6 +208,7 @@ class MeetingInner extends React.Component<IProps, IState> {
     if (currentQuestionID === undefined) {
       return wrapper(<Loader active={true} inline="centered" />);
     }
+    const meeting = this.props.data.getMeeting;
     return wrapper((
         <Question
         key={currentQuestionID}
