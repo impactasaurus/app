@@ -28,6 +28,7 @@ export const suggestTags = <T>(idExtractor: IDExtractor<T>) => {
       options: (props: T) => {
         const ben = idExtractor(props);
         return {
+          fetchPolicy: 'network-only',
           notifyOnNetworkStatusChange: true,
           variables: {
             ben,
