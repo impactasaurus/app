@@ -4,15 +4,15 @@ import {IQuestionMutation, deleteQuestion} from 'apollo/modules/questions';
 import {renderArray} from 'helpers/react';
 import {ILikertForm, Question} from 'models/question';
 import {IOutcomeSet} from 'models/outcomeSet';
-import { List, Loader, Button, Popup, Message } from 'semantic-ui-react';
+import { List, Loader, Message } from 'semantic-ui-react';
 import {NewLikertQuestion} from 'components/NewLikertQuestion';
-import {ConfirmButton} from 'components/ConfirmButton';
-import {CategoryPill} from 'components/CategoryPill';
 import {EditLikertQuestion} from 'components/EditLikertQuestion';
+import {ListItem} from './ListItem';
 import './style.less';
 import {isNullOrUndefined} from 'util';
 import {getQuestions} from '../../helpers/questionnaire';
 const ReactGA = require('react-ga');
+import {SortableContainer} from 'react-sortable-hoc';
 
 interface IProps extends IQuestionMutation {
   data: IOutcomeResult;
@@ -111,25 +111,6 @@ class QuestionListInner extends React.Component<IProps, IState> {
     };
   }
 
-  private getQuestionDescription(q: Question): string {
-    const description = q.description || '';
-
-    if (q.leftLabel || q.rightLabel) {
-      if (description) {
-        return `${description} (${q.leftLabel} > ${q.rightLabel})`;
-      }
-      return `${q.leftLabel} > ${q.rightLabel}`;
-    }
-    return description;
-  }
-
-  private getQuestionTitle(q: Question): string {
-    if (!isNullOrUndefined(q.short) && q.short !== '') {
-      return `${q.question} [${q.short}]`;
-    }
-    return q.question;
-  }
-
   private renderEditQuestionForm(q: Question): JSX.Element {
     return wrapQuestionForm('Edit Likert Question', (
       <EditLikertQuestion
@@ -146,26 +127,22 @@ class QuestionListInner extends React.Component<IProps, IState> {
     return (isNullOrUndefined(catID)) ? undefined : this.state.categoryClasses[catID];
   }
 
-  private renderQuestion(q: Question): JSX.Element {
+  private renderQuestion(q: Question, idx: number) {
 
     if (this.state.editedQuestionId && this.state.editedQuestionId === q.id) {
       return this.renderEditQuestionForm(q);
     }
 
-    const editButton = <Button onClick={this.setEditedQuestionId(q.id)} icon="edit" tooltip="Edit" compact={true} size="tiny" />;
-
     return (
-      <List.Item className="question" key={q.id}>
-        <List.Content floated="right" verticalAlign="middle">
-          <CategoryPill outcomeSetID={this.props.outcomeSetID} questionID={q.id} cssClass={this.getCategoryPillClass(q.categoryID)} data={this.props.data}/>
-          <Popup trigger={editButton} content="Edit" />
-          <ConfirmButton onConfirm={this.deleteQuestion(q.id)} promptText="Are you sure you want to archive this question?" buttonProps={{icon: 'archive', compact:true, size:'tiny'}} tooltip="Archive" />
-        </List.Content>
-        <List.Content verticalAlign="middle">
-          <List.Header>{this.getQuestionTitle(q)}</List.Header>
-          <List.Description>{this.getQuestionDescription(q)}</List.Description>
-        </List.Content>
-      </List.Item>
+      <ListItem
+        data={this.props.data}
+        categoryPillStyle={this.getCategoryPillClass(q.categoryID)}
+        deleteQuestion={this.deleteQuestion(q.id)}
+        editQuestion={this.setEditedQuestionId(q.id)}
+        outcomeSetID={this.props.outcomeSetID}
+        question={q}
+        index={idx}
+      />
     );
   }
 
@@ -225,5 +202,5 @@ class QuestionListInner extends React.Component<IProps, IState> {
     );
   }
 }
-const QuestionList = deleteQuestion<IProps>(QuestionListInner);
+const QuestionList = deleteQuestion<IProps>(SortableContainer(QuestionListInner));
 export { QuestionList };
