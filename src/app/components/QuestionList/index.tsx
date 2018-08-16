@@ -1,18 +1,16 @@
 import * as React from 'react';
 import {IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {IQuestionMutation, deleteQuestion} from 'apollo/modules/questions';
-import {renderArray} from 'helpers/react';
 import {ILikertForm, Question} from 'models/question';
 import {IOutcomeSet} from 'models/outcomeSet';
-import { List, Loader, Message } from 'semantic-ui-react';
+import { Loader, Message, List } from 'semantic-ui-react';
 import {NewLikertQuestion} from 'components/NewLikertQuestion';
 import {EditLikertQuestion} from 'components/EditLikertQuestion';
-import {ListItem} from './ListItem';
+import {List as QList} from './List';
 import './style.less';
 import {isNullOrUndefined} from 'util';
 import {getQuestions} from '../../helpers/questionnaire';
 const ReactGA = require('react-ga');
-import {SortableContainer} from 'react-sortable-hoc';
 
 interface IProps extends IQuestionMutation {
   data: IOutcomeResult;
@@ -61,10 +59,11 @@ class QuestionListInner extends React.Component<IProps, IState> {
       categoryClasses: assignCategoriesClasses({}, this.props.data),
     };
     this.renderNewQuestionControl = this.renderNewQuestionControl.bind(this);
-    this.renderQuestion = this.renderQuestion.bind(this);
+    this.renderEditQuestionForm = this.renderEditQuestionForm.bind(this);
     this.deleteQuestion = this.deleteQuestion.bind(this);
     this.setNewQuestionClicked = this.setNewQuestionClicked.bind(this);
     this.getCategoryPillClass = this.getCategoryPillClass.bind(this);
+    this.setEditedQuestionId = this.setEditedQuestionId.bind(this);
   }
 
   public componentWillUpdate(nextProps: IProps) {
@@ -127,25 +126,6 @@ class QuestionListInner extends React.Component<IProps, IState> {
     return (isNullOrUndefined(catID)) ? undefined : this.state.categoryClasses[catID];
   }
 
-  private renderQuestion(q: Question, idx: number) {
-
-    if (this.state.editedQuestionId && this.state.editedQuestionId === q.id) {
-      return this.renderEditQuestionForm(q);
-    }
-
-    return (
-      <ListItem
-        data={this.props.data}
-        categoryPillStyle={this.getCategoryPillClass(q.categoryID)}
-        deleteQuestion={this.deleteQuestion(q.id)}
-        editQuestion={this.setEditedQuestionId(q.id)}
-        outcomeSetID={this.props.outcomeSetID}
-        question={q}
-        index={idx}
-      />
-    );
-  }
-
   private renderNewQuestionControl(): JSX.Element {
     if (this.state.newQuestionClicked === true) {
       let defaults: ILikertForm;
@@ -189,18 +169,22 @@ class QuestionListInner extends React.Component<IProps, IState> {
         <Loader active={true} inline="centered" />
       );
     }
-    const { data } = this.props;
-    const os = data.getOutcomeSet;
-    if (os === undefined) {
-        return (<div />);
-    }
+
     return (
-      <List divided={true} relaxed={true} verticalAlign="middle" className="list question">
-        {renderArray(this.renderQuestion, getQuestions(os))}
-        {this.renderNewQuestionControl()}
-      </List>
+      <QList
+        outcomeSetID={this.props.outcomeSetID}
+        data={this.props.data}
+        editedQuestionID={this.state.editedQuestionId}
+        newQuestionControl={this.renderNewQuestionControl()}
+        renderEditQuestionForm={this.renderEditQuestionForm}
+        deleteQuestion={this.deleteQuestion}
+        getCategoryPillClass={this.getCategoryPillClass}
+        setEditedQuestionId={this.setEditedQuestionId}
+        axis="y"
+        useDragHandle={true}
+      />
     );
   }
 }
-const QuestionList = deleteQuestion<IProps>(SortableContainer(QuestionListInner));
+const QuestionList = deleteQuestion<IProps>(QuestionListInner);
 export { QuestionList };

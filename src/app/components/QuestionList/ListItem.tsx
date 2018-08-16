@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {IOutcomeResult} from '../../apollo/modules/outcomeSets';
 import {Question} from 'models/question';
-import { List, Button, Popup } from 'semantic-ui-react';
+import { List, Button, Popup, Icon } from 'semantic-ui-react';
 import {isNullOrUndefined} from 'util';
 import {ConfirmButton} from 'components/ConfirmButton';
 import {CategoryPill} from 'components/CategoryPill';
 import {IOutcomeSet} from '../../models/outcomeSet';
-import {SortableElement} from 'react-sortable-hoc';
+import {SortableElement, SortableHandle} from 'react-sortable-hoc';
 
 interface IProps {
   data: IOutcomeResult;
@@ -16,6 +16,8 @@ interface IProps {
   deleteQuestion: () => Promise<IOutcomeSet>;
   categoryPillStyle: string;
 }
+
+const DragHandle = SortableHandle(() => <Icon name="sort" />);
 
 function getQuestionDescription(q: Question): string {
   const description = q.description || '';
@@ -51,6 +53,7 @@ class ListItemInner extends React.Component<IProps, any> {
           <ConfirmButton onConfirm={deleteQuestion}
                          promptText="Are you sure you want to archive this question?"
                          buttonProps={{icon: 'archive', compact: true, size: 'tiny'}} tooltip="Archive"/>
+          <DragHandle />
         </List.Content>
         <List.Content verticalAlign="middle">
           <List.Header>{getQuestionTitle(question)}</List.Header>
