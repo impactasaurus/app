@@ -78,6 +78,29 @@ export function deleteQuestion<T>(component) {
   })(component);
 }
 
+export function moveQuestion<T>(component) {
+  return graphql<any, T>(gql`
+  mutation ($outcomeSetID: String!, $questionID: String!, $newIndex: Int!) {
+    moveQuestion: MoveQuestion(outcomeSetID:$outcomeSetID, questionID: $questionID, newIndex: $newIndex) {
+      ...defaultOutcomeSet
+    }
+  }
+  ${osFragment}`, {
+    props: ({ mutate }) => ({
+      moveQuestion: (outcomeSetID: string, questionID: string, newIndex: number): Promise<IOutcomeSet> => mutate({
+        variables: {
+          outcomeSetID,
+          questionID,
+          newIndex,
+        },
+      }).then(mutationResultExtractor<IOutcomeSet>('moveQuestion')),
+    }),
+  })(component);
+}
+export interface IQuestionMover {
+  moveQuestion(outcomeSetID: string, questionID: string, newIndex: number): Promise<IOutcomeSet>;
+}
+
 export interface IQuestionMutation {
   addLikertQuestion?(outcomeSetID: string, question: string, minValue: number, maxValue: number, description?: string, short?: string, categoryID?: string, labels?: ILabel[]): Promise<IOutcomeSet>;
   editLikertQuestion?(outcomeSetID: string, questionID: string, question: string, description?: string, short?: string, labels?: ILabel[]): Promise<IOutcomeSet>;
