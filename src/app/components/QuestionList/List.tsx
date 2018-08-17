@@ -33,6 +33,8 @@ class ListInner extends React.Component<IProps, any> {
       return this.props.renderEditQuestionForm(q);
     }
 
+    const draggable = !(this.props.editedQuestionID !== undefined && this.props.editedQuestionID !== null);
+
     return (
       <ListItem
         data={this.props.data}
@@ -42,7 +44,8 @@ class ListInner extends React.Component<IProps, any> {
         outcomeSetID={this.props.outcomeSetID}
         question={q}
         index={idx}
-        disabled={this.props.editedQuestionID !== undefined && this.props.editedQuestionID !== null}
+        draggable={draggable}
+        disabled={!draggable}
       />
     );
   }

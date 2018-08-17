@@ -7,6 +7,7 @@ import {ConfirmButton} from 'components/ConfirmButton';
 import {CategoryPill} from 'components/CategoryPill';
 import {IOutcomeSet} from '../../models/outcomeSet';
 import {SortableElement, SortableHandle} from 'react-sortable-hoc';
+const Grip = require('./grip-vertical-solid.inline.svg');
 
 interface IProps {
   data: IOutcomeResult;
@@ -15,9 +16,10 @@ interface IProps {
   editQuestion: () => void;
   deleteQuestion: () => Promise<IOutcomeSet>;
   categoryPillStyle: string;
+  draggable: boolean;
 }
 
-const DragHandle = SortableHandle(() => <Icon name="sort" />);
+const DragHandle = SortableHandle(() => <Grip style={{'height':'0.8em', 'color': 'grey', 'cursor': 'move', 'padding-left': '3px'}} />);
 
 function getQuestionDescription(q: Question): string {
   const description = q.description || '';
@@ -41,7 +43,7 @@ function getQuestionTitle(q: Question): string {
 class ListItemInner extends React.Component<IProps, any> {
 
   public render() {
-    const {question, editQuestion, categoryPillStyle, deleteQuestion} = this.props;
+    const {question, editQuestion, categoryPillStyle, deleteQuestion, draggable} = this.props;
     const editButton = <Button onClick={editQuestion} icon="edit" tooltip="Edit" compact={true} size="tiny" />;
 
     return (
@@ -53,7 +55,7 @@ class ListItemInner extends React.Component<IProps, any> {
           <ConfirmButton onConfirm={deleteQuestion}
                          promptText="Are you sure you want to archive this question?"
                          buttonProps={{icon: 'archive', compact: true, size: 'tiny'}} tooltip="Archive"/>
-          <DragHandle />
+          {draggable && <DragHandle />}
         </List.Content>
         <List.Content verticalAlign="middle">
           <List.Header>{getQuestionTitle(question)}</List.Header>

@@ -181,6 +181,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
         getCategoryPillClass={this.getCategoryPillClass}
         setEditedQuestionId={this.setEditedQuestionId}
         axis="y"
+        lockAxis="y"
         useDragHandle={true}
       />
     );
