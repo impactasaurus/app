@@ -86,19 +86,33 @@ export function moveQuestion<T>(component) {
     }
   }
   ${osFragment}`, {
-    props: ({ mutate }) => ({
-      moveQuestion: (outcomeSetID: string, questionID: string, newIndex: number): Promise<IOutcomeSet> => mutate({
-        variables: {
-          outcomeSetID,
-          questionID,
-          newIndex,
-        },
-      }).then(mutationResultExtractor<IOutcomeSet>('moveQuestion')),
+    props: ({mutate}) => ({
+      moveQuestion: (outcomeset: IOutcomeSet, questionID: string, newIndex: number): Promise<IOutcomeSet> => {
+        let questions = outcomeset.questions.slice(0);
+        const q = questions.find((q) => q.id === questionID);
+        questions = questions.filter((q) => q.id !== questionID);
+        questions.splice(newIndex, 0, q);
+        const optimistic: IOutcomeSet = {
+          ...outcomeset,
+          questions,
+        };
+        return mutate({
+          variables: {
+            outcomeSetID: outcomeset.id,
+            questionID,
+            newIndex,
+          },
+          optimisticResponse: {
+            moveQuestion: optimistic,
+          },
+        }).then(mutationResultExtractor<IOutcomeSet>('moveQuestion'));
+      },
     }),
   })(component);
 }
+
 export interface IQuestionMover {
-  moveQuestion(outcomeSetID: string, questionID: string, newIndex: number): Promise<IOutcomeSet>;
+  moveQuestion?(outcomeset: IOutcomeSet, questionID: string, newIndex: number): Promise<IOutcomeSet>;
 }
 
 export interface IQuestionMutation {
