@@ -17,9 +17,12 @@ interface IProps {
   deleteQuestion: () => Promise<IOutcomeSet>;
   categoryPillStyle: string;
   draggable: boolean;
+
+  questionMoving: boolean;
+  questionMovingError: boolean;
 }
 
-const DragHandle = SortableHandle(() => <Grip style={{'height':'0.8em', 'color': 'grey', 'cursor': 'move', 'padding-left': '3px'}} />);
+const DragHandle = SortableHandle(() => <Grip style={{height:'0.8em', color: 'grey', cursor: 'move', paddingLeft: '3px'}} />);
 
 function getQuestionDescription(q: Question): string {
   const description = q.description || '';
@@ -40,10 +43,23 @@ function getQuestionTitle(q: Question): string {
   return q.question;
 }
 
+function renderHandle(p: IProps): JSX.Element {
+  if (p.questionMoving) {
+    return (<Icon name="spinner" loading={true} />);
+  }
+  if (p.questionMovingError) {
+    return (<Icon name="exclamation" />);
+  }
+  if (p.draggable) {
+    return (<DragHandle />);
+  }
+  return (<span />);
+}
+
 class ListItemInner extends React.Component<IProps, any> {
 
   public render() {
-    const {question, editQuestion, categoryPillStyle, deleteQuestion, draggable} = this.props;
+    const {question, editQuestion, categoryPillStyle, deleteQuestion} = this.props;
     const editButton = <Button onClick={editQuestion} icon="edit" tooltip="Edit" compact={true} size="tiny" />;
 
     return (
@@ -55,7 +71,7 @@ class ListItemInner extends React.Component<IProps, any> {
           <ConfirmButton onConfirm={deleteQuestion}
                          promptText="Are you sure you want to archive this question?"
                          buttonProps={{icon: 'archive', compact: true, size: 'tiny'}} tooltip="Archive"/>
-          {draggable && <DragHandle />}
+          {renderHandle(this.props)}
         </List.Content>
         <List.Content verticalAlign="middle">
           <List.Header>{getQuestionTitle(question)}</List.Header>

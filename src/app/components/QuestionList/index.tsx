@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {IOutcomeResult} from 'apollo/modules/outcomeSets';
-import {IQuestionMutation, deleteQuestion} from 'apollo/modules/questions';
+import {IQuestionMutation, deleteQuestion, IQuestionMover, moveQuestion} from 'apollo/modules/questions';
 import {ILikertForm, Question} from 'models/question';
 import {IOutcomeSet} from 'models/outcomeSet';
 import { Loader, Message, List } from 'semantic-ui-react';
@@ -12,7 +12,7 @@ import {isNullOrUndefined} from 'util';
 import {getQuestions} from '../../helpers/questionnaire';
 const ReactGA = require('react-ga');
 
-interface IProps extends IQuestionMutation {
+interface IProps extends IQuestionMutation, IQuestionMover {
   data: IOutcomeResult;
   outcomeSetID: string;
 }
@@ -21,6 +21,9 @@ interface IState {
   newQuestionClicked?: boolean;
   editedQuestionId?: string;
   categoryClasses?: {[catID: string]: string};
+
+  questionMoving: boolean;
+  questionMoveError: boolean;
 }
 
 function assignCategoriesClasses(current: {[catID: string]: string}, data: IOutcomeResult): {[catID: string]: string} {
@@ -57,6 +60,8 @@ class QuestionListInner extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       categoryClasses: assignCategoriesClasses({}, this.props.data),
+      questionMoveError: false,
+      questionMoving: false,
     };
     this.renderNewQuestionControl = this.renderNewQuestionControl.bind(this);
     this.renderEditQuestionForm = this.renderEditQuestionForm.bind(this);
@@ -64,6 +69,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
     this.setNewQuestionClicked = this.setNewQuestionClicked.bind(this);
     this.getCategoryPillClass = this.getCategoryPillClass.bind(this);
     this.setEditedQuestionId = this.setEditedQuestionId.bind(this);
+    this.onSortEnd = this.onSortEnd.bind(this);
   }
 
   public componentWillUpdate(nextProps: IProps) {
@@ -163,6 +169,32 @@ class QuestionListInner extends React.Component<IProps, IState> {
     }
   }
 
+  private onSortEnd = ({oldIndex, newIndex}) => {
+
+    this.setState({
+      ...this.state,
+      questionMoving: true,
+      questionMoveError: false,
+    });
+    const q = getQuestions(this.props.data.getOutcomeSet)[oldIndex];
+    console.log(oldIndex, newIndex, q.question);
+    this.props.moveQuestion(this.props.outcomeSetID, q.id, newIndex)
+      .then(() => {
+        this.setState({
+          ...this.state,
+          questionMoving: false,
+          questionMoveError: false,
+        });
+      })
+      .catch(() => {
+        this.setState({
+          ...this.state,
+          questionMoving: false,
+          questionMoveError: true,
+        });
+      });
+  }
+
   public render() {
     if (this.props.data.loading) {
       return (
@@ -183,9 +215,12 @@ class QuestionListInner extends React.Component<IProps, IState> {
         axis="y"
         lockAxis="y"
         useDragHandle={true}
+        onSortEnd={this.onSortEnd}
+        questionMoving={this.state.questionMoving}
+        questionMovingError={this.state.questionMoveError}
       />
     );
   }
 }
-const QuestionList = deleteQuestion<IProps>(QuestionListInner);
+const QuestionList = moveQuestion<IProps>(deleteQuestion<IProps>(QuestionListInner));
 export { QuestionList };

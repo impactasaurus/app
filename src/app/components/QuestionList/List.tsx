@@ -19,6 +19,9 @@ interface IProps {
 
   renderEditQuestionForm: (q: Question) => JSX.Element;
   newQuestionControl: JSX.Element;
+
+  questionMoving: boolean;
+  questionMovingError: boolean;
 }
 
 class ListInner extends React.Component<IProps, any> {
@@ -37,6 +40,7 @@ class ListInner extends React.Component<IProps, any> {
 
     return (
       <ListItem
+        key={q.id}
         data={this.props.data}
         categoryPillStyle={this.props.getCategoryPillClass(q.categoryID)}
         deleteQuestion={this.props.deleteQuestion(q.id)}
@@ -45,7 +49,9 @@ class ListInner extends React.Component<IProps, any> {
         question={q}
         index={idx}
         draggable={draggable}
-        disabled={!draggable}
+        questionMoving={this.props.questionMoving}
+        questionMovingError={this.props.questionMovingError}
+        disabled={!draggable && !this.props.questionMoving}
       />
     );
   }
