@@ -47,6 +47,10 @@ class ListItemInner extends React.Component<IProps, any> {
     return (
       <List.Item className="question" key={question.id}>
         <Handle draggable={this.props.draggable} />
+        <List.Content verticalAlign="middle">
+          <List.Header>{getQuestionTitle(question)}</List.Header>
+          <List.Description>{getQuestionDescription(question)}</List.Description>
+        </List.Content>
         <List.Content floated="right" verticalAlign="middle">
           <CategoryPill outcomeSetID={this.props.outcomeSetID} questionID={question.id}
                         cssClass={categoryPillStyle} data={this.props.data}/>
@@ -54,10 +58,6 @@ class ListItemInner extends React.Component<IProps, any> {
           <ConfirmButton onConfirm={deleteQuestion}
                          promptText="Are you sure you want to archive this question?"
                          buttonProps={{icon: 'archive', compact: true, size: 'tiny'}} tooltip="Archive"/>
-        </List.Content>
-        <List.Content verticalAlign="middle">
-          <List.Header>{getQuestionTitle(question)}</List.Header>
-          <List.Description>{getQuestionDescription(question)}</List.Description>
         </List.Content>
       </List.Item>
     );
