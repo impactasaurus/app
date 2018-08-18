@@ -21,6 +21,7 @@ interface IState {
   newQuestionClicked?: boolean;
   editedQuestionId?: string;
   categoryClasses?: {[catID: string]: string};
+  sorting?: boolean;
 }
 
 function assignCategoriesClasses(current: {[catID: string]: string}, data: IOutcomeResult): {[catID: string]: string} {
@@ -57,6 +58,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       categoryClasses: assignCategoriesClasses({}, this.props.data),
+      sorting: false,
     };
     this.renderNewQuestionControl = this.renderNewQuestionControl.bind(this);
     this.renderEditQuestionForm = this.renderEditQuestionForm.bind(this);
@@ -65,6 +67,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
     this.getCategoryPillClass = this.getCategoryPillClass.bind(this);
     this.setEditedQuestionId = this.setEditedQuestionId.bind(this);
     this.onSortEnd = this.onSortEnd.bind(this);
+    this.onSortStart = this.onSortStart.bind(this);
   }
 
   public componentWillUpdate(nextProps: IProps) {
@@ -164,7 +167,16 @@ class QuestionListInner extends React.Component<IProps, IState> {
     }
   }
 
-  private onSortEnd = ({oldIndex, newIndex}) => {
+  private onSortStart() {
+    this.setState({
+      sorting: true,
+    });
+  }
+
+  private onSortEnd({oldIndex, newIndex}) {
+    this.setState({
+      sorting: false,
+    });
     if (oldIndex === newIndex) {
       return;
     }
@@ -200,6 +212,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
 
     return (
       <QList
+        className={this.state.sorting ? 'sorting' : ''}
         key={`qlist-${this.state.editedQuestionId}-${this.state.newQuestionClicked}`}
         outcomeSetID={this.props.outcomeSetID}
         data={this.props.data}
@@ -213,6 +226,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
         lockAxis="y"
         useDragHandle={true}
         onSortEnd={this.onSortEnd}
+        onSortStart={this.onSortStart}
       />
     );
   }

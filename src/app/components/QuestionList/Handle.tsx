@@ -1,7 +1,8 @@
 import * as React from 'react';
 import {SortableHandle} from 'react-sortable-hoc';
-const SolidGrip = require('./grip-vertical-solid.inline.svg');
-const Grip = require('./grip-vertical.inline.svg');
+const SolidGrip = require('./grip-vertical-solid.svg');
+const Grip = require('./grip-vertical.svg');
+import {Image} from 'semantic-ui-react';
 
 interface IProps {
   draggable: boolean;
@@ -10,26 +11,26 @@ interface IProps {
 class HandleInner extends React.Component<IProps, any> {
   public render() {
     const style = {
-      height:'0.8em',
-      color: 'grey',
-      paddingLeft: '3px',
-      float: 'left',
-      marginTop: '10px',
-      marginRight: '10px',
+      height: '0.8em',
+      paddingLeft: '0.1em',
+      marginRight: '0.3em',
+    };
+    const props = {
+      draggable: 'false', // avoid normal HTML5 dragging
     };
     if (!this.props.draggable) {
       return (
-        <Grip style={{
+        <Image src={Grip} style={{
           ...style,
           cursor: 'not-allowed',
-        }} />
+        }} {...props} />
       );
     }
     return (
-      <SolidGrip style={{
+      <Image src={SolidGrip} style={{
         ...style,
         cursor: 'move',
-      }} />
+      }} {...props} />
     );
   }
 }

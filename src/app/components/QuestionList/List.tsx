@@ -19,6 +19,8 @@ interface IProps {
 
   renderEditQuestionForm: (q: Question) => JSX.Element;
   newQuestionControl: JSX.Element;
+
+  className?: string;
 }
 
 class ListInner extends React.Component<IProps, any> {
@@ -57,7 +59,7 @@ class ListInner extends React.Component<IProps, any> {
       return (<div />);
     }
     return (
-      <SemanticUIList divided={true} relaxed={true} verticalAlign="middle" className="list question">
+      <SemanticUIList divided={true} relaxed={true} verticalAlign="middle" className={this.props.className+' list question'}>
         {renderArray(this.renderQuestion, getQuestions(os))}
         {this.props.newQuestionControl}
       </SemanticUIList>

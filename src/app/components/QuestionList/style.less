@@ -1,33 +1,49 @@
 @import (reference) './../../theme/variables.less';
 
-#impactasaurus .question.list {
-  .right.floated.content > * {
-    display: inline-block;
-    vertical-align: middle;
-  }
+#impactasaurus {
+  .question.list {
+    &.sorting .content {
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+    }
 
-  .category-pill.set {
-    &.col-0 {
-      background-color: @primary;
-      color: @primaryTextColor
+    .right.floated.content > * {
+      display: inline-block;
+      vertical-align: middle;
     }
-    &.col-1 {
-      background-color: @primaryd;
-      color: @primaryTextColor
-    }
-    &.col-2 {
-      background-color: @primaryl;
-    }
-    &.col-3 {
-      background-color: @primarydd;
-      color: @primaryTextColor
-    }
-    &.col-4 {
-      background-color: @primaryll;
+
+    .category-pill.set {
+      &.col-0 {
+        background-color: @primary;
+        color: @primaryTextColor
+      }
+      &.col-1 {
+        background-color: @primaryd;
+        color: @primaryTextColor
+      }
+      &.col-2 {
+        background-color: @primaryl;
+      }
+      &.col-3 {
+        background-color: @primarydd;
+        color: @primaryTextColor
+      }
+      &.col-4 {
+        background-color: @primaryll;
+      }
     }
   }
 }
 
-body > .question.item .right.floated {
-  display: none;
+// this applies when questions are being moved
+body > .question.item {
+  .right.floated {
+    display: none;
+  }
+  img.image {
+    display: none;
+  }
 }
