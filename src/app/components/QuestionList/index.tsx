@@ -21,9 +21,6 @@ interface IState {
   newQuestionClicked?: boolean;
   editedQuestionId?: string;
   categoryClasses?: {[catID: string]: string};
-
-  questionMoving: boolean;
-  questionMoveError: boolean;
 }
 
 function assignCategoriesClasses(current: {[catID: string]: string}, data: IOutcomeResult): {[catID: string]: string} {
@@ -60,8 +57,6 @@ class QuestionListInner extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       categoryClasses: assignCategoriesClasses({}, this.props.data),
-      questionMoveError: false,
-      questionMoving: false,
     };
     this.renderNewQuestionControl = this.renderNewQuestionControl.bind(this);
     this.renderEditQuestionForm = this.renderEditQuestionForm.bind(this);
@@ -170,28 +165,29 @@ class QuestionListInner extends React.Component<IProps, IState> {
   }
 
   private onSortEnd = ({oldIndex, newIndex}) => {
-
-    this.setState({
-      ...this.state,
-      questionMoving: true,
-      questionMoveError: false,
-    });
-    const q = getQuestions(this.props.data.getOutcomeSet)[oldIndex];
-    console.log(oldIndex, newIndex, q.question);
-    this.props.moveQuestion(this.props.outcomeSetID, q.id, newIndex)
+    if (oldIndex === newIndex) {
+      return;
+    }
+    const questions = getQuestions(this.props.data.getOutcomeSet);
+    if (oldIndex >= questions.length) {
+      throw new Error('Old index does not exist in array');
+    }
+    const q = questions[oldIndex];
+    this.props.moveQuestion(this.props.data.getOutcomeSet, q.id, newIndex)
       .then(() => {
-        this.setState({
-          ...this.state,
-          questionMoving: false,
-          questionMoveError: false,
+        ReactGA.event({
+          category: 'question',
+          action: 'moved',
+          label: 'likert',
         });
       })
-      .catch(() => {
-        this.setState({
-          ...this.state,
-          questionMoving: false,
-          questionMoveError: true,
+      .catch((e) => {
+        ReactGA.event({
+          category: 'question',
+          action: 'move-fail',
+          label: 'likert',
         });
+        console.error(e);
       });
   }
 
@@ -216,8 +212,6 @@ class QuestionListInner extends React.Component<IProps, IState> {
         lockAxis="y"
         useDragHandle={true}
         onSortEnd={this.onSortEnd}
-        questionMoving={this.state.questionMoving}
-        questionMovingError={this.state.questionMoveError}
       />
     );
   }

@@ -90,6 +90,9 @@ export function moveQuestion<T>(component) {
       moveQuestion: (outcomeset: IOutcomeSet, questionID: string, newIndex: number): Promise<IOutcomeSet> => {
         let questions = outcomeset.questions.slice(0);
         const q = questions.find((q) => q.id === questionID);
+        if (q === undefined) {
+          return Promise.reject(new Error('Question ID not found in questions'));
+        }
         questions = questions.filter((q) => q.id !== questionID);
         questions.splice(newIndex, 0, q);
         const optimistic: IOutcomeSet = {

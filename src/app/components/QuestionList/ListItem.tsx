@@ -1,13 +1,13 @@
 import * as React from 'react';
 import {IOutcomeResult} from '../../apollo/modules/outcomeSets';
 import {Question} from 'models/question';
-import { List, Button, Popup, Icon } from 'semantic-ui-react';
+import { List, Button, Popup } from 'semantic-ui-react';
 import {isNullOrUndefined} from 'util';
 import {ConfirmButton} from 'components/ConfirmButton';
 import {CategoryPill} from 'components/CategoryPill';
 import {IOutcomeSet} from '../../models/outcomeSet';
-import {SortableElement, SortableHandle} from 'react-sortable-hoc';
-const Grip = require('./grip-vertical-solid.inline.svg');
+import {SortableElement} from 'react-sortable-hoc';
+import {Handle} from './Handle';
 
 interface IProps {
   data: IOutcomeResult;
@@ -17,12 +17,7 @@ interface IProps {
   deleteQuestion: () => Promise<IOutcomeSet>;
   categoryPillStyle: string;
   draggable: boolean;
-
-  questionMoving: boolean;
-  questionMovingError: boolean;
 }
-
-const DragHandle = SortableHandle(() => <Grip style={{height:'0.8em', color: 'grey', cursor: 'move', paddingLeft: '3px'}} />);
 
 function getQuestionDescription(q: Question): string {
   const description = q.description || '';
@@ -43,19 +38,6 @@ function getQuestionTitle(q: Question): string {
   return q.question;
 }
 
-function renderHandle(p: IProps): JSX.Element {
-  if (p.questionMoving) {
-    return (<Icon name="spinner" loading={true} />);
-  }
-  if (p.questionMovingError) {
-    return (<Icon name="exclamation" />);
-  }
-  if (p.draggable) {
-    return (<DragHandle />);
-  }
-  return (<span />);
-}
-
 class ListItemInner extends React.Component<IProps, any> {
 
   public render() {
@@ -64,6 +46,7 @@ class ListItemInner extends React.Component<IProps, any> {
 
     return (
       <List.Item className="question" key={question.id}>
+        <Handle draggable={this.props.draggable} />
         <List.Content floated="right" verticalAlign="middle">
           <CategoryPill outcomeSetID={this.props.outcomeSetID} questionID={question.id}
                         cssClass={categoryPillStyle} data={this.props.data}/>
@@ -71,7 +54,6 @@ class ListItemInner extends React.Component<IProps, any> {
           <ConfirmButton onConfirm={deleteQuestion}
                          promptText="Are you sure you want to archive this question?"
                          buttonProps={{icon: 'archive', compact: true, size: 'tiny'}} tooltip="Archive"/>
-          {renderHandle(this.props)}
         </List.Content>
         <List.Content verticalAlign="middle">
           <List.Header>{getQuestionTitle(question)}</List.Header>
