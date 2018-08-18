@@ -43,7 +43,7 @@ function assignCategoriesClasses(current: {[catID: string]: string}, data: IOutc
 }
 
 const wrapQuestionForm = (title: string, inner: JSX.Element): JSX.Element => ((
-  <Message className="form-container likert-form-container">
+  <Message className="form-container likert-form-container" key="question-form">
     <Message.Header>{title}</Message.Header>
     <Message.Content>
       {inner}
@@ -114,7 +114,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
   private renderEditQuestionForm(q: Question): JSX.Element {
     return wrapQuestionForm('Edit Likert Question', (
       <EditLikertQuestion
-        key={q.id}
+        key={'edit-' + q.id}
         question={q}
         QuestionSetID={this.props.outcomeSetID}
         OnSuccess={this.setEditedQuestionId(null)}
@@ -200,6 +200,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
 
     return (
       <QList
+        key={`qlist-${this.state.editedQuestionId}-${this.state.newQuestionClicked}`}
         outcomeSetID={this.props.outcomeSetID}
         data={this.props.data}
         editedQuestionID={this.state.editedQuestionId}
