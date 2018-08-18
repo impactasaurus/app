@@ -28,7 +28,7 @@ const InnerForm = (props: InjectedFormikProps<any, IOutcomeSet>) => {
       </FormField>
       <Form.Group>
         <Form.Button onClick={onCancel}>Cancel</Form.Button>
-        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Create</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Save</Form.Button>
       </Form.Group>
       {error && <span className="submit-error"><Icon name="exclamation" />Editing the questionnaire failed. {formFailureGeneric}</span>}
     </Form>
