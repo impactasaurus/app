@@ -1,20 +1,18 @@
 import * as React from 'react';
 import {IOutcomeResult} from 'apollo/modules/outcomeSets';
-import {IQuestionMutation, deleteQuestion} from 'apollo/modules/questions';
-import {renderArray} from 'helpers/react';
+import {IQuestionMutation, deleteQuestion, IQuestionMover, moveQuestion} from 'apollo/modules/questions';
 import {ILikertForm, Question} from 'models/question';
 import {IOutcomeSet} from 'models/outcomeSet';
-import { List, Loader, Button, Popup, Message } from 'semantic-ui-react';
+import { Loader, Message, List } from 'semantic-ui-react';
 import {NewLikertQuestion} from 'components/NewLikertQuestion';
-import {ConfirmButton} from 'components/ConfirmButton';
-import {CategoryPill} from 'components/CategoryPill';
 import {EditLikertQuestion} from 'components/EditLikertQuestion';
+import {List as QList} from './List';
 import './style.less';
 import {isNullOrUndefined} from 'util';
 import {getQuestions} from '../../helpers/questionnaire';
 const ReactGA = require('react-ga');
 
-interface IProps extends IQuestionMutation {
+interface IProps extends IQuestionMutation, IQuestionMover {
   data: IOutcomeResult;
   outcomeSetID: string;
 }
@@ -45,7 +43,7 @@ function assignCategoriesClasses(current: {[catID: string]: string}, data: IOutc
 }
 
 const wrapQuestionForm = (title: string, inner: JSX.Element): JSX.Element => ((
-  <Message className="form-container likert-form-container">
+  <Message className="form-container likert-form-container" key="question-form">
     <Message.Header>{title}</Message.Header>
     <Message.Content>
       {inner}
@@ -61,10 +59,12 @@ class QuestionListInner extends React.Component<IProps, IState> {
       categoryClasses: assignCategoriesClasses({}, this.props.data),
     };
     this.renderNewQuestionControl = this.renderNewQuestionControl.bind(this);
-    this.renderQuestion = this.renderQuestion.bind(this);
+    this.renderEditQuestionForm = this.renderEditQuestionForm.bind(this);
     this.deleteQuestion = this.deleteQuestion.bind(this);
     this.setNewQuestionClicked = this.setNewQuestionClicked.bind(this);
     this.getCategoryPillClass = this.getCategoryPillClass.bind(this);
+    this.setEditedQuestionId = this.setEditedQuestionId.bind(this);
+    this.onSortEnd = this.onSortEnd.bind(this);
   }
 
   public componentWillUpdate(nextProps: IProps) {
@@ -111,29 +111,10 @@ class QuestionListInner extends React.Component<IProps, IState> {
     };
   }
 
-  private getQuestionDescription(q: Question): string {
-    const description = q.description || '';
-
-    if (q.leftLabel || q.rightLabel) {
-      if (description) {
-        return `${description} (${q.leftLabel} > ${q.rightLabel})`;
-      }
-      return `${q.leftLabel} > ${q.rightLabel}`;
-    }
-    return description;
-  }
-
-  private getQuestionTitle(q: Question): string {
-    if (!isNullOrUndefined(q.short) && q.short !== '') {
-      return `${q.question} [${q.short}]`;
-    }
-    return q.question;
-  }
-
   private renderEditQuestionForm(q: Question): JSX.Element {
     return wrapQuestionForm('Edit Likert Question', (
       <EditLikertQuestion
-        key={q.id}
+        key={'edit-' + q.id}
         question={q}
         QuestionSetID={this.props.outcomeSetID}
         OnSuccess={this.setEditedQuestionId(null)}
@@ -144,29 +125,6 @@ class QuestionListInner extends React.Component<IProps, IState> {
 
   private getCategoryPillClass(catID?: string): string|undefined {
     return (isNullOrUndefined(catID)) ? undefined : this.state.categoryClasses[catID];
-  }
-
-  private renderQuestion(q: Question): JSX.Element {
-
-    if (this.state.editedQuestionId && this.state.editedQuestionId === q.id) {
-      return this.renderEditQuestionForm(q);
-    }
-
-    const editButton = <Button onClick={this.setEditedQuestionId(q.id)} icon="edit" tooltip="Edit" compact={true} size="tiny" />;
-
-    return (
-      <List.Item className="question" key={q.id}>
-        <List.Content floated="right" verticalAlign="middle">
-          <CategoryPill outcomeSetID={this.props.outcomeSetID} questionID={q.id} cssClass={this.getCategoryPillClass(q.categoryID)} data={this.props.data}/>
-          <Popup trigger={editButton} content="Edit" />
-          <ConfirmButton onConfirm={this.deleteQuestion(q.id)} promptText="Are you sure you want to archive this question?" buttonProps={{icon: 'archive', compact:true, size:'tiny'}} tooltip="Archive" />
-        </List.Content>
-        <List.Content verticalAlign="middle">
-          <List.Header>{this.getQuestionTitle(q)}</List.Header>
-          <List.Description>{this.getQuestionDescription(q)}</List.Description>
-        </List.Content>
-      </List.Item>
-    );
   }
 
   private renderNewQuestionControl(): JSX.Element {
@@ -206,24 +164,58 @@ class QuestionListInner extends React.Component<IProps, IState> {
     }
   }
 
+  private onSortEnd = ({oldIndex, newIndex}) => {
+    if (oldIndex === newIndex) {
+      return;
+    }
+    const questions = getQuestions(this.props.data.getOutcomeSet);
+    if (oldIndex >= questions.length) {
+      throw new Error('Old index does not exist in array');
+    }
+    const q = questions[oldIndex];
+    this.props.moveQuestion(this.props.data.getOutcomeSet, q.id, newIndex)
+      .then(() => {
+        ReactGA.event({
+          category: 'question',
+          action: 'moved',
+          label: 'likert',
+        });
+      })
+      .catch((e) => {
+        ReactGA.event({
+          category: 'question',
+          action: 'move-fail',
+          label: 'likert',
+        });
+        console.error(e);
+      });
+  }
+
   public render() {
     if (this.props.data.loading) {
       return (
         <Loader active={true} inline="centered" />
       );
     }
-    const { data } = this.props;
-    const os = data.getOutcomeSet;
-    if (os === undefined) {
-        return (<div />);
-    }
+
     return (
-      <List divided={true} relaxed={true} verticalAlign="middle" className="list question">
-        {renderArray(this.renderQuestion, getQuestions(os))}
-        {this.renderNewQuestionControl()}
-      </List>
+      <QList
+        key={`qlist-${this.state.editedQuestionId}-${this.state.newQuestionClicked}`}
+        outcomeSetID={this.props.outcomeSetID}
+        data={this.props.data}
+        editedQuestionID={this.state.editedQuestionId}
+        newQuestionControl={this.renderNewQuestionControl()}
+        renderEditQuestionForm={this.renderEditQuestionForm}
+        deleteQuestion={this.deleteQuestion}
+        getCategoryPillClass={this.getCategoryPillClass}
+        setEditedQuestionId={this.setEditedQuestionId}
+        axis="y"
+        lockAxis="y"
+        useDragHandle={true}
+        onSortEnd={this.onSortEnd}
+      />
     );
   }
 }
-const QuestionList = deleteQuestion<IProps>(QuestionListInner);
+const QuestionList = moveQuestion<IProps>(deleteQuestion<IProps>(QuestionListInner));
 export { QuestionList };

@@ -78,6 +78,46 @@ export function deleteQuestion<T>(component) {
   })(component);
 }
 
+export function moveQuestion<T>(component) {
+  return graphql<any, T>(gql`
+  mutation ($outcomeSetID: String!, $questionID: String!, $newIndex: Int!) {
+    moveQuestion: MoveQuestion(outcomeSetID:$outcomeSetID, questionID: $questionID, newIndex: $newIndex) {
+      ...defaultOutcomeSet
+    }
+  }
+  ${osFragment}`, {
+    props: ({mutate}) => ({
+      moveQuestion: (outcomeset: IOutcomeSet, questionID: string, newIndex: number): Promise<IOutcomeSet> => {
+        let questions = outcomeset.questions.slice(0);
+        const q = questions.find((q) => q.id === questionID);
+        if (q === undefined) {
+          return Promise.reject(new Error('Question ID not found in questions'));
+        }
+        questions = questions.filter((q) => q.id !== questionID);
+        questions.splice(newIndex, 0, q);
+        const optimistic: IOutcomeSet = {
+          ...outcomeset,
+          questions,
+        };
+        return mutate({
+          variables: {
+            outcomeSetID: outcomeset.id,
+            questionID,
+            newIndex,
+          },
+          optimisticResponse: {
+            moveQuestion: optimistic,
+          },
+        }).then(mutationResultExtractor<IOutcomeSet>('moveQuestion'));
+      },
+    }),
+  })(component);
+}
+
+export interface IQuestionMover {
+  moveQuestion?(outcomeset: IOutcomeSet, questionID: string, newIndex: number): Promise<IOutcomeSet>;
+}
+
 export interface IQuestionMutation {
   addLikertQuestion?(outcomeSetID: string, question: string, minValue: number, maxValue: number, description?: string, short?: string, categoryID?: string, labels?: ILabel[]): Promise<IOutcomeSet>;
   editLikertQuestion?(outcomeSetID: string, questionID: string, question: string, description?: string, short?: string, labels?: ILabel[]): Promise<IOutcomeSet>;
