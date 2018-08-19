@@ -9,6 +9,7 @@ interface IProps {
   addOnBlur?: boolean;
   addOnKeyboard?: boolean;
   tags: string[];
+  id?: string;
 }
 
 class TagInput extends React.Component<IProps, any> {
@@ -72,6 +73,7 @@ class TagInput extends React.Component<IProps, any> {
     return (
       <div>
         <TagsInput
+          id={this.props.id}
           className="tag-input"
           value={this.props.tags}
           onChange={this.onChange}
