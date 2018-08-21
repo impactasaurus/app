@@ -30,8 +30,11 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
       setFieldValue('questionSetID', qsID);
     }
   };
-  const allOnChange = (toSet: boolean) => () => setFieldValue('all', toSet);
-  const setDateRange = (start: Date, end: Date): void => {
+  const allOnChange = (toSet: boolean) => () => {
+    setFieldValue('all', toSet);
+    setFieldTouched('all');
+  };
+  const setDateRange = (start: Date|null, end: Date|null): void => {
     setFieldValue('start', start);
     setFieldValue('end', end);
     setFieldTouched('start');
@@ -42,27 +45,31 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
     setFieldTouched('tags');
   };
 
-  let datePicker = <span />;
-  if (!values.all) {
-    datePicker = <div><DateRangePicker onSelect={setDateRange} future={false}/></div>;
+  const dateRangeStyle = {} as any;
+  if (values.all) {
+    dateRangeStyle.display = 'none';
   }
-  const label = <span><Hint text={strings.tagUsage} />Tags</span>;
 
-  const rangeTouched = touched.all || touched.end as boolean || touched.start as boolean;
-  const rangeError = errors.all as string || errors.start as string || errors.end as string;
+  const label = <span><Hint text={strings.tagUsage} />Tags</span>;
 
   return (
     <Form className="screen" onSubmit={submitForm}>
       <FormField error={errors.questionSetID} touched={touched.questionSetID} inputID="rf-qid" required={true} label="Questionnaire">
         <QuestionSetSelect inputID="rf-qid" onQuestionSetSelected={qsOnChange} onBlur={qsOnBlur} />
       </FormField>
-      <FormField label="Included Records" required={true} inputID="filter-options" error={rangeError} touched={rangeTouched}>
+      <FormField label="Included Records" required={true} inputID="filter-options" error={errors.all as string} touched={touched.all}>
         <div id="filter-options">
-          <Radio checked={values.all === true} onChange={allOnChange(true)} /><span>All</span>
-          <Radio checked={values.all === false} onChange={allOnChange(false)} /><span>Date Range</span>
+          <Radio checked={values.all === true} onChange={allOnChange(true)} label="All" />
+          <Radio checked={values.all === false} onChange={allOnChange(false)} label="Date Range"/>
         </div>
-        {datePicker}
       </FormField>
+      <div style={dateRangeStyle}>
+        <FormField  label="Date Range" required={true} inputID="rf-date-picker" error={errors.start as string || errors.end as string} touched={touched.end as boolean || touched.start as boolean}>
+          <div id="rf-date-picker">
+            <DateRangePicker onSelectUnfiltered={setDateRange} future={false}/>
+          </div>
+        </FormField>
+      </div>
       <FormField inputID="rf-tags" label={label} touched={touched.tags as boolean} error={errors.tags as string}>
         <RecordTagInput id="rf-tags" onChange={setTags} tags={values.tags} allowNewTags={false} />
       </FormField>
