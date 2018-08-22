@@ -112,6 +112,7 @@ class QuestionSetSelectInner extends React.Component<IProp, any> {
         value={this.props.selectedQuestionSetID}
         placeholder="Questionnaire"
         onChange={this.setQuestionSetID}
+        onBlur={this.props.onBlur}
         options={this.getOptions(this.props.allowedQuestionSets)}
       />
     );
