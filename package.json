@@ -119,6 +119,7 @@
     "chartjs-color": "2.2.0",
     "connected-react-router": "^4.3.0",
     "distinct-colors": "1.0.4",
+    "escape-string-regexp": "^1.0.5",
     "formik": "1.0.2",
     "history": "4.7.2",
     "input-moment": "0.4.0",
