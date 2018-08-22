@@ -6,7 +6,8 @@ import * as moment from 'moment';
 
 interface IProp {
   future?: boolean;
-  onSelect: (start: Date, end: Date) => void;
+  onSelect?: (start: Date, end: Date) => void;
+  onSelectUnfiltered?: (start: Date|null, end: Date|null) => void;
 }
 
 interface IState {
@@ -40,8 +41,13 @@ class DateRangePicker extends React.Component<IProp, IState> {
       start: startDate,
       end: endDate,
     });
-    if (startDate !== null && endDate !== null) {
-      this.props.onSelect(getStartOfDay(startDate.local()).toDate(), getEndOfDay(endDate.local()).toDate());
+    const s = startDate ? getStartOfDay(startDate.local()).toDate() : null;
+    const e = endDate ? getEndOfDay(endDate.local()).toDate() : null;
+    if (this.props.onSelectUnfiltered !== undefined) {
+      this.props.onSelectUnfiltered(s, e);
+    }
+    if (startDate !== null && endDate !== null && this.props.onSelect !== undefined) {
+      this.props.onSelect(s, e);
     }
   }
 

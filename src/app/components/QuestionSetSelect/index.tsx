@@ -11,13 +11,15 @@ import {SelectedQuestionSetIDKey, getSelectedQuestionSetID} from 'models/pref';
 interface IExternalProps {
   allowedQuestionSetIDs?: string[];
   autoSelectFirst?: boolean;
+  inputID?: string;
+  onBlur?: () => void;
+  onQuestionSetSelected?: (qsID: string) => void;
 }
 
 interface IProp extends IExternalProps {
   data?: IOutcomeResult;
   selectedQuestionSetID?: string;
   setPref?: SetPrefFunc;
-  onQuestionSetSelected?: (qsID: string) => void;
   allowedQuestionSets?: IOutcomeSet[];
 }
 
@@ -104,11 +106,13 @@ class QuestionSetSelectInner extends React.Component<IProp, any> {
     }
     return (
       <Select
+        id={this.props.inputID}
         className="qs-selector"
         {...selectProps}
         value={this.props.selectedQuestionSetID}
         placeholder="Questionnaire"
         onChange={this.setQuestionSetID}
+        onBlur={this.props.onBlur}
         options={this.getOptions(this.props.allowedQuestionSets)}
       />
     );

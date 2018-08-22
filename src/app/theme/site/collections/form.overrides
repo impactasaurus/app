@@ -52,7 +52,7 @@
 
         text-align: center;
 
-        label {
+        > label {
           &:extend(h3, #impactasaurus h3);
           margin-top: 25px;
           margin-bottom: 10px;

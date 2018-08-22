@@ -9,6 +9,7 @@ interface IProps {
   data?: ITagResult;
   allowNewTags?: boolean;
   tags: string[];
+  id?: string;
 }
 
 function getMatchingTags(systemTags: string[], selectedTags: string[], q: string) {
@@ -65,6 +66,7 @@ class RecordTagInputInner extends React.Component<IProps, any> {
     return (
       <div className="record-tag-input">
         <TagInput
+          id={this.props.id}
           onChange={this.props.onChange}
           renderInput={this.renderInput}
           addOnBlur={false}
