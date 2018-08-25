@@ -6,7 +6,6 @@ import {FormField} from 'components/FormField';
 import { bindActionCreators } from 'redux';
 import { IURLConnector, setURL } from 'redux/modules/url';
 import { Hint } from 'components/Hint';
-import './style.less';
 import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
 const formFailureGeneric = require('../../../strings.json').formFailureGeneric;
 const { connect } = require('react-redux');

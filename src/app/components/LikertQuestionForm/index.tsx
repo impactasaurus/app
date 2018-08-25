@@ -92,7 +92,7 @@ const InnerForm = (props: InjectedFormikProps<IInnerFormProps, ILikertQuestionFo
           rightValue: values.rightValue,
         }}
         errors={{
-          labels: errors.labels as string,
+          labels: errors.labels as any,
           leftValue: errors.leftValue as string,
           rightValue: errors.rightValue as string,
         }}

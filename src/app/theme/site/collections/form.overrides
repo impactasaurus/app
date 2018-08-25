@@ -47,10 +47,14 @@
     &.screen {
       max-width: 400px;
       margin: 0px auto;
+      margin-top: 40px;
 
       .field {
-
         text-align: center;
+
+        &:last-child {
+          margin-top: 1em
+        }
 
         > label {
           &:extend(h3, #impactasaurus h3);
