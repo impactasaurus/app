@@ -4,7 +4,7 @@ import * as ReactDOM from 'react-dom';
 import { configureStore } from './app/redux/store';
 import { getToken } from 'helpers/auth';
 import Raven = require('raven-js');
-import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo';
+import { ApolloClient, ApolloProvider, createNetworkInterface, IntrospectionFragmentMatcher } from 'react-apollo';
 import * as containers from './app/containers';
 import withTracker from './app/containers/withTracking';
 import {Route} from 'react-router-dom';
@@ -13,6 +13,7 @@ import { createBrowserHistory } from 'history';
 import {ConnectedRouter} from 'connected-react-router';
 
 const appConfig = require('../config/main');
+const introspectionQueryResultData = require('./app/apollo/fragmentTypes.json');
 
 if (appConfig.env === 'production') {
   Raven.config(appConfig.app.errorTracking.url, {
@@ -32,7 +33,13 @@ networkInterface.use([{
     next();
   },
 }]);
-const client = new ApolloClient({networkInterface});
+const fragmentMatcher = new IntrospectionFragmentMatcher({
+  introspectionQueryResultData,
+});
+const client = new ApolloClient({
+  networkInterface,
+  fragmentMatcher,
+});
 
 const history = createBrowserHistory();
 const store = configureStore(
