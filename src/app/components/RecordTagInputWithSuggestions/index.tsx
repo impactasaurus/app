@@ -4,6 +4,7 @@ import {RecordTagInput} from 'components/RecordTagInput';
 import {suggestTags, ISuggestTagsResult} from 'apollo/modules/tags';
 import {renderArray} from '../../helpers/react';
 import {isNullOrUndefined} from 'util';
+import './style.less';
 
 interface IProps {
   data?: ISuggestTagsResult;
@@ -13,6 +14,7 @@ interface IProps {
   allowNewTags?: boolean;
   onChange: (tags: string[]) => void;
   tags: string[];
+  id?: string;
 }
 
 function filterAlreadySelectedTags(suggested: string[], selected: string[]) {
@@ -45,7 +47,7 @@ class RecordTagInputWithSuggestionsInner extends React.Component<IProps, any> {
     const wrap = (inner: JSX.Element): JSX.Element => {
       return ((
         <div>
-          <h4 className="label">Suggested Tags</h4>
+          <h4 className="label suggestions">Suggested Tags</h4>
           {inner}
         </div>
       ));
@@ -80,6 +82,7 @@ class RecordTagInputWithSuggestionsInner extends React.Component<IProps, any> {
           onChange={this.props.onChange}
           tags={this.props.tags}
           allowNewTags={this.props.allowNewTags}
+          id={this.props.id}
         />
         {this.renderSuggested(this.props)}
       </div>
