@@ -4,7 +4,6 @@ import {DateTimePicker} from 'components/DateTimePicker';
 import {Hint} from 'components/Hint';
 import {RecordTagInputWithSuggestions} from 'components/RecordTagInputWithSuggestions';
 import {BeneficiaryInput} from 'components/BeneficiaryInput';
-import {IOutcomeResult, allOutcomeSets} from 'apollo/modules/outcomeSets';
 import {FormField} from 'components/FormField';
 import {IAssessmentConfig} from 'models/assessment';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
@@ -16,7 +15,6 @@ interface IProps  {
   showDatePicker: boolean;
   buttonText: string;
   onSubmit: (config: IAssessmentConfig) => Promise<void>;
-  data?: IOutcomeResult;
 }
 
 interface IAssessmentConfigAndDebounce extends IAssessmentConfig {
@@ -72,7 +70,7 @@ const InnerForm = (props: InjectedFormikProps<InnerFormProps, IAssessmentConfigA
       <FormField error={errors.outcomeSetID as string} touched={touched.outcomeSetID} inputID="as-qid" required={true} label="Questionnaire">
         <QuestionSetSelect inputID="as-qid" onQuestionSetSelected={qsOnChange} onBlur={qsOnBlur} />
       </FormField>
-      <FormField inputID="as-tags" label={tagLabel} touched={touched.tags as boolean} error={errors.tags as string}>
+      <FormField inputID="as-tags" label={tagLabel} touched={touched.tags as any} error={errors.tags as any}>
         <RecordTagInputWithSuggestions id="as-tags" onChange={setTags} tags={values.tags} beneficiary={values.debouncedBenID} allowNewTags={true} />
       </FormField>
       <div style={datePickerStyle}>
@@ -91,7 +89,7 @@ const InnerForm = (props: InjectedFormikProps<InnerFormProps, IAssessmentConfigA
   );
 };
 
-const AssessmentConfigInner = withFormik<IProps, IAssessmentConfigAndDebounce>({
+export const AssessmentConfig = withFormik<IProps, IAssessmentConfigAndDebounce>({
   validate: (values: IAssessmentConfigAndDebounce) => {
     const errors: FormikErrors<IAssessmentConfigAndDebounce> = {};
     if (!values.beneficiaryID || values.beneficiaryID === '') {
@@ -130,6 +128,3 @@ const AssessmentConfigInner = withFormik<IProps, IAssessmentConfigAndDebounce>({
     };
   },
 })(InnerForm);
-
-const AssessmentConfig = allOutcomeSets<IProps>(AssessmentConfigInner);
-export {AssessmentConfig};
