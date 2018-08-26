@@ -34,6 +34,10 @@ class Settings extends React.Component<IProps, any> {
     return this.props.currentURL !== undefined && this.props.currentURL.includes(url);
   }
 
+  private isExact(url: string): boolean {
+    return this.props.currentURL !== undefined && this.props.currentURL === url;
+  }
+
   private handleClick(url: string) {
     return () => {
       this.props.setURL(url);
@@ -48,19 +52,17 @@ class Settings extends React.Component<IProps, any> {
           <title>Settings</title>
         </Helmet>
         <Menu pointing={true} secondary={true}>
-          <Menu.Item name="Account" active={this.isSelected('/settings/account')} onClick={this.handleClick('/settings/account')} />
+          <Menu.Item name="Account" active={this.isSelected('/settings/account') || this.isExact(`${match}/`) || this.isExact(`${match}`)} onClick={this.handleClick('/settings/account')} />
           <Menu.Item name="Data" active={this.isSelected('/settings/data')} onClick={this.handleClick('/settings/data')} />
           <Menu.Item name="Organisation" active={this.isSelected('/settings/organisation')} onClick={this.handleClick('/settings/organisation')} />
-          <Menu.Item name="Questionnaires" active={this.isSelected('/settings/questions')} onClick={this.handleClick('/settings/questions')} />
         </Menu>
 
         <Switch>
+          <Route exact={true} path={`${match}/`} component={containers.Account} />
           <Route path={`${match}/account`} component={containers.Account} />
           <Route path={`${match}/data/questionnaire/export/:id`} component={containers.ExportQuestionnaire} />
           <Route path={`${match}/data`} component={containers.Data} />
           <Route path={`${match}/organisation`}  component={containers.Organisation} />
-          <Route path={`${match}/questions/:id`} component={containers.OutcomeSet} />
-          <Route path={`${match}/questions`} component={containers.OutcomeSets} />
         </Switch>
       </div>
     );
