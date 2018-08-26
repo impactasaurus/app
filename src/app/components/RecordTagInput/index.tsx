@@ -18,6 +18,9 @@ function getMatchingTags(systemTags: string[], selectedTags: string[], q: string
     .filter((t) => t.toLowerCase().includes(q.toLowerCase()));
 }
 
+const newTagTitle = 'Create a new tag';
+const newTagDesc = 'Click here or the plus icon';
+
 class RecordTagInputInner extends React.Component<IProps, any> {
 
   constructor(props) {
@@ -29,7 +32,7 @@ class RecordTagInputInner extends React.Component<IProps, any> {
     const {onChange, value, addTag, ...other} = props;
     const addTagWithVal = () => addTag(value);
     const handleResultSelect = (_, { result }) => {
-      if (result.addValue === true) {
+      if (result.title === newTagTitle) {
         return addTagWithVal();
       }
       addTag(result.title);
@@ -39,9 +42,8 @@ class RecordTagInputInner extends React.Component<IProps, any> {
     let icon;
     if (this.props.allowNewTags !== false) {
       results.push({
-        title: 'Create a new tag',
-        description: 'Click here or the plus icon',
-        addValue: true,
+        title: newTagTitle,
+        description: newTagDesc,
       });
       icon = (<Icon name="add" link={true} onClick={addTagWithVal} />);
     }
