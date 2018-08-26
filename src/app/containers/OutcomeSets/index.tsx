@@ -38,7 +38,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
   }
 
   private navigateToOutcomeSet(id: string) {
-    return () => this.props.setURL(`/settings/questions/${id}`);
+    return () => this.props.setURL(`/questions/${id}`);
   }
 
   private logQuestionSetGAEvent(action: string) {

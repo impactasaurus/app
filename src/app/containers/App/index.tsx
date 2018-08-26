@@ -60,6 +60,8 @@ class App extends React.Component<IProps, any> {
           <Route path="/report/export/:questionSetID/:start/:end" component={containers.ExportReport} />
           <Route path="/report" component={containers.Report} />
           <Route path="/jti/:jti" component={containers.BeneficiaryRedirect} />
+          <Route path="/questions/:id" component={containers.OutcomeSet} />
+          <Route path="/questions" component={containers.OutcomeSets} />
         </Switch>
       </div>
     ));
