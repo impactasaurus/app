@@ -112,7 +112,7 @@ export const AssessmentConfig = withFormik<IProps, IAssessmentConfigAndDebounce>
       date: v.date,
     })
       .then(() => {
-        formikBag.setSubmitting(false);
+        // will move on from this component so no need to do anything
       })
       .catch((e) => {
         formikBag.setSubmitting(false);
