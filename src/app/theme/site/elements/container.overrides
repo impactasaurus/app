@@ -1,0 +1,5 @@
+#impactasaurus {
+  .ui.container {
+    margin-bottom: 15vmin;
+  }
+}

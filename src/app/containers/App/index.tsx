@@ -30,7 +30,6 @@ class App extends React.Component<IProps, any> {
           <Helmet {...appConfig.app} {...appConfig.app.head} />
           <Header/>
           {inner}
-          <div id="bottom-padding" />
         </section>
       );
     };
@@ -40,7 +39,7 @@ class App extends React.Component<IProps, any> {
     }
 
     return wrapper((
-      <div>
+      <div id="main-app-content">
         <IsLoggedIn/>
         <Switch>
           <Route exact={true} path="/" component={containers.Home} />
