@@ -8,6 +8,7 @@ import {isBeneficiaryUser} from 'redux/modules/user';
 import './style.less';
 import { Switch, Route } from 'react-router-dom';
 import * as containers from 'containers';
+import {SecondaryMenu} from 'components/SecondaryMenu';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
@@ -40,7 +41,6 @@ class Review extends React.Component<IProps, any> {
     super(props);
     this.state = {};
     this.handleClick = this.handleClick.bind(this);
-    this.renderSubMenu = this.renderSubMenu.bind(this);
     this.innerPageSetter = this.innerPageSetter.bind(this);
   }
 
@@ -71,45 +71,31 @@ class Review extends React.Component<IProps, any> {
     };
   }
 
-  private renderSubMenu(): JSX.Element {
-    return (
-      <Menu pointing={true} secondary={true} className="add-margin">
-        <Menu.Item name="Journey" active={this.props.child === ReviewPage.JOURNEY} onClick={this.innerPageSetter(ReviewPage.JOURNEY)}/>
-        <Menu.Item name="Records" active={this.props.child === ReviewPage.RECORDS} onClick={this.innerPageSetter(ReviewPage.RECORDS)}/>
-      </Menu>
-    );
-  }
-
   public render() {
     if(this.props.match.params.id === undefined) {
       return (<div />);
-    }
-
-    let backButton: JSX.Element = (<div />);
-    if (this.props.isBeneficiary === false) {
-      backButton = (<Button onClick={this.handleClick('/beneficiary')} content="Back" icon="left arrow" labelPosition="left" primary={true} id="back-button"/>);
     }
 
     const match = this.props.match.path;
 
     return (
       <div>
+        <SecondaryMenu>
+          <Menu.Item name="Journey" active={this.props.child === ReviewPage.JOURNEY} onClick={this.innerPageSetter(ReviewPage.JOURNEY)}/>
+          <Menu.Item name="Records" active={this.props.child === ReviewPage.RECORDS} onClick={this.innerPageSetter(ReviewPage.RECORDS)}/>
+        </SecondaryMenu>
         <Grid container={true} columns={1}>
           <Grid.Column>
-            {backButton}
             <div id="review">
               <Helmet>
                 <title>{this.props.match.params.id + ' Review'}</title>
               </Helmet>
               <h1>{this.props.match.params.id}</h1>
-              {this.renderSubMenu()}
-
               <Switch>
                 <Route exact={true} path={`${match}/`} component={containers.Journey} />
                 <Route path={`${match}/journey`} component={containers.Journey} />
                 <Route path={`${match}/records`} component={containers.Records} />
               </Switch>
-
             </div>
           </Grid.Column>
         </Grid>
