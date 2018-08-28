@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { Grid, Button, Menu } from 'semantic-ui-react';
+import { Grid, Icon, Menu } from 'semantic-ui-react';
 import {setURL, IURLConnector} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
 import {IStore} from 'redux/IStore';
@@ -27,6 +27,17 @@ export enum ReviewPage {
   RECORDS,
 }
 
+const getTitle = (b: string, p: ReviewPage) => {
+  switch (p) {
+    case ReviewPage.RECORDS:
+      return `${b}'s Records`;
+    case ReviewPage.JOURNEY:
+      return `${b}'s Journey`;
+    default:
+      return b;
+  }
+};
+
 @connect((state: IStore) => {
   return {
     isBeneficiary: isBeneficiaryUser(state.user),
@@ -44,9 +55,9 @@ class Review extends React.Component<IProps, any> {
     this.innerPageSetter = this.innerPageSetter.bind(this);
   }
 
-  private handleClick(url: string) {
+  private handleClick(url: string, search?: string) {
     return () => {
-      this.props.setURL(url);
+      this.props.setURL(url, search);
     };
   }
 
@@ -72,25 +83,32 @@ class Review extends React.Component<IProps, any> {
   }
 
   public render() {
-    if(this.props.match.params.id === undefined) {
+    const ben = this.props.match.params.id;
+    if(ben === undefined) {
       return (<div />);
     }
 
     const match = this.props.match.path;
+    const title = getTitle(ben, this.props.child);
 
     return (
       <div>
-        <SecondaryMenu>
-          <Menu.Item name="Journey" active={this.props.child === ReviewPage.JOURNEY} onClick={this.innerPageSetter(ReviewPage.JOURNEY)}/>
-          <Menu.Item name="Records" active={this.props.child === ReviewPage.RECORDS} onClick={this.innerPageSetter(ReviewPage.RECORDS)}/>
+        <SecondaryMenu signpost={ben}>
+          <Menu.Item name="Journey" active={this.props.child === ReviewPage.JOURNEY} onClick={this.innerPageSetter(ReviewPage.JOURNEY)}>
+            <Icon name="chart line" />
+            Journey
+          </Menu.Item>
+          <Menu.Item name="Records" active={this.props.child === ReviewPage.RECORDS} onClick={this.innerPageSetter(ReviewPage.RECORDS)}>
+            <Icon name="file outline" />
+            Records
+          </Menu.Item>
         </SecondaryMenu>
         <Grid container={true} columns={1}>
           <Grid.Column>
             <div id="review">
               <Helmet>
-                <title>{this.props.match.params.id + ' Review'}</title>
+                <title>{title}</title>
               </Helmet>
-              <h1>{this.props.match.params.id}</h1>
               <Switch>
                 <Route exact={true} path={`${match}/`} component={containers.Journey} />
                 <Route path={`${match}/journey`} component={containers.Journey} />
