@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import {IStore} from 'redux/IStore';
 import { Route, Switch } from 'react-router-dom';
 import * as containers from 'containers';
+import {SecondaryMenu} from 'components/SecondaryMenu';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
@@ -51,11 +52,11 @@ class Settings extends React.Component<IProps, any> {
         <Helmet>
           <title>Settings</title>
         </Helmet>
-        <Menu pointing={true} secondary={true}>
+        <SecondaryMenu>
           <Menu.Item name="Account" active={this.isSelected('/settings/account') || this.isExact(`${match}/`) || this.isExact(`${match}`)} onClick={this.handleClick('/settings/account')} />
           <Menu.Item name="Data" active={this.isSelected('/settings/data')} onClick={this.handleClick('/settings/data')} />
           <Menu.Item name="Organisation" active={this.isSelected('/settings/organisation')} onClick={this.handleClick('/settings/organisation')} />
-        </Menu>
+        </SecondaryMenu>
 
         <Switch>
           <Route exact={true} path={`${match}/`} component={containers.Account} />

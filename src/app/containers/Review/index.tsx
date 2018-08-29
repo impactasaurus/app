@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { Grid, Button, Menu } from 'semantic-ui-react';
+import { Grid, Icon, Menu } from 'semantic-ui-react';
 import {setURL, IURLConnector} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
 import {IStore} from 'redux/IStore';
-import {isBeneficiaryUser} from 'redux/modules/user';
 import './style.less';
 import { Switch, Route } from 'react-router-dom';
 import * as containers from 'containers';
+import {SecondaryMenu} from 'components/SecondaryMenu';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
@@ -16,20 +16,38 @@ interface IProps extends IURLConnector {
       id: string,
     },
     path: string,
+    url: string,
   };
-  isBeneficiary: boolean;
   child: ReviewPage;
 }
 
 export enum ReviewPage {
   JOURNEY,
   RECORDS,
+  NEW_RECORD,
 }
 
-@connect((state: IStore) => {
+const getTitle = (b: string, p: ReviewPage) => {
+  switch (p) {
+    case ReviewPage.RECORDS:
+      return `${b}'s Records`;
+    case ReviewPage.JOURNEY:
+      return `${b}'s Journey`;
+    default:
+      return b;
+  }
+};
+
+@connect((state: IStore, p: IProps) => {
+  let child = ReviewPage.NEW_RECORD;
+  if (state.router.location.pathname.endsWith('journey') ||
+    p.match.url === state.router.location.pathname) {
+    child = ReviewPage.JOURNEY;
+  } else if (state.router.location.pathname.endsWith('records')) {
+    child = ReviewPage.RECORDS;
+  }
   return {
-    isBeneficiary: isBeneficiaryUser(state.user),
-    child: state.router.location.pathname.endsWith('records') ? ReviewPage.RECORDS : ReviewPage.JOURNEY,
+    child,
   };
 }, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
@@ -40,17 +58,16 @@ class Review extends React.Component<IProps, any> {
     super(props);
     this.state = {};
     this.handleClick = this.handleClick.bind(this);
-    this.renderSubMenu = this.renderSubMenu.bind(this);
     this.innerPageSetter = this.innerPageSetter.bind(this);
   }
 
-  private handleClick(url: string) {
+  private handleClick(url: string, search?: string) {
     return () => {
-      this.props.setURL(url);
+      this.props.setURL(url, search);
     };
   }
 
-  private innerPageSetter(toSet: ReviewPage): () => void {
+  private innerPageSetter(toSet: ReviewPage, search?: string): () => void {
     return () => {
       let subPage: string;
       switch(toSet) {
@@ -62,54 +79,57 @@ class Review extends React.Component<IProps, any> {
           subPage = 'records';
           break;
         }
+        case ReviewPage.NEW_RECORD: {
+          subPage = 'record';
+          break;
+        }
         default: {
           subPage = 'journey';
           break;
         }
       }
-      this.handleClick(`/beneficiary/${this.props.match.params.id}/${subPage}`)();
+      this.handleClick(`/beneficiary/${this.props.match.params.id}/${subPage}`, search)();
     };
   }
 
-  private renderSubMenu(): JSX.Element {
-    return (
-      <Menu pointing={true} secondary={true} className="add-margin">
-        <Menu.Item name="Journey" active={this.props.child === ReviewPage.JOURNEY} onClick={this.innerPageSetter(ReviewPage.JOURNEY)}/>
-        <Menu.Item name="Records" active={this.props.child === ReviewPage.RECORDS} onClick={this.innerPageSetter(ReviewPage.RECORDS)}/>
-      </Menu>
-    );
-  }
-
   public render() {
-    if(this.props.match.params.id === undefined) {
+    const ben = this.props.match.params.id;
+    if(ben === undefined) {
       return (<div />);
     }
 
-    let backButton: JSX.Element = (<div />);
-    if (this.props.isBeneficiary === false) {
-      backButton = (<Button onClick={this.handleClick('/beneficiary')} content="Back" icon="left arrow" labelPosition="left" primary={true} id="back-button"/>);
-    }
-
     const match = this.props.match.path;
+    const title = getTitle(ben, this.props.child);
 
     return (
       <div>
+        <SecondaryMenu signpost={ben}>
+          <Menu.Item name="Journey" active={this.props.child === ReviewPage.JOURNEY} onClick={this.innerPageSetter(ReviewPage.JOURNEY)}>
+            <Icon name="chart line" />
+            Journey
+          </Menu.Item>
+          <Menu.Item name="Records" active={this.props.child === ReviewPage.RECORDS} onClick={this.innerPageSetter(ReviewPage.RECORDS)}>
+            <Icon name="file outline" />
+            Records
+          </Menu.Item>
+          <Menu.Item name="New Record" active={this.props.child === ReviewPage.NEW_RECORD} onClick={this.innerPageSetter(ReviewPage.NEW_RECORD, `?ben=${ben}`)}>
+            <Icon name="plus" />
+            New Record
+          </Menu.Item>
+        </SecondaryMenu>
         <Grid container={true} columns={1}>
           <Grid.Column>
-            {backButton}
             <div id="review">
               <Helmet>
-                <title>{this.props.match.params.id + ' Review'}</title>
+                <title>{title}</title>
               </Helmet>
-              <h1>{this.props.match.params.id}</h1>
-              {this.renderSubMenu()}
-
               <Switch>
                 <Route exact={true} path={`${match}/`} component={containers.Journey} />
                 <Route path={`${match}/journey`} component={containers.Journey} />
                 <Route path={`${match}/records`} component={containers.Records} />
+                <Route path={`${match}/record/:type`} component={containers.AssessmentConfig} />
+                <Route path={`${match}/record`} component={containers.AssessmentTypeSelect} />
               </Switch>
-
             </div>
           </Grid.Column>
         </Grid>

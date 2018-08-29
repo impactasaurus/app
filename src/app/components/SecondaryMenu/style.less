@@ -1,0 +1,33 @@
+@import (reference) './../../theme/variables.less';
+
+.signpost {
+  background: @primaryl;
+
+  h1 {
+    padding-top: 0.5em;
+    color: @primaryTextColor;
+  }
+
+  .ui.menu.secondary.pointing {
+    border-color: transparent;
+
+    .active.item,
+    .active.item:hover {
+      border-color: @primaryTextColor;
+      color: @primaryTextColor;
+    }
+
+    .item {
+      color: mix(@primaryl, @primaryTextColor, 30%);
+
+      &:hover {
+        color: mix(@primaryl, @primaryTextColor, 20%);
+        border-color: mix(@primaryl, @primaryTextColor, 20%);
+      }
+    }
+  }
+}
+
+.ui.menu.secondary.pointing {
+  justify-content: center;
+}

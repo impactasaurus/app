@@ -16,10 +16,18 @@ interface IProp extends IMeetingMutation, IURLConnector {
       type: string,
     },
   };
+  location: {
+    search: string,
+  };
 }
 
 interface IState {
   jti?: string;
+}
+
+function getBen(p: IProp): string|undefined {
+  const urlParams = new URLSearchParams(p.location.search);
+  return urlParams.has('ben') ? urlParams.get('ben') : undefined;
 }
 
 @connect(undefined, (dispatch) => ({
@@ -113,6 +121,7 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
     }
     return (
       <ConfigComponent
+        defaultBen={getBen(this.props)}
         showDatePicker={this.shouldGetDate()}
         onSubmit={this.startMeeting}
         buttonText={this.getButtonText()}
@@ -122,7 +131,7 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
 
   public render() {
     return (
-      <Grid container={true} columns={1} id="conduct">
+      <Grid container={true} columns={1} id="assessment-config">
         <Grid.Column>
           <Helmet title="Record"/>
           <h1>Create Record</h1>

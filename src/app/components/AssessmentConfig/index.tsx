@@ -9,16 +9,19 @@ import {IAssessmentConfig} from 'models/assessment';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import * as moment from 'moment';
 import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
+import './style.less';
 const strings = require('./../../../strings.json');
 
 interface IProps  {
   showDatePicker: boolean;
   buttonText: string;
   onSubmit: (config: IAssessmentConfig) => Promise<void>;
+  defaultBen?: string;
 }
 
 interface IAssessmentConfigAndDebounce extends IAssessmentConfig {
   debouncedBenID?: string;
+  defaultBen?: string;
 }
 
 interface InnerFormProps {
@@ -62,11 +65,16 @@ const InnerForm = (props: InjectedFormikProps<InnerFormProps, IAssessmentConfigA
   const benLabel = <span><Hint text={strings.beneficiaryIDExplanation} />Beneficiary</span>;
   const tagLabel = <span><Hint text={strings.tagUsage} />Tags</span>;
 
+  // if the beneficiary has been set via URL, hide the beneficiary field
+  const benField = (
+    <FormField error={errors.beneficiaryID as string} touched={touched.beneficiaryID} inputID="as-ben" required={true} label={benLabel}>
+      <BeneficiaryInput inputID="rsf-ben" onChange={onBenChange} onBlur={onBenBlur} onFocus={onBenFocus} allowUnknown={true} />
+    </FormField>
+  );
+
   return (
     <Form className="screen assessment-config" onSubmit={submitForm}>
-      <FormField error={errors.beneficiaryID as string} touched={touched.beneficiaryID} inputID="as-ben" required={true} label={benLabel}>
-        <BeneficiaryInput inputID="rsf-ben" onChange={onBenChange} onBlur={onBenBlur} onFocus={onBenFocus} allowUnknown={true}/>
-      </FormField>
+      {!values.defaultBen && benField}
       <FormField error={errors.outcomeSetID as string} touched={touched.outcomeSetID} inputID="as-qid" required={true} label="Questionnaire">
         <QuestionSetSelect inputID="as-qid" onQuestionSetSelected={qsOnChange} onBlur={qsOnBlur} />
       </FormField>
@@ -119,9 +127,11 @@ export const AssessmentConfig = withFormik<IProps, IAssessmentConfigAndDebounce>
         formikBag.setError(e);
       });
   },
-  mapPropsToValues: (_: IProps): IAssessmentConfigAndDebounce => {
+  mapPropsToValues: (p: IProps): IAssessmentConfigAndDebounce => {
     return {
-      beneficiaryID: '',
+      beneficiaryID: p.defaultBen ? p.defaultBen : '',
+      debouncedBenID: p.defaultBen,
+      defaultBen: p.defaultBen,
       outcomeSetID: '',
       tags: [],
       date: new Date(),
