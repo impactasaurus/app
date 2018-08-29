@@ -4,7 +4,6 @@ import { Grid, Icon, Menu } from 'semantic-ui-react';
 import {setURL, IURLConnector} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
 import {IStore} from 'redux/IStore';
-import {isBeneficiaryUser} from 'redux/modules/user';
 import './style.less';
 import { Switch, Route } from 'react-router-dom';
 import * as containers from 'containers';
@@ -17,14 +16,15 @@ interface IProps extends IURLConnector {
       id: string,
     },
     path: string,
+    url: string,
   };
-  isBeneficiary: boolean;
   child: ReviewPage;
 }
 
 export enum ReviewPage {
   JOURNEY,
   RECORDS,
+  NEW_RECORD,
 }
 
 const getTitle = (b: string, p: ReviewPage) => {
@@ -38,10 +38,16 @@ const getTitle = (b: string, p: ReviewPage) => {
   }
 };
 
-@connect((state: IStore) => {
+@connect((state: IStore, p: IProps) => {
+  let child = ReviewPage.NEW_RECORD;
+  if (state.router.location.pathname.endsWith('journey') ||
+    p.match.url === state.router.location.pathname) {
+    child = ReviewPage.JOURNEY;
+  } else if (state.router.location.pathname.endsWith('records')) {
+    child = ReviewPage.RECORDS;
+  }
   return {
-    isBeneficiary: isBeneficiaryUser(state.user),
-    child: state.router.location.pathname.endsWith('records') ? ReviewPage.RECORDS : ReviewPage.JOURNEY,
+    child,
   };
 }, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
@@ -61,7 +67,7 @@ class Review extends React.Component<IProps, any> {
     };
   }
 
-  private innerPageSetter(toSet: ReviewPage): () => void {
+  private innerPageSetter(toSet: ReviewPage, search?: string): () => void {
     return () => {
       let subPage: string;
       switch(toSet) {
@@ -73,12 +79,16 @@ class Review extends React.Component<IProps, any> {
           subPage = 'records';
           break;
         }
+        case ReviewPage.NEW_RECORD: {
+          subPage = 'record';
+          break;
+        }
         default: {
           subPage = 'journey';
           break;
         }
       }
-      this.handleClick(`/beneficiary/${this.props.match.params.id}/${subPage}`)();
+      this.handleClick(`/beneficiary/${this.props.match.params.id}/${subPage}`, search)();
     };
   }
 
@@ -102,6 +112,10 @@ class Review extends React.Component<IProps, any> {
             <Icon name="file outline" />
             Records
           </Menu.Item>
+          <Menu.Item name="New Record" active={this.props.child === ReviewPage.NEW_RECORD} onClick={this.innerPageSetter(ReviewPage.NEW_RECORD, `?ben=${ben}`)}>
+            <Icon name="plus" />
+            New Record
+          </Menu.Item>
         </SecondaryMenu>
         <Grid container={true} columns={1}>
           <Grid.Column>
@@ -113,6 +127,8 @@ class Review extends React.Component<IProps, any> {
                 <Route exact={true} path={`${match}/`} component={containers.Journey} />
                 <Route path={`${match}/journey`} component={containers.Journey} />
                 <Route path={`${match}/records`} component={containers.Records} />
+                <Route path={`${match}/record/:type`} component={containers.AssessmentConfig} />
+                <Route path={`${match}/record`} component={containers.AssessmentTypeSelect} />
               </Switch>
             </div>
           </Grid.Column>

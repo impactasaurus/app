@@ -8,10 +8,17 @@ import './style.less';
 import { AssessmentType } from 'models/assessment';
 const { connect } = require('react-redux');
 
+interface IProps extends IURLConnector {
+  location: {
+    search: string,
+    pathname: string,
+  };
+}
+
 @connect(undefined, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
-class AssessmentTypeSelect extends React.Component<IURLConnector, any> {
+class AssessmentTypeSelect extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
@@ -19,7 +26,7 @@ class AssessmentTypeSelect extends React.Component<IURLConnector, any> {
   }
 
   private typeSelected(selected: AssessmentType) {
-    this.props.setURL(`/record/${AssessmentType[selected]}`);
+    this.props.setURL(`${this.props.location.pathname}/${AssessmentType[selected]}`, this.props.location.search);
   }
 
   public render() {
