@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import {IOutcomeResult, getOutcomeSet, IOutcomeMutation} from 'apollo/modules/outcomeSets';
-import {IQuestionMutation} from 'apollo/modules/questions';
+import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import { Grid, Loader, Menu } from 'semantic-ui-react';
 import {SecondaryMenu} from 'components/SecondaryMenu';
 import { General } from './general';
@@ -9,8 +8,18 @@ import { Questions } from './questions';
 import { Categories } from './categories';
 import { Switch, Route } from 'react-router-dom';
 import './style.less';
+import {IStore} from 'redux/IStore';
+import {bindActionCreators} from 'redux';
+import {IURLConnector, setURL} from '../../redux/modules/url';
+const { connect } = require('react-redux');
 
-interface IProps extends IOutcomeMutation, IQuestionMutation {
+export enum Page {
+  GENERAL,
+  QUESTIONS,
+  CATEGORIES,
+}
+
+interface IProps extends IURLConnector {
   data: IOutcomeResult;
   match: {
     params: {
@@ -19,17 +28,66 @@ interface IProps extends IOutcomeMutation, IQuestionMutation {
     path: string,
     url: string,
   };
+  page: Page;
 }
 
+@connect((state: IStore) => {
+  let page = Page.GENERAL;
+  if (state.router.location.pathname.endsWith('questions')) {
+    page = Page.QUESTIONS;
+  } else if (state.router.location.pathname.endsWith('categories')) {
+    page = Page.CATEGORIES;
+  }
+  return {
+    page,
+  };
+}, (dispatch) => ({
+  setURL: bindActionCreators(setURL, dispatch),
+}))
 class OutcomeSetInner extends React.Component<IProps, any> {
+
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+    this.innerPageSetter = this.innerPageSetter.bind(this);
+  }
+
+  private handleClick(url: string, search?: string) {
+    return () => {
+      this.props.setURL(url, search);
+    };
+  }
+
+  private innerPageSetter(toSet: Page): () => void {
+    return () => {
+      let subPage: string;
+      switch(toSet) {
+        case Page.QUESTIONS: {
+          subPage = 'questions';
+          break;
+        }
+        case Page.CATEGORIES: {
+          subPage = 'categories';
+          break;
+        }
+        default: {
+          subPage = '';
+          break;
+        }
+      }
+      this.handleClick(`/questions/${this.props.match.params.id}/${subPage}`)();
+    };
+  }
+
   public render() {
     const wrapper = (inner: JSX.Element, signpost?: string): JSX.Element => {
+      const page = this.props.page;
       return (
         <div>
           <SecondaryMenu signpost={signpost}>
-            <Menu.Item name="General" />
-            <Menu.Item name="Questions" />
-            <Menu.Item name="Categories" />
+            <Menu.Item name="General" active={page === Page.GENERAL} onClick={this.innerPageSetter(Page.GENERAL)} />
+            <Menu.Item name="Questions" active={page === Page.QUESTIONS} onClick={this.innerPageSetter(Page.QUESTIONS)} />
+            <Menu.Item name="Categories" active={page === Page.CATEGORIES} onClick={this.innerPageSetter(Page.CATEGORIES)} />
           </SecondaryMenu>
           <Grid container={true} columns={1} id="question-set">
             <Grid.Column>
