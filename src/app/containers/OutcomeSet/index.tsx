@@ -92,7 +92,7 @@ class OutcomeSetInner extends React.Component<IProps, any> {
           <Grid container={true} columns={1} id="question-set">
             <Grid.Column>
               <Helmet>
-                <title>Questionnaire</title>
+                <title>{signpost ? signpost : 'Questionnaire'}</title>
               </Helmet>
               <div>
                 {inner}
