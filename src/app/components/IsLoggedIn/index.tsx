@@ -136,8 +136,9 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
       });
       this.props.setUserDetails(userID, isBeneficiaryUser());
 
-      if (isBeneficiaryUser() === false) {
-        (window as any).delighted.survey({
+      const delighted = (window as any).delighted;
+      if (isBeneficiaryUser() === false && delighted !== undefined && delighted.survey !== undefined) {
+        delighted.survey({
           email: getUserEmail(),
           name: getUserName(),
           createdAt: getCreatedDate(),
