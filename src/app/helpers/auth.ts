@@ -67,20 +67,32 @@ export function getExpiryDate(): Date|null {
   return getExpiryDateOfToken(getToken());
 }
 
-export function getUserID(): string|null {
+function getKeyOrNull(k: string): string|null {
   const decoded = getDecodedToken();
-  if (decoded === null || decoded.sub === undefined) {
+  if (decoded === null || decoded[k] === undefined) {
     return null;
   }
-  return decoded.sub;
+  return decoded[k];
+}
+
+export function getUserID(): string|null {
+  return getKeyOrNull('sub');
 }
 
 export function getUserEmail(): string|null {
-  const decoded = getDecodedToken();
-  if (decoded === null || decoded.email === undefined) {
-    return null;
-  }
-  return decoded.email;
+  return getKeyOrNull('email');
+}
+
+export function getUserName(): string|null {
+  return getKeyOrNull('name');
+}
+
+export function getOrganisation(): string|null {
+  return getKeyOrNull('https://app.impactasaurus.org/organisation');
+}
+
+export function getCreatedDate(): string|null {
+  return getKeyOrNull('https://app.impactasaurus.org/created_at');
 }
 
 export function isBeneficiaryUser(): boolean {
