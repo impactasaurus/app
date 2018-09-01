@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { getToken, getExpiryDate, getUserID, saveAuth, isBeneficiaryUser } from 'helpers/auth';
+import { getToken, getExpiryDate, getUserEmail, getUserID, saveAuth, isBeneficiaryUser,
+  getUserName, getOrganisation, getCreatedDate } from 'helpers/auth';
 import {setURL, IURLConnector} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
 import { RouterState } from 'connected-react-router';
@@ -134,6 +135,17 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
         userId: userID,
       });
       this.props.setUserDetails(userID, isBeneficiaryUser());
+
+      if (isBeneficiaryUser() === false) {
+        (window as any).delighted.survey({
+          email: getUserEmail(),
+          name: getUserName(),
+          createdAt: getCreatedDate(),
+          properties: {
+            org: getOrganisation(),
+          },
+        });
+      }
     }
   }
 
