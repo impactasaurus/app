@@ -49,12 +49,12 @@
       margin: 0px auto;
       margin-top: 40px;
 
+      .fields:last-child {
+          margin-top: 2em
+      }
+
       .field {
         text-align: center;
-
-        &:last-child {
-          margin-top: 1em
-        }
 
         > label {
           &:extend(h3, #impactasaurus h3);

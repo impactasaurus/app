@@ -1,14 +1,12 @@
 import * as React from 'react';
-import {EditQuestionnaireName} from 'components/EditQuestionnaireName';
-import {EditQuestionnaireDescription} from 'components/EditQuestionnaireDescription';
-import {EditQuestionnaireInstructions} from 'components/EditQuestionnaireInstructions';
-import {IOutcomeResult, getOutcomeSet, IOutcomeMutation} from 'apollo/modules/outcomeSets';
-import {IQuestionMutation} from 'apollo/modules/questions';
-import { Button, Icon } from 'semantic-ui-react';
+import {IOutcomeResult, getOutcomeSet, IOutcomeMutation, editQuestionSet} from 'apollo/modules/outcomeSets';
+import {FormField} from 'components/FormField';
+import { Icon, Input, Form, TextArea } from 'semantic-ui-react';
 import {Hint} from 'components/Hint';
+import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
 const strings = require('./../../../strings.json');
 
-interface IProps extends IOutcomeMutation, IQuestionMutation {
+interface IProps extends IOutcomeMutation {
   data: IOutcomeResult;
   match: {
     params: {
@@ -17,79 +15,73 @@ interface IProps extends IOutcomeMutation, IQuestionMutation {
   };
 }
 
-interface IState {
-  displayEditNameControl?: boolean;
-  displayEditDescriptionControl?: boolean;
-  editingInstructions?: boolean;
+interface IFormOutput {
+  name: string;
+  description?: string;
+  instructions?: string;
 }
 
-class GeneralInner extends React.Component<IProps, IState> {
-  constructor(props) {
-    super(props);
-    this.state = {};
-    this.setEditNameState = this.setEditNameState.bind(this);
-    this.setEditDescState = this.setEditDescState.bind(this);
-    this.setEditInstructionsState = this.setEditInstructionsState.bind(this);
-    this.renderEditButton = this.renderEditButton.bind(this);
-  }
+const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
+  const { touched, error, errors, isSubmitting, values, submitForm, isValid, handleChange, handleBlur, handleReset } = props;
+  const standardProps = {
+    onChange: handleChange,
+    onBlur: handleBlur,
+  };
+  const instructionLabel = <span><Hint text={strings.instructionsExplanation} />Instructions</span>;
+  return (
+    <Form className="screen" onSubmit={submitForm}>
+      <FormField error={errors.name as string} touched={touched.name} inputID="qg-name" required={true} label="Name">
+        <Input id="qg-name" name="name" type="text" placeholder="Name" value={values.name} {...standardProps}/>
+      </FormField>
+      <FormField error={errors.description as string} touched={touched.description} inputID="qg-description" label="Description">
+        <Input id="qg-description" name="description" type="text" placeholder="Description" value={values.description} {...standardProps}/>
+      </FormField>
+      <FormField error={errors.instructions as string} touched={touched.instructions} inputID="qg-instructions" label={instructionLabel}>
+        <TextArea id="qg-instructions" name="instructions" type="text" placeholder="Instructions" value={values.instructions} autoHeight={true} {...standardProps}/>
+      </FormField>
+      <Form.Group>
+        <Form.Button onClick={handleReset}>Cancel</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Save</Form.Button>
+      </Form.Group>
+      {error && <span className="submit-error"><Icon name="exclamation" />Editing the questionnaire failed. {strings.formFailureGeneric}</span>}
+    </Form>
+  );
+};
 
-  private setEditNameState(displayed: boolean): () => void {
-    return () => {
-      this.setState({
-        displayEditNameControl: displayed,
+const GeneralInner = withFormik<IProps, IFormOutput>({
+  validate: (values: IFormOutput) => {
+    const errors: FormikErrors<IFormOutput> = {};
+    if (!values.name || values.name === '') {
+      errors.name = 'Please give the questionnaire a name';
+    }
+    return errors;
+  },
+  handleSubmit: (v: FormikValues, formikBag: FormikBag<IProps, IFormOutput>): void => {
+    formikBag.setSubmitting(true);
+    formikBag.props.editQuestionSet(formikBag.props.match.params.id, v.name, v.description, v.instructions)
+      .then(() => {
+        formikBag.setSubmitting(false);
+        formikBag.setError(undefined);
+        formikBag.resetForm();
+      })
+      .catch((e) => {
+        formikBag.setSubmitting(false);
+        formikBag.setError(e);
       });
+  },
+  mapPropsToValues: (p: IProps): IFormOutput => {
+    if (p.data.loading || p.data.getOutcomeSet === undefined) {
+      return {
+        name: '',
+      };
+    }
+    const os = p.data.getOutcomeSet;
+    return {
+      name: os.name,
+      description: os.description,
+      instructions: os.instructions,
     };
-  }
+  },
+})(InnerForm);
 
-  private setEditDescState(displayed: boolean): () => void {
-    return () => {
-      this.setState({
-        displayEditDescriptionControl: displayed,
-      });
-    };
-  }
-
-  private setEditInstructionsState(displayed: boolean): () => void {
-    return () => {
-      this.setState({
-        editingInstructions: displayed,
-      });
-    };
-  }
-
-  private renderEditButton(onClick: () => void): JSX.Element {
-    return (
-      <Button icon={true} basic={true} circular={true} size="mini" onClick={onClick}>
-        <Icon name="pencil"/>
-      </Button>
-    );
-  }
-
-  public render() {
-    const { data, match: {params} } = this.props;
-    const { displayEditNameControl, displayEditDescriptionControl, editingInstructions } = this.state;
-    const os = data.getOutcomeSet;
-    return (
-      <div>
-        {displayEditNameControl ?
-          <EditQuestionnaireName data={data} outcomeSetID={params.id} afterSubmit={this.setEditNameState(false)} />
-          :
-          <h1>{os.name}{this.renderEditButton(this.setEditNameState(true))}</h1>
-        }
-        {displayEditDescriptionControl ?
-          <EditQuestionnaireDescription data={data} outcomeSetID={params.id} afterSubmit={this.setEditDescState(false)} />
-          :
-          <p>{os.description || 'No description'}{this.renderEditButton(this.setEditDescState(true))}</p>
-        }
-        <h3>Instructions <Hint text={strings.instructionsExplanation} /></h3>
-        {editingInstructions ?
-          <EditQuestionnaireInstructions data={data} outcomeSetID={params.id} afterSubmit={this.setEditInstructionsState(false)} />
-          :
-          <p className="instructions">{os.instructions || 'No instructions'}{this.renderEditButton(this.setEditInstructionsState(true))}</p>
-        }
-      </div>
-    );
-  }
-}
-
-export const General = getOutcomeSet<IProps>((props) => props.match.params.id)(GeneralInner);
+export const General = editQuestionSet<IProps>(getOutcomeSet<IProps>((props) => props.match.params.id)(GeneralInner));
