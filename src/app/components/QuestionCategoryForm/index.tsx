@@ -65,7 +65,7 @@ const InnerForm = (props: InjectedFormikProps<IInnerFormProps, IQuestionCategory
         <Form.Button onClick={OnCancel}>Cancel</Form.Button>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>{submitButtonText}</Form.Button>
       </Form.Group>
-      {error && <span className="submit-error"><Icon name="exclamation" />Saving the question category failed. {formFailureGeneric}</span>}
+      {error && <span className="submit-error"><Icon name="exclamation" />Saving the category failed. {formFailureGeneric}</span>}
     </Form>
   );
 };
@@ -74,7 +74,7 @@ export const QuestionCategoryForm = withFormik<IProps, IQuestionCategory>({
   validate: (values: IQuestionCategory) => {
     const errors: FormikErrors<IQuestionCategory> = {};
     if (!values.name) {
-      errors.name = 'Please enter a name for the question category';
+      errors.name = 'Please enter a name for the category';
     }
     if (!values.aggregation) {
       errors.aggregation = 'Please select an aggregation';

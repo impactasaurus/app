@@ -74,7 +74,7 @@ class CategoryListInner extends React.Component<IProps, IState> {
       return (
         <List.Item className="edit-control" key={c.id}>
           <List.Content>
-            {wrapCategoryForm('Edit Question Category', (
+            {wrapCategoryForm('Edit Category', (
               <EditQuestionCategory
                 category={c}
                 QuestionSetID={this.props.outcomeSetID}
@@ -112,7 +112,7 @@ class CategoryListInner extends React.Component<IProps, IState> {
       return (
         <List.Item className="new-control">
           <List.Content>
-            {wrapCategoryForm('New Question Category', (
+            {wrapCategoryForm('New Category', (
               <NewQuestionCategory
                 QuestionSetID={this.props.outcomeSetID}
                 OnSuccess={this.setNewCategoryClicked(false)}
@@ -126,7 +126,7 @@ class CategoryListInner extends React.Component<IProps, IState> {
       return (
         <List.Item className="new-control">
           <List.Content onClick={this.setNewCategoryClicked(true)}>
-            <List.Header as="a">New Question Category</List.Header>
+            <List.Header as="a">New Category</List.Header>
           </List.Content>
         </List.Item>
       );
