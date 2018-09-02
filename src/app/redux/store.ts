@@ -7,6 +7,7 @@ import * as storage from 'redux-storage';
 import createEngine from 'redux-storage-engine-localstorage';
 import filter from 'redux-storage-decorator-filter';
 import logger from 'redux-logger';
+import {ConfigureQuerySyncers} from './syncers';
 const appConfig = require('../../../config/main');
 
 export function configureStore(history, apolloReducer, clientMiddlewares: Middleware[], initialState?: IStore) {
@@ -43,7 +44,10 @@ export function configureStore(history, apolloReducer, clientMiddlewares: Middle
   }
 
   const load = storage.createLoader(storeEngine);
-  load(store).then(undefined, (e) => {
+  load(store).then(() => {
+    console.log('store loaded');
+    ConfigureQuerySyncers(store);
+  }, (e) => {
     console.error('Failed to load previous state: ' + e);
   });
 
