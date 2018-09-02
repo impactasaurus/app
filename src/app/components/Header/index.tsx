@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Menu } from 'semantic-ui-react';
+import { Menu, Icon } from 'semantic-ui-react';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
 import { IStore } from 'redux/IStore';
@@ -55,20 +55,38 @@ class Header extends React.Component<IProps, any> {
     if(this.props.isLoggedIn && this.props.isBeneficiary !== true) {
       return(
         <Menu size="massive">
-          <Menu.Item active={this.isActive('/', true)} onClick={this.handleClick('/')} className="icon-menu-item">
+          <Menu.Item id="home-link" active={this.isActive('/', true)} onClick={this.handleClick('/')} className="icon-menu-item">
             <Logo />
           </Menu.Item>
-          <Menu.Item name="record" active={this.isActive('/record') || this.isActive('/meeting') || this.isActive('/dataentry')} onClick={this.handleClick('/record')} />
-          <Menu.Item name="beneficiary" active={this.isActive('/beneficiary')} onClick={this.handleClick('/beneficiary')} />
-          <Menu.Item name="report" active={this.isActive('/report')} onClick={this.handleClick('/report')} />
-          <Menu.Item name="questionnaires" active={this.isActive('/questions')} onClick={this.handleClick('/questions')} />
+          <Menu.Item id="add-menu-link" active={this.isActive('/record') || this.isActive('/meeting') || this.isActive('/dataentry')} onClick={this.handleClick('/record')}>
+            <Icon name="plus"/>
+            <span>Record</span>
+          </Menu.Item>
+          <Menu.Item active={this.isActive('/beneficiary')} onClick={this.handleClick('/beneficiary')}>
+            <Icon name="user"/>
+            <span>Beneficiary</span>
+          </Menu.Item>
+          <Menu.Item active={this.isActive('/report')} onClick={this.handleClick('/report')}>
+            <Icon name="line graph"/>
+            <span>Report</span>
+          </Menu.Item>
+          <Menu.Item active={this.isActive('/questions')} onClick={this.handleClick('/questions')}>
+            <Icon name="question"/>
+            <span>Questionnaires</span>
+          </Menu.Item>
 
           <Menu.Menu position="right">
-            <Menu.Item href="https://twitter.com/impactasaurus" target="blank" className="icon-menu-item">
-              <TwitterIcon />
+            <Menu.Item id="twitter-menu-link" href="https://twitter.com/impactasaurus" target="blank" className="icon-menu-item">
+              <TwitterIcon/>
             </Menu.Item>
-            <Menu.Item name="settings" active={this.isActive('/settings')} onClick={this.handleClick('/settings')} />
-            <Menu.Item name="log out" onClick={this.logOut()} />
+            <Menu.Item active={this.isActive('/settings')} onClick={this.handleClick('/settings')}>
+              <Icon name="cog"/>
+              <span>Settings</span>
+            </Menu.Item>
+            <Menu.Item onClick={this.logOut()}>
+              <Icon name="log out"/>
+              <span>Log Out</span>
+            </Menu.Item>
           </Menu.Menu>
         </Menu>
       );
