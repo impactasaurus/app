@@ -9,6 +9,8 @@ import {isNullOrUndefined} from 'util';
 const ReactGA = require('react-ga');
 const { connect } = require('react-redux');
 
+export const pageRegex = /(\/beneficiary\/[^\/]*\/journey|\/beneficiary\/[^\/]*$|\/beneficiary\/[^\/]*\/$|\/report\/service\/)/;
+
 interface IProps {
   canCategoryAg: boolean;
   vis?: Visualisation;
@@ -22,6 +24,9 @@ interface IProps {
 }
 
 @connect((state: IStore, ownProps: IProps) => {
+  if (pageRegex.test(state.router.location.pathname) === false) {
+    console.error('vizControlPanel page regex not correct');
+  }
   return {
     vis: getVisualisation(state.pref, ownProps.allowGraph !== false),
     agg: getAggregation(state.pref, ownProps.canCategoryAg),
@@ -53,15 +58,15 @@ class VizControlPanel extends React.Component<IProps, any> {
     });
   }
   private setAggPref(value: Aggregation): () => void {
-    this.reactGAAgg(Aggregation[value]);
     return () => {
+      this.reactGAAgg(Aggregation[value]);
       this.props.setPref(AggregationKey, Aggregation[value]);
     };
   }
 
   private setVisPref(value: Visualisation): () => void {
-    this.reactGAVis(Visualisation[value]);
     return () => {
+      this.reactGAVis(Visualisation[value]);
       this.props.setPref(VisualisationKey, Visualisation[value]);
     };
   }

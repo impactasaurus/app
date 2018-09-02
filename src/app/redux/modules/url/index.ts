@@ -1,5 +1,6 @@
-import { push } from 'connected-react-router';
+import {push, replace} from 'connected-react-router';
 import { IStore } from 'redux/IStore';
+import {Action} from 'redux';
 
 export function setURL(url: string, search?: string) {
   return (dispatch, getState) => {
@@ -12,6 +13,12 @@ export function setURL(url: string, search?: string) {
       search,
     }));
   };
+}
+
+export function replaceSearchAction(search: string): Action {
+  return replace({
+    search,
+  });
 }
 
 export interface IURLConnector {
