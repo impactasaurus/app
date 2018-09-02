@@ -53,15 +53,15 @@ class VizControlPanel extends React.Component<IProps, any> {
     });
   }
   private setAggPref(value: Aggregation): () => void {
-    this.reactGAAgg(Aggregation[value]);
     return () => {
+      this.reactGAAgg(Aggregation[value]);
       this.props.setPref(AggregationKey, Aggregation[value]);
     };
   }
 
   private setVisPref(value: Visualisation): () => void {
-    this.reactGAVis(Visualisation[value]);
     return () => {
+      this.reactGAVis(Visualisation[value]);
       this.props.setPref(VisualisationKey, Visualisation[value]);
     };
   }
