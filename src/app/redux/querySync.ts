@@ -7,7 +7,6 @@ export interface IParam {
   action: (value: any) => Action;
   stringToValue: (s: string) => any;
   valueToString: (v: any) => string;
-  defaultValue?: any;
   setSearchParam?: (store: IStore) => boolean;
 }
 
@@ -16,17 +15,20 @@ export interface IParams {
 }
 
 export function ReduxQuerySync(store: Store<IStore>, params: IParams) {
-  const { dispatch } = store;
 
   function getQueryValues(location) {
     const locationParams = new URLSearchParams(location.search);
     const queryValues = {};
     Object.keys(params).forEach((param) => {
-      const { defaultValue = null, stringToValue = (s) => s } = params[param];
+      if (locationParams.has(param) === false) {
+        return;
+      }
       const valueString = locationParams.get(param);
-      queryValues[param] = (valueString === null)
-        ? defaultValue
-        : stringToValue(valueString);
+      if (valueString === null) {
+        return;
+      }
+      const { stringToValue = (s) => s } = params[param];
+      queryValues[param] = stringToValue(valueString);
     });
     return queryValues;
   }
@@ -41,13 +43,13 @@ export function ReduxQuerySync(store: Store<IStore>, params: IParams) {
     Object.keys(queryValues).forEach((param) => {
       const value = queryValues[param];
       const { selector, action } = params[param];
-      if (value !== null && selector(state) !== value) {
+      if (selector(state) !== value) {
         actionsToDispatch.push(action(value));
       }
     });
 
     actionsToDispatch.forEach((action) => {
-      dispatch(action);
+      store.dispatch(action);
     });
   }
 
@@ -70,7 +72,7 @@ export function ReduxQuerySync(store: Store<IStore>, params: IParams) {
     const oldLocationSearchString = location.search || '?';
 
     if (newLocationSearchString !== oldLocationSearchString) {
-      dispatch(replaceSearchAction(newLocationSearchString));
+      store.dispatch(replaceSearchAction(newLocationSearchString));
     }
   }
 
