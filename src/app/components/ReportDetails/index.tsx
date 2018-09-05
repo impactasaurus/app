@@ -50,6 +50,7 @@ class ReportDetails extends React.Component<IProp, any> {
 
     if (noBens > 0) {
       panels.push({
+        key: 'bens-included',
         title: `This report aggregates data covering ${this.dealWithSingularOrMultiple(noBens, 'beneficiary', 'beneficiaries')}.`,
         content: {
           content: (
@@ -62,11 +63,12 @@ class ReportDetails extends React.Component<IProp, any> {
     }
     if (excluded.beneficiaryIDs.length > 0) {
       panels.push({
+        key: 'bens-excluded',
         title: `${this.dealWithSingularOrMultiple(excluded.beneficiaryIDs.length, 'beneficiary has', 'beneficiaries have')} been excluded because ${excludedReason}.`,
         content: {
           content: (
             <div>
-              {excluded.beneficiaryIDs.map((bID) => (<BeneficiaryPill beneficiaryID={bID} questionnaireID={qs.id}/>))}
+              {excluded.beneficiaryIDs.map((bID) => (<BeneficiaryPill key={bID} beneficiaryID={bID} questionnaireID={qs.id}/>))}
             </div>
           ),
         },
@@ -74,6 +76,7 @@ class ReportDetails extends React.Component<IProp, any> {
     }
     if (excluded.categoryIDs.length > 0 || excluded.questionIDs.length > 0) {
       panels.push({
+        key: 'qs+cats',
         title: `${this.dealWithSingularOrMultiple(excluded.categoryIDs.length, 'category', 'categories')} and ${this.dealWithSingularOrMultiple(excluded.questionIDs.length, 'question', 'questions')} have been excluded because they are not present within the assessments.`,
         content: {
           content: (
