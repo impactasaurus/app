@@ -3,10 +3,10 @@ import { Radio, Icon, Form } from 'semantic-ui-react';
 import {DateRangePicker} from 'components/DateRangePicker';
 import {Hint} from 'components/Hint';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
-import {RecordTagInput} from 'components/RecordTagInput';
 import {FormField} from 'components/FormField';
 import './style.less';
 import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
+import {RecordTagInputWithQuestionnaireSuggestions} from 'components/RecordTagInputWithSuggestions';
 const strings = require('./../../../strings.json');
 
 export interface IFormOutput {
@@ -71,7 +71,7 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
         </FormField>
       </div>
       <FormField inputID="rf-tags" label={label} touched={touched.tags as boolean} error={errors.tags as string}>
-        <RecordTagInput id="rf-tags" onChange={setTags} tags={values.tags} allowNewTags={false} />
+        <RecordTagInputWithQuestionnaireSuggestions inputID="rf-tags" id={values.questionSetID} onChange={setTags} tags={values.tags} allowNewTags={false} />
       </FormField>
       <Form.Group>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Generate</Form.Button>

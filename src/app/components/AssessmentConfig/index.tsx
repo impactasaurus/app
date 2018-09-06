@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Icon, Form } from 'semantic-ui-react';
 import {DateTimePicker} from 'components/DateTimePicker';
 import {Hint} from 'components/Hint';
-import {RecordTagInputWithSuggestions} from 'components/RecordTagInputWithSuggestions';
+import {RecordTagInputWithBenSuggestions} from 'components/RecordTagInputWithSuggestions';
 import {BeneficiaryInput} from 'components/BeneficiaryInput';
 import {FormField} from 'components/FormField';
 import {IAssessmentConfig} from 'models/assessment';
@@ -79,7 +79,7 @@ const InnerForm = (props: InjectedFormikProps<InnerFormProps, IAssessmentConfigA
         <QuestionSetSelect inputID="as-qid" onQuestionSetSelected={qsOnChange} onBlur={qsOnBlur} />
       </FormField>
       <FormField inputID="as-tags" label={tagLabel} touched={touched.tags as any} error={errors.tags as any}>
-        <RecordTagInputWithSuggestions id="as-tags" onChange={setTags} tags={values.tags} beneficiary={values.debouncedBenID} allowNewTags={true} />
+        <RecordTagInputWithBenSuggestions inputID="as-tags" onChange={setTags} tags={values.tags} id={values.debouncedBenID} allowNewTags={true} />
       </FormField>
       <div style={datePickerStyle}>
         <FormField inputID="as-datepicker" label="Date Conducted" touched={touched.date as boolean} error={errors.date as string}>
