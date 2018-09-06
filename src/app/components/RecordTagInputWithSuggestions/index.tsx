@@ -1,20 +1,20 @@
 import * as React from 'react';
 import {Icon, Label} from 'semantic-ui-react';
 import {RecordTagInput} from 'components/RecordTagInput';
-import {suggestTags, ISuggestTagsResult} from 'apollo/modules/tags';
+import {suggestTags, ISuggestTagsResult, suggestQuestionnaireTags} from 'apollo/modules/tags';
 import {renderArray} from '../../helpers/react';
 import {isNullOrUndefined} from 'util';
 import './style.less';
 
 interface IProps {
   data?: ISuggestTagsResult;
-  beneficiary: string;
+  id: string;
 
   // pass through to RecordTagInput
   allowNewTags?: boolean;
   onChange: (tags: string[]) => void;
   tags: string[];
-  id?: string;
+  inputID?: string;
 }
 
 function filterAlreadySelectedTags(suggested: string[], selected: string[]) {
@@ -61,10 +61,10 @@ class RecordTagInputWithSuggestionsInner extends React.Component<IProps, any> {
     if (props.data.loading) {
       return wrap(<span>Loading...</span>);
     }
-    if (props.data.suggestTags.length === 0) {
+    if (props.data.suggestedTags.length === 0) {
       return wrap(<span>No suggested tags available for this beneficiary</span>);
     }
-    const unselectedSuggestedTags = filterAlreadySelectedTags(props.data.suggestTags, props.tags);
+    const unselectedSuggestedTags = filterAlreadySelectedTags(props.data.suggestedTags, props.tags);
     if (unselectedSuggestedTags.length === 0) {
       return wrap(<span>All suggested tags selected</span>);
     }
@@ -82,7 +82,7 @@ class RecordTagInputWithSuggestionsInner extends React.Component<IProps, any> {
           onChange={this.props.onChange}
           tags={this.props.tags}
           allowNewTags={this.props.allowNewTags}
-          id={this.props.id}
+          id={this.props.inputID}
         />
         {this.renderSuggested(this.props)}
       </div>
@@ -90,7 +90,6 @@ class RecordTagInputWithSuggestionsInner extends React.Component<IProps, any> {
   }
 }
 
-const getBeneficiary = (p: IProps) => p.beneficiary;
-
-const RecordTagInputWithSuggestions = suggestTags<IProps>(getBeneficiary)(RecordTagInputWithSuggestionsInner);
-export { RecordTagInputWithSuggestions };
+const getID = (p: IProps) => p.id;
+export const RecordTagInputWithBenSuggestions = suggestTags<IProps>(getID)(RecordTagInputWithSuggestionsInner);
+export const RecordTagInputWithQuestionnaireSuggestions = suggestQuestionnaireTags<IProps>(getID)(RecordTagInputWithSuggestionsInner);

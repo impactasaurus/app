@@ -22,7 +22,7 @@ export interface ITagResult extends QueryProps {
 export const suggestTags = <T>(idExtractor: IDExtractor<T>) => {
   return graphql<any, T>(gql`
     query suggestTags($ben: String!) {
-      suggestTags: suggestTags(beneficiary:$ben)
+      suggestedTags: suggestTags(beneficiary:$ben)
     }`,
     {
       options: (props: T) => {
@@ -41,5 +41,26 @@ export const suggestTags = <T>(idExtractor: IDExtractor<T>) => {
 };
 
 export interface ISuggestTagsResult extends QueryProps {
-  suggestTags?: string[];
+  suggestedTags?: string[];
 }
+
+export const suggestQuestionnaireTags = <T>(idExtractor: IDExtractor<T>) => {
+  return graphql<any, T>(gql`
+    query suggestTags($qID: String!) {
+      suggestedTags: suggestQuestionnaireTags(questionnaire:$qID)
+    }`,
+    {
+      options: (props: T) => {
+        const qID = idExtractor(props);
+        return {
+          fetchPolicy: 'network-only',
+          notifyOnNetworkStatusChange: true,
+          variables: {
+            qID,
+          },
+          skip: qID === '' || isNullOrUndefined(qID),
+        };
+      },
+    },
+  );
+};
