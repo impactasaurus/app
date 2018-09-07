@@ -2,6 +2,7 @@ import {IOutcomeSet} from '../models/outcomeSet';
 import {IQuestion, Question} from 'models/question';
 import {ICategory} from '../models/category';
 import {isNullOrUndefined} from 'util';
+import undefinedError = Mocha.utils.undefinedError;
 
 function aggregate(values: number[], aggregation: string): number {
   if (values.length === 0) {
@@ -54,6 +55,25 @@ function getCategoryMinValue(os: IOutcomeSet, cID: string): number|undefined {
   return aggregateAcrossCategoryQuestions(os, cID, (q: Question) => Math.min(q.leftValue, q.rightValue));
 }
 
+function getCategoryMinAndMaxValues(os: IOutcomeSet, cID: string): {min: number, max:number}|undefined {
+  const min = getCategoryMinValue(os, cID);
+  const max = getCategoryMaxValue(os, cID);
+  if (min === undefined || max === undefined) {
+    return undefined;
+  }
+  return {min,max};
+}
+
+function getQuestionMinAndMaxValues(os: IOutcomeSet, qID: string): {min: number, max: number}|undefined {
+  const q: Question = (os.questions.find((q) => q.id === qID) as Question);
+  if (q === undefined) {
+    return undefined;
+  }
+  const max = Math.max(q.leftValue, q.rightValue);
+  const min = Math.min(q.leftValue, q.rightValue);
+  return {min, max};
+}
+
 function aggregateAcrossCategoryQuestions(os: IOutcomeSet, cID: string, questionMapper: (q: Question) => number): number|undefined {
   const c = getCategory(os, cID);
   const catQs = getCategoryQuestions(os, cID);
@@ -77,22 +97,27 @@ function getCategory(os: IOutcomeSet, cID: string): ICategory|undefined {
 }
 
 export function convertCategoryValueToPercentage(os: IOutcomeSet, cID: string, value: number): number|undefined {
-  const min = getCategoryMinValue(os, cID);
-  const max = getCategoryMaxValue(os, cID);
-  if (min === undefined || max === undefined) {
-    return undefined;
-  }
-  return (value / (max - min)) * 100;
+  const v = getCategoryMinAndMaxValues(os, cID);
+  if (v === undefined) return undefined;
+  return ((value-v.min) / (v.max - v.min)) * 100;
+}
+
+export function convertCategoryDeltaToPercentage(os: IOutcomeSet, cID: string, value: number): number|undefined {
+  const v = getCategoryMinAndMaxValues(os, cID);
+  if (v === undefined) return undefined;
+  return ((value) / (v.max - v.min)) * 100;
 }
 
 export function convertQuestionValueToPercentage(os: IOutcomeSet, qID: string, value: number): number|undefined {
-  const q: Question = (os.questions.find((q) => q.id === qID) as Question);
-  if (q === undefined) {
-    return undefined;
-  }
-  const max = Math.max(q.leftValue, q.rightValue);
-  const min = Math.min(q.leftValue, q.rightValue);
-  return (value / (max - min)) * 100;
+  const v = getQuestionMinAndMaxValues(os, qID);
+  if (v === undefined) return undefined;
+  return ((value-v.min) / (v.max - v.min)) * 100;
+}
+
+export function convertQuestionDeltaToPercentage(os: IOutcomeSet, qID: string, value: number): number|undefined {
+  const v = getQuestionMinAndMaxValues(os, qID);
+  if (v === undefined) return undefined;
+  return ((value) / (v.max - v.min)) * 100;
 }
 
 export function getCategoryFriendlyName(catID: string, qs: IOutcomeSet): string {
