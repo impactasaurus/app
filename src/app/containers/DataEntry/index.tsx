@@ -11,6 +11,7 @@ import {QuestionInline} from 'components/QuestionInline';
 import {renderArray} from 'helpers/react';
 import {getHumanisedDateFromISO} from 'helpers/moment';
 import {QuestionnaireReview} from 'components/QuestionnaireReview';
+import {Error} from 'components/Error';
 import {MeetingNotepad} from 'components/MeetingNotepad';
 const { connect } = require('react-redux');
 
@@ -169,6 +170,9 @@ class DataEntryInner extends React.Component<IProps, IState> {
       );
     };
 
+    if (this.props.data.error) {
+      return wrapper(<Error text="Failed to load" />);
+    }
     const meeting = this.props.data.getMeeting;
     if (meeting === undefined) {
         return wrapper(<Loader active={true} inline="centered" />);

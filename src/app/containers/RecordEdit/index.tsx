@@ -8,6 +8,7 @@ import {
 } from 'apollo/modules/meetings';
 import {RecordTagInputWithBenSuggestions} from 'components/RecordTagInputWithSuggestions';
 import {DateTimePicker} from 'components/DateTimePicker';
+import {Error} from 'components/Error';
 import {Hint} from 'components/Hint';
 import * as moment from 'moment';
 import {bindActionCreators} from 'redux';
@@ -224,6 +225,10 @@ class RecordEditInner extends React.Component<IProps, IState> {
 
     if(this.props.match.params.id === undefined) {
       return wrapper(<div />);
+    }
+
+    if (this.props.data.error) {
+      return wrapper(<Error text="Failed to load record"/>);
     }
 
     const record = this.props.data.getMeeting;

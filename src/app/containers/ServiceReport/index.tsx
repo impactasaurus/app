@@ -1,15 +1,15 @@
 import * as React from 'react';
 import 'url-search-params-polyfill';
 import { Helmet } from 'react-helmet';
-import { Grid, Loader, Message } from 'semantic-ui-react';
+import { Grid, Loader } from 'semantic-ui-react';
 import {getJOCServiceReport, IJOCReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ServiceReportDetails} from 'components/ServiceReportDetails';
 import {ServiceReportRadar} from 'components/ServiceReportRadar';
 import {ServiceReportTable} from 'components/ServiceReportTable';
 import {VizControlPanel} from 'components/VizControlPanel';
+import {Error} from 'components/Error';
 import {IStore} from 'redux/IStore';
-import {renderArray} from 'helpers/react';
 import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'models/pref';
 import './style.less';
 import {constructReportQueryParams, constructReportURL} from 'helpers/report';
@@ -62,14 +62,6 @@ class ServiceReportInner extends React.Component<IProp, any> {
     this.exportReportData = this.exportReportData.bind(this);
   }
 
-  private renderError(error: string): JSX.Element {
-    return (
-      <p key={error}>
-        {error}
-      </p>
-    );
-  }
-
   private renderVis(): JSX.Element {
     const p = this.props;
     if (p.vis === Visualisation.RADAR) {
@@ -105,11 +97,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
       );
     };
     if (this.props.JOCServiceReport.error) {
-      return wrapper((
-        <Message error={true}>
-          {renderArray<string>(this.renderError, this.props.JOCServiceReport.error.graphQLErrors.map((e) => e.message))}
-        </Message>
-      ));
+      return wrapper(<Error text="Failed to load the report"/>);
     }
     if (this.props.data.loading || this.props.JOCServiceReport.loading) {
       return wrapper(<Loader active={true} inline="centered" />);

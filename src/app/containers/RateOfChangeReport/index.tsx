@@ -1,11 +1,11 @@
 import * as React from 'react';
 import 'url-search-params-polyfill';
 import { Helmet } from 'react-helmet';
-import { Grid, Loader, Message } from 'semantic-ui-react';
+import { Grid, Loader } from 'semantic-ui-react';
 import {getROCReport, IROCReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {IStore} from 'redux/IStore';
-import {renderArray} from 'helpers/react';
+import {Error} from 'components/Error';
 import {Aggregation, getAggregation} from 'models/pref';
 import {RocReportBarChart} from 'components/RocReportBarChart';
 import {RocReportDetails} from 'components/RocReportDetails';
@@ -36,14 +36,6 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
   return props.ROCReport.getROCReport.beneficiaries[0].categories.length > 0;
 };
 
-function renderError(error: string): JSX.Element {
-  return (
-    <p key={error}>
-      {error}
-    </p>
-  );
-}
-
 @connect((state: IStore, ownProps: IProp) => {
   const canCatAg = isCategoryAggregationAvailable(ownProps);
   return {
@@ -61,11 +53,7 @@ class RateOfChangeReportInner extends React.Component<IProp, any> {
   public renderPage(): JSX.Element {
     const reportReq = this.props.ROCReport;
     if (reportReq.error) {
-      return (
-        <Message error={true}>
-          {renderArray<string>(renderError, reportReq.error.graphQLErrors.map((e) => e.message))}
-        </Message>
-      );
+      return (<Error text="Failed to load report"/>);
     }
     if (this.props.data.loading || reportReq.loading) {
       return (

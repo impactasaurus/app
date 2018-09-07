@@ -2,7 +2,8 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { Grid, Loader } from 'semantic-ui-react';
 import {isNullOrUndefined} from 'util';
-import {exportMeetings, IExportMeetingsResult} from '../../apollo/modules/meetings';
+import {exportMeetings, IExportMeetingsResult} from 'apollo/modules/meetings';
+import {Error} from 'components/Error';
 const appConfig = require('../../../../config/main');
 
 interface IProps  {
@@ -23,11 +24,7 @@ class ExportQuestionnaireInner extends React.Component<IProps, any> {
   }
 
   public render() {
-    let inner = (<Loader active={true} inline="centered" />);
-    if (!isNullOrUndefined(this.props.data.exportMeetings) && !this.props.data.loading) {
-      inner = (<span>Download started</span>);
-    }
-    return (
+    const wrapper = (inner: JSX.Element) => (
       <Grid container={true} columns={1} id="data">
         <Grid.Column>
           <Helmet>
@@ -37,6 +34,13 @@ class ExportQuestionnaireInner extends React.Component<IProps, any> {
         </Grid.Column>
       </Grid>
     );
+    if (this.props.data.error) {
+      return wrapper(<Error text="Export failed" />);
+    }
+    if (this.props.data.loading) {
+      return wrapper(<Loader active={true} inline="centered" />);
+    }
+    return wrapper(<span>Download started</span>);
   }
 }
 

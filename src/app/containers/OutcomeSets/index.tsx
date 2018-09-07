@@ -8,6 +8,7 @@ import { bindActionCreators } from 'redux';
 import { List, Icon, Grid, Loader, Message } from 'semantic-ui-react';
 import {INewQuestionnaire, NewQuestionnaireForm} from 'components/NewQuestionnaireForm';
 import {ConfirmButton} from 'components/ConfirmButton';
+import {Error} from 'components/Error';
 import './style.less';
 const { connect } = require('react-redux');
 const ReactGA = require('react-ga');
@@ -121,7 +122,9 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
 
   public render() {
     let inner: JSX.Element;
-    if (this.props.data.loading) {
+    if (this.props.data.error) {
+      inner = (<Error text="Failed to load questionnaires" />);
+    } else if (this.props.data.loading) {
       inner = (
         <Loader active={true} inline="centered" />
       );

@@ -6,6 +6,7 @@ import {IURLConnector, setURL} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
 import {getJWT, IJWTResult} from 'apollo/modules/jwt';
 import { Message, Loader, Grid, Button } from 'semantic-ui-react';
+import {Error} from 'components/Error';
 const { connect } = require('react-redux');
 const ReactGA = require('react-ga');
 
@@ -103,15 +104,6 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
     });
   }
 
-  private renderError(message: string): JSX.Element {
-    return (
-      <Message error={true}>
-        <Message.Header>Error</Message.Header>
-        <div>{message}</div>
-      </Message>
-    );
-  }
-
   private confirmUserWantsToContinue(): JSX.Element {
     return (
       <Message warning={true}>
@@ -140,9 +132,9 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
       return wrapper(<Loader active={true} inline="centered" />);
     }
     if (this.state.expired) {
-      return wrapper(this.renderError('This link has expired. Please request a new link'));
+      return wrapper(<Error text="This link has expired. Please request a new link"/>);
     }
-    return wrapper(this.renderError('This link is not valid. Please try refreshing, if it continues to fail, please request a new link'));
+    return wrapper(<Error text="This link is not valid. Please try refreshing, if it continues to fail, please request a new link"/>);
   }
 }
 
