@@ -7,6 +7,7 @@ import {bindActionCreators} from 'redux';
 import './style.less';
 import {RecordQuestionSummary} from 'components/RecordQuestionSummary';
 import {getHumanisedDateFromISO} from 'helpers/moment';
+import {Error} from 'components/Error';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
@@ -77,6 +78,10 @@ class RecordViewInner extends React.Component<IProps, any> {
 
     if(this.props.match.params.id === undefined) {
       return wrapper(<div />);
+    }
+
+    if (this.props.data.error) {
+      return wrapper(<Error text="Failed to load record"/>);
     }
 
     const record = this.props.data.getMeeting;

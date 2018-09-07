@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Loader, Message } from 'semantic-ui-react';
+import { Loader } from 'semantic-ui-react';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import {VizControlPanel} from 'components/VizControlPanel';
 import { bindActionCreators } from 'redux';
@@ -14,6 +14,7 @@ import {MeetingRadar} from 'components/MeetingRadar';
 import {MeetingTable} from 'components/MeetingTable';
 import {isBeneficiaryUser} from 'redux/modules/user';
 import {MeetingGraph} from 'components/MeetingGraph';
+import {Error} from 'components/Error';
 
 import {setPref, SetPrefFunc} from 'redux/modules/pref';
 const { connect } = require('react-redux');
@@ -155,23 +156,14 @@ class JourneyInner extends React.Component<IProps, any> {
   }
 
   private renderJourney(): JSX.Element {
-    if (this.props.data.loading) {
-      return (
-        <Loader active={true} inline="centered" />
-      );
+    if (this.props.data.error) {
+      return (<Error text="Failed to load records" />);
     }
-    if (this.props.data.error !== undefined) {
-      return (
-        <Message error={true}>
-          <Message.Header>Error</Message.Header>
-          <div>Failed to load records</div>
-        </Message>
-      );
+    if (this.props.data.loading) {
+      return (<Loader active={true} inline="centered" />);
     }
     if (!Array.isArray(this.props.data.getMeetings) || this.props.data.getMeetings.length === 0) {
-      return (
-        <p>No complete meetings found for beneficiary {this.props.match.params.id}</p>
-      );
+      return (<p>No complete meetings found for beneficiary {this.props.match.params.id}</p>);
     }
     return (
       <div>

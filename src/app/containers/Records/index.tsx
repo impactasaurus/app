@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { Loader, Message } from 'semantic-ui-react';
+import { Loader } from 'semantic-ui-react';
 import {IURLConnector} from 'redux/modules/url';
 import {getAllMeetings, IGetAllMeetingsResult} from 'apollo/modules/meetings';
 import {RecordList} from 'components/RecordList';
+import {Error} from 'components/Error';
 
 interface IProps extends IURLConnector {
   match: {
@@ -21,13 +22,8 @@ class RecordsInner extends React.Component<IProps, any> {
   }
 
   private renderRecords(): JSX.Element {
-    if (this.props.data.error !== undefined) {
-      return (
-        <Message error={true}>
-          <Message.Header>Error</Message.Header>
-          <div>Failed to load records</div>
-        </Message>
-      );
+    if (this.props.data.error) {
+      return (<Error text="Failed to load records"/>);
     }
     if (this.props.data.loading) {
       return (

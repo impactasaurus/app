@@ -6,6 +6,7 @@ import {SecondaryMenu} from 'components/SecondaryMenu';
 import { General } from './general';
 import { Questions } from './questions';
 import { Categories } from './categories';
+import {Error} from 'components/Error';
 import { Switch, Route } from 'react-router-dom';
 import './style.less';
 import {IStore} from 'redux/IStore';
@@ -102,7 +103,10 @@ class OutcomeSetInner extends React.Component<IProps, any> {
         </div>
       );
     };
-    const { data: {loading, getOutcomeSet}} = this.props;
+    const { data: {loading, getOutcomeSet, error}} = this.props;
+    if (error) {
+      return wrapper((<Error text="Failed to load questionnaire" />), 'Unknown');
+    }
     if (loading) {
       return wrapper((<Loader active={true} inline="centered" />), 'Loading...');
     }
