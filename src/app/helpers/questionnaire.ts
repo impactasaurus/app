@@ -2,7 +2,6 @@ import {IOutcomeSet} from '../models/outcomeSet';
 import {IQuestion, Question} from 'models/question';
 import {ICategory} from '../models/category';
 import {isNullOrUndefined} from 'util';
-import undefinedError = Mocha.utils.undefinedError;
 
 function aggregate(values: number[], aggregation: string): number {
   if (values.length === 0) {
@@ -55,7 +54,7 @@ function getCategoryMinValue(os: IOutcomeSet, cID: string): number|undefined {
   return aggregateAcrossCategoryQuestions(os, cID, (q: Question) => Math.min(q.leftValue, q.rightValue));
 }
 
-function getCategoryMinAndMaxValues(os: IOutcomeSet, cID: string): {min: number, max:number}|undefined {
+function getCategoryMinAndMaxValues(os: IOutcomeSet, cID: string): {min: number, max: number}|undefined {
   const min = getCategoryMinValue(os, cID);
   const max = getCategoryMaxValue(os, cID);
   if (min === undefined || max === undefined) {
@@ -98,25 +97,25 @@ function getCategory(os: IOutcomeSet, cID: string): ICategory|undefined {
 
 export function convertCategoryValueToPercentage(os: IOutcomeSet, cID: string, value: number): number|undefined {
   const v = getCategoryMinAndMaxValues(os, cID);
-  if (v === undefined) return undefined;
+  if (v === undefined) {return undefined;}
   return ((value-v.min) / (v.max - v.min)) * 100;
 }
 
 export function convertCategoryDeltaToPercentage(os: IOutcomeSet, cID: string, value: number): number|undefined {
   const v = getCategoryMinAndMaxValues(os, cID);
-  if (v === undefined) return undefined;
+  if (v === undefined) {return undefined;}
   return ((value) / (v.max - v.min)) * 100;
 }
 
 export function convertQuestionValueToPercentage(os: IOutcomeSet, qID: string, value: number): number|undefined {
   const v = getQuestionMinAndMaxValues(os, qID);
-  if (v === undefined) return undefined;
+  if (v === undefined) {return undefined;}
   return ((value-v.min) / (v.max - v.min)) * 100;
 }
 
 export function convertQuestionDeltaToPercentage(os: IOutcomeSet, qID: string, value: number): number|undefined {
   const v = getQuestionMinAndMaxValues(os, qID);
-  if (v === undefined) return undefined;
+  if (v === undefined) {return undefined;}
   return ((value) / (v.max - v.min)) * 100;
 }
 

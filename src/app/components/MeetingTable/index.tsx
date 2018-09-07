@@ -7,6 +7,7 @@ import {ImpactTable, IRow} from 'components/ImpactTable';
 import {getHumanisedDate} from 'helpers/moment';
 import {Select, DropdownItemProps, Message} from 'semantic-ui-react';
 import './style.less';
+import {convertQuestionDeltaToPercentage} from 'helpers/questionnaire';
 
 interface IProp {
   meetings: IMeeting[];
@@ -112,7 +113,7 @@ class MeetingTable extends React.Component<IProp, IState> {
       if (q === undefined || q.archived) {
         return rows;
       }
-      rows[q.question] = {
+      rows[q.id] = {
         first: a.answer,
         name: (q.short || q.question),
       };
@@ -123,15 +124,24 @@ class MeetingTable extends React.Component<IProp, IState> {
       if (q === undefined || q.archived) {
         return rows;
       }
-      if (rows[q.question] === undefined) {
-        rows[q.question] = {
+      if (rows[q.id] === undefined) {
+        rows[q.id] = {
           name: (q.short || q.question),
         };
       }
-      rows[q.question] = { ...rows[q.question], last: a.answer };
+      rows[q.id] = {
+        ...rows[q.id],
+        last: a.answer,
+      };
       return rows;
     }, rows);
-    return Object.keys(rows).map((k) => rows[k]);
+    return Object.keys(rows).map((qID) => {
+      const r = rows[qID];
+      return {
+        ...r,
+        deltaPercent: convertQuestionDeltaToPercentage(f.outcomeSet, qID, r.last-r.first),
+      };
+    });
   }
 
   private getColumnTitle(prefix: string, meeting: IMeeting): string {

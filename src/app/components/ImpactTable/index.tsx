@@ -6,6 +6,7 @@ interface IRow {
   name: string;
   first: number|undefined;
   last: number|undefined;
+  deltaPercent: number|undefined;
 }
 
 interface IProp {
@@ -118,12 +119,16 @@ function sortData(data: IRow[], column: Column, direction: Direction): IRow[] {
 
 function renderRow(r: IRow): JSX.Element {
   const d = delta(r);
+  let dPercent = '';
+  if (r.deltaPercent !== undefined && !isNaN(r.deltaPercent)) {
+    dPercent = ` (${r.deltaPercent.toFixed(0)}%)`;
+  }
   return (
     <Table.Row key={r.name}>
       <Table.Cell>{r.name}</Table.Cell>
       <Table.Cell>{r.first === undefined ? 'N/A' : r.first.toFixed(2)}</Table.Cell>
       <Table.Cell>{r.last === undefined ? 'N/A' : r.last.toFixed(2)}</Table.Cell>
-      <Table.Cell>{d === undefined ? 'N/A' : d.toFixed(2)}</Table.Cell>
+      <Table.Cell>{d === undefined ? 'N/A' : d.toFixed(2)}{dPercent}</Table.Cell>
     </Table.Row>
   );
 }
