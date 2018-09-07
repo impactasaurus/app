@@ -160,14 +160,10 @@ class JourneyInner extends React.Component<IProps, any> {
       return (<Error text="Failed to load records" />);
     }
     if (this.props.data.loading) {
-      return (
-        <Loader active={true} inline="centered" />
-      );
+      return (<Loader active={true} inline="centered" />);
     }
     if (!Array.isArray(this.props.data.getMeetings) || this.props.data.getMeetings.length === 0) {
-      return (
-        <p>No complete meetings found for beneficiary {this.props.match.params.id}</p>
-      );
+      return (<p>No complete meetings found for beneficiary {this.props.match.params.id}</p>);
     }
     return (
       <div>

@@ -132,9 +132,14 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
       return wrapper(<Loader active={true} inline="centered" />);
     }
     if (this.state.expired) {
-      return wrapper(<Error text="This link has expired. Please request a new link"/>);
+      return wrapper((
+        <Message error={true}>
+          <Message.Header>Expired</Message.Header>
+          <div>This link has expired. Please request a new link</div>
+        </Message>
+      ));
     }
-    return wrapper(<Error text="This link is not valid. Please try refreshing, if it continues to fail, please request a new link"/>);
+    return wrapper(<Error text="This link does not seem to be valid"/>);
   }
 }
 
