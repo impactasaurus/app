@@ -6,5 +6,6 @@
   "tagUsage": "Use tags to filter the records you would like included within the report. Only records containing all the specified tags will be included.",
   "instructionsExplanation": "Instructions are shown to beneficiaries before they begin a questionnaire",
   "formFailureGeneric": "Please refresh and try again, if that doesn't get it, please drop us an email at support@impactasaurus.org",
+  "failureGeneric": "Please refresh and try again, if that doesn't get it, please drop us an email at support@impactasaurus.org",
   "valuesNotEditable": "We do not allow the values of the scale to be edited to ensure data consistency. If you would like to change them, please delete this question and recreate it or contact support@impactasaurus.org"
 }
