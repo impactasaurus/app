@@ -1,6 +1,6 @@
 import {gql, graphql, QueryProps} from 'react-apollo';
 import {IMeeting, fragment, fragmentWithOutcomeSetAndAggregates} from 'models/meeting';
-import {IDExtractor, mutationResultExtractor} from 'helpers/apollo';
+import {Extractor, IDExtractor, mutationResultExtractor} from 'helpers/apollo';
 import { invalidateFields, ROOT } from 'apollo-cache-invalidation';
 import {IAssessmentConfig} from 'models/assessment';
 
@@ -50,6 +50,56 @@ export const getMeetings = <T>(idExtractor: IDExtractor<T>, name?: string) => {
     name: name ? name : 'data',
   });
 };
+
+export interface IGetRecentMeetings extends QueryProps, IGetRecentMeetingsData {}
+
+interface IGetRecentMeetingsData {
+  getRecentMeetings: {
+    isMore: boolean;
+    page: number;
+    meetings: IMeeting[];
+  };
+}
+
+const getRecentMeetingsGQL = gql`
+  query ($page: Int!, $limit: Int!) {
+    getRecentMeetings: recentMeetings(page: $page, limit: $limit) {
+      isMore,
+      page,
+      meetings {
+        ...meetingWithOutcomeSetAndAggregates
+      }
+    }
+  }
+  ${fragmentWithOutcomeSetAndAggregates}`;
+
+export const getRecentMeetings = <T>(pageExtractor: Extractor<T, number>, name?: string) => {
+  return graphql<any, T>(getRecentMeetingsGQL, {
+    options: (props: T) => {
+      return {
+        variables: {
+          limit: 10,
+          page: pageExtractor(props),
+        },
+        notifyOnNetworkStatusChange: true,
+        fetchPolicy: 'network-only',
+      };
+    },
+    name: name ? name : 'data',
+  });
+};
+
+export const getMoreRecentMeetings = (page: number): any => ({
+  variables: {
+    page,
+  },
+  updateQuery: (prev: IGetRecentMeetingsData, { fetchMoreResult }: {fetchMoreResult: IGetRecentMeetingsData}) => {
+    if (!fetchMoreResult) {return prev;}
+    const n = {...fetchMoreResult};
+    n.getRecentMeetings.meetings = prev.getRecentMeetings.meetings.concat(fetchMoreResult.getRecentMeetings.meetings);
+    return n;
+  },
+});
 
 const getAllMeetingsGQL = gql`
   query getAllMeetings ($beneficiaryID: String!) {

@@ -18,6 +18,9 @@ export const RadarChartStatic = ({data, opt}: IProps) => {
     m[dp.axis] = dp.axis;
     return m;
   }, {});
+  if (Object.keys(columns).length < 3) {
+    return (<div />);
+  }
   const series: any = data.series.map((d) => {
     return d.datapoints.reduce((m, dp) => {
       m[dp.axis] = (dp.value-data.scaleMin) / data.scaleMax;

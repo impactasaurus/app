@@ -18,7 +18,7 @@ interface ImplementationIProp {
 }
 
 export function MeetingRadarWithImpl<P extends ImplementationIProp>(RadarImpl: React.ComponentType<P>, innerProps?: P) {
-  return class MeetingRadar extends React.Component<P & IProp, any> {
+  return class MeetingRadar extends React.Component<IProp, any> {
 
     private getQuestionLevelData(meetings: IMeeting[]): RadarData {
       const series = meetings.map((meeting): IRadarSeries => {

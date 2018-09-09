@@ -1,56 +1,39 @@
 import * as React from 'react';
 import {Feed, Label} from 'semantic-ui-react';
 import {RadarChartStatic} from 'components/RadarChartStatic';
-import {RadarData} from 'models/radar';
+import {IMeeting} from 'models/meeting';
+import {MeetingRadarWithImpl} from '../MeetingRadar';
+import {Aggregation} from 'models/pref';
 import './style.less';
+import {getHumanisedTimeSinceDate} from 'helpers/moment';
+import {renderArray} from 'helpers/react';
 
-export class TimelineEntry extends React.Component<any, any> {
+interface IProp {
+  meeting: IMeeting;
+}
+
+const label = (t: string) => <Label key={t}>{t}</Label>;
+
+export class TimelineEntry extends React.Component<IProp, any> {
 
   public render() {
-    const d: RadarData = {
-      scaleMin: 0,
-      scaleMax: 10,
-      series: [{
-        name: 'test',
-        datapoints: [{
-          axis: 'a',
-          value: 10,
-        }, {
-          axis: 'b',
-          value: 4,
-        }, {
-          axis: 'c',
-          value: 2,
-        }, {
-          axis: 'd',
-          value: 3,
-        }, {
-          axis: 'e',
-          value: 4,
-        }, {
-          axis: 'f',
-          value: 8,
-        }, {
-          axis: 'g',
-          value: 6,
-        }],
-      }],
-    };
+    const Radar = MeetingRadarWithImpl(RadarChartStatic);
+    const m = this.props.meeting;
     return (
       <Feed.Event className="timeline-entry">
         <Feed.Label>
-          <RadarChartStatic data={d} />
+          <Radar meetings={[m]} aggregation={Aggregation.QUESTION} />
         </Feed.Label>
         <Feed.Content>
           <Feed.Summary>
-            <a>AB527</a> completed <a>Wellbeing Checklist</a>
-            <Feed.Date>3 days ago</Feed.Date>
+            <a>{m.beneficiary}</a> completed <a>{m.outcomeSet.name}</a>
+            <Feed.Date>{getHumanisedTimeSinceDate(new Date(m.conducted))}</Feed.Date>
           </Feed.Summary>
           <Feed.Extra text={true}>
-            this was the first week for this gardener who freely chatted to the other gardeners especially B2 whilst they were working.
+            {m.notes ? m.notes : 'No notes'}
           </Feed.Extra>
           <Feed.Meta>
-            <Label>Maybridge</Label>
+            {renderArray(label, m.tags)}
           </Feed.Meta>
         </Feed.Content>
       </Feed.Event>
