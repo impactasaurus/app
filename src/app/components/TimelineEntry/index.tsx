@@ -1,8 +1,8 @@
 import * as React from 'react';
-import {Feed} from 'semantic-ui-react';
+import {Feed, Label} from 'semantic-ui-react';
 import {RadarChartStatic} from 'components/RadarChartStatic';
+import {RadarData} from 'models/radar';
 import './style.less';
-import {RadarData} from '../../models/radar';
 
 export class TimelineEntry extends React.Component<any, any> {
 
@@ -17,33 +17,40 @@ export class TimelineEntry extends React.Component<any, any> {
           value: 10,
         }, {
           axis: 'b',
-          value: 0,
+          value: 4,
         }, {
           axis: 'c',
-          value: 5,
+          value: 2,
         }, {
           axis: 'd',
           value: 3,
+        }, {
+          axis: 'e',
+          value: 4,
+        }, {
+          axis: 'f',
+          value: 8,
+        }, {
+          axis: 'g',
+          value: 6,
         }],
       }],
     };
     return (
-      <Feed.Event>
+      <Feed.Event className="timeline-entry">
         <Feed.Label>
           <RadarChartStatic data={d} />
         </Feed.Label>
         <Feed.Content>
           <Feed.Summary>
-            <a>Joe Henderson</a> posted on his page
+            <a>AB527</a> completed <a>Wellbeing Checklist</a>
             <Feed.Date>3 days ago</Feed.Date>
           </Feed.Summary>
           <Feed.Extra text={true}>
-            Ours is a life of constant reruns. We're always circling back to where we'd we started,
-            then starting all over again. Even if we don't run extra laps that day, we surely will
-            come back for more of the same another day soon.
+            this was the first week for this gardener who freely chatted to the other gardeners especially B2 whilst they were working.
           </Feed.Extra>
           <Feed.Meta>
-            <span>tag</span>
+            <Label>Maybridge</Label>
           </Feed.Meta>
         </Feed.Content>
       </Feed.Event>

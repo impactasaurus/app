@@ -1,5 +1,8 @@
+import * as React from 'react';
 import {RadarData} from 'models/radar';
 import {render} from './inner';
+import Raven = require('raven-js');
+import './style.less';
 
 interface IProps {
   data: RadarData;
@@ -7,6 +10,10 @@ interface IProps {
 }
 
 export const RadarChartStatic = ({data, opt}: IProps) => {
+  if (data.series.length !== 1) {
+    Raven.captureException('Expecting charts of containing one series');
+    return (<div />);
+  }
   const columns: any = data.series[0].datapoints.reduce((m, dp) => {
     m[dp.axis] = dp.axis;
     return m;
