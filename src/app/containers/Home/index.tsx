@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { TimelineEntry } from 'components/TimelineEntry';
-import { Grid, Feed } from 'semantic-ui-react';
+import { Grid, Feed, Loader } from 'semantic-ui-react';
 import {getMoreRecentMeetings, getRecentMeetings, IGetRecentMeetings} from '../../apollo/modules/meetings';
 import {renderArray} from '../../helpers/react';
 import * as InfiniteScroll from 'react-infinite-scroller';
+import {Error} from 'components/Error';
+import {IMeeting} from 'models/meeting';
 
-const timelineEntry = (m) => <TimelineEntry meeting={m} />;
+const timelineEntry = (m: IMeeting) => <TimelineEntry key={m.id} meeting={m} />;
 
 interface IProps {
   data?: IGetRecentMeetings;
@@ -24,29 +26,41 @@ class HomeInner extends React.Component<IProps, any> {
   }
 
   public render() {
-    if (!this.props.data.getRecentMeetings) {
-      return (<div />);
-    }
-    return (
+    const wrapper = (inner: JSX.Element): JSX.Element => (
       <Grid container={true} columns={1} id="home">
         <Grid.Column>
           <Helmet>
             <title>Home</title>
           </Helmet>
-          <h1>Activity</h1>
-          <InfiniteScroll
-            initialLoad={false}
-            loadMore={this.loadMore}
-            hasMore={this.props.data.getRecentMeetings.isMore}
-            loader={<div className="loader" key={0}>Loading ...</div>}
-          >
-            <Feed>
-              {this.props.data.getRecentMeetings && renderArray(timelineEntry, this.props.data.getRecentMeetings.meetings)}
-            </Feed>
-          </InfiniteScroll>
+          <div>
+            <h1>Activity</h1>
+            {inner}
+          </div>
         </Grid.Column>
       </Grid>
     );
+    if (this.props.data.error) {
+      return wrapper(<Error text="Failed to load activity feed" />);
+    }
+    const d = this.props.data.getRecentMeetings;
+    if (this.props.data.loading && !d) {
+      return wrapper(<Loader active={true} inline="centered" />);
+    }
+    if (!d) {
+      return wrapper(<div />);
+    }
+    return wrapper((
+      <InfiniteScroll
+        initialLoad={false}
+        loadMore={this.loadMore}
+        hasMore={d.isMore}
+        loader={<Loader key="spinner" active={true} inline="centered" />}
+      >
+        <Feed>
+          {renderArray(timelineEntry, d.meetings)}
+        </Feed>
+      </InfiniteScroll>
+    ));
   }
 }
 

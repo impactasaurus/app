@@ -1,5 +1,5 @@
 import {gql, graphql, QueryProps} from 'react-apollo';
-import {IMeeting, fragment, fragmentWithOutcomeSetAndAggregates} from 'models/meeting';
+import {IMeeting, fragment, fragmentWithOutcomeSetAndAggregates, fragmentWithOutcomeSet} from 'models/meeting';
 import {Extractor, IDExtractor, mutationResultExtractor} from 'helpers/apollo';
 import { invalidateFields, ROOT } from 'apollo-cache-invalidation';
 import {IAssessmentConfig} from 'models/assessment';
@@ -67,11 +67,11 @@ const getRecentMeetingsGQL = gql`
       isMore,
       page,
       meetings {
-        ...meetingWithOutcomeSetAndAggregates
+        ...meetingWithOutcomeSet
       }
     }
   }
-  ${fragmentWithOutcomeSetAndAggregates}`;
+  ${fragmentWithOutcomeSet}`;
 
 export const getRecentMeetings = <T>(pageExtractor: Extractor<T, number>, name?: string) => {
   return graphql<any, T>(getRecentMeetingsGQL, {
