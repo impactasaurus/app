@@ -93,11 +93,22 @@ export const getMoreRecentMeetings = (page: number): any => ({
   variables: {
     page,
   },
-  updateQuery: (prev: IGetRecentMeetingsData, { fetchMoreResult }: {fetchMoreResult: IGetRecentMeetingsData}) => {
+  updateQuery: (prev: IGetRecentMeetingsData, { fetchMoreResult }: {fetchMoreResult: IGetRecentMeetingsData}): IGetRecentMeetingsData => {
     if (!fetchMoreResult) {return prev;}
-    const n = {...fetchMoreResult};
-    n.getRecentMeetings.meetings = prev.getRecentMeetings.meetings.concat(fetchMoreResult.getRecentMeetings.meetings);
-    return n;
+    const meetings = [].concat(prev.getRecentMeetings.meetings);
+    fetchMoreResult.getRecentMeetings.meetings.forEach((nm) => {
+      // having issues where updateQuery is called twice, put in dup logic to guard against it
+      const dup = meetings.find((m) => m.id === nm.id);
+      if (dup === undefined) {
+        meetings.push(nm);
+      }
+    });
+    return {
+      getRecentMeetings: {
+        ... fetchMoreResult.getRecentMeetings,
+        meetings,
+      },
+    };
   },
 });
 
