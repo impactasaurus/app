@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { TimelineEntry } from 'components/TimelineEntry';
-import { Grid, Feed, Loader } from 'semantic-ui-react';
+import {Grid, Card, Loader, Responsive, SemanticWIDTHS} from 'semantic-ui-react';
 import {getMoreRecentMeetings, getRecentMeetings, IGetRecentMeetings} from '../../apollo/modules/meetings';
 import {renderArray} from '../../helpers/react';
 import * as InfiniteScroll from 'react-infinite-scroller';
 import {Error} from 'components/Error';
 import {IMeeting} from 'models/meeting';
+import './style.less';
 
 const timelineEntry = (m: IMeeting) => <TimelineEntry key={m.id} meeting={m} />;
 
@@ -49,16 +50,30 @@ class HomeInner extends React.Component<IProps, any> {
     if (!d) {
       return wrapper(<div />);
     }
+    const cards = (perRow: SemanticWIDTHS): JSX.Element => ((
+      <Card.Group itemsPerRow={perRow}>
+        {renderArray(timelineEntry, d.meetings)}
+      </Card.Group>
+    ));
     return wrapper((
       <InfiniteScroll
         initialLoad={false}
         loadMore={this.loadMore}
         hasMore={d.isMore}
-        loader={<Loader key="spinner" active={true} inline="centered" />}
+        loader={<Loader className="end-of-timeline" key="spinner" active={true} inline="centered" />}
       >
-        <Feed>
-          {renderArray(timelineEntry, d.meetings)}
-        </Feed>
+        <Responsive minWidth={990}>
+          {cards(4)}
+        </Responsive>
+        <Responsive minWidth={700} maxWidth={989}>
+          {cards(3)}
+        </Responsive>
+        <Responsive minWidth={500} maxWidth={699}>
+          {cards(2)}
+        </Responsive>
+        <Responsive maxWidth={499}>
+          {cards(1)}
+        </Responsive>
       </InfiniteScroll>
     ));
   }

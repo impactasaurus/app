@@ -78,11 +78,10 @@ export const getRecentMeetings = <T>(pageExtractor: Extractor<T, number>, name?:
     options: (props: T) => {
       return {
         variables: {
-          limit: 10,
+          limit: 12,
           page: pageExtractor(props),
         },
         notifyOnNetworkStatusChange: true,
-        fetchPolicy: 'network-only',
       };
     },
     name: name ? name : 'data',
