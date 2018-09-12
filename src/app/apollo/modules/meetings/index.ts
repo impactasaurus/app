@@ -1,6 +1,6 @@
 import {gql, graphql, QueryProps} from 'react-apollo';
-import {IMeeting, fragment, fragmentWithOutcomeSetAndAggregates} from 'models/meeting';
-import {IDExtractor, mutationResultExtractor} from 'helpers/apollo';
+import {IMeeting, fragment, fragmentWithOutcomeSetAndAggregates, fragmentWithOutcomeSet} from 'models/meeting';
+import {Extractor, IDExtractor, mutationResultExtractor} from 'helpers/apollo';
 import { invalidateFields, ROOT } from 'apollo-cache-invalidation';
 import {IAssessmentConfig} from 'models/assessment';
 
@@ -50,6 +50,66 @@ export const getMeetings = <T>(idExtractor: IDExtractor<T>, name?: string) => {
     name: name ? name : 'data',
   });
 };
+
+export interface IGetRecentMeetings extends QueryProps, IGetRecentMeetingsData {}
+
+interface IGetRecentMeetingsData {
+  getRecentMeetings: {
+    isMore: boolean;
+    page: number;
+    meetings: IMeeting[];
+  };
+}
+
+const getRecentMeetingsGQL = gql`
+  query ($page: Int!, $limit: Int!) {
+    getRecentMeetings: recentMeetings(page: $page, limit: $limit) {
+      isMore,
+      page,
+      meetings {
+        ...meetingWithOutcomeSet
+      }
+    }
+  }
+  ${fragmentWithOutcomeSet}`;
+
+export const getRecentMeetings = <T>(pageExtractor: Extractor<T, number>, name?: string) => {
+  return graphql<any, T>(getRecentMeetingsGQL, {
+    options: (props: T) => {
+      return {
+        variables: {
+          limit: 12,
+          page: pageExtractor(props),
+        },
+        notifyOnNetworkStatusChange: true,
+      };
+    },
+    name: name ? name : 'data',
+  });
+};
+
+export const getMoreRecentMeetings = (page: number): any => ({
+  variables: {
+    page,
+  },
+  updateQuery: (prev: IGetRecentMeetingsData, { fetchMoreResult }: {fetchMoreResult: IGetRecentMeetingsData}): IGetRecentMeetingsData => {
+    if (!fetchMoreResult) {return prev;}
+    const meetings = [].concat(prev.getRecentMeetings.meetings);
+    fetchMoreResult.getRecentMeetings.meetings.forEach((nm) => {
+      // having issues where updateQuery is called twice, put in dup logic to guard against it
+      const dup = meetings.find((m) => m.id === nm.id);
+      if (dup === undefined) {
+        meetings.push(nm);
+      }
+    });
+    return {
+      getRecentMeetings: {
+        ... fetchMoreResult.getRecentMeetings,
+        meetings,
+      },
+    };
+  },
+});
 
 const getAllMeetingsGQL = gql`
   query getAllMeetings ($beneficiaryID: String!) {
@@ -219,6 +279,9 @@ export function completeMeeting<T>(component) {
         }, {
           query: getAllMeetingsGQL,
           variables: { beneficiaryID },
+        }, {
+          query: getRecentMeetingsGQL,
+          variables: {page: 0, limit: 12},
         }],
       }).then(mutationResultExtractor<IMeeting>('completeMeeting')),
     }),
@@ -263,6 +326,9 @@ export function deleteMeeting<T>(component) {
         }, {
           query: getAllMeetingsGQL,
           variables: { beneficiaryID },
+        }, {
+          query: getRecentMeetingsGQL,
+          variables: {page: 0, limit: 12},
         }],
       }),
     }),

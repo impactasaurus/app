@@ -1,0 +1,26 @@
+@import (reference) './../../theme/variables.less';
+
+.static-radar {
+  .axis {
+    stroke-width: .2;
+    stroke: @text;
+  }
+  .scale {
+    stroke-width: .2;
+  }
+  .shape {
+    fill-opacity: .4;
+    fill: @primary;
+    stroke: @primary;
+    stroke-width: 1;
+  }
+  .shape:hover {
+    fill-opacity: .6;
+  }
+  .scale {
+    stroke: @text;
+  }
+  .caption {
+    display: none;
+  }
+}
