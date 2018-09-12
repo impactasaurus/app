@@ -279,6 +279,9 @@ export function completeMeeting<T>(component) {
         }, {
           query: getAllMeetingsGQL,
           variables: { beneficiaryID },
+        }, {
+          query: getRecentMeetingsGQL,
+          variables: {page: 0, limit: 12},
         }],
       }).then(mutationResultExtractor<IMeeting>('completeMeeting')),
     }),
@@ -323,6 +326,9 @@ export function deleteMeeting<T>(component) {
         }, {
           query: getAllMeetingsGQL,
           variables: { beneficiaryID },
+        }, {
+          query: getRecentMeetingsGQL,
+          variables: {page: 0, limit: 12},
         }],
       }),
     }),

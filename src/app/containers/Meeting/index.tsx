@@ -16,6 +16,7 @@ import {MeetingNotepad} from 'components/MeetingNotepad';
 import {isNullOrUndefined} from 'util';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {Screen, IMeetingState, getPreviousState, canGoBack, getNextState, initialState} from './state-machine';
+import {journey} from 'helpers/url';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
@@ -86,7 +87,7 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   private completed() {
-    this.props.setURL(`/beneficiary/${this.props.data.getMeeting.beneficiary}`, `?q=${this.props.data.getMeeting.outcomeSetID}`);
+    journey(this.props.setURL, this.props.data.getMeeting.beneficiary, this.props.data.getMeeting.outcomeSetID);
   }
 
   private hasInstructions() {
