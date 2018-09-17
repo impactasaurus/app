@@ -1,29 +1,40 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { TimelineEntry } from 'components/TimelineEntry';
-import {Grid, Card, Loader, Responsive, SemanticWIDTHS} from 'semantic-ui-react';
+import {Grid, Card, Loader, Responsive, SemanticWIDTHS, Button} from 'semantic-ui-react';
 import {getMoreRecentMeetings, getRecentMeetings, IGetRecentMeetings} from '../../apollo/modules/meetings';
 import {renderArray} from '../../helpers/react';
 import * as InfiniteScroll from 'react-infinite-scroller';
 import {Error} from 'components/Error';
 import {IMeeting} from 'models/meeting';
 import './style.less';
+import {IURLConnector, setURL} from '../../redux/modules/url';
+import {bindActionCreators} from 'redux';
+const { connect } = require('react-redux');
 
 const timelineEntry = (m: IMeeting) => <TimelineEntry key={m.id} meeting={m} />;
 
-interface IProps {
+interface IProps extends IURLConnector {
   data?: IGetRecentMeetings;
 }
 
+@connect(undefined, (dispatch) => ({
+  setURL: bindActionCreators(setURL, dispatch),
+}))
 class HomeInner extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
     this.loadMore = this.loadMore.bind(this);
+    this.newRecord = this.newRecord.bind(this);
   }
 
   private loadMore() {
     this.props.data.fetchMore(getMoreRecentMeetings(this.props.data.getRecentMeetings.page+1));
+  }
+
+  private newRecord() {
+    this.props.setURL('/record');
   }
 
   public render() {
@@ -34,7 +45,11 @@ class HomeInner extends React.Component<IProps, any> {
             <title>Home</title>
           </Helmet>
           <div>
-            <h1>Activity</h1>
+            <span className="title-holder">
+              <h1>Activity</h1>
+              <Responsive as={Button} minWidth={620} icon="plus" content="New Record" primary={true} onClick={this.newRecord} />
+              <Responsive as={Button} maxWidth={619} icon="plus" primary={true} onClick={this.newRecord} />
+            </span>
             {inner}
           </div>
         </Grid.Column>
