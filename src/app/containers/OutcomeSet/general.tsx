@@ -78,8 +78,8 @@ const GeneralInner = withFormik<IProps, IFormOutput>({
     const os = p.data.getOutcomeSet;
     return {
       name: os.name,
-      description: os.description,
-      instructions: os.instructions,
+      description: os.description || '',
+      instructions: os.instructions || '',
     };
   },
 })(InnerForm);
