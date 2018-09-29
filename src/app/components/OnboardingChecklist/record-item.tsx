@@ -12,7 +12,7 @@ const Inner = (p: IProps) => {
   return (
     <OnboardingChecklistItem
       title="Create a record"
-      description="When a questionnaire is completed, it creates a record within the system. This record is stored against the beneficiary which completed the questionnaire. Complete a questionnaire to create your first record."
+      description="When a beneficiary completes a questionnaire, the data is stored as a record in the system. Complete a questionnaire to create your first record."
       completed={completed}
       loading={loading}
       link="/record"

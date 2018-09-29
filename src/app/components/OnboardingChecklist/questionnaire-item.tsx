@@ -11,8 +11,8 @@ const Inner = (p: IProps) => {
   const completed = !loading && p.data.allOutcomeSets && p.data.allOutcomeSets.length > 0;
   return (
     <OnboardingChecklistItem
-      title="Create a questionnaire"
-      description="Questionnaires are used to collect information from your beneficiaries. They should measure the outcomes you wish to achieve. Create a questionnaire with atleast 3 questions."
+      title="Define a questionnaire"
+      description="Questionnaires are used to collect information from your beneficiaries. They should measure the outcomes you wish to achieve. Create a questionnaire with 3 or more questions."
       completed={completed}
       loading={loading}
       link="/questions"
