@@ -10,6 +10,7 @@ import {IMeeting} from 'models/meeting';
 import './style.less';
 import {IURLConnector, setURL} from '../../redux/modules/url';
 import {bindActionCreators} from 'redux';
+import {OnboardingChecklist} from 'components/OnboardingChecklist';
 const { connect } = require('react-redux');
 
 const timelineEntry = (m: IMeeting) => <TimelineEntry key={m.id} meeting={m} />;
@@ -46,10 +47,11 @@ class HomeInner extends React.Component<IProps, any> {
           </Helmet>
           <div>
             <span className="title-holder">
-              <h1>Activity</h1>
               <Responsive as={Button} minWidth={620} icon="plus" content="New Record" primary={true} onClick={this.newRecord} />
               <Responsive as={Button} maxWidth={619} icon="plus" primary={true} onClick={this.newRecord} />
             </span>
+            <OnboardingChecklist />
+            <h1>Activity</h1>
             {inner}
           </div>
         </Grid.Column>
