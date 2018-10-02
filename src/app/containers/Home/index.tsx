@@ -13,7 +13,13 @@ import {bindActionCreators} from 'redux';
 import {OnboardingChecklist} from 'components/OnboardingChecklist';
 const { connect } = require('react-redux');
 
-const timelineEntry = (m: IMeeting) => <TimelineEntry key={m.id} meeting={m} />;
+const timelineEntry = (m: IMeeting): JSX.Element => <TimelineEntry key={m.id} meeting={m} />;
+const hasRecords = (p: IProps): boolean|undefined => {
+  if (!p.data || !p.data.getRecentMeetings || !p.data.getRecentMeetings.meetings) {
+    return undefined;
+  }
+  return p.data.getRecentMeetings.meetings.length > 0;
+};
 
 interface IProps extends IURLConnector {
   data?: IGetRecentMeetings;
@@ -39,6 +45,7 @@ class HomeInner extends React.Component<IProps, any> {
   }
 
   public render() {
+    const recordsExist = hasRecords(this.props);
     const wrapper = (inner: JSX.Element): JSX.Element => (
       <Grid container={true} columns={1} id="home">
         <Grid.Column>
@@ -50,9 +57,13 @@ class HomeInner extends React.Component<IProps, any> {
               <Responsive as={Button} minWidth={620} icon="plus" content="New Record" primary={true} onClick={this.newRecord} />
               <Responsive as={Button} maxWidth={619} icon="plus" primary={true} onClick={this.newRecord} />
             </span>
-            <OnboardingChecklist />
-            <h1>Activity</h1>
-            {inner}
+            <OnboardingChecklist dismissible={recordsExist} />
+            {recordsExist !== false &&
+              <div>
+                <h1>Activity</h1>
+                {inner}
+              </div>
+            }
           </div>
         </Grid.Column>
       </Grid>
