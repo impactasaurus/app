@@ -104,7 +104,7 @@ export const AssessmentConfig = withFormik<IProps, IAssessmentConfigAndDebounce>
       errors.beneficiaryID = 'Please select a beneficiary';
     }
     if (!values.outcomeSetID || values.outcomeSetID === '') {
-      errors.beneficiaryID = 'Please select a questionnaire';
+      errors.outcomeSetID = 'Please select a questionnaire';
     }
     if (!values.date || values.date.getTime() > Date.now()) {
       errors.date = 'Please select a date in the past' as any;
