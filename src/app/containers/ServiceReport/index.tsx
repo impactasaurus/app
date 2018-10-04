@@ -1,7 +1,7 @@
 import * as React from 'react';
 import 'url-search-params-polyfill';
 import { Helmet } from 'react-helmet';
-import { Grid, Loader } from 'semantic-ui-react';
+import { Grid, Loader, Message } from 'semantic-ui-react';
 import {getJOCServiceReport, IJOCReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ServiceReportDetails} from 'components/ServiceReportDetails';
@@ -15,6 +15,7 @@ import './style.less';
 import {constructReportQueryParams, constructReportURL} from 'helpers/report';
 import {bindActionCreators} from 'redux';
 import {IURLConnector, setURL} from 'redux/modules/url';
+import {Link} from 'react-router-dom';
 const { connect } = require('react-redux');
 
 interface IProp extends IJOCReportResult, IURLConnector {
@@ -81,6 +82,34 @@ class ServiceReportInner extends React.Component<IProp, any> {
     this.props.setURL(url, qp);
   }
 
+  private renderEmptyReport() {
+    const unqiueExcludedBens = this.props.JOCServiceReport.getJOCServiceReport.excluded
+      .filter((e) => e.beneficiary !== undefined)
+      .filter((e, i, a) => a.indexOf(e) === i);
+    if (unqiueExcludedBens.length > 0) {
+      return (
+        <Message warning={true}>
+          <Message.Header>We Need More Records</Message.Header>
+          <p>When generating your report, we only found beneficiaries with one record</p>
+          <p>We need at least two records to understand the impact your intervention is having on a beneficiary</p>
+          <p>Please collect more records and ensure that the time range you provided includes them</p>
+        </Message>
+      );
+    }
+    return (
+      <Message warning={true}>
+        <Message.Header>No Records</Message.Header>
+        <div>
+          <p>We couldn't generate your report as we found no records. This may be because:</p>
+          <p>There are no records in the system, <Link to={'/record'}>click here to create some</Link></p>
+          <p>or</p>
+          <p>The report's time range didn't contain any records</p>
+        </div>
+      </Message>
+    );
+
+  }
+
   public render() {
     const wrapper = (inner: JSX.Element): JSX.Element => {
       return (
@@ -90,6 +119,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
               <title>Service Report</title>
             </Helmet>
             <div>
+              <h1>Service Report</h1>
               {inner}
             </div>
           </Grid.Column>
@@ -102,9 +132,11 @@ class ServiceReportInner extends React.Component<IProp, any> {
     if (this.props.data.loading || this.props.JOCServiceReport.loading) {
       return wrapper(<Loader active={true} inline="centered" />);
     }
+    if (this.props.JOCServiceReport.getJOCServiceReport && this.props.JOCServiceReport.getJOCServiceReport.beneficiaries.length === 0) {
+      return wrapper(this.renderEmptyReport());
+    }
     return wrapper((
       <div>
-        <h1>Service Report</h1>
         <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
         <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} export={this.exportReportData} allowCanvasSnapshot={this.props.isCanvasSnapshotPossible} />
         {this.renderVis()}
