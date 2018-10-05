@@ -5,10 +5,13 @@ import {IURLConnector, setURL} from 'redux/modules/url';
 import { AssessmentType, IAssessmentConfig, defaultRemoteMeetingLimit } from 'models/assessment';
 import { bindActionCreators } from 'redux';
 import { Grid, Message } from 'semantic-ui-react';
-import {AssessmentConfig as ConfigComponent} from 'components/AssessmentConfig';
+import {AssessmentConfig as AssessmentConfigComponent} from 'components/AssessmentConfig';
+import {QuestionnaireRequired} from 'components/QuestionnaireRequired';
 const { connect } = require('react-redux');
 const config = require('../../../../config/main');
 const ReactGA = require('react-ga');
+
+const ConfigComponent = QuestionnaireRequired(AssessmentConfigComponent);
 
 interface IProp extends IMeetingMutation, IURLConnector {
   match: {
@@ -107,7 +110,7 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
     return this.getType() === AssessmentType.remote ? 'Generate Link' : 'Start';
   }
 
-  private renderInner(): JSX.Element {
+  private renderInner() {
     if (this.isUnknownType()) {
       return (
         <Message error={true}>
