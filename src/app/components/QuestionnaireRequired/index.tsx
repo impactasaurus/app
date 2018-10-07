@@ -7,19 +7,19 @@ interface IProp {
   data?: IOutcomeResult;
 }
 
-const renderQuestionnaireNeeded = (): JSX.Element => ((
+const renderQuestionnaireNeeded = (action: string): JSX.Element => ((
   <Message warning={true}>
     <Message.Header>Questionnaire Required</Message.Header>
-    <p>To create a record, you first need to define a questionnaire</p>
+    <p>{action}, you first need to define a questionnaire</p>
     <p>Head over to the <Link to="/questions">questionnaire page</Link> to create one</p>
   </Message>
 ));
 
-export const QuestionnaireRequired = <P extends object>(WrappedComponent: React.ComponentType<P>) => {
+export const QuestionnaireRequired = <P extends object>(action: string, WrappedComponent: React.ComponentType<P>) => {
   class Inner extends React.Component<P & IProp, any> {
     public render() {
       if (this.props.data.allOutcomeSets && this.props.data.allOutcomeSets.length === 0) {
-        return renderQuestionnaireNeeded();
+        return renderQuestionnaireNeeded(action);
       }
       return <WrappedComponent {...this.props} />;
     }

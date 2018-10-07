@@ -9,7 +9,7 @@ import {QuestionnaireRequired} from 'components/QuestionnaireRequired';
 const { connect } = require('react-redux');
 const ReactGA = require('react-ga');
 
-const ReportForm = QuestionnaireRequired(RFComponent);
+const ReportForm = QuestionnaireRequired('To generate a report', RFComponent);
 
 const dateDiff = (date1: Date, date2: Date): number => {
   const oneDay = 1000*60*60*24;

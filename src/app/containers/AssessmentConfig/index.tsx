@@ -11,7 +11,7 @@ const { connect } = require('react-redux');
 const config = require('../../../../config/main');
 const ReactGA = require('react-ga');
 
-const ConfigComponent = QuestionnaireRequired(AssessmentConfigComponent);
+const ConfigComponent = QuestionnaireRequired('To create a record', AssessmentConfigComponent);
 
 interface IProp extends IMeetingMutation, IURLConnector {
   match: {
@@ -110,7 +110,7 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
     return this.getType() === AssessmentType.remote ? 'Generate Link' : 'Start';
   }
 
-  private renderInner() {
+  private renderInner(): JSX.Element {
     if (this.isUnknownType()) {
       return (
         <Message error={true}>
