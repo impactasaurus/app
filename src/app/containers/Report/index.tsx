@@ -4,9 +4,12 @@ import {IURLConnector, setURL} from 'redux/modules/url';
 import { Grid, Message } from 'semantic-ui-react';
 import { bindActionCreators } from 'redux';
 import {constructReportQueryParams, constructReportURL} from '../../helpers/report';
-import {IFormOutput, ReportForm} from 'components/ReportForm';
+import {IFormOutput, ReportForm as RFComponent} from 'components/ReportForm';
+import {QuestionnaireRequired} from 'components/QuestionnaireRequired';
 const { connect } = require('react-redux');
 const ReactGA = require('react-ga');
+
+const ReportForm = QuestionnaireRequired('To generate a report', RFComponent);
 
 const dateDiff = (date1: Date, date2: Date): number => {
   const oneDay = 1000*60*60*24;

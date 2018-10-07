@@ -5,10 +5,13 @@ import {IURLConnector, setURL} from 'redux/modules/url';
 import { AssessmentType, IAssessmentConfig, defaultRemoteMeetingLimit } from 'models/assessment';
 import { bindActionCreators } from 'redux';
 import { Grid, Message } from 'semantic-ui-react';
-import {AssessmentConfig as ConfigComponent} from 'components/AssessmentConfig';
+import {AssessmentConfig as AssessmentConfigComponent} from 'components/AssessmentConfig';
+import {QuestionnaireRequired} from 'components/QuestionnaireRequired';
 const { connect } = require('react-redux');
 const config = require('../../../../config/main');
 const ReactGA = require('react-ga');
+
+const ConfigComponent = QuestionnaireRequired('To create a record', AssessmentConfigComponent);
 
 interface IProp extends IMeetingMutation, IURLConnector {
   match: {
