@@ -27,12 +27,14 @@ const renderQuestionsNeeded = (action: string): JSX.Element => ((
 export const QuestionnaireRequired = <P extends object>(action: string, WrappedComponent: React.ComponentType<P>) => {
   class Inner extends React.Component<P & IProp, any> {
     public render() {
-      if (this.props.data.allOutcomeSets && this.props.data.allOutcomeSets.length === 0) {
-        return renderQuestionnaireNeeded(action);
-      }
-      const noQuestions = this.props.data.allOutcomeSets.reduce((max, q) => Math.max(max, getQuestions(q).length), 0);
-      if (noQuestions === 0) {
-        return renderQuestionsNeeded(action);
+      if (Array.isArray(this.props.data.allOutcomeSets)) {
+        if (this.props.data.allOutcomeSets.length === 0) {
+          return renderQuestionnaireNeeded(action);
+        }
+        const noQuestions = this.props.data.allOutcomeSets.reduce((max, q) => Math.max(max, getQuestions(q).length), 0);
+        if (noQuestions === 0) {
+          return renderQuestionsNeeded(action);
+        }
       }
       return <WrappedComponent {...this.props} />;
     }
