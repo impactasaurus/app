@@ -126,15 +126,15 @@ class QuestionInner extends React.Component<IProps, IState> {
         logGAEvent('answered');
         this.props.onNext();
       })
-      .catch((e: string) => {
+      .catch(() => {
         this.setState({
           saving: false,
-          saveError: e,
+          saveError: "Failed to save your answer",
         });
       });
   }
 
-  public render() {
+  public render(): JSX.Element {
     const record = this.props.record;
     if (record === undefined) {
       return (<div />);
