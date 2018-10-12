@@ -129,7 +129,7 @@ class QuestionInner extends React.Component<IProps, IState> {
       .catch(() => {
         this.setState({
           saving: false,
-          saveError: "Failed to save your answer",
+          saveError: 'Failed to save your answer',
         });
       });
   }
