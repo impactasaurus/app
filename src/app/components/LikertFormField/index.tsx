@@ -123,6 +123,8 @@ class LikertFormField extends React.Component<IProps, IState> {
     const props: InputProps = {};
     if (this.state.selectedLabel === undefined) {
       props.disabled = true;
+    } else {
+      props.autoFocus = true;
     }
     const editedLabel = this.props.values.labels.find((l) => l.value === this.state.selectedLabel);
     const {errors, touched} = this.props;
