@@ -109,7 +109,7 @@ export function getQuestionFriendlyName(qID: string, qs: IOutcomeSet, allowShort
     return 'Unknown Question';
   }
   let question = q.question;
-  if (allowShort && !isNullOrUndefined(q.short)) {
+  if (allowShort && !isNullOrUndefined(q.short) && q.short !== '') {
     question = q.short;
   }
   if (q.archived) {
