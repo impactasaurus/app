@@ -78,8 +78,8 @@ class RecordListInner extends React.Component<IProp, any> {
     return [(
       <Table.Row key={r.id}>
         <Table.Cell>
-          {incomplete}
           {getHumanisedDate(new Date(r.conducted))}
+          {incomplete}
         </Table.Cell>
         <Table.Cell>{r.outcomeSet.name}</Table.Cell>
         <Table.Cell>{renderArray(this.renderTag, r.tags)}</Table.Cell>
