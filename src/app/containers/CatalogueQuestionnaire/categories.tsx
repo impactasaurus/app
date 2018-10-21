@@ -21,7 +21,7 @@ const CategoriesInner = (p: IProps) => {
         <Icon name="question" />
         {strings.questionCategoryExplanation}
       </Message>
-      <CategoryList outcomeSetID={p.match.params.id} questionnaire={p.data.getCatalogueQuestionnaire}/>
+      <CategoryList outcomeSetID={p.match.params.id} questionnaire={p.data.getCatalogueQuestionnaire} readOnly={true}/>
     </div>
   );
 };
