@@ -1,5 +1,4 @@
 import * as React from 'react';
-import {IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ICategoryMutation, deleteCategory} from 'apollo/modules/categories';
 import {renderArray} from 'helpers/react';
 import {ICategory} from 'models/category';
@@ -11,7 +10,7 @@ import {ConfirmButton} from 'components/ConfirmButton';
 
 interface IProps extends ICategoryMutation {
   outcomeSetID: string;
-  data: IOutcomeResult;
+  questionnaire: IOutcomeSet;
 }
 
 interface IState {
@@ -134,19 +133,14 @@ class CategoryListInner extends React.Component<IProps, IState> {
   }
 
   public render() {
-    if (this.props.data.loading) {
+    if (!this.props.questionnaire) {
       return (
         <Loader active={true} inline="centered" />
       );
     }
-    const { data } = this.props;
-    const os = data.getOutcomeSet;
-    if (os === undefined) {
-        return (<div />);
-    }
     return (
       <List divided={true} relaxed={true} verticalAlign="middle" className="list">
-        {renderArray(this.renderCategory, os.categories)}
+        {renderArray(this.renderCategory, this.props.questionnaire.categories)}
         {this.renderNewCategoryControl()}
       </List>
     );
