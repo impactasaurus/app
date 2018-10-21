@@ -1,16 +1,15 @@
 import * as React from 'react';
-import {IOutcomeResult} from '../../apollo/modules/outcomeSets';
 import {Question} from 'models/question';
 import { List, Button, Popup } from 'semantic-ui-react';
 import {isNullOrUndefined} from 'util';
 import {ConfirmButton} from 'components/ConfirmButton';
 import {CategoryPill} from 'components/CategoryPill';
-import {IOutcomeSet} from '../../models/outcomeSet';
+import {IOutcomeSet} from 'models/outcomeSet';
 import {SortableElement} from 'react-sortable-hoc';
 import {Handle} from './Handle';
 
 interface IProps {
-  data: IOutcomeResult;
+  questionnaire: IOutcomeSet;
   outcomeSetID: string;
   question: Question;
   editQuestion: () => void;
@@ -53,7 +52,7 @@ class ListItemInner extends React.Component<IProps, any> {
         </List.Content>
         <List.Content floated="right" verticalAlign="middle">
           <CategoryPill outcomeSetID={this.props.outcomeSetID} questionID={question.id}
-                        cssClass={categoryPillStyle} data={this.props.data}/>
+                        cssClass={categoryPillStyle} questionnaire={this.props.questionnaire}/>
           <Popup trigger={editButton} content="Edit"/>
           <ConfirmButton onConfirm={deleteQuestion}
                          promptText="Are you sure you want to archive this question?"

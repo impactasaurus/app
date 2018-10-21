@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {QuestionList} from 'components/QuestionList';
 import {getCatalogueQuestionnaire, ICatalogueQuestionnaire} from '../../apollo/modules/catalogue';
+import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
 
 interface IProps {
   data: ICatalogueQuestionnaire;
@@ -12,7 +13,9 @@ interface IProps {
 }
 
 const QuestionsInner = (p: IProps) => {
-  return (<QuestionList outcomeSetID={p.match.params.id} data={p.data}/>);
+  return (<QuestionList outcomeSetID={p.match.params.id} questionnaire={p.data.getCatalogueQuestionnaire}/>);
 };
 
-export const Questions = getCatalogueQuestionnaire<IProps>((props) => props.match.params.id)(QuestionsInner);
+const InnerWithSpinner = ApolloLoaderHoC('loading questionnaire', (p: IProps) => p.data, QuestionsInner);
+const InnerWithData = getCatalogueQuestionnaire<IProps>((props) => props.match.params.id)(InnerWithSpinner);
+export const Questions = InnerWithData;

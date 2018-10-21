@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {getQuestions} from 'helpers/questionnaire';
 import {renderArray} from 'helpers/react';
-import {IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {Question} from 'models/question';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {ListItem} from './ListItem';
@@ -9,7 +8,7 @@ import { List as SemanticUIList } from 'semantic-ui-react';
 import {SortableContainer} from 'react-sortable-hoc';
 
 interface IProps {
-  data: IOutcomeResult;
+  questionnaire: IOutcomeSet;
   outcomeSetID: string;
   editedQuestionID: string;
 
@@ -40,7 +39,7 @@ class ListInner extends React.Component<IProps, any> {
     return (
       <ListItem
         key={q.id}
-        data={this.props.data}
+        questionnaire={this.props.questionnaire}
         categoryPillStyle={this.props.getCategoryPillClass(q.categoryID)}
         deleteQuestion={this.props.deleteQuestion(q.id)}
         editQuestion={this.props.setEditedQuestionId(q.id)}
@@ -54,13 +53,12 @@ class ListInner extends React.Component<IProps, any> {
   }
 
   public render() {
-    const os = this.props.data.getOutcomeSet;
-    if (os === undefined) {
+    if (this.props.questionnaire === undefined) {
       return (<div />);
     }
     return (
       <SemanticUIList divided={true} relaxed={true} verticalAlign="middle" className={this.props.className+' list question'}>
-        {renderArray(this.renderQuestion, getQuestions(os))}
+        {renderArray(this.renderQuestion, getQuestions(this.props.questionnaire))}
         {this.props.newQuestionControl}
       </SemanticUIList>
     );

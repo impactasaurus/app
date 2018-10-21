@@ -7,6 +7,9 @@ export const ApolloLoaderHoC = <P extends object>(action: string, queryProps: (p
   class Inner extends React.Component<P, any> {
     public render() {
       const qp = queryProps(this.props);
+      if (!qp) {
+        return (<span />);
+      }
       if (qp.error) {
         return (<Error text={`Failed to ${action}`} />);
       }
