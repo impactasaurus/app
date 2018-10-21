@@ -14,6 +14,7 @@ const ReactGA = require('react-ga');
 interface IProps extends IQuestionMutation, IQuestionMover {
   questionnaire: IOutcomeSet;
   outcomeSetID: string;
+  readOnly?: boolean; // defaults to false
 }
 
 interface IState {
@@ -226,6 +227,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
         useDragHandle={true}
         onSortEnd={this.onSortEnd}
         onSortStart={this.onSortStart}
+        readOnly={this.props.readOnly}
       />
     );
   }

@@ -16,6 +16,7 @@ interface IProps {
   deleteQuestion: () => Promise<IOutcomeSet>;
   categoryPillStyle: string;
   draggable: boolean;
+  readOnly?: boolean; // defaults to false
 }
 
 function getQuestionDescription(q: Question): string {
@@ -40,23 +41,27 @@ function getQuestionTitle(q: Question): string {
 class ListItemInner extends React.Component<IProps, any> {
 
   public render() {
-    const {question, editQuestion, categoryPillStyle, deleteQuestion} = this.props;
+    const {question, editQuestion, categoryPillStyle, deleteQuestion, readOnly} = this.props;
     const editButton = <Button onClick={editQuestion} icon="edit" tooltip="Edit" compact={true} size="tiny" />;
+    const editable = readOnly !== true;
 
     return (
       <List.Item className="question" key={question.id}>
-        <Handle draggable={this.props.draggable} />
+        {editable && <Handle draggable={this.props.draggable} />}
         <List.Content verticalAlign="middle">
           <List.Header>{getQuestionTitle(question)}</List.Header>
           <List.Description>{getQuestionDescription(question)}</List.Description>
         </List.Content>
         <List.Content floated="right" verticalAlign="middle">
-          <CategoryPill outcomeSetID={this.props.outcomeSetID} questionID={question.id}
+          <CategoryPill outcomeSetID={this.props.outcomeSetID} questionID={question.id} readOnly={readOnly}
                         cssClass={categoryPillStyle} questionnaire={this.props.questionnaire}/>
-          <Popup trigger={editButton} content="Edit"/>
-          <ConfirmButton onConfirm={deleteQuestion}
-                         promptText="Are you sure you want to archive this question?"
-                         buttonProps={{icon: 'archive', compact: true, size: 'tiny'}} tooltip="Archive"/>
+          {editable && <Popup trigger={editButton} content="Edit"/>}
+          {editable && <ConfirmButton
+            onConfirm={deleteQuestion}
+            promptText="Are you sure you want to archive this question?"
+            buttonProps={{icon: 'archive', compact: true, size: 'tiny'}}
+            tooltip="Archive"/>
+          }
         </List.Content>
       </List.Item>
     );

@@ -13,7 +13,7 @@ interface IProps {
 }
 
 const QuestionsInner = (p: IProps) => {
-  return (<QuestionList outcomeSetID={p.match.params.id} questionnaire={p.data.getCatalogueQuestionnaire}/>);
+  return (<QuestionList outcomeSetID={p.match.params.id} questionnaire={p.data.getCatalogueQuestionnaire} readOnly={true}/>);
 };
 
 const InnerWithSpinner = ApolloLoaderHoC('loading questionnaire', (p: IProps) => p.data, QuestionsInner);

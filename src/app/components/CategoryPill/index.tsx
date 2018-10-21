@@ -11,6 +11,7 @@ interface IProps extends ICategoryMutation {
   outcomeSetID: string;
   questionnaire: IOutcomeSet;
   cssClass?: string;
+  readOnly?: boolean; // defaults to false
 }
 
 interface IState {
@@ -36,6 +37,9 @@ class CategoryPillInner extends React.Component<IProps, IState> {
   }
 
   private setEditMode() {
+    if(this.props.readOnly) {
+      return;
+    }
     this.setState({
       editClicked: true,
     });
@@ -51,7 +55,7 @@ class CategoryPillInner extends React.Component<IProps, IState> {
       leftComponent = (<Loader active={true} inline={true} size="mini" />);
     }
     return (
-      <Label as="a" className={`category-pill ${className} ${this.props.cssClass || ''}`} horizontal={true} onClick={this.setEditMode}>
+      <Label className={`category-pill ${className} ${this.props.cssClass || ''} editable-${this.props.readOnly !== true}`} horizontal={true} onClick={this.setEditMode}>
         {leftComponent} {text}
       </Label>
     );

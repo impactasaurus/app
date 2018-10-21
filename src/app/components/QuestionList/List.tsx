@@ -11,6 +11,7 @@ interface IProps {
   questionnaire: IOutcomeSet;
   outcomeSetID: string;
   editedQuestionID: string;
+  readOnly?: boolean; // defaults to false
 
   getCategoryPillClass(catID?: string): string|undefined;
   deleteQuestion(questionID: string): () => Promise<IOutcomeSet>;
@@ -44,6 +45,7 @@ class ListInner extends React.Component<IProps, any> {
         deleteQuestion={this.props.deleteQuestion(q.id)}
         editQuestion={this.props.setEditedQuestionId(q.id)}
         outcomeSetID={this.props.outcomeSetID}
+        readOnly={this.props.readOnly}
         question={q}
         index={idx}
         draggable={draggable}
@@ -59,7 +61,7 @@ class ListInner extends React.Component<IProps, any> {
     return (
       <SemanticUIList divided={true} relaxed={true} verticalAlign="middle" className={this.props.className+' list question'}>
         {renderArray(this.renderQuestion, getQuestions(this.props.questionnaire))}
-        {this.props.newQuestionControl}
+        {this.props.readOnly !== true && this.props.newQuestionControl}
       </SemanticUIList>
     );
   }
