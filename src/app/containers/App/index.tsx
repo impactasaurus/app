@@ -62,6 +62,7 @@ class App extends React.Component<IProps, any> {
           <Route path="/questions/:id" component={containers.OutcomeSet} />
           <Route path="/questions" component={containers.OutcomeSets} />
           <Route path="/catalogue/:id" component={containers.CatalogueQuestionnaire} />
+          <Route path="/catalogue" component={containers.Catalogue} />
         </Switch>
       </div>
     ));
