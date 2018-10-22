@@ -90,7 +90,7 @@ class CatalogueQuestionnaireInner extends React.Component<IProps, any> {
             <Menu.Item name="Questions" active={page === Page.QUESTIONS} onClick={this.innerPageSetter(Page.QUESTIONS)} />
             <Menu.Item name="Categories" active={page === Page.CATEGORIES} onClick={this.innerPageSetter(Page.CATEGORIES)} />
           </SecondaryMenu>
-          <Grid container={true} columns={1} id="question-set">
+          <Grid container={true} columns={1} id="catalouge-questionnaire">
             <Grid.Column>
               <Helmet>
                 <title>{signpost ? signpost : 'Questionnaire'}</title>
