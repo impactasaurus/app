@@ -16,6 +16,6 @@ const QuestionsInner = (p: IProps) => {
   return (<QuestionList outcomeSetID={p.match.params.id} questionnaire={p.data.getOutcomeSet}/>);
 };
 
-const InnerWithSpinner = ApolloLoaderHoC('loading questionnaire', (p: IProps) => p.data, QuestionsInner);
+const InnerWithSpinner = ApolloLoaderHoC('questionnaire', (p: IProps) => p.data, QuestionsInner);
 const InnerWithData = getOutcomeSet<IProps>((props) => props.match.params.id)(InnerWithSpinner);
 export const Questions = InnerWithData;

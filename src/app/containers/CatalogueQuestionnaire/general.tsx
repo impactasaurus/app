@@ -31,6 +31,6 @@ const GeneralReadOnlyForm = (p: IProps) => (
   </Form>
 );
 
-const GeneralInner = ApolloLoaderHoC<IProps>('load questionnaire', (p: IProps) => p.data, GeneralReadOnlyForm);
+const GeneralInner = ApolloLoaderHoC<IProps>('questionnaire', (p: IProps) => p.data, GeneralReadOnlyForm);
 
 export const General = getCatalogueQuestionnaire<IProps>((props) => props.match.params.id)(GeneralInner);

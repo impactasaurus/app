@@ -70,7 +70,7 @@ class Header extends React.Component<IProps, any> {
             <Icon name="line graph"/>
             <span>Report</span>
           </Menu.Item>
-          <Menu.Item active={this.isActive('/questions')} onClick={this.handleClick('/questions')}>
+          <Menu.Item active={this.isActive('/catalogue') || this.isActive('/questions')} onClick={this.handleClick('/questions')}>
             <Icon name="question"/>
             <span>Questionnaires</span>
           </Menu.Item>
