@@ -1,16 +1,17 @@
 import * as React from 'react';
-import {IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ICategoryMutation, setCategory} from 'apollo/modules/categories';
 import {ICategory} from 'models/category';
 import { Label, Select, Loader } from 'semantic-ui-react';
 import './style.less';
+import {IOutcomeSet} from 'models/outcomeSet';
 const ReactGA = require('react-ga');
 
 interface IProps extends ICategoryMutation {
   questionID: string;
   outcomeSetID: string;
-  data: IOutcomeResult;
+  questionnaire: IOutcomeSet;
   cssClass?: string;
+  readOnly?: boolean; // defaults to false
 }
 
 interface IState {
@@ -36,13 +37,16 @@ class CategoryPillInner extends React.Component<IProps, IState> {
   }
 
   private setEditMode() {
+    if(this.props.readOnly) {
+      return;
+    }
     this.setState({
       editClicked: true,
     });
   }
 
   private getCategory(id): ICategory {
-    return this.props.data.getOutcomeSet.categories.find((c) => c.id === id);
+    return this.props.questionnaire.categories.find((c) => c.id === id);
   }
 
   private renderPill(className: string, text: string, saving=false): JSX.Element {
@@ -51,7 +55,7 @@ class CategoryPillInner extends React.Component<IProps, IState> {
       leftComponent = (<Loader active={true} inline={true} size="mini" />);
     }
     return (
-      <Label as="a" className={`category-pill ${className} ${this.props.cssClass || ''}`} horizontal={true} onClick={this.setEditMode}>
+      <Label className={`category-pill ${className} ${this.props.cssClass || ''} editable-${this.props.readOnly !== true}`} horizontal={true} onClick={this.setEditMode}>
         {leftComponent} {text}
       </Label>
     );
@@ -62,7 +66,7 @@ class CategoryPillInner extends React.Component<IProps, IState> {
   }
 
   private getCategoryOptions() {
-    const categories = this.props.data.getOutcomeSet.categories.map((os) => {
+    const categories = this.props.questionnaire.categories.map((os) => {
       return {
         key: os.id,
         value: os.id,
@@ -96,7 +100,7 @@ class CategoryPillInner extends React.Component<IProps, IState> {
   }
 
   private isCategorySet() {
-    const os = this.props.data.getOutcomeSet;
+    const os = this.props.questionnaire;
     const q = os.questions.find((q) => q.id === this.props.questionID);
 
     if (q !== undefined && q.categoryID !== null && q.categoryID !== undefined) {
@@ -152,7 +156,7 @@ class CategoryPillInner extends React.Component<IProps, IState> {
   }
 
   public render() {
-    if (this.props.data.loading) {
+    if (!this.props.questionnaire) {
       return this.renderPill('empty', 'Loading...', true);
     }
     if (this.state.editClicked) {
@@ -164,7 +168,7 @@ class CategoryPillInner extends React.Component<IProps, IState> {
     if (this.state.error !== null) {
       return this.renderPill('failure', this.state.error);
     }
-    const os = this.props.data.getOutcomeSet;
+    const os = this.props.questionnaire;
     const q = os.questions.find((q) => q.id === this.props.questionID);
     if (q === undefined) {
       return this.renderPill('empty', 'Unknown Category');

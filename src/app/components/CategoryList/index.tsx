@@ -1,5 +1,4 @@
 import * as React from 'react';
-import {IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ICategoryMutation, deleteCategory} from 'apollo/modules/categories';
 import {renderArray} from 'helpers/react';
 import {ICategory} from 'models/category';
@@ -11,13 +10,16 @@ import {ConfirmButton} from 'components/ConfirmButton';
 
 interface IProps extends ICategoryMutation {
   outcomeSetID: string;
-  data: IOutcomeResult;
+  questionnaire: IOutcomeSet;
+  readOnly?: boolean; // defaults to false
 }
 
 interface IState {
   newCategoryClicked?: boolean;
   editedCategoryId?: string;
 }
+
+const editable = (p: IProps) => p.readOnly !== true;
 
 const wrapCategoryForm = (title: string, inner: JSX.Element): JSX.Element => ((
   <Message className="form-container">
@@ -95,10 +97,12 @@ class CategoryListInner extends React.Component<IProps, IState> {
 
     return (
       <List.Item className="category" key={c.id}>
-        <List.Content floated="right" verticalAlign="middle">
-          <Popup trigger={editButton} content="Edit" />
-          <ConfirmButton onConfirm={this.deleteCategory(c.id)} promptText="Are you sure you want to delete this category?" buttonProps={{icon: 'delete', compact:true, size:'tiny'}} tooltip="Delete" />
-        </List.Content>
+        {editable(this.props) && (
+          <List.Content floated="right" verticalAlign="middle">
+            <Popup trigger={editButton} content="Edit" />
+            <ConfirmButton onConfirm={this.deleteCategory(c.id)} promptText="Are you sure you want to delete this category?" buttonProps={{icon: 'delete', compact:true, size:'tiny'}} tooltip="Delete" />
+          </List.Content>
+        )}
         <List.Content verticalAlign="middle">
           <List.Header>{c.name}</List.Header>
           <List.Description>{c.description}</List.Description>
@@ -134,20 +138,15 @@ class CategoryListInner extends React.Component<IProps, IState> {
   }
 
   public render() {
-    if (this.props.data.loading) {
+    if (!this.props.questionnaire) {
       return (
         <Loader active={true} inline="centered" />
       );
     }
-    const { data } = this.props;
-    const os = data.getOutcomeSet;
-    if (os === undefined) {
-        return (<div />);
-    }
     return (
       <List divided={true} relaxed={true} verticalAlign="middle" className="list">
-        {renderArray(this.renderCategory, os.categories)}
-        {this.renderNewCategoryControl()}
+        {renderArray(this.renderCategory, this.props.questionnaire.categories)}
+        {editable(this.props) && this.renderNewCategoryControl()}
       </List>
     );
   }

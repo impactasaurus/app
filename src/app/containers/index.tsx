@@ -25,3 +25,4 @@ export {Data} from './Data';
 export {ExportQuestionnaire} from './ExportQuestionnaire';
 export {ExportReport} from './ExportReport';
 export {ExportBenRecords} from './ExportBenRecords';
+export {CatalogueQuestionnaire} from './CatalogueQuestionnaire';

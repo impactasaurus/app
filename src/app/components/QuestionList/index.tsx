@@ -1,5 +1,4 @@
 import * as React from 'react';
-import {IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {IQuestionMutation, deleteQuestion, IQuestionMover, moveQuestion} from 'apollo/modules/questions';
 import {ILikertForm, Question} from 'models/question';
 import {IOutcomeSet} from 'models/outcomeSet';
@@ -9,12 +8,13 @@ import {EditLikertQuestion} from 'components/EditLikertQuestion';
 import {List as QList} from './List';
 import './style.less';
 import {isNullOrUndefined} from 'util';
-import {getQuestions} from '../../helpers/questionnaire';
+import {getQuestions} from 'helpers/questionnaire';
 const ReactGA = require('react-ga');
 
 interface IProps extends IQuestionMutation, IQuestionMover {
-  data: IOutcomeResult;
+  questionnaire: IOutcomeSet;
   outcomeSetID: string;
+  readOnly?: boolean; // defaults to false
 }
 
 interface IState {
@@ -24,12 +24,12 @@ interface IState {
   sorting?: boolean;
 }
 
-function assignCategoriesClasses(current: {[catID: string]: string}, data: IOutcomeResult): {[catID: string]: string} {
+function assignCategoriesClasses(current: {[catID: string]: string}, questionnaire: IOutcomeSet): {[catID: string]: string} {
   const assignments = {...current};
-  if (isNullOrUndefined(data.getOutcomeSet) || !Array.isArray(data.getOutcomeSet.questions)) {
+  if (isNullOrUndefined(questionnaire) || !Array.isArray(questionnaire.questions)) {
     return assignments;
   }
-  data.getOutcomeSet.questions.forEach((q: Question) => {
+  questionnaire.questions.forEach((q: Question) => {
     if (isNullOrUndefined(q.categoryID)) {
       return;
     }
@@ -57,7 +57,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      categoryClasses: assignCategoriesClasses({}, this.props.data),
+      categoryClasses: assignCategoriesClasses({}, this.props.questionnaire),
       sorting: false,
     };
     this.renderNewQuestionControl = this.renderNewQuestionControl.bind(this);
@@ -72,7 +72,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
 
   public componentWillUpdate(nextProps: IProps) {
     const currentAssignment = this.state.categoryClasses;
-    const newAssignments = assignCategoriesClasses(currentAssignment, nextProps.data);
+    const newAssignments = assignCategoriesClasses(currentAssignment, nextProps.questionnaire);
     if (Object.keys(newAssignments).length !== Object.keys(currentAssignment).length) {
       this.setState({
         ...this.state,
@@ -133,7 +133,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
   private renderNewQuestionControl(): JSX.Element {
     if (this.state.newQuestionClicked === true) {
       let defaults: ILikertForm;
-      const qs = getQuestions(this.props.data.getOutcomeSet) || [];
+      const qs = getQuestions(this.props.questionnaire) || [];
       if (qs.length > 0) {
         const last = qs[qs.length-1] as Question;
         defaults = {
@@ -180,12 +180,12 @@ class QuestionListInner extends React.Component<IProps, IState> {
     if (oldIndex === newIndex) {
       return;
     }
-    const questions = getQuestions(this.props.data.getOutcomeSet);
+    const questions = getQuestions(this.props.questionnaire);
     if (oldIndex >= questions.length) {
       throw new Error('Old index does not exist in array');
     }
     const q = questions[oldIndex];
-    this.props.moveQuestion(this.props.data.getOutcomeSet, q.id, newIndex)
+    this.props.moveQuestion(this.props.questionnaire, q.id, newIndex)
       .then(() => {
         ReactGA.event({
           category: 'question',
@@ -204,7 +204,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
   }
 
   public render() {
-    if (this.props.data.loading) {
+    if (!this.props.questionnaire) {
       return (
         <Loader active={true} inline="centered" />
       );
@@ -215,7 +215,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
         className={this.state.sorting ? 'sorting' : ''}
         key={`qlist-${this.state.editedQuestionId}-${this.state.newQuestionClicked}`}
         outcomeSetID={this.props.outcomeSetID}
-        data={this.props.data}
+        questionnaire={this.props.questionnaire}
         editedQuestionID={this.state.editedQuestionId}
         newQuestionControl={this.renderNewQuestionControl()}
         renderEditQuestionForm={this.renderEditQuestionForm}
@@ -227,6 +227,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
         useDragHandle={true}
         onSortEnd={this.onSortEnd}
         onSortStart={this.onSortStart}
+        readOnly={this.props.readOnly}
       />
     );
   }

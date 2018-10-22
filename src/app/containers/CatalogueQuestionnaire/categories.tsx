@@ -1,12 +1,12 @@
 import * as React from 'react';
-import {IOutcomeResult, getOutcomeSet} from 'apollo/modules/outcomeSets';
 import {CategoryList} from 'components/CategoryList';
 import {Message, Icon} from 'semantic-ui-react';
+import {getCatalogueQuestionnaire, ICatalogueQuestionnaire} from '../../apollo/modules/catalogue';
 import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
 const strings = require('./../../../strings.json');
 
 interface IProps {
-  data: IOutcomeResult;
+  data: ICatalogueQuestionnaire;
   match: {
     params: {
       id: string,
@@ -21,11 +21,11 @@ const CategoriesInner = (p: IProps) => {
         <Icon name="question" />
         {strings.questionCategoryExplanation}
       </Message>
-      <CategoryList outcomeSetID={p.match.params.id} questionnaire={p.data.getOutcomeSet}/>
+      <CategoryList outcomeSetID={p.match.params.id} questionnaire={p.data.getCatalogueQuestionnaire} readOnly={true}/>
     </div>
   );
 };
 
 const InnerWithSpinner = ApolloLoaderHoC('loading questionnaire', (p: IProps) => p.data, CategoriesInner);
-const InnerWithData = getOutcomeSet<IProps>((props) => props.match.params.id)(InnerWithSpinner);
+const InnerWithData = getCatalogueQuestionnaire<IProps>((props) => props.match.params.id)(InnerWithSpinner);
 export const Categories = InnerWithData;
