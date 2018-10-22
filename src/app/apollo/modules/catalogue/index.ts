@@ -25,3 +25,17 @@ export const getCatalogueQuestionnaire = <T>(idExtractor: IDExtractor<T>) => {
 export interface ICatalogueQuestionnaire extends QueryProps {
   getCatalogueQuestionnaire?: IOutcomeSet;
 }
+
+export function getCatalogueQuestionnaires<T>(component) {
+  return graphql<any, T>(gql`
+    query getCatalogueQuestionnaires {
+      getCatalogueQuestionnaires: outcomesetCatalogue(source:"softoutcomes") {
+        ...defaultOutcomeSet
+      }
+    }
+    ${fragment}`)(component);
+}
+
+export interface ICatalogueQuestionnaires extends QueryProps {
+  getCatalogueQuestionnaires?: IOutcomeSet[];
+}
