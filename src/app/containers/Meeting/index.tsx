@@ -17,6 +17,8 @@ import {isNullOrUndefined} from 'util';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {Screen, IMeetingState, getPreviousState, canGoBack, getNextState, initialState} from './state-machine';
 import {journey} from 'helpers/url';
+import {isBeneficiaryUser} from '../../helpers/auth';
+import {Thanks} from './thanks';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
@@ -87,7 +89,14 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   private completed() {
-    journey(this.props.setURL, this.props.data.getMeeting.beneficiary, this.props.data.getMeeting.outcomeSetID);
+    if(isBeneficiaryUser()) {
+      this.setMeetingState({
+        screen: Screen.THANKS,
+        qIdx: this.currentQuestionIdx(),
+      });
+    } else {
+      journey(this.props.setURL, this.props.data.getMeeting.beneficiary, this.props.data.getMeeting.outcomeSetID);
+    }
   }
 
   private hasInstructions() {
@@ -200,6 +209,9 @@ class MeetingInner extends React.Component<IProps, IState> {
     }
     if (this.state.screen === Screen.INSTRUCTIONS) {
       return wrapper(this.renderInstructions(), this.renderProgressBar());
+    }
+    if (this.state.screen === Screen.THANKS) {
+      return wrapper(<Thanks />);
     }
     const currentQuestionID = this.state.currentQuestion;
     if (currentQuestionID === undefined) {
