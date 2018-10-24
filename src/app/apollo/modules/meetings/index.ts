@@ -146,6 +146,7 @@ export const exportMeetings = <T>(idExtractor: IDExtractor<T>) => {
           qid: idExtractor(props),
         },
         fetchPolicy: 'network-only',
+        notifyOnNetworkStatusChange: true,
       };
     },
   });
@@ -163,6 +164,7 @@ export const exportBenMeetings = <T>(idExtractor: IDExtractor<T>, benExtractor: 
           ben: benExtractor(props),
         },
         fetchPolicy: 'network-only',
+        notifyOnNetworkStatusChange: true,
       };
     },
   });

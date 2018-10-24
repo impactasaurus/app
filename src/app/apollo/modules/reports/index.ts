@@ -29,6 +29,7 @@ export const getJOCServiceReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T
           tags: tags(props),
           open: openStart,
         },
+        notifyOnNetworkStatusChange: true,
         fetchPolicy: 'network-only',
       };
     },
@@ -53,6 +54,7 @@ export const getROCReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end:
             end: end(props),
             tags: tags(props),
           },
+          notifyOnNetworkStatusChange: true,
           fetchPolicy: 'network-only',
         };
       },
@@ -95,6 +97,7 @@ export const exportReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end:
           tags: tags(props),
           openStart: openStart(props),
         },
+        notifyOnNetworkStatusChange: true,
         fetchPolicy: 'network-only',
       };
     },
