@@ -10,6 +10,7 @@ export const getTags = <T>(component)  => {
     options: () => {
       return {
         fetchPolicy: 'network-only',
+        notifyOnNetworkStatusChange: true,
       };
     },
   })(component);
