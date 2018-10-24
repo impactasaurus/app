@@ -3,6 +3,7 @@ export enum Screen {
   NOTES,
   REVIEW,
   INSTRUCTIONS,
+  THANKS,
 }
 
 export interface IMeetingState {
