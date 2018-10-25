@@ -1,16 +1,12 @@
 import * as React from 'react';
-import { saveAuth, isBeneficiaryUser, getBeneficiaryScope, getExpiryDateOfToken } from 'helpers/auth';
 import {isUserLoggedIn, isBeneficiaryUser as isCurrentUserABeneficiary} from 'redux/modules/user';
 import { IStore } from 'redux/IStore';
-import {IURLConnector, setURL} from 'redux/modules/url';
-import { bindActionCreators } from 'redux';
-import {getJWT, IJWTResult} from 'apollo/modules/jwt';
-import { Message, Loader, Grid, Button } from 'semantic-ui-react';
-import {Error} from 'components/Error';
+import { Grid } from 'semantic-ui-react';
+import {LoggedInUserConfirmation} from './confirmation';
+import {JTILoader} from './loader';
 const { connect } = require('react-redux');
-const ReactGA = require('react-ga');
 
-interface IProps extends IURLConnector {
+interface IProps {
   match: {
     params: {
       jti: string,
@@ -18,103 +14,13 @@ interface IProps extends IURLConnector {
   };
   isLoggedIn?: boolean;
   isBeneficiary?: boolean;
-  data: IJWTResult;
-}
-
-interface IState {
-  error: boolean;
-  expired: boolean;
-  confirmed?: boolean;
 }
 
 @connect((state: IStore) => ({
   isLoggedIn: isUserLoggedIn(state.user),
   isBeneficiary: isCurrentUserABeneficiary(state.user),
-}), (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
 }))
-class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      error: false,
-      expired: false,
-    };
-    this.confirmed = this.confirmed.bind(this);
-  }
-
-  private logSuccessfulBenLogin() {
-    ReactGA.event({
-      category: 'beneficiary',
-      action: 'login',
-      label: 'jti',
-    });
-  }
-
-  private performLoginProcess(props: IProps) {
-    if (props.data.getJWT === undefined || props.data.getJWT === null) {
-      return;
-    }
-    if (this.props.isLoggedIn && !this.props.isBeneficiary && !this.state.confirmed) {
-      return;
-    }
-    const token = props.data.getJWT;
-    const expires = getExpiryDateOfToken(token);
-    if (expires === null || expires < new Date()) {
-      this.setState({
-        error: true,
-        expired: true,
-      });
-      return;
-    }
-    saveAuth(token);
-    if (isBeneficiaryUser() === false) {
-      this.setState({
-        error: true,
-        expired: false,
-      });
-      return;
-    }
-    const scope = getBeneficiaryScope();
-    if (scope === null) {
-      this.setState({
-        error: true,
-        expired: false,
-      });
-      return;
-    }
-    this.logSuccessfulBenLogin();
-    this.props.setURL(`/meeting/${scope}`);
-  }
-
-  public componentDidUpdate(prevProps: IProps, prevState: IState) {
-    // looking for the trigger state where either data is received or confirmation is received
-    if (prevProps.data.getJWT === this.props.data.getJWT && prevState.confirmed === this.state.confirmed) {
-      return;
-    }
-    this.performLoginProcess(this.props);
-  }
-
-  private confirmed() {
-    this.setState({
-      error: this.state.error,
-      expired: this.state.expired,
-      confirmed: true,
-    });
-  }
-
-  private confirmUserWantsToContinue(): JSX.Element {
-    return (
-      <Message warning={true}>
-        <Message.Header>Warning</Message.Header>
-        <div>Using this link will log you out of Impactasaurus</div>
-        <br />
-        <Button onClick={this.confirmed}>Continue</Button>
-      </Message>
-    );
-  }
-
+export class BeneficiaryRedirect extends React.Component<IProps, any> {
   public render() {
     const wrapper = (inner: JSX.Element): JSX.Element => {
       return (
@@ -125,23 +31,9 @@ class BeneficiaryRedirectInner extends React.Component<IProps, IState> {
         </Grid>
       );
     };
-    if (this.props.isLoggedIn && !this.props.isBeneficiary && !this.state.confirmed) {
-      return wrapper(this.confirmUserWantsToContinue());
+    if (this.props.isLoggedIn && !this.props.isBeneficiary) {
+      return wrapper(<LoggedInUserConfirmation />);
     }
-    if (this.props.data.loading || (this.props.data.error === undefined && this.state.error === false)) {
-      return wrapper(<Loader active={true} inline="centered" />);
-    }
-    if (this.state.expired) {
-      return wrapper((
-        <Message error={true}>
-          <Message.Header>Expired</Message.Header>
-          <div>This link has expired. Please request a new link</div>
-        </Message>
-      ));
-    }
-    return wrapper(<Error text="This link does not seem to be valid"/>);
+    return wrapper(<JTILoader jti={this.props.match.params.jti}/>);
   }
 }
-
-const BeneficiaryRedirect = getJWT<IProps>((props) => props.match.params.jti)(BeneficiaryRedirectInner);
-export { BeneficiaryRedirect };
