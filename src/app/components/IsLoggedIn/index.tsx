@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { getToken, getExpiryDate, getUserEmail, getUserID, saveAuth, isBeneficiaryUser,
-  getUserName, getOrganisation, getCreatedDate } from 'helpers/auth';
+  getUserName, getOrganisation, getCreatedDate, clearAuth, getLogoutOptions, getWebAuth } from 'helpers/auth';
 import {setURL, IURLConnector} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
 import { RouterState } from 'connected-react-router';
@@ -9,7 +9,6 @@ import {
   setUserDetails, setLoggedInStatus, SetUserDetailsFunc, SetLoggedInStatusFunc, getUserID as getUserIDFromStore,
   isUserLoggedIn, isLogoutRequested,
 } from 'redux/modules/user';
-import {clearAuth, getLogoutOptions, getWebAuth} from 'helpers/auth';
 import {WebAuth} from 'auth0-js';
 
 const { connect } = require('react-redux');
