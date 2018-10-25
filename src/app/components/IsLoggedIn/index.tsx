@@ -5,8 +5,11 @@ import {setURL, IURLConnector} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
 import { RouterState } from 'connected-react-router';
 import { IStore } from 'redux/IStore';
-import {setUserDetails, setLoggedInStatus, SetUserDetailsFunc, SetLoggedInStatusFunc, getUserID as getUserIDFromStore, isUserLoggedIn} from 'redux/modules/user';
-import {getWebAuth} from '../../helpers/auth';
+import {
+  setUserDetails, setLoggedInStatus, SetUserDetailsFunc, SetLoggedInStatusFunc, getUserID as getUserIDFromStore,
+  isUserLoggedIn, isLogoutRequested,
+} from 'redux/modules/user';
+import {clearAuth, getLogoutOptions, getWebAuth} from 'helpers/auth';
 import {WebAuth} from 'auth0-js';
 
 const { connect } = require('react-redux');
@@ -19,6 +22,7 @@ interface IProps extends IURLConnector {
   setLoggedInStatus?: SetLoggedInStatusFunc;
   lastUserID?: string;
   isLoggedIn?: boolean;
+  logoutRequest?: string;
 }
 
 interface IState {
@@ -29,6 +33,7 @@ interface IState {
   routeState: state.router,
   lastUserID: getUserIDFromStore(state.user),
   isLoggedIn: isUserLoggedIn(state.user),
+  logoutRequest: isLogoutRequested(state.user),
 }), (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
   setUserDetails: bindActionCreators(setUserDetails, dispatch),
@@ -163,6 +168,10 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
       return;
     }
     this.setupRefreshTrigger();
+    if (this.props.logoutRequest !== undefined) {
+      clearAuth();
+      this.state.webAuth.logout(getLogoutOptions(this.props.logoutRequest));
+    }
   }
 
   public render() {

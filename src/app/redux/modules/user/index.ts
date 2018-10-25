@@ -2,6 +2,7 @@ import {Action} from 'redux';
 
 export const SET_USER_DETAILS = 'SET_USER_DETAILS';
 export const SET_LOGIN_STATUS = 'SET_LOGIN_STATUS';
+export const REQUEST_LOGOUT = 'REQUEST_LOGOUT';
 
 export interface IAction extends Action {
   type: string;
@@ -9,6 +10,7 @@ export interface IAction extends Action {
     userID?: string;
     beneficiaryUser?: boolean;
     loggedIn?: boolean;
+    redirect?: string;
   };
 }
 
@@ -16,6 +18,7 @@ export interface IState {
   userID?: string;
   loggedIn: boolean;
   beneficiaryUser?: boolean;
+  logOutRequest?: string;
 }
 
 const initialState: IState = {
@@ -35,6 +38,12 @@ export function reducer(state: IState = initialState, action: IAction) {
       return {
         ...state,
         loggedIn: action.payload.loggedIn,
+      };
+
+    case REQUEST_LOGOUT:
+      return {
+        ...state,
+        logOutRequest: action.payload.redirect,
       };
 
     default:
@@ -63,6 +72,16 @@ export function setLoggedInStatus(loggedIn: boolean): IAction {
   };
 }
 
+export type RequestLogoutFunc = (redirect: string) => void;
+export function requestLogOut(redirect: string): IAction {
+  return {
+    type: REQUEST_LOGOUT,
+    payload: {
+      redirect,
+    },
+  };
+}
+
 export function getUserID(state: IState): string|undefined {
   return state.userID;
 }
@@ -73,4 +92,8 @@ export function isUserLoggedIn(state: IState): boolean {
 
 export function isBeneficiaryUser(state: IState): boolean|undefined {
   return state.beneficiaryUser;
+}
+
+export function isLogoutRequested(state: IState): string|undefined {
+  return state.logOutRequest;
 }
