@@ -3,8 +3,7 @@ import { Menu, Icon } from 'semantic-ui-react';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import { bindActionCreators } from 'redux';
 import { IStore } from 'redux/IStore';
-import { clearAuth } from 'helpers/auth';
-import {isUserLoggedIn, isBeneficiaryUser} from 'redux/modules/user';
+import {isUserLoggedIn, isBeneficiaryUser, RequestLogoutFunc, requestLogOut} from 'redux/modules/user';
 import './style.less';
 const { connect } = require('react-redux');
 const TwitterIcon = require('./twitter.inline.svg');
@@ -14,6 +13,7 @@ interface IProps extends IURLConnector  {
   currentURL?: string;
   isLoggedIn?: boolean;
   isBeneficiary?: boolean;
+  logout?: RequestLogoutFunc;
 }
 
 @connect((state: IStore) => ({
@@ -22,8 +22,9 @@ interface IProps extends IURLConnector  {
   currentURL: state.router.location.pathname,
 }), (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
+  logout: bindActionCreators(requestLogOut, dispatch),
 }))
-class Header extends React.Component<IProps, any> {
+export class Header extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
@@ -46,8 +47,7 @@ class Header extends React.Component<IProps, any> {
 
   private logOut() {
     return () => {
-      clearAuth();
-      this.props.setURL('/login');
+      this.props.logout('/login');
     };
   }
 
@@ -107,5 +107,3 @@ class Header extends React.Component<IProps, any> {
     }
   }
 }
-
-export {Header};

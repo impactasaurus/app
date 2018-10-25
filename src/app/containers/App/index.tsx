@@ -28,7 +28,7 @@ class App extends React.Component<IProps, any> {
       return (
         <section id="impactasaurus">
           <Helmet {...appConfig.app} {...appConfig.app.head} />
-          <Header/>
+          <Header />
           {inner}
         </section>
       );
@@ -63,6 +63,7 @@ class App extends React.Component<IProps, any> {
           <Route path="/questions" component={containers.OutcomeSets} />
           <Route path="/catalogue/:id" component={containers.CatalogueQuestionnaire} />
           <Route path="/catalogue" component={containers.Catalogue} />
+          <Route path="/redirect" component={containers.Redirect} />
         </Switch>
       </div>
     ));

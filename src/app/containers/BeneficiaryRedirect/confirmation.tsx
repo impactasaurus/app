@@ -1,12 +1,24 @@
 import * as React from 'react';
-import {clearAuth} from '../../helpers/auth';
 import { Message, Button } from 'semantic-ui-react';
+import {requestLogOut, RequestLogoutFunc} from '../../redux/modules/user';
+import {bindActionCreators} from 'redux';
+import {IStore} from '../../redux/IStore';
+const { connect } = require('react-redux');
 
-export class LoggedInUserConfirmation extends React.Component<any, any> {
+interface IProps {
+  currentURL?: string;
+  logout?: RequestLogoutFunc;
+}
+
+@connect((state: IStore) => ({
+  currentURL: state.router.location.pathname,
+}), (dispatch) => ({
+  logout: bindActionCreators(requestLogOut, dispatch),
+}))
+export class LoggedInUserConfirmation extends React.Component<IProps, any> {
 
   private confirmed() {
-    clearAuth();
-    document.location.reload(true);
+    this.props.logout(this.props.currentURL);
   }
 
   public render() {

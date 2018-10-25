@@ -1,4 +1,4 @@
-import {AuthOptions, WebAuth} from 'auth0-js';
+import {AuthOptions, LogoutOptions, WebAuth} from 'auth0-js';
 const appConfig = require('../../../config/main');
 
 export function getToken(): string|null {
@@ -127,4 +127,16 @@ export function getWebAuth(): WebAuth {
   };
 
   return new WebAuth(options);
+}
+
+export function getLogoutOptions(redirect?: string): LogoutOptions {
+  let returnTo = `${appConfig.app.root}/redirect`;
+  if (redirect !== undefined) {
+    returnTo = `${returnTo}?redirect=${encodeURI(redirect)}`;
+  }
+
+  return {
+    returnTo,
+    clientID: appConfig.app.auth.clientID,
+  };
 }
