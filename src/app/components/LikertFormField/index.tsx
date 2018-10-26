@@ -23,6 +23,7 @@ interface IProps  {
 
 interface IState {
   selectedLabel?: number;
+  labelSelected?: boolean;
 }
 
 const toInt = (s: string) => parseInt(s, 10);
@@ -47,9 +48,11 @@ const replaceLabel = (oldVal: number, newVal: number, label: string, labels: ILa
 
 class LikertFormField extends React.Component<IProps, IState> {
 
-  constructor(props) {
+  constructor(props: IProps) {
     super(props);
-    this.state = {};
+    this.state = {
+      selectedLabel: props.values.leftValue,
+    };
     this.setLabelBeingEdited = this.setLabelBeingEdited.bind(this);
     this.setLeftValue = this.setLeftValue.bind(this);
     this.setRightValue = this.setRightValue.bind(this);
@@ -63,6 +66,7 @@ class LikertFormField extends React.Component<IProps, IState> {
   private setLabelBeingEdited(val: number) {
     this.setState({
       selectedLabel: val,
+      labelSelected: true,
     });
   }
 
@@ -119,11 +123,12 @@ class LikertFormField extends React.Component<IProps, IState> {
     });
   }
 
-  private renderLabelControl(): JSX.Element {
+  private renderLabelControl(labelSelected: boolean): JSX.Element {
     const props: InputProps = {};
     if (this.state.selectedLabel === undefined) {
       props.disabled = true;
-    } else {
+    }
+    if (!labelSelected) {
       props.autoFocus = true;
     }
     const editedLabel = this.props.values.labels.find((l) => l.value === this.state.selectedLabel);
@@ -174,7 +179,7 @@ class LikertFormField extends React.Component<IProps, IState> {
           />
         </div>
         <div className="section lower">
-          {this.renderLabelControl()}
+          {this.renderLabelControl(this.state.labelSelected !== true)}
         </div>
       </div>
     );

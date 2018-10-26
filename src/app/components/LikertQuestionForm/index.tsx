@@ -70,7 +70,7 @@ const InnerForm = (props: InjectedFormikProps<IInnerFormProps, ILikertQuestionFo
     <Form onSubmit={submitForm}>
       <Form.Group>
         <FormField error={errors.question as string} touched={touched.question} inputID="lqf-question" label="Question" required={true} width={12}>
-          <Input id="lqf-question" name="question" type="text" placeholder="Question" value={values.question} {...standardActions} />
+          <Input id="lqf-question" name="question" type="text" placeholder="Question" autoFocus={true} value={values.question} {...standardActions} />
         </FormField>
         <FormField error={errors.short as string} touched={touched.short} inputID="lqf-short" label={shortenedLabel} width={4}>
           <Input id="lqf-short" name="short" type="text" placeholder="Shortened Form" value={values.short} {...standardActions} />
