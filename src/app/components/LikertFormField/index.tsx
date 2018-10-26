@@ -128,7 +128,7 @@ class LikertFormField extends React.Component<IProps, IState> {
     if (this.state.selectedLabel === undefined) {
       props.disabled = true;
     }
-    if (!labelSelected) {
+    if (labelSelected) {
       props.autoFocus = true;
     }
     const editedLabel = this.props.values.labels.find((l) => l.value === this.state.selectedLabel);
@@ -179,7 +179,7 @@ class LikertFormField extends React.Component<IProps, IState> {
           />
         </div>
         <div className="section lower">
-          {this.renderLabelControl(this.state.labelSelected !== true)}
+          {this.renderLabelControl(this.state.labelSelected === true)}
         </div>
       </div>
     );
