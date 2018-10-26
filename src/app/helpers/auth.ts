@@ -1,16 +1,18 @@
 import {AuthOptions, LogoutOptions, WebAuth} from 'auth0-js';
 const appConfig = require('../../../config/main');
 
+const localStorageKey = 'token';
+
 export function getToken(): string|null {
   return localStorage.getItem('token');
 }
 
 export function saveAuth(token: string) {
-  localStorage.setItem('token', token);
+  localStorage.setItem(localStorageKey, token);
 }
 
 export function clearAuth() {
-  localStorage.clear();
+  localStorage.removeItem(localStorageKey);
 }
 
 function getDecodedToken(inputToken?: string) {
