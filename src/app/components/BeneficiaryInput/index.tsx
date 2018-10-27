@@ -7,7 +7,7 @@ import './style.less';
 const escapeStringRegexp = require('escape-string-regexp');
 
 interface IProps {
-  onChange?: (ben: string) => void;
+  onChange?: (ben: string, existing: boolean|undefined) => void;
   onBlur?: (ben: string) => void;
   onFocus?: () => void;
   allowUnknown?: boolean; // defaults to false
@@ -39,7 +39,11 @@ class BeneficiaryInputInner extends React.Component<IProps, IState> {
       benID,
     });
     if (!isNullOrUndefined(this.props.onChange)) {
-      this.props.onChange(benID);
+      let existingBen;
+      try {
+        existingBen = this.props.bens.getBeneficiaries.find((b) => b === benID) !== undefined;
+      } catch {}
+      this.props.onChange(benID, existingBen);
     }
   }
 

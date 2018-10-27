@@ -13,24 +13,32 @@ const strings = require('./../../../strings.json');
 
 interface IFormOuput {
   beneficiaryID: string;
+  existing?: boolean;
 }
 
 interface IFormProps {
-  onBeneficiarySelect(benID: string): void;
+  onBeneficiarySelect(benID: string, newBen: boolean|undefined): void;
 }
 
 const InnerForm = (props: InjectedFormikProps<any, IFormOuput>) => {
-  const { touched, error, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid } = props;
-  const onChange = (benID: string) => setFieldValue('beneficiaryID', benID);
+  const { touched, error, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values } = props;
+  const onChange = (benID: string, existing: boolean|undefined) => {
+    setFieldValue('beneficiaryID', benID);
+    setFieldValue('existing', existing);
+  };
   const onBlur = () => setFieldTouched('beneficiaryID');
-  const label = <span><Hint text={strings.beneficiaryIDExplanation} />Beneficiary</span>;
+  const label = <span><Hint text={strings.beneficiaryIDExplanation} />New or Existing Beneficiary</span>;
+  let submitText = 'Submit';
+  if (values.existing !== undefined) {
+    submitText = values.existing ? 'View' : 'Create';
+  }
   return (
     <Form className="screen" onSubmit={submitForm}>
       <FormField error={errors.beneficiaryID as string} touched={touched.beneficiaryID} inputID="rsf-ben" required={true} label={label}>
-        <BeneficiaryInput inputID="rsf-ben" onChange={onChange} onBlur={onBlur}/>
+        <BeneficiaryInput inputID="rsf-ben" onChange={onChange} onBlur={onBlur} allowUnknown={true}/>
       </FormField>
       <Form.Group>
-        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Review</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>{submitText}</Form.Button>
       </Form.Group>
       {error && <span className="submit-error"><Icon name="exclamation" />Editing the questionnaire failed. {formFailureGeneric}</span>}
     </Form>
@@ -47,7 +55,7 @@ const BeneficairyForm = withFormik<IFormProps, IFormOuput>({
   },
   handleSubmit: (v: FormikValues, formikBag: FormikBag<IFormProps, IFormOuput>): void => {
     formikBag.setSubmitting(true);
-    formikBag.props.onBeneficiarySelect(v.beneficiaryID);
+    formikBag.props.onBeneficiarySelect(v.beneficiaryID, v.existing === false);
   },
 })(InnerForm);
 
@@ -61,8 +69,12 @@ class ReviewSelector extends React.Component<IURLConnector, any> {
     this.review = this.review.bind(this);
   }
 
-  private review(benID: string) {
-    this.props.setURL(`/beneficiary/${benID}`);
+  private review(benID: string, newBen: boolean) {
+    let url = `/beneficiary/${benID}`;
+    if (newBen) {
+      url = url + '/record';
+    }
+    this.props.setURL(url, `?ben=${benID}`);
   }
 
   public render() {
@@ -71,9 +83,9 @@ class ReviewSelector extends React.Component<IURLConnector, any> {
         <Grid.Column>
           <div id="reviewselector">
             <Helmet>
-              <title>Review</title>
+              <title>Beneficiary</title>
             </Helmet>
-            <h1>Review</h1>
+            <h1>Beneficiary</h1>
             <BeneficairyForm onBeneficiarySelect={this.review} />
           </div>
           {this.props.children}
