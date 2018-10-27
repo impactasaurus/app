@@ -63,7 +63,7 @@ const InnerForm = (props: InjectedFormikProps<InnerFormProps, IAssessmentConfigA
   };
 
   const benLabel = <span><Hint text={strings.beneficiaryIDExplanation} />Beneficiary</span>;
-  const tagLabel = <span><Hint text={strings.tagUsage} />Tags</span>;
+  const tagLabel = <span><Hint text={strings.tagExplanation} />Tags</span>;
 
   // if the beneficiary has been set via URL, hide the beneficiary field
   const benField = (
