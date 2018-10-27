@@ -1,3 +1,5 @@
+@smallScreenIcon: ~'i.icon:not(.required)';
+
 #impactasaurus {
   .menu {
     #twitter-icon, #impactasaurus-logo {
@@ -10,8 +12,11 @@
     }
 
     i.icon {
-      display: none;
       margin: 0px;
+    }
+
+    @{smallScreenIcon} {
+      display: none;
     }
 
     @media only screen and (max-width: 800px) {
@@ -21,7 +26,7 @@
       span {
         display: none;
       }
-      i.icon {
+      @{smallScreenIcon} {
         display: block;
       }
     }

@@ -58,10 +58,6 @@ export class Header extends React.Component<IProps, any> {
           <Menu.Item id="home-link" active={this.isActive('/', true)} onClick={this.handleClick('/')} className="icon-menu-item">
             <Logo />
           </Menu.Item>
-          <Menu.Item id="add-menu-link" active={this.isActive('/record') || this.isActive('/meeting') || this.isActive('/dataentry')} onClick={this.handleClick('/record')}>
-            <Icon name="plus"/>
-            <span>Record</span>
-          </Menu.Item>
           <Menu.Item active={this.isActive('/beneficiary')} onClick={this.handleClick('/beneficiary')}>
             <Icon name="user"/>
             <span>Beneficiary</span>
@@ -73,6 +69,9 @@ export class Header extends React.Component<IProps, any> {
           <Menu.Item active={this.isActive('/catalogue') || this.isActive('/questions')} onClick={this.handleClick('/questions')}>
             <Icon name="question"/>
             <span>Questionnaires</span>
+          </Menu.Item>
+          <Menu.Item id="add-menu-link" active={this.isActive('/record') || this.isActive('/meeting') || this.isActive('/dataentry')} onClick={this.handleClick('/record')}>
+            <Icon name="plus" className="required" />
           </Menu.Item>
 
           <Menu.Menu position="right">
