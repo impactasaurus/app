@@ -66,13 +66,13 @@ class Report extends React.Component<IURLConnector, any> {
       <Grid container={true} columns={1} id="report-picker">
         <Grid.Column>
           <Helmet>
-            <title>Service Report</title>
+            <title>Report</title>
           </Helmet>
-          <h1>Service Report</h1>
+          <h1>Report</h1>
           <Message info={true}>
-            <Message.Header>What does this report provide?</Message.Header>
+            <Message.Header>What does this provide?</Message.Header>
 
-            <p>The service report quantifies your organisation's impact on your beneficiaries.</p>
+            <p>The report quantifies your organisation's impact on your beneficiaries.</p>
             <p>
               This is calculated by examining how much change there has been between each beneficiary's first and last record within the report's time range.
               The average measurements from the first and last records, across all suitable beneficiaries, are compared and visualised.

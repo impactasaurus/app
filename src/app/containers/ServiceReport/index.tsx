@@ -111,22 +111,26 @@ class ServiceReportInner extends React.Component<IProp, any> {
   }
 
   public render() {
-    const wrapper = (inner: JSX.Element): JSX.Element => {
+    const wrapper = (inner: JSX.Element, questionnaireName?: string): JSX.Element => {
+      let title = 'Report';
+      if (questionnaireName !== undefined) {
+        title = questionnaireName + ' ' + title;
+      }
       return (
         <Grid container={true} columns={1} id="service-report">
           <Grid.Column>
             <Helmet>
-              <title>Service Report</title>
+              <title>{title}</title>
             </Helmet>
             <div>
-              <h1>Service Report</h1>
+              <h1>{title}</h1>
               {inner}
             </div>
           </Grid.Column>
         </Grid>
       );
     };
-    if (this.props.JOCServiceReport.error) {
+    if (this.props.JOCServiceReport.error || this.props.data.error) {
       return wrapper(<Error text="Failed to load the report"/>);
     }
     if (this.props.data.loading || this.props.JOCServiceReport.loading) {
@@ -141,7 +145,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
         <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} export={this.exportReportData} allowCanvasSnapshot={this.props.isCanvasSnapshotPossible} />
         {this.renderVis()}
       </div>
-    ));
+    ), this.props.data.getOutcomeSet.name);
   }
 }
 
