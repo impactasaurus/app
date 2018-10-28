@@ -32,7 +32,7 @@ export class SecondaryMenu extends React.Component<IProps, any> {
     };
     return (
       <div className="signpost">
-        <h1>{this.props.signpost}</h1>
+        <h1 className="close">{this.props.signpost}</h1>
         <Menu {...p}>
           {this.props.children}
         </Menu>

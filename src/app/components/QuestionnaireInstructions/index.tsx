@@ -17,7 +17,7 @@ class QuestionnaireInstructions extends React.Component<IProps, any> {
   public render() {
     return (
       <div className="questionnaire-instructions">
-        <h1>{this.props.title || ''}</h1>
+        <h1 className="close">{this.props.title || ''}</h1>
         <h3>{this.props.text}</h3>
         <Button onClick={this.props.onNext}>Next</Button>
       </div>
