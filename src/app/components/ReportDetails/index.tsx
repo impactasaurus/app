@@ -7,6 +7,7 @@ import './style.less';
 import {BeneficiaryPill} from 'components/BeneficiaryPill';
 
 interface IProp {
+  introduction?: string;
   includedBeneficiaries: string[];
   excluded: IExcluded;
   warnings: string[];
@@ -45,7 +46,7 @@ class ReportDetails extends React.Component<IProp, any> {
   private renderOverview(includedBens: string[], excluded: IExcluded, qs: IOutcomeSet, excludedReason = 'they only have a single assessment'): JSX.Element {
     const noBens = includedBens.length;
     const info = noBens > 0;
-    const title = info ? 'Overview of Report Content' : 'Report failed';
+    const title = info ? 'Overview' : 'Report failed';
     const panels = [];
 
     if (noBens > 0) {
@@ -91,6 +92,7 @@ class ReportDetails extends React.Component<IProp, any> {
     return (
       <Message info={info} error={!info} className="report-overview">
         <Message.Header>{title}</Message.Header>
+        {this.props.introduction && <div className="intro">{this.props.introduction}</div>}
         <Accordion exclusive={false} panels={panels} />
       </Message>
     );
