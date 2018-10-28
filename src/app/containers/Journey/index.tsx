@@ -7,7 +7,7 @@ import {IStore} from 'redux/IStore';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {
   Aggregation, Visualisation, getAggregation, getVisualisation,
-  getSelectedQuestionSetID, SelectedQuestionSetIDKey} from 'models/pref';
+  getSelectedQuestionSetID, QuestionnaireKey} from 'models/pref';
 import {getMeetings, IMeetingResult} from 'apollo/modules/meetings';
 import {IMeeting} from 'models/meeting';
 import {MeetingRadar} from 'components/MeetingRadar';
@@ -129,7 +129,7 @@ class JourneyInner extends React.Component<IProps, any> {
     if (urlQS === undefined) {
       return;
     }
-    this.props.setPref(SelectedQuestionSetIDKey, urlQS);
+    this.props.setPref(QuestionnaireKey, urlQS);
   }
 
   private renderVis(): JSX.Element {
