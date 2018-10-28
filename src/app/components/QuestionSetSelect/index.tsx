@@ -23,6 +23,8 @@ interface IProp extends IExternalProps {
   allowedQuestionSets?: IOutcomeSet[];
 }
 
+export const stateInURLRegex = /(\/beneficiary\/[^\/]*\/journey|\/beneficiary\/[^\/]*$|\/beneficiary\/[^\/]*\/$)/;
+
 const isQuestionSetAllowed = (qsID: string, props: IProp): boolean => {
   const isAllowed = Array.isArray(props.allowedQuestionSetIDs) === false ||
     props.allowedQuestionSetIDs.indexOf(qsID) !== -1;
