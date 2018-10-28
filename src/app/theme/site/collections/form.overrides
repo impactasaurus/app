@@ -47,7 +47,6 @@
     &.screen {
       max-width: 400px;
       margin: 0px auto;
-      margin-top: 40px;
 
       .fields:last-child {
           margin-top: 2em

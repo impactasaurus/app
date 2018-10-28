@@ -154,7 +154,7 @@ class QuestionInner extends React.Component<IProps, IState> {
     }
     return (
       <div>
-        <h1>{q.question}</h1>
+        <h1 className="close">{q.question}</h1>
         <h3>{q.description}</h3>
         <Likert key={'l-' + q.id} leftValue={q.leftValue} rightValue={q.rightValue} labels={q.labels} onChange={this.setAnswer} value={this.state.value} />
         <Notepad key={'np-' + q.id} onChange={this.setNotes} notes={this.state.notes} />
