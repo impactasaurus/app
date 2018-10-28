@@ -136,8 +136,8 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
     return (
       <Grid container={true} columns={1} id="assessment-config">
         <Grid.Column>
-          <Helmet title="Record"/>
-          <h1>Create Record</h1>
+          <Helmet title="New Record"/>
+          <h1>New Record</h1>
           {this.renderInner()}
         </Grid.Column>
       </Grid>

@@ -33,8 +33,8 @@ class AssessmentTypeSelect extends React.Component<IProps, any> {
     return (
       <Grid container={true} columns={1} id="conduct">
         <Grid.Column>
-          <Helmet title="Record"/>
-          <h1>Create Record</h1>
+          <Helmet title="New Record"/>
+          <h1>New Record</h1>
           <AssessmentTypeSelector typeSelector={this.typeSelected}/>
         </Grid.Column>
       </Grid>
