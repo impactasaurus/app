@@ -11,8 +11,10 @@ import { Switch, Route } from 'react-router-dom';
 import './style.less';
 import {IStore} from 'redux/IStore';
 import {bindActionCreators} from 'redux';
-import {IURLConnector, setURL} from '../../redux/modules/url';
+import {IURLConnector, setURL} from 'redux/modules/url';
+import {Hint} from 'components/Hint';
 const { connect } = require('react-redux');
+const strings = require('./../../../strings.json');
 
 export enum Page {
   GENERAL,
@@ -88,7 +90,9 @@ class OutcomeSetInner extends React.Component<IProps, any> {
           <SecondaryMenu signpost={signpost}>
             <Menu.Item name="General" active={page === Page.GENERAL} onClick={this.innerPageSetter(Page.GENERAL)} />
             <Menu.Item name="Questions" active={page === Page.QUESTIONS} onClick={this.innerPageSetter(Page.QUESTIONS)} />
-            <Menu.Item name="Categories" active={page === Page.CATEGORIES} onClick={this.innerPageSetter(Page.CATEGORIES)} />
+            <Menu.Item active={page === Page.CATEGORIES} onClick={this.innerPageSetter(Page.CATEGORIES)}>
+              <Hint text={strings.questionCategoryExplanation} /> Categories
+            </Menu.Item>
           </SecondaryMenu>
           <Grid container={true} columns={1} id="question-set">
             <Grid.Column>
