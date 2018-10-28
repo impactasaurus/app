@@ -6,7 +6,7 @@ import {setPref, SetPrefFunc} from 'redux/modules/pref';
 import {IStore} from 'redux/IStore';
 const { connect } = require('react-redux');
 import { bindActionCreators } from 'redux';
-import {SelectedQuestionSetIDKey, getSelectedQuestionSetID} from 'models/pref';
+import {QuestionnaireKey, getSelectedQuestionSetID} from 'models/pref';
 
 interface IExternalProps {
   allowedQuestionSetIDs?: string[];
@@ -22,6 +22,8 @@ interface IProp extends IExternalProps {
   setPref?: SetPrefFunc;
   allowedQuestionSets?: IOutcomeSet[];
 }
+
+export const stateInURLRegex = /(\/beneficiary\/[^\/]*\/journey|\/beneficiary\/[^\/]*$|\/beneficiary\/[^\/]*\/$)/;
 
 const isQuestionSetAllowed = (qsID: string, props: IProp): boolean => {
   const isAllowed = Array.isArray(props.allowedQuestionSetIDs) === false ||
@@ -95,7 +97,7 @@ class QuestionSetSelectInner extends React.Component<IProp, any> {
   }
 
   private setQuestionSetID(_, data) {
-    this.props.setPref(SelectedQuestionSetIDKey, data.value);
+    this.props.setPref(QuestionnaireKey, data.value);
   }
 
   public render() {

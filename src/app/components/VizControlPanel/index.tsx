@@ -24,9 +24,6 @@ interface IProps {
 }
 
 @connect((state: IStore, ownProps: IProps) => {
-  if (pageRegex.test(state.router.location.pathname) === false) {
-    console.error('vizControlPanel page regex not correct');
-  }
   return {
     vis: getVisualisation(state.pref, ownProps.allowGraph !== false),
     agg: getAggregation(state.pref, ownProps.canCategoryAg),

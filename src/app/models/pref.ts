@@ -34,7 +34,7 @@ export function getAggregation(prefState: PrefState, isCategoryAgPossible: boole
   return Aggregation[value];
 }
 
-export const SelectedQuestionSetIDKey = 'selectedQSID';
+export const QuestionnaireKey = 'questionnaire';
 export function getSelectedQuestionSetID(prefState: PrefState): string|undefined {
-  return prefState[SelectedQuestionSetIDKey];
+  return prefState[QuestionnaireKey];
 }
