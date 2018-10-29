@@ -16,6 +16,7 @@ class ServiceReportDetails extends React.Component<IProp, any> {
     const includedBens = this.props.serviceReport.beneficiaries.map((b) => b.id);
     return (
       <ReportDetails
+        introduction="Your organisation's impact is calculated by examining how much change there has been between each beneficiary's first and last record"
         includedBeneficiaries={includedBens}
         excluded={getExcluded(this.props.serviceReport.excluded)}
         warnings={warnings}

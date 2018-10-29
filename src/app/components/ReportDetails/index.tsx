@@ -7,6 +7,7 @@ import './style.less';
 import {BeneficiaryPill} from 'components/BeneficiaryPill';
 
 interface IProp {
+  introduction?: string;
   includedBeneficiaries: string[];
   excluded: IExcluded;
   warnings: string[];
@@ -42,10 +43,10 @@ class ReportDetails extends React.Component<IProp, any> {
     }
   }
 
-  private renderOverview(includedBens: string[], excluded: IExcluded, qs: IOutcomeSet, excludedReason = 'they only have a single assessment'): JSX.Element {
+  private renderOverview(includedBens: string[], excluded: IExcluded, qs: IOutcomeSet, excludedReason = 'they only have a single record'): JSX.Element {
     const noBens = includedBens.length;
     const info = noBens > 0;
-    const title = info ? 'Overview of Report Content' : 'Report failed';
+    const title = info ? 'Overview' : 'Report failed';
     const panels = [];
 
     if (noBens > 0) {
@@ -77,7 +78,7 @@ class ReportDetails extends React.Component<IProp, any> {
     if (excluded.categoryIDs.length > 0 || excluded.questionIDs.length > 0) {
       panels.push({
         key: 'qs+cats',
-        title: `${this.dealWithSingularOrMultiple(excluded.categoryIDs.length, 'category', 'categories')} and ${this.dealWithSingularOrMultiple(excluded.questionIDs.length, 'question', 'questions')} have been excluded because they are not present within the assessments.`,
+        title: `${this.dealWithSingularOrMultiple(excluded.categoryIDs.length, 'category', 'categories')} and ${this.dealWithSingularOrMultiple(excluded.questionIDs.length, 'question', 'questions')} have been excluded because they are not present within the records.`,
         content: {
           content: (
             <div>
@@ -91,6 +92,7 @@ class ReportDetails extends React.Component<IProp, any> {
     return (
       <Message info={info} error={!info} className="report-overview">
         <Message.Header>{title}</Message.Header>
+        {this.props.introduction && <div className="intro">{this.props.introduction}</div>}
         <Accordion exclusive={false} panels={panels} />
       </Message>
     );

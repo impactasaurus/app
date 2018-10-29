@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import {IURLConnector, setURL} from 'redux/modules/url';
-import { Grid, Message } from 'semantic-ui-react';
+import { Grid } from 'semantic-ui-react';
 import { bindActionCreators } from 'redux';
 import {constructReportQueryParams, constructReportURL} from '../../helpers/report';
 import {IFormOutput, ReportForm as RFComponent} from 'components/ReportForm';
@@ -66,19 +66,9 @@ class Report extends React.Component<IURLConnector, any> {
       <Grid container={true} columns={1} id="report-picker">
         <Grid.Column>
           <Helmet>
-            <title>Report</title>
+            <title>Impact Report</title>
           </Helmet>
-          <h1>Report</h1>
-          <Message info={true}>
-            <Message.Header>What does this provide?</Message.Header>
-
-            <p>The report quantifies your organisation's impact on your beneficiaries.</p>
-            <p>
-              This is calculated by examining how much change there has been between each beneficiary's first and last record within the report's time range.
-              The average measurements from the first and last records, across all suitable beneficiaries, are compared and visualised.
-            </p>
-            <p>This report will only include beneficiaries with more than one assessment, so that the amount of change can be understood.</p>
-          </Message>
+          <h1>Impact Report</h1>
           <ReportForm onFormSubmit={this.navigateToReport} />
         </Grid.Column>
       </Grid>

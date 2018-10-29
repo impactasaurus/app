@@ -112,7 +112,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
 
   public render() {
     const wrapper = (inner: JSX.Element, questionnaireName?: string): JSX.Element => {
-      let title = 'Report';
+      let title = 'Impact Report';
       if (questionnaireName !== undefined) {
         title = questionnaireName + ' ' + title;
       }

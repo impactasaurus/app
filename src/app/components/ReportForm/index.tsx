@@ -50,14 +50,15 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
     dateRangeStyle.display = 'none';
   }
 
-  const label = <span><Hint text={strings.tagUsage} />Tags</span>;
+  const tagLabel = <span><Hint text={strings.tagUsage} />Tags</span>;
+  const incRecordLabel = <span><Hint text={strings.reportBeneficiariesIncluded} />Included Records</span>;
 
   return (
     <Form className="screen" onSubmit={submitForm}>
       <FormField error={errors.questionSetID} touched={touched.questionSetID} inputID="rf-qid" required={true} label="Questionnaire">
         <QuestionSetSelect inputID="rf-qid" onQuestionSetSelected={qsOnChange} onBlur={qsOnBlur} />
       </FormField>
-      <FormField label="Included Records" required={true} inputID="filter-options" error={errors.all as string} touched={touched.all}>
+      <FormField label={incRecordLabel} required={true} inputID="filter-options" error={errors.all as string} touched={touched.all}>
         <div id="filter-options">
           <Radio checked={values.all === true} onChange={allOnChange(true)} label="All" />
           <Radio checked={values.all === false} onChange={allOnChange(false)} label="Date Range"/>
@@ -70,7 +71,7 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
           </div>
         </FormField>
       </div>
-      <FormField inputID="rf-tags" label={label} touched={touched.tags as boolean} error={errors.tags as string}>
+      <FormField inputID="rf-tags" label={tagLabel} touched={touched.tags as boolean} error={errors.tags as string}>
         <RecordTagInputWithQuestionnaireSuggestions inputID="rf-tags" id={values.questionSetID} onChange={setTags} tags={values.tags} allowNewTags={false} />
       </FormField>
       <Form.Group>
