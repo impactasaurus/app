@@ -43,7 +43,7 @@ class ReportDetails extends React.Component<IProp, any> {
     }
   }
 
-  private renderOverview(includedBens: string[], excluded: IExcluded, qs: IOutcomeSet, excludedReason = 'they only have a single assessment'): JSX.Element {
+  private renderOverview(includedBens: string[], excluded: IExcluded, qs: IOutcomeSet, excludedReason = 'they only have a single record'): JSX.Element {
     const noBens = includedBens.length;
     const info = noBens > 0;
     const title = info ? 'Overview' : 'Report failed';
@@ -78,7 +78,7 @@ class ReportDetails extends React.Component<IProp, any> {
     if (excluded.categoryIDs.length > 0 || excluded.questionIDs.length > 0) {
       panels.push({
         key: 'qs+cats',
-        title: `${this.dealWithSingularOrMultiple(excluded.categoryIDs.length, 'category', 'categories')} and ${this.dealWithSingularOrMultiple(excluded.questionIDs.length, 'question', 'questions')} have been excluded because they are not present within the assessments.`,
+        title: `${this.dealWithSingularOrMultiple(excluded.categoryIDs.length, 'category', 'categories')} and ${this.dealWithSingularOrMultiple(excluded.questionIDs.length, 'question', 'questions')} have been excluded because they are not present within the records.`,
         content: {
           content: (
             <div>
