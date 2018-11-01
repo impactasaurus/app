@@ -1,8 +1,7 @@
 import {gql, graphql, QueryProps} from 'react-apollo';
-import {fragment} from 'models/outcomeSet';
-import {IDExtractor} from 'helpers/apollo';
-import {IOutcomeSet} from '../../../models/outcomeSet';
-import {mutationResultExtractor} from '../../../helpers/apollo';
+import {fragment, IOutcomeSet} from 'models/outcomeSet';
+import {IDExtractor, mutationResultExtractor} from 'helpers/apollo';
+import {allOutcomeSetsGQL} from 'apollo/modules/outcomeSets';
 
 export const getCatalogueQuestionnaire = <T>(idExtractor: IDExtractor<T>) => {
   return graphql<any, T>(gql`
@@ -49,6 +48,11 @@ export function importQuestionnaire<T>(component) {
     }
   }
   ${fragment}`, {
+    options: {
+      refetchQueries: [{
+        query: allOutcomeSetsGQL,
+      }],
+    },
     props: ({ mutate }) => ({
       importQuestionnaire: (id: string): Promise<IOutcomeSet> => mutate({
         variables: {
