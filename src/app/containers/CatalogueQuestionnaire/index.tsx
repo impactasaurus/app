@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { Grid, Loader, Menu } from 'semantic-ui-react';
+import { Grid, Loader, Menu} from 'semantic-ui-react';
 import {SecondaryMenu} from 'components/SecondaryMenu';
 import { General } from './general';
 import { Questions } from './questions';
@@ -13,6 +13,7 @@ import {Hint} from 'components/Hint';
 import {bindActionCreators} from 'redux';
 import {IURLConnector, setURL} from '../../redux/modules/url';
 import {getCatalogueQuestionnaire, ICatalogueQuestionnaire} from 'apollo/modules/catalogue';
+import {ImportQuestionnaireButton} from 'components/ImportQuestionnaireButton';
 const { connect } = require('react-redux');
 const strings = require('./../../../strings.json');
 
@@ -119,11 +120,14 @@ class CatalogueQuestionnaireInner extends React.Component<IProps, any> {
     }
     const match = this.props.match.path;
     return wrapper((
-      <Switch>
-        <Route exact={true} path={`${match}/`} component={General} />
-        <Route path={`${match}/questions`} component={Questions} />
-        <Route path={`${match}/categories`} component={Categories} />
-      </Switch>
+      <div>
+        <ImportQuestionnaireButton questionnaireID={this.props.match.params.id} text={true} options={{compact: true}}/>
+        <Switch>
+          <Route exact={true} path={`${match}/`} component={General} />
+          <Route path={`${match}/questions`} component={Questions} />
+          <Route path={`${match}/categories`} component={Categories} />
+        </Switch>
+      </div>
     ), getCatalogueQuestionnaire.name);
   }
 }

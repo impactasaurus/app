@@ -18,7 +18,7 @@ interface IProps extends IURLConnector {
 const renderQuestionnaire = (os: IOutcomeSet, onClick: () => void): JSX.Element => (
   <List.Item className="questionnaire" key={os.id}>
     <List.Content floated="right">
-      <ImportQuestionnaireButton questionnaireID={os.id} text={false}/>
+      <ImportQuestionnaireButton questionnaireID={os.id} text={false} options={{size: 'tiny'}}/>
     </List.Content>
     <List.Content onClick={onClick}>
       <List.Header as="a">{os.name}</List.Header>

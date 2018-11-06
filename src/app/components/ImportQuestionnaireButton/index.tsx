@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Button, Popup} from 'semantic-ui-react';
+import {Button, ButtonProps, Popup, Icon, SemanticICONS} from 'semantic-ui-react';
 import {ICatalogueImport, importQuestionnaire} from '../../apollo/modules/catalogue';
 import {IURLConnector, setURL} from '../../redux/modules/url';
 import {bindActionCreators} from 'redux';
@@ -8,6 +8,7 @@ const { connect } = require('react-redux');
 interface IProps extends ICatalogueImport, IURLConnector {
   questionnaireID: string;
   text?: boolean; // defaults true
+  options?: ButtonProps;
 }
 
 interface IState {
@@ -47,16 +48,24 @@ class Inner extends React.Component<IProps, IState> {
   }
 
   public render() {
+    const options: ButtonProps = {...this.props.options};
+    let icon: SemanticICONS = 'add';
+    let popup = 'Import to your account';
     if (this.state.error) {
-      return (
-        <Popup content="Failed to import" trigger={(
-          <Button icon="close" onClick={this.import} loading={this.state.loading} color="red" size="tiny" />
-        )} />
-      );
+      options.color = 'red';
+      icon = 'close';
+      popup = 'Failed to import';
+    } else {
+      options.primary = true;
+    }
+    if (this.props.text) {
+      options.children = <span><Icon name={icon} />Import</span>;
+    } else {
+      options.icon = icon;
     }
     return (
-      <Popup content="Import to your account" trigger={(
-        <Button icon="add" primary={true} onClick={this.import} loading={this.state.loading} size="tiny" />
+      <Popup content={popup} trigger={(
+        <Button onClick={this.import} loading={this.state.loading} {...options} />
       )} />
     );
   }
