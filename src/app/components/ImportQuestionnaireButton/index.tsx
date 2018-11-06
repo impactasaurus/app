@@ -47,9 +47,16 @@ class Inner extends React.Component<IProps, IState> {
   }
 
   public render() {
+    if (this.state.error) {
+      return (
+        <Popup content="Failed to import" trigger={(
+          <Button icon="close" onClick={this.import} loading={this.state.loading} color="red" size="tiny" />
+        )} />
+      );
+    }
     return (
-      <Popup content="Import to your Account" trigger={(
-        <Button icon="world" primary={true} onClick={this.import} loading={this.state.loading} />
+      <Popup content="Import to your account" trigger={(
+        <Button icon="add" primary={true} onClick={this.import} loading={this.state.loading} size="tiny" />
       )} />
     );
   }
