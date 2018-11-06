@@ -121,7 +121,7 @@ class CatalogueQuestionnaireInner extends React.Component<IProps, any> {
     const match = this.props.match.path;
     return wrapper((
       <div>
-        <ImportQuestionnaireButton questionnaireID={this.props.match.params.id} text={true} options={{compact: true}}/>
+        <ImportQuestionnaireButton questionnaireID={this.props.match.params.id} text={true}/>
         <Switch>
           <Route exact={true} path={`${match}/`} component={General} />
           <Route path={`${match}/questions`} component={Questions} />
