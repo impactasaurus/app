@@ -21,14 +21,20 @@ export const getOutcomeSet = <T>(idExtractor: IDExtractor<T>) => {
   });
 };
 
-export function allOutcomeSets<T>(component) {
-  return graphql<any, T>(gql`
+export const allOutcomeSetsGQL = gql`
   query allOutcomeSets {
     allOutcomeSets: outcomesets{
       ...defaultOutcomeSet
     }
   }
-  ${fragment}`)(component);
+  ${fragment}`;
+
+export function allOutcomeSets<T>(component) {
+  return graphql<any, T>(allOutcomeSetsGQL, {
+    options: {
+      notifyOnNetworkStatusChange: true,
+    },
+  })(component);
 }
 
 export const newQuestionSet = graphql(gql`

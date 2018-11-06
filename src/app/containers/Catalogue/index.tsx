@@ -8,6 +8,7 @@ import './style.less';
 import {getCatalogueQuestionnaires, ICatalogueQuestionnaires} from 'apollo/modules/catalogue';
 import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
 import {PageWrapperHoC} from 'components/PageWrapperHoC';
+import {ImportQuestionnaireButton} from 'components/ImportQuestionnaireButton';
 const { connect } = require('react-redux');
 
 interface IProps extends IURLConnector {
@@ -16,6 +17,9 @@ interface IProps extends IURLConnector {
 
 const renderQuestionnaire = (os: IOutcomeSet, onClick: () => void): JSX.Element => (
   <List.Item className="questionnaire" key={os.id}>
+    <List.Content floated="right">
+      <ImportQuestionnaireButton questionnaireID={os.id} text={false} options={{size: 'tiny'}}/>
+    </List.Content>
     <List.Content onClick={onClick}>
       <List.Header as="a">{os.name}</List.Header>
       <List.Description as="a">{os.description}</List.Description>
