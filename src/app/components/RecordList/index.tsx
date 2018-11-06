@@ -8,6 +8,7 @@ import {IURLConnector, setURL} from 'redux/modules/url';
 import {bindActionCreators} from 'redux';
 import {deleteMeeting, IDeleteMeetingMutation} from 'apollo/modules/meetings';
 import {ConfirmButton} from 'components/ConfirmButton';
+import {Link} from 'react-router-dom';
 const { connect } = require('react-redux');
 
 interface IProp extends IURLConnector, IDeleteMeetingMutation {
@@ -81,7 +82,7 @@ class RecordListInner extends React.Component<IProp, any> {
           {getHumanisedDate(new Date(r.conducted))}
           {incomplete}
         </Table.Cell>
-        <Table.Cell>{r.outcomeSet.name}</Table.Cell>
+        <Table.Cell><Link to={`/questions/${r.outcomeSet.id}`}>{r.outcomeSet.name}</Link></Table.Cell>
         <Table.Cell>{renderArray(this.renderTag, r.tags)}</Table.Cell>
         <Table.Cell>{r.user}</Table.Cell>
         <Table.Cell className="actions">{this.renderActions(r)}</Table.Cell>
