@@ -56,9 +56,6 @@ const NewQuestionnaireForm = withFormik<IProps, INewQuestionnaire>({
     formikBag.setSubmitting(true);
     formikBag.setError(undefined);
     formikBag.props.submit(v)
-      .then(() => {
-        formikBag.setSubmitting(false);
-      })
       .catch((e: Error) => {
         formikBag.setSubmitting(false);
         formikBag.setError(e.message);
