@@ -59,5 +59,5 @@ ReactDOM.render(
       } />
     </ConnectedRouter>
   </ApolloProvider>,
-  document.getElementById('app'),
+  document.getElementById('impactasaurus'),
 );
