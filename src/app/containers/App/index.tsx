@@ -9,6 +9,7 @@ import {IStore} from 'redux/IStore';
 import { Route, Switch } from 'react-router-dom';
 import * as containers from 'containers';
 import {Loader} from 'semantic-ui-react';
+import {Footer} from 'components/Footer';
 const { connect } = require('react-redux');
 const appConfig = require('../../../../config/main');
 
@@ -24,22 +25,21 @@ interface IProps {
 class App extends React.Component<IProps, any> {
 
   public render() {
-    const wrapper = (inner: JSX.Element): JSX.Element => {
-      return (
-        <section id="impactasaurus">
-          <Helmet {...appConfig.app} {...appConfig.app.head} />
-          <Header />
-          {inner}
-        </section>
-      );
+    const wrapper = (inner: JSX.Element): JSX.Element[] => {
+      return [
+        (<Helmet key="helm" {...appConfig.app} {...appConfig.app.head}/>),
+        (<Header key="header" />),
+        inner,
+        (<Footer key="footer" />),
+      ];
     };
 
     if (this.props.storeLoaded !== true) {
-      return wrapper(<Loader active={true} inline="centered" />);
+      return wrapper(<Loader key="loader" active={true} inline="centered" />);
     }
 
     return wrapper((
-      <div id="main-app-content">
+      <div key="content" id="main-app-content">
         <IsLoggedIn/>
         <Switch>
           <Route exact={true} path="/" component={containers.Home} />
