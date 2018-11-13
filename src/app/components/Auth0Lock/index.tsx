@@ -44,7 +44,7 @@ class Auth0Lock extends React.Component<IProps, IState> {
         ReactGA.event({
           category : 'login',
           action : 'failed',
-          label: err.description,
+          label: err.errorDescription,
         });
         this.setState({error: err});
       } else {
@@ -56,9 +56,9 @@ class Auth0Lock extends React.Component<IProps, IState> {
   public render() {
     if (this.state.error !== undefined) {
       return (
-        <Message warning={true}>
-          <Message.Header>Error {this.state.error.code}</Message.Header>
-          <Message.Content>Please try refreshing the page.</Message.Content>
+        <Message error={true}>
+          <Message.Header>Failed to login</Message.Header>
+          <Message.Content>{this.state.error.errorDescription}</Message.Content>
         </Message>
       );
     }

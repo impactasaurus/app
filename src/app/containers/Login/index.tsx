@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Helmet } from 'react-helmet';
 import {setURL} from 'redux/modules/url';
 import {ActionCreator, bindActionCreators} from 'redux';
 import {Auth0Lock} from 'components/Auth0Lock';
 import {isNullOrUndefined} from 'util';
+import {PageWrapperHoC} from 'components/PageWrapperHoC';
 const { connect } = require('react-redux');
 
 interface IProps {
@@ -26,7 +26,7 @@ const getReturnURL = (p: IProps): string|undefined => {
 @connect(undefined, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
-class Login extends React.Component<IProps, {}> {
+class LoginInner extends React.Component<IProps, {}> {
 
   constructor(props: IProps) {
     super(props);
@@ -51,15 +51,7 @@ class Login extends React.Component<IProps, {}> {
   }
 
   public render() {
-    return (
-      <div>
-        <Helmet>
-          <title>Login</title>
-        </Helmet>
-        <Auth0Lock onAuthenticated={this.loggedIn} />
-      </div>
-    );
+    return <Auth0Lock onAuthenticated={this.loggedIn} />;
   }
 }
-
-export { Login };
+export const Login = PageWrapperHoC('Login', 'login', LoginInner);
