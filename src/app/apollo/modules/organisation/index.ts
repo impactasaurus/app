@@ -51,3 +51,27 @@ export function updateOrgSetting<T>(component) {
 export interface IUpdateOrgSettings {
   updateOrgSetting(beneficiaryTypeAhead: boolean): Promise<IOrganisation>;
 }
+
+export function signup<T>(component) {
+  return graphql<any, T>(gql`
+  mutation ($name: String!, $email: String!, $password: String!, $org: String!) {
+    signup: AddOrg(name:$name, org:$org, email:$email, password:$password) {
+      id,
+    }
+  }`, {
+    props: ({ mutate }) => ({
+      signup: (name: string, email: string, password: string, org: string): Promise<void> => mutate({
+        variables: {
+          name,
+          email,
+          password,
+          org,
+        },
+      }).then(()=> {}),
+    }),
+  })(component);
+}
+
+export interface ISignup {
+  signup(name: string, email: string, password: string, org: string): Promise<void>;
+}

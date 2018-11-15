@@ -19,7 +19,7 @@ var config = {
       domain: "impact.eu.auth0.com",
       scope : "openid profile email",
       connection: "Username-Password-Authentication",
-      publicPages: [/login/, /jti\/.*/, /redirect/]
+      publicPages: [/login/, /jti\/.*/, /redirect/, /signup/]
     },
     analytics: {
       debug: process.env.NODE_ENV !== "production",

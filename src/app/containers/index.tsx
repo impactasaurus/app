@@ -28,3 +28,4 @@ export {ExportBenRecords} from './ExportBenRecords';
 export {CatalogueQuestionnaire} from './CatalogueQuestionnaire';
 export {Catalogue} from './Catalogue';
 export {Redirect} from './Redirect';
+export {Signup} from './Signup';
