@@ -67,7 +67,7 @@ export function signup<T>(component) {
           password,
           org,
         },
-      }),
+      }).then(()=> {}),
     }),
   })(component);
 }
