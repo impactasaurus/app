@@ -1,7 +1,14 @@
 @smallScreenIcon: ~'i.icon:not(.required)';
 
+
+
 #impactasaurus {
   .menu.massive {
+
+    @media print {
+      display: none;
+    }
+
     #twitter-icon, #impactasaurus-logo {
       width: 25px;
       height: 25px;
