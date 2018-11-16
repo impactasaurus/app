@@ -8,5 +8,6 @@
   "formFailureGeneric": "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org",
   "failureGeneric": "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org",
   "valuesNotEditable": "We do not allow the values of the scale to be edited to ensure data consistency. If you would like to change them, please delete this question and recreate it or contact support@impactasaurus.org",
-  "reportBeneficiariesIncluded": "Beneficiaries must have at least two included records, to be considered in the report"
+  "reportBeneficiariesIncluded": "Beneficiaries must have at least two included records, to be considered in the report",
+  "signupVsInvite": "If your organisation already has an account with Impactasaurus, please request an invite from your colleagues"
 }

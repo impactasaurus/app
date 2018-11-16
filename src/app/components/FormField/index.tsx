@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {Icon, Form, SemanticWIDTHS} from 'semantic-ui-react';
+import './style.less';
 
 interface IProps {
   error?: string;
@@ -16,7 +17,7 @@ export class FormField extends React.Component<IProps, any> {
     const {error, inputID, label, touched, required, width, description} = this.props;
     const errored = touched && error !== undefined;
     return (
-      <Form.Field error={errored} required={required} width={width}>
+      <Form.Field error={errored} required={required} width={width} className="form-field">
         <label htmlFor={inputID}>{label}</label>
         {description && <span className="description">{description}</span>}
         {this.props.children}
