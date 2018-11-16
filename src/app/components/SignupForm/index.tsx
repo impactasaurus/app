@@ -31,7 +31,7 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
       <FormField error={errors.password as string} touched={touched.password} inputID="su-password" label="Password" required={true}>
         <Input id="su-password" name="password" type="password" placeholder="Password" onChange={handleChange} onBlur={handleBlur} />
       </FormField>
-      <FormField error={errors.organisation as string} touched={touched.organisation} inputID="su-organisation" label="Organisation's Name" required={true}>
+      <FormField error={errors.organisation as string} touched={touched.organisation} inputID="su-organisation" label="Organisation's Name" required={true} description={strings.signupVsInvite}>
         <Input id="su-organisation" name="organisation" type="text" placeholder="Your Organisation's Name" onChange={handleChange} onBlur={handleBlur} />
       </FormField>
       <Form.Group error={errors.policyAcceptance as string} style={{marginTop: '3em'}}>
