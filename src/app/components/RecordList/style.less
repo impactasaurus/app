@@ -3,5 +3,11 @@
     td.actions i {
       cursor: pointer;
     }
+
+    .actions, .actions-header {
+      @media print {
+        display: none;
+      }
+    }
   }
 }

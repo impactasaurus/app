@@ -1,6 +1,11 @@
 @import (reference) './../../theme/variables.less';
 
 .signpost {
+
+  @media print {
+    display: none;
+  }
+
   background: @primaryl;
 
   h1 {
