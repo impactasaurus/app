@@ -8,6 +8,7 @@ import {renderArray} from 'helpers/react';
 import {Likert} from 'components/Likert';
 import {IMeeting} from 'models/meeting';
 import {isNullOrUndefined} from 'util';
+import './style.less';
 const { connect } = require('react-redux');
 
 interface IProps {
@@ -23,7 +24,7 @@ interface IProps {
 function renderQuestionNote(q: IQuestion, r: IMeeting): JSX.Element {
   const answer = r.answers.find((a) => a.questionID === q.id);
   if (answer === undefined || answer.notes === undefined || answer.notes === null) {
-    return (<span />);
+    return (<div className="notes"/>);
   }
   return (<div className="notes"><Icon name="comments outline" />{answer.notes}</div>);
 }
@@ -32,7 +33,7 @@ function renderQuestionnaireNote(r: IMeeting): JSX.Element {
   if (isNullOrUndefined(r.notes)) {
     return (<span />);
   }
-  return (<div className="notes"><Icon name="comments outline" />{r.notes}</div>);
+  return (<div className="notes main"><Icon name="comments outline" />{r.notes}</div>);
 }
 
 @connect((_, ownProps: IProps) => {
@@ -73,15 +74,15 @@ class RecordQuestionSummaryInner extends React.Component<IProps, any> {
       inner = (
         <div>
           {likert}
-          {renderQuestionNote(q, this.props.data.getMeeting)}
         </div>
       );
     }
 
     return (
-      <div key={q.id}>
+      <div key={q.id} className="question">
         <h3>{q.question}</h3>
         {inner}
+        {renderQuestionNote(q, this.props.data.getMeeting)}
       </div>
     );
   }
