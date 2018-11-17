@@ -51,7 +51,9 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
 
   private createQS(q: INewQuestionnaire) {
     return this.props.newQuestionSet(q.name, q.description)
-      .then(this.setNewClicked(false));
+      .then(() => {
+        this.logQuestionSetGAEvent('created');
+      }).then(this.setNewClicked(false));
   }
 
   private deleteQS(id: string) {
