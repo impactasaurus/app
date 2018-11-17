@@ -20,6 +20,7 @@ import {journey} from 'helpers/url';
 import {isBeneficiaryUser} from '../../helpers/auth';
 import {Thanks} from './thanks';
 const { connect } = require('react-redux');
+const ReactGA = require('react-ga');
 
 interface IProps extends IURLConnector {
   data: IMeetingResult;
@@ -89,6 +90,10 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   private completed() {
+    ReactGA.event({
+      category : 'assessment',
+      action: 'completed',
+    });
     if(isBeneficiaryUser()) {
       this.setMeetingState({
         screen: Screen.THANKS,
