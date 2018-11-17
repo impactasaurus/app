@@ -135,19 +135,23 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
   private trackUser() {
     const userID = getUserID();
     if (userID !== this.props.lastUserID) {
+      const ben = isBeneficiaryUser();
+      const org = getOrganisation();
       ReactGA.set({
         userId: userID,
+        dimension1: org,
+        dimension2: ben ? 'true' : 'false',
       });
-      this.props.setUserDetails(userID, isBeneficiaryUser());
+      this.props.setUserDetails(userID, ben);
 
       const delighted = (window as any).delighted;
-      if (isBeneficiaryUser() === false && delighted !== undefined && delighted.survey !== undefined) {
+      if (!ben && delighted !== undefined && delighted.survey !== undefined) {
         delighted.survey({
           email: getUserEmail(),
           name: getUserName(),
           createdAt: getCreatedDate(),
           properties: {
-            org: getOrganisation(),
+            org,
           },
         });
       }
