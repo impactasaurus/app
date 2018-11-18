@@ -1,6 +1,7 @@
 import {gql, graphql, QueryProps} from 'react-apollo';
 import {IOrganisation} from 'models/organisation';
 import {mutationResultExtractor} from 'helpers/apollo';
+import {IDExtractor} from '../../../helpers/apollo';
 
 export const getOrganisation = <T>(component, name: string = undefined)  => {
   return graphql<any, T>(gql`
@@ -74,4 +75,47 @@ export function signup<T>(component) {
 
 export interface ISignup {
   signup(name: string, email: string, password: string, org: string): Promise<void>;
+}
+
+export function acceptInvite<T>(component) {
+  return graphql<any, T>(gql`
+  mutation ($name: String!, $email: String!, $password: String!, $invite: String!) {
+    acceptInvite: AcceptInvite(name:$name, invite:$invite, email:$email, password:$password)
+  }`, {
+    props: ({ mutate }) => ({
+      acceptInvite: (name: string, email: string, password: string, invite: string): Promise<void> => mutate({
+        variables: {
+          name,
+          email,
+          password,
+          invite,
+        },
+      }).then(()=> {}),
+    }),
+  })(component);
+}
+
+export interface IAcceptInvite {
+  acceptInvite(name: string, email: string, password: string, invite: string): Promise<void>;
+}
+
+export const checkInvite = <T>(idExtractor: IDExtractor<T>)  => {
+  return graphql<any, T>(gql`
+    query ($id: String!) {
+      checkInvite: invite(id:$id)
+    }`, {
+    options: (props: T) => {
+      return {
+        fetchPolicy: 'network-only',
+        notifyOnNetworkStatusChange: true,
+        variables: {
+          id: idExtractor(props),
+        },
+      };
+    },
+  });
+};
+
+export interface ICheckInvite extends QueryProps {
+  checkInvite?: string;
 }
