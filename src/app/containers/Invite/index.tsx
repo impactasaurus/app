@@ -3,7 +3,7 @@ import {isUserLoggedIn} from 'redux/modules/user';
 import { IStore } from 'redux/IStore';
 import {PageWrapperHoC} from 'components/PageWrapperHoC';
 import {bindActionCreators} from 'redux';
-import { Loader } from 'semantic-ui-react';
+import { Loader, Message } from 'semantic-ui-react';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {acceptInvite, checkInvite, IAcceptInvite, ICheckInvite} from 'apollo/modules/organisation';
 import {IFormOutput, SignupForm} from 'components/SignupForm';
@@ -53,20 +53,29 @@ class InviteInner extends React.Component<IProps, any> {
 
   public render() {
     if (this.props.data.error) {
+      if (this.props.data.error.message.includes('expired')) {
+        return (
+          <Message error={true}>
+            <Message.Header>Invite Has Expired</Message.Header>
+            <div>Please request a new one.</div>
+          </Message>
+        );
+      }
+      if (this.props.data.error.message.includes('found')) {
+        return (
+          <Message error={true}>
+            <Message.Header>Unknown Invite</Message.Header>
+            <div>We did not recognize this invite. Please ensure the URL is correct.</div>
+          </Message>
+        );
+      }
       return <Error text={`Failed to load invite`} />;
     }
     if (this.props.data.loading) {
       return <Loader active={true} inline="centered" />;
     }
-    const initialValues: IFormOutput = {
-      organisation: this.props.data.checkInvite,
-      name: '',
-      email: '',
-      password: '',
-      policyAcceptance: false,
-    };
     return (
-      <SignupForm onFormSubmit={this.onFormSubmit} initial={initialValues}/>
+      <SignupForm onFormSubmit={this.onFormSubmit} collectOrgName={false}/>
     );
   }
 }

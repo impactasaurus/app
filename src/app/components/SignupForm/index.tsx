@@ -15,10 +15,13 @@ export interface IFormOutput {
 
 interface IProps {
   onFormSubmit(v: IFormOutput): Promise<void>;
+  collectOrgName?: boolean; // defaults to true
   initial?: IFormOutput;
 }
 
-const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
+const shouldCollectOrg = (p: IProps) => p.collectOrgName !== false;
+
+const InnerForm = (props: InjectedFormikProps<IProps, IFormOutput>) => {
   const { touched, error, errors, isSubmitting, submitForm, isValid, handleChange, handleBlur, values } = props;
   const termsLabel = <label>I agree to the <a href="https://impactasaurus.org/terms">Terms of Use</a> and <a href="https://impactasaurus.org/privacy">Privacy Policy</a></label>;
   return (
@@ -32,9 +35,11 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
       <FormField error={errors.password as string} touched={touched.password} inputID="su-password" label="Password" required={true}>
         <Input id="su-password" name="password" type="password" placeholder="Password" onChange={handleChange} onBlur={handleBlur} value={values.password} />
       </FormField>
-      <FormField error={errors.organisation as string} touched={touched.organisation} inputID="su-organisation" label="Organisation's Name" required={true} description={strings.signupVsInvite}>
-        <Input id="su-organisation" name="organisation" type="text" placeholder="Your Organisation's Name" onChange={handleChange} onBlur={handleBlur} value={values.organisation} />
-      </FormField>
+      {shouldCollectOrg(props) && (
+        <FormField error={errors.organisation as string} touched={touched.organisation} inputID="su-organisation" label="Organisation's Name" required={true} description={strings.signupVsInvite}>
+          <Input id="su-organisation" name="organisation" type="text" placeholder="Your Organisation's Name" onChange={handleChange} onBlur={handleBlur} value={values.organisation} />
+        </FormField>
+      )}
       <Form.Group error={errors.policyAcceptance as string} style={{marginTop: '3em'}}>
         <Form.Checkbox id="su-policy" name="policyAcceptance" label={termsLabel} onChange={handleChange} />
       </Form.Group>
@@ -47,7 +52,7 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
 };
 
 export const SignupForm = withFormik<IProps, IFormOutput>({
-  validate: (values: IFormOutput) => {
+  validate: (values: IFormOutput, p: IProps) => {
     const errors: FormikErrors<IFormOutput> = {};
     if (values.policyAcceptance !== true) {
       errors.policyAcceptance = 'To use Impactasaurus you must accept the terms of use and privacy policy' as any;
@@ -67,7 +72,7 @@ export const SignupForm = withFormik<IProps, IFormOutput>({
     if (values.password && values.password.length < 6) {
       errors.password = 'Passwords should be at least 6 characters long';
     }
-    if (!values.organisation || values.organisation.length === 0) {
+    if (shouldCollectOrg(p) && (!values.organisation || values.organisation.length === 0)) {
       errors.organisation = 'Please provide your organisation\'s name';
     }
     return errors;
