@@ -15,24 +15,25 @@ export interface IFormOutput {
 
 interface IProps {
   onFormSubmit(v: IFormOutput): Promise<void>;
+  initial?: IFormOutput;
 }
 
 const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
-  const { touched, error, errors, isSubmitting, submitForm, isValid, handleChange, handleBlur } = props;
+  const { touched, error, errors, isSubmitting, submitForm, isValid, handleChange, handleBlur, values } = props;
   const termsLabel = <label>I agree to the <a href="https://impactasaurus.org/terms">Terms of Use</a> and <a href="https://impactasaurus.org/privacy">Privacy Policy</a></label>;
   return (
     <Form className="screen" onSubmit={submitForm}>
       <FormField error={errors.name as string} touched={touched.name} inputID="su-name" label="Name" required={true}>
-        <Input id="su-name" name="name" type="text" placeholder="Your Name" onChange={handleChange} onBlur={handleBlur} />
+        <Input id="su-name" name="name" type="text" placeholder="Your Name" onChange={handleChange} onBlur={handleBlur} value={values.name} />
       </FormField>
       <FormField error={errors.email as string} touched={touched.email} inputID="su-email" label="Email" required={true}>
-        <Input id="su-email" name="email" type="text" placeholder="Your Email" onChange={handleChange} onBlur={handleBlur} />
+        <Input id="su-email" name="email" type="text" placeholder="Your Email" onChange={handleChange} onBlur={handleBlur} value={values.email} />
       </FormField>
       <FormField error={errors.password as string} touched={touched.password} inputID="su-password" label="Password" required={true}>
-        <Input id="su-password" name="password" type="password" placeholder="Password" onChange={handleChange} onBlur={handleBlur} />
+        <Input id="su-password" name="password" type="password" placeholder="Password" onChange={handleChange} onBlur={handleBlur} value={values.password} />
       </FormField>
       <FormField error={errors.organisation as string} touched={touched.organisation} inputID="su-organisation" label="Organisation's Name" required={true} description={strings.signupVsInvite}>
-        <Input id="su-organisation" name="organisation" type="text" placeholder="Your Organisation's Name" onChange={handleChange} onBlur={handleBlur} />
+        <Input id="su-organisation" name="organisation" type="text" placeholder="Your Organisation's Name" onChange={handleChange} onBlur={handleBlur} value={values.organisation} />
       </FormField>
       <Form.Group error={errors.policyAcceptance as string} style={{marginTop: '3em'}}>
         <Form.Checkbox id="su-policy" name="policyAcceptance" label={termsLabel} onChange={handleChange} />
@@ -85,7 +86,10 @@ export const SignupForm = withFormik<IProps, IFormOutput>({
         }
       });
   },
-  mapPropsToValues: (_: IProps): IFormOutput => {
+  mapPropsToValues: (p: IProps): IFormOutput => {
+    if (p.initial !== undefined && p.initial !== null) {
+      return p.initial;
+    }
     return {
       name: '',
       email: '',
