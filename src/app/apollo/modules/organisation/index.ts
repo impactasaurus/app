@@ -119,3 +119,18 @@ export const checkInvite = <T>(idExtractor: IDExtractor<T>)  => {
 export interface ICheckInvite extends QueryProps {
   checkInvite?: string;
 }
+
+export function generateInvite<T>(component) {
+  return graphql<any, T>(gql`
+  mutation {
+    generateInvite: GetInviteLink
+  }`, {
+    props: ({ mutate }) => ({
+      generateInvite: (): Promise<string> => mutate({}).then(mutationResultExtractor<string>('generateInvite')),
+    }),
+  })(component);
+}
+
+export interface IGenerateInvite {
+  generateInvite(): Promise<string>;
+}

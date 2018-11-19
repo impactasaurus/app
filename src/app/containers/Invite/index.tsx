@@ -32,18 +32,6 @@ class InviteInner extends React.Component<IProps, any> {
     this.onFormSubmit = this.onFormSubmit.bind(this);
   }
 
-  public componentDidMount() {
-    if (this.props.isLoggedIn) {
-      this.props.setURL('/');
-    }
-  }
-
-  public componentDidUpdate() {
-    if (this.props.isLoggedIn) {
-      this.props.setURL('/');
-    }
-  }
-
   private onFormSubmit(v: IFormOutput): Promise<void> {
     return this.props.acceptInvite(v.name, v.email, v.password, this.props.match.params.id)
       .then(() => {
@@ -52,6 +40,13 @@ class InviteInner extends React.Component<IProps, any> {
   }
 
   public render() {
+    if (this.props.isLoggedIn) {
+      return (
+        <Message error={true}>
+          <div>Please logout to use this invite link.</div>
+        </Message>
+      );
+    }
     if (this.props.data.error) {
       if (this.props.data.error.message.includes('expired')) {
         return (
