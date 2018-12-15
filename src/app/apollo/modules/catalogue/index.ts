@@ -1,5 +1,5 @@
 import {gql, graphql, QueryProps} from 'react-apollo';
-import {fragment, IOutcomeSet} from 'models/outcomeSet';
+import {fragment, IOutcomeSet, ICatalogueOS} from 'models/outcomeSet';
 import {IDExtractor, mutationResultExtractor} from 'helpers/apollo';
 import {allOutcomeSetsGQL} from 'apollo/modules/outcomeSets';
 
@@ -7,7 +7,9 @@ export const getCatalogueQuestionnaire = <T>(idExtractor: IDExtractor<T>) => {
   return graphql<any, T>(gql`
     query getCatalogueQuestionnaire($id: String!) {
       getCatalogueQuestionnaire: catalogueQuestionnaire(id:$id, source:"softoutcomes") {
-        ...defaultOutcomeSet
+        outcomeset {
+          ...defaultOutcomeSet
+        }
       }
     }
     ${fragment}`,
@@ -23,21 +25,23 @@ export const getCatalogueQuestionnaire = <T>(idExtractor: IDExtractor<T>) => {
 };
 
 export interface ICatalogueQuestionnaire extends QueryProps {
-  getCatalogueQuestionnaire?: IOutcomeSet;
+  getCatalogueQuestionnaire?: ICatalogueOS;
 }
 
 export function getCatalogueQuestionnaires<T>(component) {
   return graphql<any, T>(gql`
     query getCatalogueQuestionnaires {
       getCatalogueQuestionnaires: outcomesetCatalogue(source:"softoutcomes") {
-        ...defaultOutcomeSet
+        outcomeset {
+          ...defaultOutcomeSet
+        }
       }
     }
     ${fragment}`)(component);
 }
 
 export interface ICatalogueQuestionnaires extends QueryProps {
-  getCatalogueQuestionnaires?: IOutcomeSet[];
+  getCatalogueQuestionnaires?: ICatalogueOS[];
 }
 
 export function importQuestionnaire<T>(component) {

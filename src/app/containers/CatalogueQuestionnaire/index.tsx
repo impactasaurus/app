@@ -128,7 +128,7 @@ class CatalogueQuestionnaireInner extends React.Component<IProps, any> {
           <Route path={`${match}/categories`} component={Categories} />
         </Switch>
       </div>
-    ), getCatalogueQuestionnaire.name);
+    ), getCatalogueQuestionnaire.outcomeset.name);
   }
 }
 

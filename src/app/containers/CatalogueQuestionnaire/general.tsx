@@ -18,15 +18,15 @@ interface IProps {
 const GeneralReadOnlyForm = (p: IProps) => (
   <Form className="screen">
     <FormField touched={false} inputID="qg-name" required={true} label="Name">
-      <span>{p.data.getCatalogueQuestionnaire.name}</span>
+      <span>{p.data.getCatalogueQuestionnaire.outcomeset.name}</span>
     </FormField>
     <FormField touched={false} inputID="qg-description" label="Description">
-      <span>{p.data.getCatalogueQuestionnaire.description}</span>
+      <span>{p.data.getCatalogueQuestionnaire.outcomeset.description}</span>
     </FormField>
     <FormField touched={false} inputID="qg-instructions" label={(
       <span><Hint text={strings.instructionsExplanation} />Instructions</span>
     )}>
-      <span>{p.data.getCatalogueQuestionnaire.instructions}</span>
+      <span>{p.data.getCatalogueQuestionnaire.outcomeset.instructions}</span>
     </FormField>
   </Form>
 );

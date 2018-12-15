@@ -26,3 +26,7 @@ export const fragment = gql`
     }
   }
   ${qFragment} ${cFragment}`;
+
+export interface ICatalogueOS {
+  outcomeset: IOutcomeSet;
+}
