@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {IOutcomeSet} from 'models/outcomeSet';
+import {ICatalogueOS} from 'models/outcomeSet';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {renderArray} from 'helpers/react';
 import { bindActionCreators } from 'redux';
@@ -15,7 +15,7 @@ interface IProps extends IURLConnector {
   data: ICatalogueQuestionnaires;
 }
 
-const renderQuestionnaire = (os: IOutcomeSet, onClick: () => void): JSX.Element => (
+const renderQuestionnaire = ({outcomeset: os}: ICatalogueOS, onClick: () => void): JSX.Element => (
   <List.Item className="questionnaire" key={os.id}>
     <List.Content floated="right">
       <ImportQuestionnaireButton questionnaireID={os.id} text={false} options={{size: 'tiny'}}/>
@@ -36,8 +36,8 @@ class CatalogueInner extends React.Component<IProps, any> {
     return () => this.props.setURL(`/catalogue/${id}`);
   }
 
-  private renderQuestionnaire(q: IOutcomeSet) {
-    return renderQuestionnaire(q, this.navigateToQuestionnaire(q.id).bind(this));
+  private renderQuestionnaire(q: ICatalogueOS) {
+    return renderQuestionnaire(q, this.navigateToQuestionnaire(q.outcomeset.id).bind(this));
   }
 
   public render() {
