@@ -23,6 +23,9 @@ const GeneralReadOnlyForm = (p: IProps) => (
     <FormField touched={false} inputID="qg-description" label="Description">
       <span>{p.data.getCatalogueQuestionnaire.outcomeset.description}</span>
     </FormField>
+    <FormField touched={false} inputID="qg-license" label="License">
+      <span>{p.data.getCatalogueQuestionnaire.license}</span>
+    </FormField>
     <FormField touched={false} inputID="qg-instructions" label={(
       <span><Hint text={strings.instructionsExplanation} />Instructions</span>
     )}>
