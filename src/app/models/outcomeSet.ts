@@ -28,5 +28,15 @@ export const fragment = gql`
   ${qFragment} ${cFragment}`;
 
 export interface ICatalogueOS {
+  license: string;
   outcomeset: IOutcomeSet;
 }
+
+export const catalogueFragment = gql`
+  fragment catalogueOutcomeSet on CatalogueOutcomeSet {
+    license,
+    outcomeset {
+      ...defaultOutcomeSet
+    }
+  }
+  ${fragment}`;
