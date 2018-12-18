@@ -29,12 +29,14 @@ export const fragment = gql`
 
 export interface ICatalogueOS {
   license: string;
+  attribution?: string;
   outcomeset: IOutcomeSet;
 }
 
 export const catalogueFragment = gql`
   fragment catalogueOutcomeSet on CatalogueOutcomeSet {
     license,
+    attribution,
     outcomeset {
       ...defaultOutcomeSet
     }
