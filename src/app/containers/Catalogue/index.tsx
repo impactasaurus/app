@@ -44,6 +44,11 @@ class CatalogueInner extends React.Component<IProps, any> {
     return (
       <List divided={true} relaxed={true} verticalAlign="middle" className="list">
         {renderArray(this.renderQuestionnaire.bind(this), this.props.data.getCatalogueQuestionnaires || [])}
+        <List.Item  key="morecomingsoon">
+          <List.Content>
+            <List.Header>More Coming Soon...</List.Header>
+          </List.Content>
+        </List.Item>
       </List>
     );
   }
