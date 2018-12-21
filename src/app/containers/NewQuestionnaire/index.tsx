@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { Card, Button, Icon } from 'semantic-ui-react';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {INewQuestionnaire, NewQuestionnaireForm} from 'components/NewQuestionnaireForm';
 import { bindActionCreators } from 'redux';
 import {newQuestionSet} from 'apollo/modules/outcomeSets';
 import {IOutcomeMutation} from '../../apollo/modules/outcomeSets';
 import {PageWrapperHoC} from '../../components/PageWrapperHoC';
-import './style.less';
 import {IOutcomeSet} from '../../models/outcomeSet';
+import {Item, MultiChoice} from '../../components/MultiChoice';
 const { connect } = require('react-redux');
 
 enum CustomState {
@@ -68,41 +67,19 @@ class NewQuestionnaireInner extends React.Component<IProps, IState> {
     if (this.state.customState === CustomState.GENERAL) {
       return this.renderNewControl();
     }
+    const items: Item[] = [{
+      title: 'Custom',
+      subtitle: 'Create your own questionnaire',
+      onClick: this.goToState(CustomState.GENERAL),
+    }, {
+      title: 'Catalogue',
+      subtitle: 'Select a questionnaire from the literature',
+      onClick: this.goToCatalogue,
+    }];
     return (
-      <Card.Group>
-        <Card>
-          <div className="type-pic first">
-            <Icon name="edit" size="big" />
-          </div>
-          <Card.Content>
-            <Card.Header>
-              Custom
-            </Card.Header>
-            <Card.Meta>
-              Create your own questionnaire
-            </Card.Meta>
-          </Card.Content>
-          <Card.Content extra={true}>
-            <Button primary={true} onClick={this.goToState(CustomState.GENERAL)}>Select</Button>
-          </Card.Content>
-        </Card>
-        <Card>
-          <div className="type-pic second">
-            <Icon name="th list" size="big" />
-          </div>
-          <Card.Content>
-            <Card.Header>
-              Catalogue
-            </Card.Header>
-            <Card.Meta>
-              Select a questionnaire from the literature
-            </Card.Meta>
-          </Card.Content>
-          <Card.Content extra={true}>
-            <Button primary={true} onClick={this.goToCatalogue}>Select</Button>
-          </Card.Content>
-        </Card>
-      </Card.Group>
+      <div style={{paddingTop: '2rem'}}>
+        <MultiChoice items={items} />
+      </div>
     );
   }
 }

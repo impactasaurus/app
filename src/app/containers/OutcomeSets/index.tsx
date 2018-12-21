@@ -5,7 +5,7 @@ import {IOutcomeSet} from 'models/outcomeSet';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {renderArray} from 'helpers/react';
 import { bindActionCreators } from 'redux';
-import { List, Icon, Grid, Loader, Message } from 'semantic-ui-react';
+import { List, Icon, Grid, Loader } from 'semantic-ui-react';
 import {ConfirmButton} from 'components/ConfirmButton';
 import {Error} from 'components/Error';
 import './style.less';
