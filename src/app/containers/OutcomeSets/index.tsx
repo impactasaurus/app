@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import {IOutcomeResult, IOutcomeMutation, allOutcomeSets, newQuestionSet, deleteQuestionSet} from 'apollo/modules/outcomeSets';
+import {IOutcomeResult, IOutcomeMutation, allOutcomeSets, deleteQuestionSet} from 'apollo/modules/outcomeSets';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {renderArray} from 'helpers/react';
 import { bindActionCreators } from 'redux';
-import { List, Icon, Grid, Loader, Message } from 'semantic-ui-react';
-import {INewQuestionnaire, NewQuestionnaireForm} from 'components/NewQuestionnaireForm';
+import { List, Icon, Grid, Loader } from 'semantic-ui-react';
 import {ConfirmButton} from 'components/ConfirmButton';
 import {Error} from 'components/Error';
 import './style.less';
@@ -19,7 +18,6 @@ interface IProps extends IOutcomeMutation, IURLConnector {
 
 interface IState {
   deleteError?: string;
-  newClicked?: boolean;
 }
 
 @connect(undefined, (dispatch) => ({
@@ -30,12 +28,10 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {};
-    this.createQS = this.createQS.bind(this);
     this.deleteQS = this.deleteQS.bind(this);
     this.navigateToOutcomeSet = this.navigateToOutcomeSet.bind(this);
     this.renderOutcomeSet = this.renderOutcomeSet.bind(this);
-    this.renderNewControl = this.renderNewControl.bind(this);
-    this.setNewClicked = this.setNewClicked.bind(this);
+    this.newClicked = this.newClicked.bind(this);
   }
 
   private navigateToOutcomeSet(id: string) {
@@ -47,13 +43,6 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
         category: 'questionset',
         action,
     });
-  }
-
-  private createQS(q: INewQuestionnaire) {
-    return this.props.newQuestionSet(q.name, q.description)
-      .then(() => {
-        this.logQuestionSetGAEvent('created');
-      }).then(this.setNewClicked(false));
   }
 
   private deleteQS(id: string) {
@@ -90,36 +79,18 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     );
   }
 
-  private setNewClicked(toSet: boolean): ()=>void {
-    return ()=> {
-      this.setState({
-        newClicked: toSet,
-      });
-    };
+  private newClicked() {
+    this.props.setURL('/questions/new');
   }
 
   private renderNewControl(): JSX.Element {
-    if (this.state.newClicked) {
-      return (
-        <Message className="form-container">
-          <Message.Header>New Questionnaire</Message.Header>
-          <Message.Content>
-            <NewQuestionnaireForm
-              onCancel={this.setNewClicked(false)}
-              submit={this.createQS}
-            />
-          </Message.Content>
-        </Message>
-      );
-    } else {
-      return (
-        <List.Item className="new-control" key="new">
-          <List.Content onClick={this.setNewClicked(true)}>
-            <List.Header as="a">New Questionnaire</List.Header>
-          </List.Content>
-        </List.Item>
-      );
-    }
+    return (
+      <List.Item className="new-control" key="new">
+        <List.Content onClick={this.newClicked}>
+          <List.Header as="a">New Questionnaire</List.Header>
+        </List.Content>
+      </List.Item>
+    );
   }
 
   public render() {
@@ -152,5 +123,5 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     );
   }
 }
-const OutcomeSets = allOutcomeSets<IProps>(deleteQuestionSet(newQuestionSet(SettingQuestionsInner)));
+const OutcomeSets = allOutcomeSets<IProps>(deleteQuestionSet(SettingQuestionsInner));
 export {OutcomeSets };
