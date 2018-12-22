@@ -76,11 +76,7 @@ class NewQuestionnaireInner extends React.Component<IProps, IState> {
       subtitle: 'Select a questionnaire from the literature',
       onClick: this.goToCatalogue,
     }];
-    return (
-      <div style={{paddingTop: '2rem'}}>
-        <MultiChoice items={items} />
-      </div>
-    );
+    return <MultiChoice items={items} />;
   }
 }
 

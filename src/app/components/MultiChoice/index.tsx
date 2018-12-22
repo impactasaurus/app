@@ -15,7 +15,7 @@ interface IProps {
 }
 
 const MultiChoiceItem = (i: Item): JSX.Element => (
-  <Card className="choice">
+  <Card className="choice" key={i.title}>
     <Card.Content>
       <Card.Header>
         {i.title}
@@ -38,7 +38,9 @@ const MultiChoiceItem = (i: Item): JSX.Element => (
 );
 
 export const MultiChoice = (p: IProps) => (
-  <Card.Group className="multi-choice">
-    {p.items.map((i) => MultiChoiceItem(i))}
-  </Card.Group>
+  <div style={{paddingTop: '2rem'}}>
+    <Card.Group className="multi-choice">
+      {p.items.map((i) => MultiChoiceItem(i))}
+    </Card.Group>
+  </div>
 );
