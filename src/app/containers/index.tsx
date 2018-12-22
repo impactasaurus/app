@@ -30,4 +30,4 @@ export {Catalogue} from './Catalogue';
 export {Redirect} from './Redirect';
 export {Signup} from './Signup';
 export {Invite} from './Invite';
-export {NewQuestionnaire} from './NewQuestionnaire';
+export {NewQuestionnaireTypeSelector, NewQuestionnaireForm} from './NewQuestionnaire';
