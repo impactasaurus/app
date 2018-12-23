@@ -73,7 +73,9 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
         </List.Content>
         <List.Content onClick={this.navigateToOutcomeSet(os.id)}>
           <List.Header as="a">{os.name}</List.Header>
-          <List.Description as="a">{os.description}</List.Description>
+          {os.description && (
+            <List.Description as="a">{os.description}</List.Description>
+          )}
         </List.Content>
       </List.Item>
     );
