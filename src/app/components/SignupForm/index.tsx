@@ -23,7 +23,7 @@ const shouldCollectOrg = (p: IProps) => p.collectOrgName !== false;
 
 const InnerForm = (props: InjectedFormikProps<IProps, IFormOutput>) => {
   const { touched, error, errors, isSubmitting, submitForm, isValid, handleChange, handleBlur, values } = props;
-  const termsLabel = <label>I agree to the <a href="https://impactasaurus.org/terms">Terms of Use</a> and <a href="https://impactasaurus.org/privacy">Privacy Policy</a></label>;
+  const termsLabel = <label>I agree to the <a href="https://impactasaurus.org/terms">Terms of Use</a>, <a href="https://impactasaurus.org/privacy">Privacy Policy</a> and <a href="https://impactasaurus.org/cookie">Cookie Policy</a></label>;
   return (
     <Form className="screen" onSubmit={submitForm}>
       <FormField error={errors.name as string} touched={touched.name} inputID="su-name" label="Name" required={true}>
