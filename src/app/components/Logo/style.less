@@ -1,3 +1,5 @@
+@import (reference) '../../theme/typo.less';
+
 .impactasaurus-logo {
   display: flex;
   align-items: center;
@@ -8,8 +10,9 @@
   }
 
   span {
+    font-family: @headings-font-family;
     margin-left: 10px;
-    font-weight: bold;
+    font-weight: @headings-font-weight;
     font-size: 1.25rem;
   }
 }

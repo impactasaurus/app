@@ -14,5 +14,5 @@
 @lightSecondaryColor: @accentl;
 
 
-@textColor: rgb(99,99,99);
+@textColor: hsla(0, 0%, 0%, 0.8);
 @linkColor: @primary;
