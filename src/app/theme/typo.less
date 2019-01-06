@@ -1,11 +1,19 @@
 @import (reference) './variables.less';
 
+@import url('//fonts.googleapis.com/css?family=Nunito:700|Source+Sans+Pro:300,400');
+
+@headings-font-family: 'Nunito',sans-serif;
+@headings-font-weight: 700;
+
 #impactasaurus {
   h1 {
     font-size: 2.5em;
-    line-height: 1.1;
-    font-weight: 300;
-    margin-bottom: 1em;
+    line-height: 1.2;
+    font-weight: @headings-font-weight;
+    margin: 0 0 2.6875rem;
+    letter-spacing: 1px;
+    text-align: center;
+    font-family: @headings-font-family;
 
     &.close {
       margin-bottom: 1rem;

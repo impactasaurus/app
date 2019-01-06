@@ -5,9 +5,9 @@ import { bindActionCreators } from 'redux';
 import { IStore } from 'redux/IStore';
 import {isUserLoggedIn, isBeneficiaryUser, RequestLogoutFunc, requestLogOut} from 'redux/modules/user';
 import './style.less';
+import Logo from '../Logo';
 const { connect } = require('react-redux');
 const TwitterIcon = require('./twitter.inline.svg');
-const Logo = require('./logo.inline.svg');
 
 interface IProps extends IURLConnector  {
   currentURL?: string;
@@ -60,15 +60,15 @@ export class Header extends React.Component<IProps, any> {
           </Menu.Item>
           <Menu.Item active={this.isActive('/beneficiary')} onClick={this.handleClick('/beneficiary')}>
             <Icon name="user"/>
-            <span>Beneficiary</span>
+            <span className="title">Beneficiary</span>
           </Menu.Item>
           <Menu.Item active={this.isActive('/report')} onClick={this.handleClick('/report')}>
             <Icon name="line graph"/>
-            <span>Report</span>
+            <span className="title">Report</span>
           </Menu.Item>
           <Menu.Item active={this.isActive('/catalogue') || this.isActive('/questions')} onClick={this.handleClick('/questions')}>
             <Icon name="question"/>
-            <span>Questionnaires</span>
+            <span className="title">Questionnaires</span>
           </Menu.Item>
           <Menu.Item id="add-menu-link" active={this.isActive('/record') || this.isActive('/meeting') || this.isActive('/dataentry')} onClick={this.handleClick('/record')}>
             <Icon name="plus" className="required" />
@@ -80,11 +80,11 @@ export class Header extends React.Component<IProps, any> {
             </Menu.Item>
             <Menu.Item active={this.isActive('/settings')} onClick={this.handleClick('/settings')}>
               <Icon name="cog"/>
-              <span>Settings</span>
+              <span className="title">Settings</span>
             </Menu.Item>
             <Menu.Item onClick={this.logOut()}>
               <Icon name="log out"/>
-              <span>Log Out</span>
+              <span className="title">Log Out</span>
             </Menu.Item>
           </Menu.Menu>
         </Menu>
@@ -92,6 +92,9 @@ export class Header extends React.Component<IProps, any> {
     } else if (this.props.isLoggedIn && this.props.isBeneficiary) {
       return(
         <Menu size="massive">
+          <Menu.Item id="home-link">
+            <Logo />
+          </Menu.Item>
           <Menu.Menu position="right">
             <Menu.Item name="log out" onClick={this.logOut()} />
           </Menu.Menu>
@@ -100,7 +103,9 @@ export class Header extends React.Component<IProps, any> {
     } else {
       return(
         <Menu size="massive">
-          <Menu.Item name="Impactasaurus" active={this.isActive('/', true)} onClick={this.handleClick('/')} />
+          <Menu.Item id="home-link" active={this.isActive('/', true)} onClick={this.handleClick('/')} className="icon-menu-item">
+            <Logo />
+          </Menu.Item>
         </Menu>
       );
     }

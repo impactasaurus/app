@@ -2,11 +2,11 @@
 
 @fontName          : 'Source Sans Pro';
 @headerFont        : @fontName, Helvetica, sans-serif;
-@pageFont          : @fontName, Helvetica, sans-serif;
+@pageFont          : "Source Sans Pro", "Arial", "Helvetica", "sans-serif";
 @importGoogleFonts : false;
 
-@emSize   : 14px;
-@fontSize : 14px;
+@emSize   : 16px;
+@fontSize : 16px;
 
 @primaryColor: @primary;
 @secondaryColor: @accent;
@@ -14,5 +14,5 @@
 @lightSecondaryColor: @accentl;
 
 
-@textColor: rgb(99,99,99);
+@textColor: hsla(0, 0%, 0%, 0.8);
 @linkColor: @primary;
