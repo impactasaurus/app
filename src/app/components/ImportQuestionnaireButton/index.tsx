@@ -50,7 +50,8 @@ class Inner extends React.Component<IProps, IState> {
   public render() {
     const options: ButtonProps = {...this.props.options};
     let icon: SemanticICONS = 'add';
-    let popup = 'Import to your account';
+    const text = 'Add to your questionnaires';
+    let popup = text;
     if (this.state.error) {
       options.color = 'red';
       icon = 'close';
@@ -59,7 +60,7 @@ class Inner extends React.Component<IProps, IState> {
       options.primary = true;
     }
     if (this.props.text) {
-      options.children = <span><Icon name={icon} />Import</span>;
+      options.children = <span><Icon name={icon} />{text}</span>;
     } else {
       options.icon = icon;
     }
