@@ -21,7 +21,7 @@ const Inner = (p: IProps) => {
       description="Questionnaires are used to collect information from your beneficiaries. They should measure the outcomes you wish to achieve. Create a questionnaire with 3 or more questions."
       completed={completed}
       loading={loading}
-      link="/questions"
+      link="/questions/new"
     />
   );
 };
