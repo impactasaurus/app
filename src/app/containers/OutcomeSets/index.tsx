@@ -9,6 +9,7 @@ import { List, Icon, Grid, Loader } from 'semantic-ui-react';
 import {ConfirmButton} from 'components/ConfirmButton';
 import {Error} from 'components/Error';
 import './style.less';
+import {OnboardingNewRecordHint} from 'components/OnboardingNewRecordHint';
 const { connect } = require('react-redux');
 const ReactGA = require('react-ga');
 
@@ -119,6 +120,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
             <title>Questionnaires</title>
           </Helmet>
           <h1>Questionnaires</h1>
+          <OnboardingNewRecordHint />
           {inner}
         </Grid.Column>
       </Grid>
