@@ -10,6 +10,7 @@ import {newMeetingFromSummon} from '../../apollo/modules/summon';
 import {PageWrapperHoC} from '../../components/PageWrapperHoC';
 const { connect } = require('react-redux');
 const ReactGA = require('react-ga');
+const strings = require('./../../../strings.json');
 
 interface IProps extends IURLConnector, ISummonAcceptanceMutation {
   match: {
@@ -49,9 +50,17 @@ class SummonAcceptanceInner extends React.Component<IProps, any> {
         this.logResult('success');
         this.props.setURL(`/jti/${jti}`);
       })
-      .catch((e) => {
-        this.logResult('error');
-        throw e;
+      .catch((e: Error) => {
+        this.logResult(e.message);
+        if (e.message.includes('expired')) {
+          throw new Error('This link has expired. Please request a new link');
+        } else if (e.message.includes('exhausted')) {
+          throw new Error('This link has been exhausted. Please request a new link');
+        } else if (e.message.includes('found')) {
+          throw new Error('We did not recognise this link. Please request a new link');
+        } else {
+          throw new Error(`Loading questionnaire failed. ${strings.formFailureGeneric}`);
+        }
       });
   }
 
@@ -63,4 +72,4 @@ class SummonAcceptanceInner extends React.Component<IProps, any> {
   }
 }
 
-export const SummonAcceptance = newMeetingFromSummon(PageWrapperHoC<IProps>('Complete Questionnaire', 'summonAcceptance', SummonAcceptanceInner));
+export const SummonAcceptance = newMeetingFromSummon(PageWrapperHoC<IProps>('Welcome', 'summonAcceptance', SummonAcceptanceInner));

@@ -2,7 +2,6 @@ import * as React from 'react';
 import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
 import {FormField} from 'components/FormField';
 import {Form, Input, Icon } from 'semantic-ui-react';
-const strings = require('./../../../strings.json');
 
 interface IFormOuput {
   beneficiaryID: string;
@@ -22,7 +21,7 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOuput>) => {
       <Form.Group>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Submit</Form.Button>
       </Form.Group>
-      {error && <span className="submit-error"><Icon name="exclamation" />Loading questionnaire failed. {strings.formFailureGeneric}</span>}
+      {error && <span className="submit-error"><Icon name="exclamation" />{error}</span>}
     </Form>
   );
 };
@@ -41,9 +40,9 @@ export const SummonForm = withFormik<IFormProps, IFormOuput>({
       .then(() => {
         // will move on from this component so no need to do anything
       })
-      .catch(() => {
+      .catch((e: Error) => {
         formikBag.setSubmitting(false);
-        formikBag.setError('Failed');
+        formikBag.setError(e.message);
       });
   },
 })(InnerForm);
