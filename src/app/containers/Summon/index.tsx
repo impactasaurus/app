@@ -1,12 +1,17 @@
 import * as React from 'react';
 import {isUserLoggedIn, isBeneficiaryUser as isCurrentUserABeneficiary} from 'redux/modules/user';
 import { IStore } from 'redux/IStore';
-import { Grid } from 'semantic-ui-react';
 import {LoggedInUserConfirmation} from 'components/LogoutConfirmation';
-import {SummonLoader} from './loader';
+import {SummonForm} from './form';
+import {bindActionCreators} from 'redux';
+import {IURLConnector, setURL} from 'redux/modules/url';
+import {ISummonAcceptanceMutation} from 'apollo/modules/summon';
+import {newMeetingFromSummon} from '../../apollo/modules/summon';
+import {PageWrapperHoC} from '../../components/PageWrapperHoC';
 const { connect } = require('react-redux');
+const ReactGA = require('react-ga');
 
-interface IProps {
+interface IProps extends IURLConnector, ISummonAcceptanceMutation {
   match: {
     params: {
       id: string,
@@ -19,21 +24,43 @@ interface IProps {
 @connect((state: IStore) => ({
   isLoggedIn: isUserLoggedIn(state.user),
   isBeneficiary: isCurrentUserABeneficiary(state.user),
+}), (dispatch) => ({
+  setURL: bindActionCreators(setURL, dispatch),
 }))
-export class SummonAcceptance extends React.Component<IProps, any> {
+class SummonAcceptanceInner extends React.Component<IProps, any> {
+
+  constructor(props) {
+    super(props);
+    this.logResult = this.logResult.bind(this);
+    this.createRecord = this.createRecord.bind(this);
+  }
+
+  private logResult(label: string) {
+    ReactGA.event({
+      category: 'summon',
+      action: 'acceptance',
+      label,
+    });
+  }
+
+  private createRecord(beneficiaryID: string): Promise<void> {
+    return this.props.newMeetingFromSummon(this.props.match.params.id, beneficiaryID)
+      .then((jti) => {
+        this.logResult('success');
+        this.props.setURL(`/jti/${jti}`);
+      })
+      .catch((e) => {
+        this.logResult('error');
+        throw e;
+      });
+  }
+
   public render() {
-    const wrapper = (inner: JSX.Element): JSX.Element => {
-      return (
-        <Grid container={true} columns={1} id="summonAcceptance">
-          <Grid.Column>
-            {inner}
-          </Grid.Column>
-        </Grid>
-      );
-    };
     if (this.props.isLoggedIn && !this.props.isBeneficiary) {
-      return wrapper(<LoggedInUserConfirmation />);
+      return <LoggedInUserConfirmation />;
     }
-    return wrapper(<SummonLoader id={this.props.match.params.id}/>);
+    return <SummonForm onBeneficiarySelect={this.createRecord}/>;
   }
 }
+
+export const SummonAcceptance = newMeetingFromSummon(PageWrapperHoC<IProps>('Complete Questionnaire', 'summonAcceptance', SummonAcceptanceInner));
