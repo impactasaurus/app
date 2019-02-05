@@ -2,8 +2,8 @@ import * as React from 'react';
 import {isUserLoggedIn, isBeneficiaryUser as isCurrentUserABeneficiary} from 'redux/modules/user';
 import { IStore } from 'redux/IStore';
 import { Grid } from 'semantic-ui-react';
-import {LoggedInUserConfirmation} from './confirmation';
 import {JTILoader} from './loader';
+import {LoggedInUserConfirmation} from 'components/LogoutConfirmation';
 const { connect } = require('react-redux');
 
 interface IProps {
