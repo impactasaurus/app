@@ -4,16 +4,18 @@ import {IMeetingMutation, newMeeting, newRemoteMeeting} from 'apollo/modules/mee
 import {IURLConnector, setURL} from 'redux/modules/url';
 import { AssessmentType, IAssessmentConfig, defaultRemoteMeetingLimit } from 'models/assessment';
 import { bindActionCreators } from 'redux';
-import { Grid, Message } from 'semantic-ui-react';
+import { Grid, Message, Button } from 'semantic-ui-react';
 import {AssessmentConfig as AssessmentConfigComponent} from 'components/AssessmentConfig';
 import {QuestionnaireRequired} from 'components/QuestionnaireRequired';
+import {SummonConfig} from './summonConfig';
+import {generateSummon, IGenerateSummon} from '../../apollo/modules/summon';
 const { connect } = require('react-redux');
 const config = require('../../../../config/main');
 const ReactGA = require('react-ga');
 
 const ConfigComponent = QuestionnaireRequired('To create a record', AssessmentConfigComponent);
 
-interface IProp extends IMeetingMutation, IURLConnector {
+interface IProp extends IMeetingMutation, IURLConnector, IGenerateSummon {
   match: {
     params: {
       type: string,
@@ -25,7 +27,8 @@ interface IProp extends IMeetingMutation, IURLConnector {
 }
 
 interface IState {
-  jti?: string;
+  link?: string;
+  typ: AssessmentType;
 }
 
 function getBen(p: IProp): string|undefined {
@@ -40,7 +43,9 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      typ: AssessmentType[this.props.match.params.type],
+    };
     this.shouldGetDate = this.shouldGetDate.bind(this);
     this.startMeeting = this.startMeeting.bind(this);
     this.renderInner = this.renderInner.bind(this);
@@ -48,17 +53,22 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
     this.getType = this.getType.bind(this);
     this.recordMeetingStarted = this.recordMeetingStarted.bind(this);
     this.getButtonText = this.getButtonText.bind(this);
+    this.setType = this.setType.bind(this);
+    this.generateSummon = this.generateSummon.bind(this);
   }
 
   private getType(): AssessmentType {
-    return AssessmentType[this.props.match.params.type];
+    // we duplicate type to state so we can adjust it within the component
+    // we do not offer summon type external to this page
+    // instead we offer remote, which covers remote and summon types
+    return this.state.typ;
   }
 
   private recordMeetingStarted() {
     ReactGA.event({
       category: 'assessment',
       action: 'started',
-      label: this.props.match.params.type,
+      label: AssessmentType[this.getType()],
     });
   }
 
@@ -68,7 +78,7 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
       .then((jti) => {
         this.recordMeetingStarted();
         this.setState({
-          jti,
+          link: `jti/${jti}`,
         });
       });
     } else {
@@ -87,6 +97,16 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
     }
   }
 
+  private generateSummon(qsID: string): Promise<void> {
+    return this.props.generateSummon(qsID)
+      .then((smn) => {
+        this.recordMeetingStarted();
+        this.setState({
+          link: `smn/${smn}`,
+        });
+      });
+  }
+
   private shouldGetDate() {
     return this.getType() === AssessmentType.historic;
   }
@@ -95,19 +115,28 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
     return this.getType() === undefined;
   }
 
-  private renderJTI(): JSX.Element {
-    const jtiURL = `${config.app.root}/jti/${this.state.jti}`;
+  private renderLink(): JSX.Element {
+    const url = `${config.app.root}/${this.state.link}`;
+    const recipient = this.getType() === AssessmentType.summon ? 'beneficiaries' : 'beneficiary';
     return (
       <Message success={true}>
         <Message.Header>Success</Message.Header>
-        <div>Please provide the following link to your beneficiary. <b>They have {defaultRemoteMeetingLimit} days to complete the questionnaire</b></div>
-        <a href={jtiURL}>{jtiURL}</a>
+        <div>Please provide the following link to your {recipient}. <b>They have {defaultRemoteMeetingLimit} days to complete the questionnaire</b></div>
+        <a href={url}>{url}</a>
       </Message>
     );
   }
 
   private getButtonText(): string {
-    return this.getType() === AssessmentType.remote ? 'Generate Link' : 'Start';
+    return this.getType() === AssessmentType.remote || this.getType() === AssessmentType.summon ? 'Generate Link' : 'Start';
+  }
+
+  private setType(type: AssessmentType) {
+    return () => {
+      this.setState({
+        typ: type,
+      });
+    };
   }
 
   private renderInner(): JSX.Element {
@@ -119,25 +148,62 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
         </Message>
       );
     }
-    if (this.state.jti !== undefined) {
-      return this.renderJTI();
+    if (this.state.link !== undefined) {
+      return this.renderLink();
     }
+    const showRemoteTypeSelector = this.getType() === AssessmentType.remote || this.getType() === AssessmentType.summon;
+    const showAssessmentConfig = this.getType() !== AssessmentType.summon;
+    const showSummonConfig = this.getType() === AssessmentType.summon;
     return (
-      <ConfigComponent
-        defaultBen={getBen(this.props)}
-        showDatePicker={this.shouldGetDate()}
-        onSubmit={this.startMeeting}
-        buttonText={this.getButtonText()}
-      />
+      <div>
+        <div key="remote-type-select" style={{
+          display: showRemoteTypeSelector ? 'block' : 'none',
+          marginBottom: '2em',
+        }}>
+          <Button.Group>
+            <Button key="remote" active={this.getType() === AssessmentType.remote} onClick={this.setType(AssessmentType.remote)}>Single Beneficiary</Button>
+            <Button.Or key="or"/>
+            <Button key="summon" active={this.getType() === AssessmentType.summon} onClick={this.setType(AssessmentType.summon)}>Multiple Beneficiaries</Button>
+          </Button.Group>
+        </div>
+        <div key="assessment-config" style={{display: showAssessmentConfig ? 'block' : 'none'}}>
+          <ConfigComponent
+            defaultBen={getBen(this.props)}
+            showDatePicker={this.shouldGetDate()}
+            onSubmit={this.startMeeting}
+            buttonText={this.getButtonText()}
+          />
+        </div>
+        <div key="summon-config" style={{display: showSummonConfig ? 'block' : 'none'}}>
+          <Message info={true}>
+            <p>
+              Beneficiaries will be asked for their beneficiary ID before they answer the questionnaire.
+              When sending the link, ensure that your beneficiaries know what ID they should be using.
+            </p>
+            <p>
+              As beneficiary IDs are provided by the recipient of the link, there is potential for abuse.
+              If your beneficiaries know each others IDs, they could answer the questionnaire pretending to be another beneficiary.
+              In this case, you should use single beneficiary links instead.
+            </p>
+          </Message>
+          <SummonConfig buttonText={this.getButtonText()} onSubmit={this.generateSummon} />
+        </div>
+      </div>
     );
+  }
+
+  private getTitle() {
+    return this.getType() === AssessmentType.summon || this.getType() === AssessmentType.remote ?
+      'New Link' :
+      'New Record';
   }
 
   public render() {
     return (
       <Grid container={true} columns={1} id="assessment-config">
         <Grid.Column>
-          <Helmet title="New Record"/>
-          <h1>New Record</h1>
+          <Helmet title={this.getTitle()}/>
+          <h1>{this.getTitle()}</h1>
           {this.renderInner()}
         </Grid.Column>
       </Grid>
@@ -145,5 +211,5 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
   }
 }
 
-const AssessmentConfig = newRemoteMeeting<IProp>(newMeeting<IProp>(AssessmentConfigInner));
+const AssessmentConfig = newRemoteMeeting<IProp>(newMeeting<IProp>(generateSummon<IProp>(AssessmentConfigInner)));
 export { AssessmentConfig };

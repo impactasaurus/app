@@ -26,3 +26,23 @@ export function newMeetingFromSummon <T>(component) {
 export interface ISummonAcceptanceMutation {
   newMeetingFromSummon: (summonID: string, beneficiaryID: string) => Promise<string>;
 }
+
+export function generateSummon <T>(component) {
+  return graphql<any, T>(gql`
+  mutation($outcomeSetID: String!) {
+    generateSummon: NewMeetingSummon(outcomeSetID:$outcomeSetID, daysToComplete:30)
+  }
+`, {
+    props: ({ mutate }) => ({
+      generateSummon: (outcomeSetID: string): Promise<string> => mutate({
+        variables: {
+          outcomeSetID,
+        },
+      }).then(mutationResultExtractor<string>('generateSummon')),
+    }),
+  })(component);
+}
+
+export interface IGenerateSummon {
+  generateSummon: (outcomeSetID: string) => Promise<string>;
+}
