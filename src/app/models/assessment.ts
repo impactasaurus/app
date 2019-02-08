@@ -2,6 +2,7 @@ export enum AssessmentType {
   live,
   remote,
   historic,
+  summon,
 }
 
 export interface IAssessmentConfig {
