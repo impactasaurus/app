@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { Grid, Button, Message } from 'semantic-ui-react';
 import {getUserEmail, getWebAuth} from '../../helpers/auth';
+import {UserSettings} from 'components/UserSettings';
 const config = require('../../../../config/main').app.auth;
 
 const ReactGA = require('react-ga');
@@ -107,6 +108,8 @@ class Account extends React.Component<any, IState> {
             <title>Account</title>
           </Helmet>
           <h1>Account</h1>
+          <h3>Settings</h3>
+          <UserSettings />
           <h3>Change Password</h3>
           {this.renderChangePassword()}
           <h3>Delete Account</h3>
