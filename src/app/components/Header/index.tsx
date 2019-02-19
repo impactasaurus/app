@@ -74,7 +74,7 @@ export class Header extends React.Component<IProps, any> {
             <Icon name="plus" className="required" />
           </Menu.Item>
 
-          <Menu.Menu position="right">
+          <Menu.Menu class="right" position="right">
             <Menu.Item id="twitter-menu-link" href="https://twitter.com/impactasaurus" target="blank" className="icon-menu-item">
               <TwitterIcon/>
             </Menu.Item>

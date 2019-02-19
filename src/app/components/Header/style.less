@@ -30,6 +30,15 @@
       #twitter-menu-link {
         display: none;
       }
+      .right .title, #home-link .title {
+        display: none;
+      }
+      .right @{smallScreenIcon} {
+        display: block;
+      }
+    }
+
+    @media only screen and (max-width: 650px) {
       .title {
         display: none;
       }
@@ -38,8 +47,15 @@
       }
     }
 
-    @media only screen and (max-width: 500px) {
-      #add-menu-link {
+    @media only screen and (max-width: 450px) {
+      .item {
+        padding-left: 0.8em;
+        padding-right: 0.8em;
+      }
+    }
+
+    @media only screen and (max-width: 385px) {
+      .right .item {
         display: none;
       }
     }
