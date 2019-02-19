@@ -1,5 +1,18 @@
 @import (reference) './../../theme/variables.less';
 
+.tick-wrapper {
+
+  @media only screen and (max-width: 800px) {
+    transform: scale(0.8);
+    margin: -10px;
+  }
+
+  @media only screen and (max-width: 600px) {
+    transform: scale(0.5);
+    margin: -30px;
+  }
+}
+
 .f-modal-icon {
   border-radius: 50%;
   border: 4px solid @placeholder;
@@ -11,10 +24,7 @@
   width: 80px;
   display: inline-block;
 
-  -webkit-transform: translateZ(0);
-  -moz-transform: translateZ(0);
-  -ms-transform: translateZ(0);
-  -o-transform: translateZ(0);
+
   transform: translateZ(0);
   will-change: transform;
 
