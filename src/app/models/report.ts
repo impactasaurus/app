@@ -69,9 +69,7 @@ export const answerAggregationFragment = gql`
     questions {
       id,
       stats {
-        delta,
-        lobfDelta,
-        roc
+        delta
       },
       initial,
       latest
