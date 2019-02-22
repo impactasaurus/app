@@ -4,7 +4,7 @@ import * as color from 'chartjs-color';
 import {BarChartData} from 'models/bar';
 import {precisionRound} from 'helpers/numbers';
 
-let barCount = 0;
+let stackedBarCount = 0;
 
 interface IProps {
   data: BarChartData;
@@ -40,7 +40,7 @@ class StackedBarChart extends React.Component<IProps, IState> {
     this.state = {
       err: false,
     };
-    this.canvasID = `stacked-bar-${barCount++}`;
+    this.canvasID = `stacked-bar-${stackedBarCount++}`;
     this.renderDOM = this.renderDOM.bind(this);
   }
 
@@ -91,7 +91,6 @@ class StackedBarChart extends React.Component<IProps, IState> {
       throw new Error('The canvas element specified does not exist!');
     }
     const maxX = maxXValue(this.props.data);
-    console.log(maxX);
     return new Chart(canvasElement, {
       type: 'horizontalBar',
       data: this.prepareDataset(p.data),
