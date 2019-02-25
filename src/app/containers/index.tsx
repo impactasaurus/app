@@ -32,3 +32,4 @@ export {Signup} from './Signup';
 export {Invite} from './Invite';
 export {NewQuestionnaireTypeSelector, NewQuestionnaireForm} from './NewQuestionnaire';
 export {SummonAcceptance} from './Summon';
+export {Unsubscribe} from './Unsubscribe';
