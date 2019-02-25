@@ -42,3 +42,22 @@ export function updateSelf<T>(component) {
 export interface IUpdateSelf {
   updateSelf(unsubscribed: boolean): Promise<ISelf>;
 }
+
+export function unsubscribe<T>(component) {
+  return graphql<any, T>(gql`
+  mutation ($userID: String!) {
+    unsubscribe: Unsubscribe(userID:$userID)
+  }`, {
+    props: ({ mutate }) => ({
+      unsubscribe: (userID: string): Promise<any> => mutate({
+        variables: {
+          userID,
+        },
+      }),
+    }),
+  })(component);
+}
+
+export interface IUnsubscribe {
+  unsubscribe(userID: string): Promise<any>;
+}

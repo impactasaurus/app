@@ -68,6 +68,7 @@ class App extends React.Component<IProps, any> {
           <Route path="/redirect" component={containers.Redirect} />
           <Route path="/signup" component={containers.Signup} />
           <Route path="/invite/:id" component={containers.Invite} />
+          <Route path="/unsubscribe/:uid" component={containers.Unsubscribe} />
         </Switch>
       </div>
     ));
