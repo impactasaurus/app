@@ -36,6 +36,14 @@ export const getJOCServiceReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T
   });
 };
 
+export interface IJOCResult extends QueryProps {
+  getJOCServiceReport?: IAnswerAggregationReport;
+}
+
+export interface IJOCReportResult {
+  JOCServiceReport: IJOCResult;
+}
+
 export const getROCReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>) => {
   return graphql<any, T>(gql`
     query ROCServiceReport($start: String!, $end: String!, $questionSetID: String!, $tags:[String]) {
@@ -61,20 +69,45 @@ export const getROCReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end:
     });
 };
 
-export interface IJOCResult extends QueryProps {
-  getJOCServiceReport?: IAnswerAggregationReport;
-}
-
-export interface IJOCReportResult {
-  JOCServiceReport: IJOCResult;
-}
-
 export interface IROCResult extends QueryProps {
   getROCReport?: IBeneficiaryAggregationReport;
 }
 
 export interface IROCReportResult {
   ROCReport?: IROCResult;
+}
+
+export const getLatestReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>) => {
+  return graphql<any, T>(gql`
+    query LatestReport($start: String!, $end: String!, $questionSetID: String!, $tags:[String]) {
+      getLatestReport: report(start:$start, end: $end, questionnaire: $questionSetID, tags: $tags, openStart: false, minRequiredRecords: 1) {
+        ...answerAggregationFragment
+      }
+    }
+    ${answerAggregationFragment}`,
+    {
+      name: 'LatestReport',
+      options: (props: T): QueryOpts => {
+        return {
+          variables: {
+            questionSetID: qid(props),
+            start: start(props),
+            end: end(props),
+            tags: tags(props),
+          },
+          notifyOnNetworkStatusChange: true,
+          fetchPolicy: 'network-only',
+        };
+      },
+    });
+};
+
+export interface ILatestReport extends QueryProps {
+  getLatestReport?: IAnswerAggregationReport;
+}
+
+export interface ILatestReportResult {
+  LatestReport?: ILatestReport;
 }
 
 export const exportReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>, openStart: Extractor<T, boolean>) => {

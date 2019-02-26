@@ -33,3 +33,4 @@ export {Invite} from './Invite';
 export {NewQuestionnaireTypeSelector, NewQuestionnaireForm} from './NewQuestionnaire';
 export {SummonAcceptance} from './Summon';
 export {Unsubscribe} from './Unsubscribe';
+export {LatestReport} from './LatestReport';
