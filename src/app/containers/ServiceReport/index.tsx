@@ -78,7 +78,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
   private exportReportData() {
     const {start, end, questionSetID} = this.props.match.params;
     const url = constructReportURL('export', new Date(start), new Date(end), questionSetID);
-    const qp = constructReportQueryParams(getTagsFromProps(this.props), true);
+    const qp = constructReportQueryParams(getTagsFromProps(this.props), getOpenStartFromProps(this.props), getOrFromProps(this.props));
     this.props.setURL(url, qp);
   }
 
