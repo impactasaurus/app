@@ -83,5 +83,13 @@ function getOpenFromProps(p: IProp): boolean {
   return JSON.parse(open);
 }
 
-const ExportReport = exportReport(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenFromProps)(ExportReportInner);
+function getOrFromProps(p: IProp): boolean {
+  const urlParams = new URLSearchParams(p.location.search);
+  if (urlParams.has('or') === false) {
+    return false;
+  }
+  return JSON.parse(urlParams.get('or'));
+}
+
+const ExportReport = exportReport(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenFromProps, getOrFromProps)(ExportReportInner);
 export { ExportReport };

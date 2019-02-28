@@ -179,5 +179,13 @@ function getOpenStartFromProps(p: IProp): boolean {
   return JSON.parse(urlParams.get('open'));
 }
 
-const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenStartFromProps)(ServiceReportInner));
+function getOrFromProps(p: IProp): boolean {
+  const urlParams = new URLSearchParams(p.location.search);
+  if (urlParams.has('or') === false) {
+    return false;
+  }
+  return JSON.parse(urlParams.get('or'));
+}
+
+const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenStartFromProps, getOrFromProps)(ServiceReportInner));
 export {ServiceReport};
