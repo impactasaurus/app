@@ -6,10 +6,10 @@ import {
 import {Extractor, IDExtractor} from 'helpers/apollo';
 import {isNullOrUndefined} from 'util';
 
-export const getJOCServiceReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>, open?: Extractor<T, boolean>) => {
+export const getJOCServiceReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>, open?: Extractor<T, boolean>, orTags?: Extractor<T, boolean>) => {
   return graphql<any, T>(gql`
-    query JOCServiceReport($start: String!, $end: String!, $questionSetID: String!, $tags:[String], $open: Boolean) {
-      getJOCServiceReport: report(start:$start, end: $end, questionnaire: $questionSetID, tags: $tags, openStart: $open) {
+    query JOCServiceReport($start: String!, $end: String!, $questionSetID: String!, $tags:[String], $open: Boolean, $orTags: Boolean) {
+      getJOCServiceReport: report(start:$start, end: $end, questionnaire: $questionSetID, tags: $tags, openStart: $open, orTags: $orTags) {
         ...answerAggregationFragment
       }
     }
@@ -28,6 +28,7 @@ export const getJOCServiceReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T
           end: end(props),
           tags: tags(props),
           open: openStart,
+          orTags: orTags ? orTags(props) : false,
         },
         notifyOnNetworkStatusChange: true,
         fetchPolicy: 'network-only',
@@ -77,15 +78,16 @@ export interface IROCReportResult {
   ROCReport?: IROCResult;
 }
 
-export const exportReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>, openStart: Extractor<T, boolean>) => {
+export const exportReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>, openStart: Extractor<T, boolean>, orTags?: Extractor<T, boolean>) => {
   return graphql<any, T>(gql`
-    query ($start: String!, $end: String!, $questionSetID: String!, $tags:[String], $openStart: Boolean) {
+    query ($start: String!, $end: String!, $questionSetID: String!, $tags:[String], $openStart: Boolean, $orTags: Boolean) {
       exportReport: exportReport(
         questionnaire: $questionSetID,
   	    start: $start,
   	    end: $end,
         tags: $tags,
-        openStart: $openStart
+        openStart: $openStart,
+        orTags: $orTags
       )
     }`, {
     options: (props: T) => {
@@ -96,6 +98,7 @@ export const exportReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end:
           end: end(props),
           tags: tags(props),
           openStart: openStart(props),
+          orTags: orTags ? orTags(props) : false,
         },
         notifyOnNetworkStatusChange: true,
         fetchPolicy: 'network-only',
