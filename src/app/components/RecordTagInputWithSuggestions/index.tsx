@@ -84,6 +84,7 @@ class RecordTagInputWithSuggestionsInner extends React.Component<IProps, any> {
           allowNewTags={this.props.allowNewTags}
           id={this.props.inputID}
         />
+        {this.props.children}
         {this.renderSuggested(this.props)}
       </div>
     );

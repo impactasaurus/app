@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Radio, Icon, Form } from 'semantic-ui-react';
+import { Radio, Icon, Form, Button } from 'semantic-ui-react';
 import {DateRangePicker} from 'components/DateRangePicker';
 import {Hint} from 'components/Hint';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
@@ -72,8 +72,19 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
         </FormField>
       </div>
       <FormField inputID="rf-tags" label={tagLabel} touched={touched.tags as boolean} error={errors.tags as string}>
-        <RecordTagInputWithQuestionnaireSuggestions inputID="rf-tags" id={values.questionSetID} onChange={setTags} tags={values.tags} allowNewTags={false} />
+        <RecordTagInputWithQuestionnaireSuggestions inputID="rf-tags" id={values.questionSetID} onChange={setTags} tags={values.tags} allowNewTags={false}>
+          {values.tags.length >= 2 && (
+            <div style={{marginTop: '1em'}}>
+              Records must have <Button.Group size="mini" style={{margin: '0 0.3rem'}}>
+                <Button active={true}>all</Button>
+                <Button.Or />
+                <Button>any</Button>
+              </Button.Group> of the tags to be included in the report
+            </div>
+          )}
+        </RecordTagInputWithQuestionnaireSuggestions>
       </FormField>
+
       <Form.Group>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Generate</Form.Button>
       </Form.Group>
