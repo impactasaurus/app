@@ -15,6 +15,7 @@ export interface IFormOutput {
   start?: Date;
   end?: Date;
   tags: string[];
+  orTags: boolean;
 }
 
 interface IProps {
@@ -43,6 +44,10 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
   const setTags = (tags: string[]) => {
     setFieldValue('tags', tags);
     setFieldTouched('tags');
+  };
+  const orTagsOnChange = (toSet: boolean) => () => {
+    setFieldValue('orTags', toSet);
+    setFieldTouched('orTags');
   };
 
   const dateRangeStyle = {} as any;
@@ -76,9 +81,9 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
           {values.tags.length >= 2 && (
             <div style={{marginTop: '1em'}}>
               Records must have <Button.Group size="mini" style={{margin: '0 0.3rem'}}>
-                <Button active={true}>all</Button>
+                <Button type="button" active={!values.orTags} onClick={orTagsOnChange(false)}>all</Button>
                 <Button.Or />
-                <Button>any</Button>
+                <Button type="button" active={values.orTags} onClick={orTagsOnChange(true)}>any</Button>
               </Button.Group> of the tags to be included in the report
             </div>
           )}
@@ -117,6 +122,7 @@ export const ReportForm = withFormik<IProps, IFormOutput>({
       questionSetID: '',
       all: true,
       tags: [],
+      orTags: false,
     };
   },
 })(InnerForm);
