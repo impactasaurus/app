@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Radio, Icon, Form } from 'semantic-ui-react';
+import { Radio, Icon, Form, Button } from 'semantic-ui-react';
 import {DateRangePicker} from 'components/DateRangePicker';
 import {Hint} from 'components/Hint';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
@@ -15,6 +15,7 @@ export interface IFormOutput {
   start?: Date;
   end?: Date;
   tags: string[];
+  orTags: boolean;
 }
 
 interface IProps {
@@ -44,6 +45,10 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
     setFieldValue('tags', tags);
     setFieldTouched('tags');
   };
+  const orTagsOnChange = (toSet: boolean) => () => {
+    setFieldValue('orTags', toSet);
+    setFieldTouched('orTags');
+  };
 
   const dateRangeStyle = {} as any;
   if (values.all) {
@@ -72,8 +77,19 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
         </FormField>
       </div>
       <FormField inputID="rf-tags" label={tagLabel} touched={touched.tags as boolean} error={errors.tags as string}>
-        <RecordTagInputWithQuestionnaireSuggestions inputID="rf-tags" id={values.questionSetID} onChange={setTags} tags={values.tags} allowNewTags={false} />
+        <RecordTagInputWithQuestionnaireSuggestions inputID="rf-tags" id={values.questionSetID} onChange={setTags} tags={values.tags} allowNewTags={false}>
+          {values.tags.length >= 2 && (
+            <div style={{marginTop: '1em'}}>
+              Records must have <Button.Group size="mini" style={{margin: '0 0.3rem'}}>
+                <Button type="button" active={!values.orTags} onClick={orTagsOnChange(false)}>all</Button>
+                <Button.Or />
+                <Button type="button" active={values.orTags} onClick={orTagsOnChange(true)}>any</Button>
+              </Button.Group> of the tags to be included in the report
+            </div>
+          )}
+        </RecordTagInputWithQuestionnaireSuggestions>
       </FormField>
+
       <Form.Group>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Generate</Form.Button>
       </Form.Group>
@@ -106,6 +122,7 @@ export const ReportForm = withFormik<IProps, IFormOutput>({
       questionSetID: '',
       all: true,
       tags: [],
+      orTags: false,
     };
   },
 })(InnerForm);

@@ -57,7 +57,7 @@ class Report extends React.Component<IURLConnector, any> {
     }
     logGAEvent(v);
     const url = constructReportURL('service', start, end, v.questionSetID);
-    const qp = constructReportQueryParams(v.tags, false);
+    const qp = constructReportQueryParams(v.tags, false, v.orTags);
     this.props.setURL(url, qp);
   }
 
