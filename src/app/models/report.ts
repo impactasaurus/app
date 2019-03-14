@@ -7,8 +7,6 @@ export interface IDateTimeValue {
 
 export interface IStats {
   delta: number;
-  lobfDelta: number;
-  roc: number;
 }
 
 export interface IID {
@@ -54,13 +52,6 @@ export interface IBeneficiaryAggregationReport {
   excluded: IExclusion[];
 }
 
-export interface IReport {
-  beneficiaries: IBenSummary[];
-  questions: IAnswerAggregation[];
-  categories: IAnswerAggregation[];
-  excluded: IExclusion[];
-}
-
 export const answerAggregationFragment = gql`
   fragment answerAggregationFragment on Report {
     beneficiaries {
@@ -77,9 +68,7 @@ export const answerAggregationFragment = gql`
     categories {
       id,
       stats {
-        delta,
-        lobfDelta,
-        roc
+        delta
       },
       initial,
       latest
@@ -109,9 +98,7 @@ export const beneficiaryAggregationFragment = gql`
         noRecords,
         reportCoverage,
         stats {
-          delta,
-          lobfDelta,
-          roc
+          delta
         }
       }
       questions {
@@ -127,9 +114,7 @@ export const beneficiaryAggregationFragment = gql`
         noRecords,
         reportCoverage,
         stats {
-          delta,
-          lobfDelta,
-          roc
+          delta
         }
       }
     },

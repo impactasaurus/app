@@ -47,7 +47,7 @@ export function getExcluded(excluded: IExclusion[]): IExcluded {
   });
 }
 
-export function constructReportQueryParams(tags: string[], open?: boolean, orTags?: boolean): string {
+export function constructReportQueryParams(tags: string[], open?: boolean, orTags?: boolean, minRecords?: number): string {
   const params: any = {};
   if (Array.isArray(tags) && tags.length > 0) {
     params.tags = JSON.stringify(tags);
@@ -57,6 +57,9 @@ export function constructReportQueryParams(tags: string[], open?: boolean, orTag
   }
   if (!isNullOrUndefined(orTags)) {
     params.or = orTags;
+  }
+  if (!isNullOrUndefined(minRecords)) {
+    params.minRecords = minRecords;
   }
   return '?' + stringify(params);
 }

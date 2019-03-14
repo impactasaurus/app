@@ -91,5 +91,13 @@ function getOrFromProps(p: IProp): boolean {
   return JSON.parse(urlParams.get('or'));
 }
 
-const ExportReport = exportReport(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenFromProps, getOrFromProps)(ExportReportInner);
+function getMinRequiredRecords(p: IProp): number {
+  const urlParams = new URLSearchParams(p.location.search);
+  if (urlParams.has('minRecords') === false) {
+    return undefined;
+  }
+  return parseInt(urlParams.get('minRecords'), 10);
+}
+
+const ExportReport = exportReport(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenFromProps, getOrFromProps, getMinRequiredRecords)(ExportReportInner);
 export { ExportReport };

@@ -78,7 +78,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
   private exportReportData() {
     const {start, end, questionSetID} = this.props.match.params;
     const url = constructReportURL('export', new Date(start), new Date(end), questionSetID);
-    const qp = constructReportQueryParams(getTagsFromProps(this.props), getOpenStartFromProps(this.props), getOrFromProps(this.props));
+    const qp = constructReportQueryParams(getTagsFromProps(this.props), getOpenStartFromProps(this.props), getOrFromProps(this.props), getMinRequiredRecords(this.props));
     this.props.setURL(url, qp);
   }
 
@@ -187,5 +187,13 @@ function getOrFromProps(p: IProp): boolean {
   return JSON.parse(urlParams.get('or'));
 }
 
-const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenStartFromProps, getOrFromProps)(ServiceReportInner));
+function getMinRequiredRecords(p: IProp): number {
+  const urlParams = new URLSearchParams(p.location.search);
+  if (urlParams.has('minRecords') === false) {
+    return undefined;
+  }
+  return parseInt(urlParams.get('minRecords'), 10);
+}
+
+const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenStartFromProps, getOrFromProps, getMinRequiredRecords)(ServiceReportInner));
 export {ServiceReport};
