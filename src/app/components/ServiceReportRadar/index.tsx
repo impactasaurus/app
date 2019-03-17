@@ -3,6 +3,7 @@ import {IAnswerAggregationReport, IAnswerAggregation} from 'models/report';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {RadarChart} from 'components/RadarChart';
 import {RadarData, IRadarSeries, IRadarPoint} from 'models/radar';
+import {Aggregation} from 'models/pref';
 import {
   getMinQuestionValue, getMaxQuestionValue, getMinCategoryValue, getMaxCategoryValue,
   getQuestionFriendlyName, getCategoryFriendlyName,
@@ -75,8 +76,9 @@ class ServiceReportRadar extends React.Component<IProp, any> {
       return (<div />);
     }
     const data = this.getRadarData(p);
+    const agg = this.props.category ? Aggregation.CATEGORY : Aggregation.QUESTION;
     return (
-      <RadarChart data={data} />
+      <RadarChart data={data} aggregation={agg}/>
     );
   }
 
