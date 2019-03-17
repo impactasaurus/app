@@ -91,7 +91,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
         <Message warning={true}>
           <Message.Header>We Need More Records</Message.Header>
           <p>When generating your report, we only found beneficiaries with one record</p>
-          <p>We need at least two records to understand the impact your intervention is having on a beneficiary</p>
+          <p>We need <b>at least two records</b> to understand the impact your intervention is having on a beneficiary</p>
           <p>Please collect more records and ensure that the time range you provided includes them</p>
         </Message>
       );
