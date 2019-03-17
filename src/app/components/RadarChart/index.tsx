@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {getOutcomeGraph} from './outcomeGraph';
 import {RadarData, IRadarSeries, IRadarPoint} from 'models/radar';
+import {Aggregation} from 'models/pref';
 import {Message} from 'semantic-ui-react';
 import './style.less';
 
@@ -8,6 +9,7 @@ let count = 0;
 
 interface IProp {
   data?: RadarData;
+  aggregation?: Aggregation;
 }
 
 export interface IOutcomeGraphPoint {
@@ -109,10 +111,17 @@ class RadarChart extends React.Component<IProp, IState> {
     if (err === false) {
       return (<div />);
     }
+    let dims = 'dimensions';
+    if (this.props.aggregation === Aggregation.QUESTION) {
+      dims = 'questions';
+    }
+    if (this.props.aggregation === Aggregation.CATEGORY) {
+      dims = 'categories';
+    }
     return (
       <Message info={true} >
         <Message.Header>Incompatible Visualisation</Message.Header>
-        <Message.Content>The data contains less than three axis, and as such, cannot be visualised as a radar chart. Please select a different visualisation or aggregation.</Message.Content>
+        <Message.Content>The questionnaire contains less than three {dims}, and as such, cannot be visualised as a radar chart. Please select a different visualisation or aggregation.</Message.Content>
       </Message>
     );
   }

@@ -15,6 +15,7 @@ interface IProp {
 
 interface ImplementationIProp {
   data?: RadarData;
+  aggregation?: Aggregation;
 }
 
 export function MeetingRadarWithImpl<P extends ImplementationIProp>(RadarImpl: React.ComponentType<P>, innerProps?: P) {
@@ -117,7 +118,7 @@ export function MeetingRadarWithImpl<P extends ImplementationIProp>(RadarImpl: R
       return (
         <div className="meeting-radar">
           {this.renderInfoMessage(data)}
-          <RadarImpl data={this.preProcessData(data)} {...innerProps} />
+          <RadarImpl data={this.preProcessData(data)} aggregation={this.props.aggregation} {...innerProps} />
         </div>
       );
     }
