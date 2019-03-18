@@ -1,6 +1,7 @@
 import * as Chart from 'chart.js';
 import {SessionsConverter} from './sessionsConverter';
 import {OutcomeGraphData} from './index';
+import {getChartJSTypographyStyle} from 'theme/chartStyle';
 const sessionsConverter = SessionsConverter();
 
 export function getOutcomeGraph(canvasDiv, data: OutcomeGraphData, min, max) {
@@ -26,6 +27,7 @@ function getConfig(data: OutcomeGraphData, min, max) {
           min,
           max,
         },
+        pointLabels: getChartJSTypographyStyle(),
       },
       tooltips: {
         mode: 'point',
