@@ -4,9 +4,7 @@ import {mutationResultExtractor} from 'helpers/apollo';
 export function newMeetingFromSummon <T>(component) {
   return graphql<any, T>(gql`
   mutation($beneficiaryID: String!, $summonID: String!) {
-    newMeetingFromSummon: NewMeetingFromSummon(beneficiaryID:$beneficiaryID, summonID:$summonID){
-      JTI
-    }
+    newMeetingFromSummon: NewMeetingFromSummon(beneficiaryID:$beneficiaryID, summonID:$summonID)
   }
 `, {
     props: ({ mutate }) => ({
@@ -15,10 +13,7 @@ export function newMeetingFromSummon <T>(component) {
           summonID,
           beneficiaryID,
         },
-      }).then(mutationResultExtractor<{
-        JTI: string,
-      }>('newMeetingFromSummon'))
-        .then((x) => x.JTI),
+      }).then(mutationResultExtractor<string>('newMeetingFromSummon')),
     }),
   })(component);
 }
