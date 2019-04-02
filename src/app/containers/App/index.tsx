@@ -46,8 +46,8 @@ class App extends React.Component<IProps, any> {
           <Route path="/record/:type" component={containers.AssessmentConfig} />
           <Route path="/record" component={containers.AssessmentTypeSelect} />
           <Route path="/beneficiary/:id/export/:qid" component={containers.ExportBenRecords} />
-          <Route path="/beneficiary/:id" component={containers.Review} />
-          <Route path="/beneficiary" component={containers.ReviewSelector} />
+          <Route path="/beneficiary/:id" component={containers.Beneficiary} />
+          <Route path="/beneficiary" component={containers.BeneficiarySelector} />
           <Route path="/settings" component={containers.Settings} />
           <Route path="/login" component={containers.Login} />
           <Route path="/dataentry/:id" component={containers.DataEntry} />

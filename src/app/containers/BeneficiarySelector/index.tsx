@@ -62,7 +62,7 @@ const BeneficairyForm = withFormik<IFormProps, IFormOuput>({
 @connect(undefined, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
-class ReviewSelector extends React.Component<IURLConnector, any> {
+class BeneficiarySelector extends React.Component<IURLConnector, any> {
 
   constructor(props) {
     super(props);
@@ -95,4 +95,4 @@ class ReviewSelector extends React.Component<IURLConnector, any> {
   }
 }
 
-export { ReviewSelector };
+export { BeneficiarySelector };
