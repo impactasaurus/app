@@ -1,22 +1,20 @@
 import * as React from 'react';
-import {Card, Label, Popup} from 'semantic-ui-react';
+import {Card, Popup} from 'semantic-ui-react';
 import {RadarChartStatic} from 'components/RadarChartStatic';
 import {IMeeting} from 'models/meeting';
 import {MeetingRadarWithImpl} from 'components/MeetingRadar';
 import {Aggregation} from 'models/pref';
 import './style.less';
 import {getHumanisedDateFromISO, getHumanisedTimeSinceDate} from 'helpers/moment';
-import {renderArray} from 'helpers/react';
 import {bindActionCreators} from 'redux';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {journey, questionnaire, record} from 'helpers/url';
+import {Tags} from '../Tag';
 const { connect } = require('react-redux');
 
 interface IProp extends IURLConnector {
   meeting: IMeeting;
 }
-
-const label = (t: string) => <Label key={t}>{t}</Label>;
 
 @connect(undefined, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
@@ -64,7 +62,7 @@ export class TimelineEntry extends React.Component<IProp, any> {
           </Card.Description>
         </Card.Content>
         <Card.Content extra={true} className={`tags-${m.tags.length}`}>
-          {renderArray(label, m.tags)}
+          <Tags benTags={m.benTags} recordTags={m.meetingTags}/>
         </Card.Content>
       </Card>
     );
