@@ -35,7 +35,7 @@ class TagInput extends React.Component<IProps, any> {
     };
     return (
       <Label key={key} as="a" onClick={onRemoveLocal}>
-        {getTagDisplayValue(tag)}
+        <span>{getTagDisplayValue(tag)}</span>
         {!disabled &&
           <Icon name="close"/>
         }
