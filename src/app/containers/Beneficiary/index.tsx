@@ -52,7 +52,7 @@ const getTitle = (b: string, p: ReviewPage) => {
 }, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
-class Review extends React.Component<IProps, any> {
+class Beneficiary extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
@@ -138,4 +138,4 @@ class Review extends React.Component<IProps, any> {
   }
 }
 
-export { Review };
+export { Beneficiary };
