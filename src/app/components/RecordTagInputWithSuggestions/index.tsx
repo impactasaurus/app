@@ -37,7 +37,7 @@ class RecordTagInputWithSuggestionsInner extends React.Component<IProps, any> {
   private renderTag(tag: string): JSX.Element {
     return(
       <Label as="a" key={tag} onClick={this.addTag(tag)}>
-        {tag}
+        <span>{tag}</span>
         <Icon name="plus"/>
       </Label>
     );

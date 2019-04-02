@@ -15,6 +15,8 @@ export interface IMeeting {
   modified: string;
   aggregates?: IAggregates;
   tags?: string[];
+  benTags?: string[];
+  meetingTags?: string[];
   incomplete: boolean;
   notes?: string;
 }
@@ -33,6 +35,8 @@ export const fragment = gql`
     modified,
     incomplete,
     tags,
+    benTags,
+    meetingTags,
     notes
   } ${aFragment}`;
 
