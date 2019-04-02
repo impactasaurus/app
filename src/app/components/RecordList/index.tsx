@@ -2,14 +2,14 @@ import * as React from 'react';
 import {Table, Icon, Popup, Button} from 'semantic-ui-react';
 import './style.less';
 import {IMeeting, sortMeetingsByConducted} from '../../models/meeting';
-import {renderArray, renderArrayForArray} from '../../helpers/react';
+import {renderArrayForArray} from '../../helpers/react';
 import {getHumanisedDate} from '../../helpers/moment';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {bindActionCreators} from 'redux';
 import {deleteMeeting, IDeleteMeetingMutation} from 'apollo/modules/meetings';
 import {ConfirmButton} from 'components/ConfirmButton';
 import {Link} from 'react-router-dom';
-import {Tag} from '../Tag';
+import {Tags} from '../Tag';
 const { connect } = require('react-redux');
 
 interface IProp extends IURLConnector, IDeleteMeetingMutation {
@@ -28,10 +28,6 @@ class RecordListInner extends React.Component<IProp, any> {
     this.delete = this.delete.bind(this);
     this.view = this.view.bind(this);
     this.renderRecord = this.renderRecord.bind(this);
-  }
-
-  private renderTag(ben: boolean): (t: string) => JSX.Element {
-    return (t: string): JSX.Element => <Tag key={t} tag={t} beneficiary={ben} />;
   }
 
   private resume(m: IMeeting): () => void {
@@ -82,7 +78,7 @@ class RecordListInner extends React.Component<IProp, any> {
           {incomplete}
         </Table.Cell>
         <Table.Cell><Link to={`/questions/${r.outcomeSet.id}`}>{r.outcomeSet.name}</Link></Table.Cell>
-        <Table.Cell>{renderArray(this.renderTag(true), r.benTags)}{renderArray(this.renderTag(false), r.meetingTags)}</Table.Cell>
+        <Table.Cell><Tags recordTags={r.meetingTags} benTags={r.benTags}/></Table.Cell>
         <Table.Cell>{r.user}</Table.Cell>
         <Table.Cell className="actions">{this.renderActions(r)}</Table.Cell>
       </Table.Row>
