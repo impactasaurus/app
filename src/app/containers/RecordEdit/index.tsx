@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import {Button, Loader, Grid, ButtonProps, Label} from 'semantic-ui-react';
+import {Button, Loader, Grid, ButtonProps} from 'semantic-ui-react';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {
   editMeetingDate, editMeetingTags, getMeeting, IEditMeetingDate, IEditMeetingTags,
@@ -12,8 +12,8 @@ import {Error} from 'components/Error';
 import {Hint} from 'components/Hint';
 import * as moment from 'moment';
 import {bindActionCreators} from 'redux';
-import {renderArray} from 'helpers/react';
 import './style.less';
+import {Tags} from 'components/Tag';
 const strings = require('./../../../strings.json');
 const { connect } = require('react-redux');
 
@@ -33,7 +33,7 @@ interface IProps extends IURLConnector, IEditMeetingDate, IEditMeetingTags {
 interface IState {
   saveError?: string;
   conducted?: moment.Moment;
-  tags?: string[];
+  recordTags?: string[];
   saving?: boolean;
   tagEditing?: boolean;
   dateEditing?: boolean;
@@ -78,13 +78,13 @@ class RecordEditInner extends React.Component<IProps, IState> {
   private loadState(p: IProps) {
     this.setState({
       conducted: moment(p.data.getMeeting.conducted),
-      tags: p.data.getMeeting.tags,
+      recordTags: p.data.getMeeting.meetingTags,
     });
   }
 
   private saveRecord() {
     const record = this.props.data.getMeeting;
-    const {conducted, tags} = this.state;
+    const {conducted, recordTags} = this.state;
     this.setState({
       saving: true,
       saveError: undefined,
@@ -98,11 +98,11 @@ class RecordEditInner extends React.Component<IProps, IState> {
       });
     }
 
-    const newTags = JSON.stringify(Array.from(tags).sort());
-    const oldTags = JSON.stringify(Array.from(record.tags).sort());
+    const newTags = JSON.stringify(Array.from(recordTags).sort());
+    const oldTags = JSON.stringify(Array.from(record.meetingTags).sort());
     if (newTags !== oldTags) {
       p = p.then(() => {
-        return this.props.editMeetingTags(record.id, tags);
+        return this.props.editMeetingTags(record.id, recordTags);
       });
     }
 
@@ -140,7 +140,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
 
   private setTags(tags: string[]): void {
     this.setState({
-      tags,
+      recordTags: tags,
     });
   }
 
@@ -171,21 +171,24 @@ class RecordEditInner extends React.Component<IProps, IState> {
     let tags = (<div />);
     if (tagEditing) {
       tags = (
-        <RecordTagInputWithBenSuggestions
-          onChange={this.setTags}
-          tags={this.state.tags}
-          id={beneficiary}
-        />
+        <div>
+          <Tags benTags={this.props.data.getMeeting.benTags} recordTags={[]}/>
+          <RecordTagInputWithBenSuggestions
+            onChange={this.setTags}
+            tags={this.state.recordTags}
+            id={beneficiary}
+          />
+        </div>
       );
     } else {
       const tagEdit = () => {
         this.setState({tagEditing: true});
       };
       const editButton = this.renderEditButton(tagEdit);
-      if (this.state.tags.length > 0) {
+      if (this.props.data.getMeeting.tags.length > 0) {
         tags = (
           <div>
-            {renderArray((t) => (<Label>{t}</Label>), this.state.tags)}
+            <Tags benTags={this.props.data.getMeeting.benTags} recordTags={this.state.recordTags}/>
             {editButton}
           </div>
         );

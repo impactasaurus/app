@@ -8,7 +8,7 @@ interface IProps {
 }
 
 export const Tag = (p: IProps) => (
-  <Label className={p.beneficiary ? 'ben' : 'record'}>
+  <Label className={p.beneficiary ? 'ben' : 'record'} style={{marginTop: '0.2em', marginBottom: '0.2em'}}>
     {p.beneficiary && <Icon name="user"/>}
     <span>{p.tag}</span>
   </Label>
