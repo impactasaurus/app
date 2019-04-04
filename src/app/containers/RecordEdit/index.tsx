@@ -6,7 +6,7 @@ import {
   editMeetingDate, editMeetingTags, getMeeting, IEditMeetingDate, IEditMeetingTags,
   IMeetingResult,
 } from 'apollo/modules/meetings';
-import {RecordTagInputWithBenSuggestions} from 'components/RecordTagInputWithSuggestions';
+import {RecordTagInputWithBenSuggestions} from 'components/RecordTagInput';
 import {DateTimePicker} from 'components/DateTimePicker';
 import {Error} from 'components/Error';
 import {Hint} from 'components/Hint';

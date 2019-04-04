@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Icon, Form } from 'semantic-ui-react';
 import {DateTimePicker} from 'components/DateTimePicker';
 import {Hint} from 'components/Hint';
-import {RecordTagInputWithBenSuggestions} from 'components/RecordTagInputWithSuggestions';
+import {RecordTagInputWithBenSuggestions} from 'components/RecordTagInput';
 import {BeneficiaryInput} from 'components/BeneficiaryInput';
 import {FormField} from 'components/FormField';
 import {IAssessmentConfig} from 'models/assessment';
