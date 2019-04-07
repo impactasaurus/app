@@ -6,7 +6,7 @@ import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import {FormField} from 'components/FormField';
 import './style.less';
 import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
-import {RecordTagInputWithQuestionnaireSuggestions} from 'components/RecordTagInputWithSuggestions';
+import {RecordTagInputWithQuestionnaireSuggestions} from 'components/RecordTagInput';
 const strings = require('./../../../strings.json');
 
 export interface IFormOutput {

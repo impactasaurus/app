@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {isNullOrUndefined} from 'util';
 import {Search, Input} from 'semantic-ui-react';
-import {getBeneficiaries, IBeneficiaryResult} from 'apollo/modules/beneficiaries';
+import {getBeneficiaries, IBeneficiariesResult} from 'apollo/modules/beneficiaries';
 import {getOrganisation, IGetOrgResult} from 'apollo/modules/organisation';
 import './style.less';
 const escapeStringRegexp = require('escape-string-regexp');
@@ -13,7 +13,7 @@ interface IProps {
   allowUnknown?: boolean; // defaults to false
   inputID?: string;
 
-  bens?: IBeneficiaryResult;
+  bens?: IBeneficiariesResult;
   data?: IGetOrgResult;
 }
 
