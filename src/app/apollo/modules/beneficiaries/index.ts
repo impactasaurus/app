@@ -30,6 +30,7 @@ export const getBeneficiary = <T>(benID: IDExtractor<T>) => {
     } ${fragment}`, {
     options: (props: T) => {
       return {
+        notifyOnNetworkStatusChange: true,
         variables: {
           id: benID(props),
         },

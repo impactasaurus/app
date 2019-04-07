@@ -7,6 +7,7 @@ import {BeneficiaryInput} from 'components/BeneficiaryInput';
 import {FormField} from 'components/FormField';
 import {IAssessmentConfig} from 'models/assessment';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
+import {BeneficiaryTags} from 'components/BeneficiaryTags';
 import * as moment from 'moment';
 import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
 import './style.less';
@@ -79,6 +80,7 @@ const InnerForm = (props: InjectedFormikProps<InnerFormProps, IAssessmentConfigA
         <QuestionSetSelect inputID="as-qid" onQuestionSetSelected={qsOnChange} onBlur={qsOnBlur} />
       </FormField>
       <FormField inputID="as-tags" label={tagLabel} touched={touched.tags as any} error={errors.tags as any}>
+        <BeneficiaryTags beneficiaryID={values.debouncedBenID} />
         <RecordTagInputWithBenSuggestions inputID="as-tags" onChange={setTags} tags={values.tags} id={values.debouncedBenID} allowNewTags={true} />
       </FormField>
       <div style={datePickerStyle}>
