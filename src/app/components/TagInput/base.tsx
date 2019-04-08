@@ -1,8 +1,9 @@
 import * as React from 'react';
-import {Search, Icon, Label} from 'semantic-ui-react';
+import {Search, Icon} from 'semantic-ui-react';
 import './base.less';
 import {ITagResult, getTags} from 'apollo/modules/tags';
 import * as TagsInput from 'react-tagsinput';
+import {Tag} from '../Tag';
 
 interface IProps {
   onChange: (tags: string[]) => void;
@@ -21,43 +22,43 @@ function getMatchingTags(systemTags: string[], selectedTags: string[], q: string
 const newTagTitle = 'Create a new tag';
 const newTagDesc = 'Click here or the plus icon';
 
+const renderTag = (props) => {
+  const {tag, key, disabled, onRemove, getTagDisplayValue} = props;
+  const onRemoveLocal = () => {
+    if (disabled) {
+      return;
+    }
+    onRemove(key);
+  };
+
+  return (
+    <Tag
+      key={tag}
+      onClick={onRemoveLocal}
+      icon="close"
+      tag={getTagDisplayValue(tag)}
+    />
+  );
+};
+
+const renderLayout = (tagComponents, inputComponent) => {
+  return (
+    <div className="tag-input-container">
+      <div className="tag-container">
+        {tagComponents}
+      </div>
+      <div className="input-container">
+        {inputComponent}
+      </div>
+    </div>
+  );
+};
+
 class TagInputInner extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
     this.renderInput = this.renderInput.bind(this);
-    this.renderTag = this.renderTag.bind(this);
-  }
-
-  private renderTag(props) {
-    const {tag, key, disabled, onRemove, getTagDisplayValue} = props;
-    const onRemoveLocal = () => {
-      if (disabled) {
-        return;
-      }
-      onRemove(key);
-    };
-    return (
-      <Label key={key} as="a" onClick={onRemoveLocal}>
-        <span>{getTagDisplayValue(tag)}</span>
-        {!disabled &&
-        <Icon name="close"/>
-        }
-      </Label>
-    );
-  }
-
-  private renderLayout(tagComponents, inputComponent) {
-    return (
-      <div className="tag-input-container">
-        <div className="tag-container">
-          {tagComponents}
-        </div>
-        <div className="input-container">
-          {inputComponent}
-        </div>
-      </div>
-    );
   }
 
   private renderInput(props) {
@@ -106,9 +107,9 @@ class TagInputInner extends React.Component<IProps, any> {
           className="tag-input"
           value={this.props.tags}
           onChange={this.props.onChange}
-          renderTag={this.renderTag}
+          renderTag={renderTag}
           renderInput={this.renderInput}
-          renderLayout={this.renderLayout}
+          renderLayout={renderLayout}
           addOnBlur={addOnBlur}
           removeKeys={[]}
           addKeys={addKeys}

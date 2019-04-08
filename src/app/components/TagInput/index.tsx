@@ -1,10 +1,10 @@
 import * as React from 'react';
-import {Icon, Label} from 'semantic-ui-react';
 import {TagInput} from './base';
 import {suggestTags, ISuggestTagsResult, suggestQuestionnaireTags} from 'apollo/modules/tags';
 import {renderArray} from '../../helpers/react';
 import {isNullOrUndefined} from 'util';
 import './style.less';
+import {Tag} from '../Tag';
 
 interface IProps {
   data?: ISuggestTagsResult;
@@ -21,7 +21,7 @@ function filterAlreadySelectedTags(suggested: string[], selected: string[]) {
   return suggested.filter((t) => selected.indexOf(t) === -1);
 }
 
-class RecordTagInputWithSuggestionsInner extends React.Component<IProps, any> {
+class TagInputWithSuggestionsInner extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
@@ -35,11 +35,13 @@ class RecordTagInputWithSuggestionsInner extends React.Component<IProps, any> {
   }
 
   private renderTag(tag: string): JSX.Element {
-    return(
-      <Label as="a" key={tag} onClick={this.addTag(tag)}>
-        <span>{tag}</span>
-        <Icon name="plus"/>
-      </Label>
+    return (
+      <Tag
+        key={tag}
+        onClick={this.addTag(tag)}
+        icon="plus"
+        tag={tag}
+      />
     );
   }
 
@@ -92,5 +94,5 @@ class RecordTagInputWithSuggestionsInner extends React.Component<IProps, any> {
 }
 
 const getID = (p: IProps) => p.id;
-export const TagInputWithBenSuggestions = suggestTags<IProps>(getID)(RecordTagInputWithSuggestionsInner);
-export const TagInputWithQuestionnaireSuggestions = suggestQuestionnaireTags<IProps>(getID)(RecordTagInputWithSuggestionsInner);
+export const TagInputWithBenSuggestions = suggestTags<IProps>(getID)(TagInputWithSuggestionsInner);
+export const TagInputWithQuestionnaireSuggestions = suggestQuestionnaireTags<IProps>(getID)(TagInputWithSuggestionsInner);
