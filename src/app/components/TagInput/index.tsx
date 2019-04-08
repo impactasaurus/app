@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Icon, Label} from 'semantic-ui-react';
-import {RecordTagInput} from './base';
+import {TagInput} from './base';
 import {suggestTags, ISuggestTagsResult, suggestQuestionnaireTags} from 'apollo/modules/tags';
 import {renderArray} from '../../helpers/react';
 import {isNullOrUndefined} from 'util';
@@ -78,7 +78,7 @@ class RecordTagInputWithSuggestionsInner extends React.Component<IProps, any> {
   public render() {
     return (
       <div className="record-tag-input-w-suggestions">
-        <RecordTagInput
+        <TagInput
           onChange={this.props.onChange}
           tags={this.props.tags}
           allowNewTags={this.props.allowNewTags}
@@ -92,5 +92,5 @@ class RecordTagInputWithSuggestionsInner extends React.Component<IProps, any> {
 }
 
 const getID = (p: IProps) => p.id;
-export const RecordTagInputWithBenSuggestions = suggestTags<IProps>(getID)(RecordTagInputWithSuggestionsInner);
-export const RecordTagInputWithQuestionnaireSuggestions = suggestQuestionnaireTags<IProps>(getID)(RecordTagInputWithSuggestionsInner);
+export const TagInputWithBenSuggestions = suggestTags<IProps>(getID)(RecordTagInputWithSuggestionsInner);
+export const TagInputWithQuestionnaireSuggestions = suggestQuestionnaireTags<IProps>(getID)(RecordTagInputWithSuggestionsInner);

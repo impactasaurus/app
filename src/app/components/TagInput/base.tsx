@@ -21,7 +21,7 @@ function getMatchingTags(systemTags: string[], selectedTags: string[], q: string
 const newTagTitle = 'Create a new tag';
 const newTagDesc = 'Click here or the plus icon';
 
-class RecordTagInputInner extends React.Component<IProps, any> {
+class TagInputInner extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
@@ -119,5 +119,5 @@ class RecordTagInputInner extends React.Component<IProps, any> {
   }
 }
 
-const RecordTagInput = getTags<IProps>(RecordTagInputInner);
-export { RecordTagInput };
+const TagInput = getTags<IProps>(TagInputInner);
+export { TagInput };

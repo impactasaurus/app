@@ -6,7 +6,7 @@ import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import {FormField} from 'components/FormField';
 import './style.less';
 import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
-import {RecordTagInputWithQuestionnaireSuggestions} from 'components/RecordTagInput';
+import {TagInputWithQuestionnaireSuggestions} from 'components/TagInput';
 const strings = require('./../../../strings.json');
 
 export interface IFormOutput {
@@ -77,7 +77,7 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
         </FormField>
       </div>
       <FormField inputID="rf-tags" label={tagLabel} touched={touched.tags as boolean} error={errors.tags as string}>
-        <RecordTagInputWithQuestionnaireSuggestions inputID="rf-tags" id={values.questionSetID} onChange={setTags} tags={values.tags} allowNewTags={false}>
+        <TagInputWithQuestionnaireSuggestions inputID="rf-tags" id={values.questionSetID} onChange={setTags} tags={values.tags} allowNewTags={false}>
           {values.tags.length >= 2 && (
             <div style={{marginTop: '1em'}}>
               Records must have <Button.Group size="mini" style={{margin: '0 0.3rem'}}>
@@ -87,7 +87,7 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
               </Button.Group> of the tags to be included in the report
             </div>
           )}
-        </RecordTagInputWithQuestionnaireSuggestions>
+        </TagInputWithQuestionnaireSuggestions>
       </FormField>
 
       <Form.Group>
