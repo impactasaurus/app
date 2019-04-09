@@ -9,6 +9,7 @@ import {IAssessmentConfig} from 'models/assessment';
 export function clearCacheOfAllMeetings() {
   return invalidateFields(() => [
     [ROOT, /^meeting.*/],
+    [ROOT, /recentMeetings/],
   ]);
 }
 

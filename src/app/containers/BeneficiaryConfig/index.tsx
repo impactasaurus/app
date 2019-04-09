@@ -1,9 +1,12 @@
 import * as React from 'react';
 import {BeneficiaryForm, IFormOutput} from 'components/BeneficiaryForm';
-import {IBeneficiaryResult, getBeneficiary} from 'apollo/modules/beneficiaries';
+import {
+  IBeneficiaryResult, getBeneficiary, editBeneficiaryTags,
+  IEditBeneficiaryTags,
+} from 'apollo/modules/beneficiaries';
 import {ApolloLoaderHoC} from '../../components/ApolloLoaderHoC';
 
-interface IProps {
+interface IProps extends IEditBeneficiaryTags {
   match: {
     params: {
       id: string,
@@ -29,9 +32,8 @@ class BeneficiaryConfigInner extends React.Component<IProps, IState> {
     this.onCancel = this.onCancel.bind(this);
   }
 
-  private onSave(v: IFormOutput): Promise<void> {
-    console.log(v);
-    return Promise.resolve();
+  private onSave(v: IFormOutput): Promise<any> {
+    return this.props.editBeneficiaryTags(getBen(this.props), v.tags);
   }
 
   private onCancel() {
@@ -56,5 +58,5 @@ class BeneficiaryConfigInner extends React.Component<IProps, IState> {
 }
 
 const BeneficiaryConfigWithLoader = ApolloLoaderHoC<IProps>('beneficiary', (p: IProps) => p.data, BeneficiaryConfigInner);
-const BeneficiaryConfig = getBeneficiary<IProps>(getBen)(BeneficiaryConfigWithLoader);
+const BeneficiaryConfig = getBeneficiary<IProps>(getBen)(editBeneficiaryTags<IProps>(BeneficiaryConfigWithLoader));
 export { BeneficiaryConfig };

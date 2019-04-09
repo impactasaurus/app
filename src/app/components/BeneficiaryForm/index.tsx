@@ -11,7 +11,7 @@ export interface IFormOutput {
 }
 
 interface IProps {
-  onFormSubmit: (IFormOutput) => Promise<void>;
+  onFormSubmit: (IFormOutput) => Promise<any>;
   beneficiaryID: string;
   tags: string[];
   onCancel: () => void;
