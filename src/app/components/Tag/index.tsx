@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Label, Icon, SemanticICONS} from 'semantic-ui-react';
+import {Label, Icon, SemanticICONS, Popup} from 'semantic-ui-react';
 import {renderArray} from '../../helpers/react';
 
 interface IProps {
@@ -17,7 +17,7 @@ export const Tag = (p: IProps) => (
     onClick={p.onClick}
     style={{marginTop: '0.2em', marginBottom: '0.2em'}}
   >
-    {p.beneficiary && <Icon name="user"/>}
+    {p.beneficiary && <Popup trigger={<Icon name="user"/>} content="Beneficiary Tag" />}
     <span>{p.tag}</span>
     {p.icon !== undefined && <Icon name={p.icon} />}
   </Label>
