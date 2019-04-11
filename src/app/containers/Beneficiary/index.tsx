@@ -125,9 +125,9 @@ class Beneficiary extends React.Component<IProps, any> {
             <Icon name="plus" />
             New Record
           </Menu.Item>
-          <Menu.Item name="Settings" active={this.props.child === ReviewPage.CONFIG} onClick={this.innerPageSetter(ReviewPage.CONFIG)}>
+          <Menu.Item name="Admin" active={this.props.child === ReviewPage.CONFIG} onClick={this.innerPageSetter(ReviewPage.CONFIG)}>
             <Icon name="cog" />
-            Settings
+            Admin
           </Menu.Item>
         </SecondaryMenu>
         <Grid container={true} columns={1}>
