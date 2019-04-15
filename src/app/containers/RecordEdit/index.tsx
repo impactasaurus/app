@@ -6,7 +6,7 @@ import {
   editMeetingDate, editMeetingTags, getMeeting, IEditMeetingDate, IEditMeetingTags,
   IMeetingResult,
 } from 'apollo/modules/meetings';
-import {RecordTagInputWithBenSuggestions} from 'components/RecordTagInput';
+import {TagInputWithBenSuggestions} from 'components/TagInput';
 import {DateTimePicker} from 'components/DateTimePicker';
 import {Error} from 'components/Error';
 import {Hint} from 'components/Hint';
@@ -173,7 +173,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
       tags = (
         <div>
           <Tags benTags={this.props.data.getMeeting.benTags} recordTags={[]}/>
-          <RecordTagInputWithBenSuggestions
+          <TagInputWithBenSuggestions
             onChange={this.setTags}
             tags={this.state.recordTags}
             id={beneficiary}

@@ -25,6 +25,7 @@ export enum ReviewPage {
   JOURNEY,
   RECORDS,
   NEW_RECORD,
+  CONFIG,
 }
 
 const getTitle = (b: string, p: ReviewPage) => {
@@ -33,6 +34,8 @@ const getTitle = (b: string, p: ReviewPage) => {
       return `${b}'s Records`;
     case ReviewPage.JOURNEY:
       return `${b}'s Journey`;
+    case ReviewPage.CONFIG:
+      return `${b}'s Settings`;
     default:
       return b;
   }
@@ -45,6 +48,8 @@ const getTitle = (b: string, p: ReviewPage) => {
     child = ReviewPage.JOURNEY;
   } else if (state.router.location.pathname.endsWith('records')) {
     child = ReviewPage.RECORDS;
+  } else if (state.router.location.pathname.endsWith('config')) {
+    child = ReviewPage.CONFIG;
   }
   return {
     child,
@@ -83,6 +88,10 @@ class Beneficiary extends React.Component<IProps, any> {
           subPage = 'record';
           break;
         }
+        case ReviewPage.CONFIG: {
+          subPage = 'config';
+          break;
+        }
         default: {
           subPage = 'journey';
           break;
@@ -116,6 +125,10 @@ class Beneficiary extends React.Component<IProps, any> {
             <Icon name="plus" />
             New Record
           </Menu.Item>
+          <Menu.Item name="Admin" active={this.props.child === ReviewPage.CONFIG} onClick={this.innerPageSetter(ReviewPage.CONFIG)}>
+            <Icon name="cog" />
+            Admin
+          </Menu.Item>
         </SecondaryMenu>
         <Grid container={true} columns={1}>
           <Grid.Column>
@@ -127,6 +140,7 @@ class Beneficiary extends React.Component<IProps, any> {
                 <Route exact={true} path={`${match}/`} component={containers.Journey} />
                 <Route path={`${match}/journey`} component={containers.Journey} />
                 <Route path={`${match}/records`} component={containers.Records} />
+                <Route path={`${match}/config`} component={containers.BeneficiaryConfig} />
                 <Route path={`${match}/record/:type`} component={containers.AssessmentConfig} />
                 <Route path={`${match}/record`} component={containers.AssessmentTypeSelect} />
               </Switch>
