@@ -7,9 +7,9 @@ import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {IStore} from 'redux/IStore';
 import {Error} from 'components/Error';
 import {Aggregation, getAggregation} from 'models/pref';
-import {RocReportBarChart} from 'components/RocReportBarChart';
 import {RocReportDetails} from 'components/RocReportDetails';
 import {VizControlPanel} from 'components/VizControlPanel';
+import {ServiceReportGroupedStackedBar} from '../../components/ServiceReportGroupedStackedBar';
 const { connect } = require('react-redux');
 
 interface IProp extends IROCReportResult {
@@ -66,7 +66,7 @@ class RateOfChangeReportInner extends React.Component<IProp, any> {
       <div>
         <RocReportDetails report={report} questionSet={qs} />
         <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} showVizOptions={false} />
-        <RocReportBarChart report={report} questionSet={qs} category={this.props.agg === Aggregation.CATEGORY} />
+        <ServiceReportGroupedStackedBar report={report} questionSet={qs} />
       </div>
     );
   }
