@@ -7,8 +7,6 @@ export interface IDateTimeValue {
 
 export interface IStats {
   delta: number;
-  lobfDelta: number;
-  roc: number;
 }
 
 export interface IID {
@@ -77,9 +75,7 @@ export const answerAggregationFragment = gql`
     categories {
       id,
       stats {
-        delta,
-        lobfDelta,
-        roc
+        delta
       },
       initial,
       latest
