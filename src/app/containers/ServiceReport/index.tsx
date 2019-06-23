@@ -12,24 +12,20 @@ import {Error} from 'components/Error';
 import {IStore} from 'redux/IStore';
 import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'models/pref';
 import './style.less';
-import {constructReportQueryParams, constructReportURL} from 'helpers/report';
 import {bindActionCreators} from 'redux';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {Link} from 'react-router-dom';
+import {
+  exportReportData,
+  getEndDateFromProps, getOpenStartFromProps, getOrFromProps,
+  getQuestionSetIDFromProps,
+  getStartDateFromProps, getTagsFromProps,
+  IReportProps,
+} from 'containers/Report/helpers';
 const { connect } = require('react-redux');
 
-interface IProp extends IJOCReportResult, IURLConnector {
+interface IProp extends IJOCReportResult, IURLConnector, IReportProps {
   data: IOutcomeResult;
-  match: {
-    params: {
-      questionSetID: string,
-      start: string,
-      end: string,
-    },
-  };
-  location: {
-    search: string,
-  };
   vis?: Visualisation;
   agg?: Aggregation;
   isCategoryAgPossible?: boolean;
@@ -60,7 +56,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
   constructor(props) {
     super(props);
     this.renderVis = this.renderVis.bind(this);
-    this.exportReportData = this.exportReportData.bind(this);
+    this.export = this.export.bind(this);
   }
 
   private renderVis(): JSX.Element {
@@ -75,11 +71,8 @@ class ServiceReportInner extends React.Component<IProp, any> {
     );
   }
 
-  private exportReportData() {
-    const {start, end, questionSetID} = this.props.match.params;
-    const url = constructReportURL('export', new Date(start), new Date(end), questionSetID);
-    const qp = constructReportQueryParams(getTagsFromProps(this.props), getOpenStartFromProps(this.props), getOrFromProps(this.props));
-    this.props.setURL(url, qp);
+  private export() {
+    exportReportData(this.props, this.props);
   }
 
   private renderEmptyReport() {
@@ -142,49 +135,11 @@ class ServiceReportInner extends React.Component<IProp, any> {
     return wrapper((
       <div>
         <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
-        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} export={this.exportReportData} allowCanvasSnapshot={this.props.isCanvasSnapshotPossible} />
+        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} export={this.export} allowCanvasSnapshot={this.props.isCanvasSnapshotPossible} />
         {this.renderVis()}
       </div>
     ), this.props.data.getOutcomeSet.name);
   }
-}
-
-function getQuestionSetIDFromProps(p: IProp): string {
-  return p.match.params.questionSetID;
-}
-
-function getStartDateFromProps(p: IProp): string {
-  return p.match.params.start;
-}
-
-function getEndDateFromProps(p: IProp): string {
-  return p.match.params.end;
-}
-
-function getTagsFromProps(p: IProp): string[] {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has('tags') === false) {
-    return [];
-  }
-  const tags = urlParams.get('tags');
-  const parsedTags = JSON.parse(tags);
-  return parsedTags;
-}
-
-function getOpenStartFromProps(p: IProp): boolean {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has('open') === false) {
-    return true;
-  }
-  return JSON.parse(urlParams.get('open'));
-}
-
-function getOrFromProps(p: IProp): boolean {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has('or') === false) {
-    return false;
-  }
-  return JSON.parse(urlParams.get('or'));
 }
 
 const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenStartFromProps, getOrFromProps)(ServiceReportInner));
