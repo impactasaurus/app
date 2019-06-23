@@ -57,7 +57,8 @@ export const answerAggregationFragment = gql`
     }
   }`;
 
-export interface IAnswerDelta extends IID {
+export interface IAnswerDelta {
+  aID: string;
   stats: IDelta;
 }
 
@@ -77,13 +78,13 @@ export const beneficiaryDeltaFragment = gql`
     beneficiaries {
       id,
       categories {
-        id,
+        aID: id,
         stats {
           delta
         }
       }
       questions {
-        id,
+        aID: id,
         stats {
           delta
         }
@@ -91,7 +92,7 @@ export const beneficiaryDeltaFragment = gql`
     },
     categories {
       id
-    }
+    },
     excluded {
       beneficiary,
       question,

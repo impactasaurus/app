@@ -115,11 +115,12 @@ class StackedBarChart extends React.Component<IProps, IState> {
             ticks: {
               beginAtZero: true,
               max: this.props.showPercentage ? maxX : undefined,
+              stepSize: this.props.showPercentage ? maxX/5 : undefined,
               callback: (value) => {
                 if (!this.props.showPercentage) {
                   return value;
                 } else {
-                  return `${precisionRound((value / maxX)*100, 2)}%`;
+                  return `${precisionRound((value / maxX)*100, 0)}%`;
                 }
               },
             },

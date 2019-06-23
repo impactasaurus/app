@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { Grid, Loader, Message } from 'semantic-ui-react';
+import { Grid, Loader } from 'semantic-ui-react';
 import {getJOCServiceReport, IJOCReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ServiceReportDetails} from 'components/ServiceReportDetails';
