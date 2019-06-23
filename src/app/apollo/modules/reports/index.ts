@@ -1,7 +1,6 @@
 import {gql, graphql, QueryProps, QueryOpts} from 'react-apollo';
 import {
   answerAggregationFragment, IAnswerAggregationReport,
-  beneficiaryAggregationFragment, IBeneficiaryAggregationReport,
 } from 'models/report';
 import {Extractor, IDExtractor} from 'helpers/apollo';
 import {isNullOrUndefined} from 'util';
@@ -37,45 +36,12 @@ export const getJOCServiceReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T
   });
 };
 
-export const getROCReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>) => {
-  return graphql<any, T>(gql`
-    query ROCServiceReport($start: String!, $end: String!, $questionSetID: String!, $tags:[String]) {
-      getROCReport: report(start:$start, end: $end, questionnaire: $questionSetID, tags: $tags, openStart: false) {
-        ...beneficiaryAggregationFragment
-      }
-    }
-    ${beneficiaryAggregationFragment}`,
-    {
-      name: 'ROCReport',
-      options: (props: T): QueryOpts => {
-        return {
-          variables: {
-            questionSetID: qid(props),
-            start: start(props),
-            end: end(props),
-            tags: tags(props),
-          },
-          notifyOnNetworkStatusChange: true,
-          fetchPolicy: 'network-only',
-        };
-      },
-    });
-};
-
 export interface IJOCResult extends QueryProps {
   getJOCServiceReport?: IAnswerAggregationReport;
 }
 
 export interface IJOCReportResult {
   JOCServiceReport: IJOCResult;
-}
-
-export interface IROCResult extends QueryProps {
-  getROCReport?: IBeneficiaryAggregationReport;
-}
-
-export interface IROCReportResult {
-  ROCReport?: IROCResult;
 }
 
 export const exportReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>, openStart: Extractor<T, boolean>, orTags?: Extractor<T, boolean>) => {
