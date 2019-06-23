@@ -68,11 +68,12 @@ export interface IBenDeltaSummary extends IID {
 
 export interface IBeneficiaryDeltaReport {
   beneficiaries: IBenDeltaSummary[];
+  categories: IID[];
   excluded: IExclusion[];
 }
 
 export const beneficiaryDeltaFragment = gql`
-  fragment beneficiaryAggregationFragment on Report {
+  fragment beneficiaryDeltaFragment on Report {
     beneficiaries {
       id,
       categories {
@@ -88,6 +89,9 @@ export const beneficiaryDeltaFragment = gql`
         }
       }
     },
+    categories {
+      id
+    }
     excluded {
       beneficiary,
       question,

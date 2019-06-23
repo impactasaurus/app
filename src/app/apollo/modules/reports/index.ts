@@ -1,6 +1,6 @@
 import {gql, graphql, QueryProps, QueryOpts} from 'react-apollo';
 import {
-  answerAggregationFragment, IAnswerAggregationReport,
+  answerAggregationFragment, beneficiaryDeltaFragment, IAnswerAggregationReport, IBeneficiaryDeltaReport,
 } from 'models/report';
 import {Extractor, IDExtractor} from 'helpers/apollo';
 import {isNullOrUndefined} from 'util';
@@ -42,6 +42,45 @@ export interface IJOCResult extends QueryProps {
 
 export interface IJOCReportResult {
   JOCServiceReport: IJOCResult;
+}
+
+export const getDeltaReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>, open?: Extractor<T, boolean>, orTags?: Extractor<T, boolean>) => {
+  return graphql<any, T>(gql`
+    query DeltaReport($start: String!, $end: String!, $questionSetID: String!, $tags:[String], $open: Boolean, $orTags: Boolean) {
+      getDeltaReport: report(start:$start, end: $end, questionnaire: $questionSetID, tags: $tags, openStart: $open, orTags: $orTags) {
+        ...beneficiaryDeltaFragment
+      }
+    }
+    ${beneficiaryDeltaFragment}`,
+    {
+      name: 'DeltaReport',
+      options: (props: T): QueryOpts => {
+        let openStart = true;
+        if (!isNullOrUndefined(open)) {
+          openStart = open(props);
+        }
+        return {
+          variables: {
+            questionSetID: qid(props),
+            start: start(props),
+            end: end(props),
+            tags: tags(props),
+            open: openStart,
+            orTags: orTags ? orTags(props) : false,
+          },
+          notifyOnNetworkStatusChange: true,
+          fetchPolicy: 'network-only',
+        };
+      },
+    });
+};
+
+export interface IDeltaResult extends QueryProps {
+  getDeltaReport?: IBeneficiaryDeltaReport;
+}
+
+export interface IDeltaReportResult {
+  DeltaReport: IDeltaResult;
 }
 
 export const exportReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>, openStart: Extractor<T, boolean>, orTags?: Extractor<T, boolean>) => {

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import 'url-search-params-polyfill';
 import { Helmet } from 'react-helmet';
 import { Grid, Loader, Message } from 'semantic-ui-react';
 import {getJOCServiceReport, IJOCReportResult} from 'apollo/modules/reports';
@@ -14,13 +13,12 @@ import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'mode
 import './style.less';
 import {bindActionCreators} from 'redux';
 import {IURLConnector, setURL} from 'redux/modules/url';
-import {Link} from 'react-router-dom';
 import {
   exportReportData,
   getEndDateFromProps, getOpenStartFromProps, getOrFromProps,
   getQuestionSetIDFromProps,
   getStartDateFromProps, getTagsFromProps,
-  IReportProps,
+  IReportProps, renderEmptyReport,
 } from 'containers/Report/helpers';
 const { connect } = require('react-redux');
 
@@ -75,34 +73,6 @@ class ServiceReportInner extends React.Component<IProp, any> {
     exportReportData(this.props, this.props);
   }
 
-  private renderEmptyReport() {
-    const unqiueExcludedBens = this.props.JOCServiceReport.getJOCServiceReport.excluded
-      .filter((e) => e.beneficiary !== undefined)
-      .filter((e, i, a) => a.indexOf(e) === i);
-    if (unqiueExcludedBens.length > 0) {
-      return (
-        <Message warning={true}>
-          <Message.Header>We Need More Records</Message.Header>
-          <p>When generating your report, we only found beneficiaries with one record</p>
-          <p>We need <b>at least two records</b> to understand the impact your intervention is having on a beneficiary</p>
-          <p>Please collect more records and ensure that the time range you provided includes them</p>
-        </Message>
-      );
-    }
-    return (
-      <Message warning={true}>
-        <Message.Header>No Records</Message.Header>
-        <div>
-          <p>We couldn't generate your report as we found no records. This may be because:</p>
-          <p>There are no records in the system, <Link to={'/record'}>click here to create some</Link></p>
-          <p>or</p>
-          <p>The report's time range didn't contain any records</p>
-        </div>
-      </Message>
-    );
-
-  }
-
   public render() {
     const wrapper = (inner: JSX.Element, questionnaireName?: string): JSX.Element => {
       let title = 'Impact Report';
@@ -130,7 +100,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
       return wrapper(<Loader active={true} inline="centered" />);
     }
     if (this.props.JOCServiceReport.getJOCServiceReport && this.props.JOCServiceReport.getJOCServiceReport.beneficiaries.length === 0) {
-      return wrapper(this.renderEmptyReport());
+      return wrapper(renderEmptyReport(this.props.JOCServiceReport.getJOCServiceReport.excluded));
     }
     return wrapper((
       <div>

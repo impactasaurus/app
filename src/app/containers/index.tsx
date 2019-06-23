@@ -14,6 +14,7 @@ export { Organisation } from './Organisation';
 export {Account} from './Account';
 export {Report} from './Report';
 export {ServiceReport} from './ServiceReport';
+export {DeltaReport} from './DeltaReport';
 export {BeneficiaryRedirect} from './BeneficiaryRedirect';
 export {Journey} from './Journey';
 export {Records} from './Records';
