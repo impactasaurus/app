@@ -7,6 +7,7 @@ import './style.less';
 import {bindActionCreators} from 'redux';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {
+  exportReportData,
   getEndDateFromProps,
   getOpenStartFromProps,
   getOrFromProps,
@@ -18,7 +19,10 @@ import {
 } from 'containers/Report/helpers';
 import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
 import {PageWrapperHoC} from 'components/PageWrapperHoC';
-import {DeltaReportStackedBarGraph} from 'components/DeltaReportStackedBarGraph';
+import {VizControlPanel} from 'components/VizControlPanel';
+import {DeltaReportStackedBarGraph} from './bar';
+import {DeltaReportDetails} from './details';
+import {DeltaTable} from './table';
 
 const { connect } = require('react-redux');
 
@@ -54,18 +58,33 @@ class DeltaReportInner extends React.Component<IProp, any> {
   constructor(props) {
     super(props);
     this.renderVis = this.renderVis.bind(this);
+    this.export = this.export.bind(this);
   }
 
   private renderVis(): JSX.Element {
     const p = this.props;
-    return <DeltaReportStackedBarGraph report={p.DeltaReport.getDeltaReport} questionSet={p.data.getOutcomeSet} category={p.agg === Aggregation.CATEGORY} />;
+    if (p.vis === Visualisation.RADAR) {
+      return <DeltaReportStackedBarGraph report={p.DeltaReport.getDeltaReport} questionSet={p.data.getOutcomeSet} category={p.agg === Aggregation.CATEGORY} />;
+    } else {
+      return <DeltaTable report={p.DeltaReport.getDeltaReport} />;
+    }
+  }
+
+  private export() {
+    exportReportData(this.props, this.props);
   }
 
   public render() {
     if (this.props.DeltaReport.getDeltaReport && this.props.DeltaReport.getDeltaReport.beneficiaries.length === 0) {
       return renderEmptyReport(this.props.DeltaReport.getDeltaReport.excluded);
     }
-    return this.renderVis();
+    return (
+      <div>
+        <DeltaReportDetails report={this.props.DeltaReport.getDeltaReport} questionnaire={this.props.data.getOutcomeSet} />
+        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} export={this.export} allowCanvasSnapshot={this.props.isCanvasSnapshotPossible} />
+        {this.renderVis()}
+      </div>
+    );
   }
 }
 
