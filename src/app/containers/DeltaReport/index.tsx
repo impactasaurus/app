@@ -26,6 +26,8 @@ import {DeltaTable} from './table';
 
 const { connect } = require('react-redux');
 
+const allowedVisualisations = [Visualisation.BAR, Visualisation.TABLE];
+
 interface IProp extends IDeltaReportResult, IURLConnector, IReportProps {
   data: IOutcomeResult;
   vis?: Visualisation;
@@ -43,12 +45,12 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
 
 @connect((state: IStore, ownProps: IProp) => {
   const canCatAg = isCategoryAggregationAvailable(ownProps);
-  const viz = getVisualisation(state.pref, false);
+  const viz = getVisualisation(state.pref, allowedVisualisations);
   return {
     vis: viz,
     agg: getAggregation(state.pref, canCatAg),
     isCategoryAgPossible: canCatAg,
-    isCanvasSnapshotPossible: viz === Visualisation.RADAR,
+    isCanvasSnapshotPossible: viz === Visualisation.BAR,
   };
 }, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
@@ -63,7 +65,7 @@ class DeltaReportInner extends React.Component<IProp, any> {
 
   private renderVis(): JSX.Element {
     const p = this.props;
-    if (p.vis === Visualisation.RADAR) {
+    if (p.vis === Visualisation.BAR) {
       return <DeltaReportStackedBarGraph report={p.DeltaReport.getDeltaReport} questionSet={p.data.getOutcomeSet} category={p.agg === Aggregation.CATEGORY} />;
     } else {
       return <DeltaTable report={p.DeltaReport.getDeltaReport} questionSet={p.data.getOutcomeSet} category={p.agg === Aggregation.CATEGORY} />;
@@ -81,7 +83,12 @@ class DeltaReportInner extends React.Component<IProp, any> {
     return (
       <div>
         <DeltaReportDetails report={this.props.DeltaReport.getDeltaReport} questionnaire={this.props.data.getOutcomeSet} />
-        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} export={this.export} allowCanvasSnapshot={this.props.isCanvasSnapshotPossible} />
+        <VizControlPanel
+          canCategoryAg={this.props.isCategoryAgPossible}
+          visualisations={allowedVisualisations}
+          export={this.export}
+          allowCanvasSnapshot={this.props.isCanvasSnapshotPossible}
+        />
         {this.renderVis()}
       </div>
     );

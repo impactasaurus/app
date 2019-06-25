@@ -22,6 +22,8 @@ import {
 } from 'containers/Report/helpers';
 const { connect } = require('react-redux');
 
+const allowedVisualisations = [Visualisation.RADAR, Visualisation.TABLE];
+
 interface IProp extends IJOCReportResult, IURLConnector, IReportProps {
   data: IOutcomeResult;
   vis?: Visualisation;
@@ -39,7 +41,7 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
 
 @connect((state: IStore, ownProps: IProp) => {
   const canCatAg = isCategoryAggregationAvailable(ownProps);
-  const viz = getVisualisation(state.pref, false);
+  const viz = getVisualisation(state.pref, allowedVisualisations);
   return {
     vis: viz,
     agg: getAggregation(state.pref, canCatAg),
@@ -105,7 +107,12 @@ class ServiceReportInner extends React.Component<IProp, any> {
     return wrapper((
       <div>
         <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
-        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} export={this.export} allowCanvasSnapshot={this.props.isCanvasSnapshotPossible} />
+        <VizControlPanel
+          canCategoryAg={this.props.isCategoryAgPossible}
+          visualisations={allowedVisualisations}
+          export={this.export}
+          allowCanvasSnapshot={this.props.isCanvasSnapshotPossible}
+        />
         {this.renderVis()}
       </div>
     ), this.props.data.getOutcomeSet.name);
