@@ -66,7 +66,7 @@ class DeltaReportInner extends React.Component<IProp, any> {
     if (p.vis === Visualisation.RADAR) {
       return <DeltaReportStackedBarGraph report={p.DeltaReport.getDeltaReport} questionSet={p.data.getOutcomeSet} category={p.agg === Aggregation.CATEGORY} />;
     } else {
-      return <DeltaTable report={p.DeltaReport.getDeltaReport} />;
+      return <DeltaTable report={p.DeltaReport.getDeltaReport} questionSet={p.data.getOutcomeSet} category={p.agg === Aggregation.CATEGORY} />;
     }
   }
 
