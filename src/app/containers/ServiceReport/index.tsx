@@ -1,7 +1,6 @@
 import * as React from 'react';
-import 'url-search-params-polyfill';
 import { Helmet } from 'react-helmet';
-import { Grid, Loader, Message } from 'semantic-ui-react';
+import { Grid, Loader } from 'semantic-ui-react';
 import {getJOCServiceReport, IJOCReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {ServiceReportDetails} from 'components/ServiceReportDetails';
@@ -12,24 +11,21 @@ import {Error} from 'components/Error';
 import {IStore} from 'redux/IStore';
 import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'models/pref';
 import './style.less';
-import {constructReportQueryParams, constructReportURL} from 'helpers/report';
 import {bindActionCreators} from 'redux';
 import {IURLConnector, setURL} from 'redux/modules/url';
-import {Link} from 'react-router-dom';
+import {
+  exportReportData,
+  getEndDateFromProps, getOpenStartFromProps, getOrFromProps,
+  getQuestionSetIDFromProps,
+  getStartDateFromProps, getTagsFromProps,
+  IReportProps, renderEmptyReport,
+} from 'containers/Report/helpers';
 const { connect } = require('react-redux');
 
-interface IProp extends IJOCReportResult, IURLConnector {
+const allowedVisualisations = [Visualisation.RADAR, Visualisation.TABLE];
+
+interface IProp extends IJOCReportResult, IURLConnector, IReportProps {
   data: IOutcomeResult;
-  match: {
-    params: {
-      questionSetID: string,
-      start: string,
-      end: string,
-    },
-  };
-  location: {
-    search: string,
-  };
   vis?: Visualisation;
   agg?: Aggregation;
   isCategoryAgPossible?: boolean;
@@ -45,7 +41,7 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
 
 @connect((state: IStore, ownProps: IProp) => {
   const canCatAg = isCategoryAggregationAvailable(ownProps);
-  const viz = getVisualisation(state.pref, false);
+  const viz = getVisualisation(state.pref, allowedVisualisations);
   return {
     vis: viz,
     agg: getAggregation(state.pref, canCatAg),
@@ -60,7 +56,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
   constructor(props) {
     super(props);
     this.renderVis = this.renderVis.bind(this);
-    this.exportReportData = this.exportReportData.bind(this);
+    this.export = this.export.bind(this);
   }
 
   private renderVis(): JSX.Element {
@@ -75,39 +71,8 @@ class ServiceReportInner extends React.Component<IProp, any> {
     );
   }
 
-  private exportReportData() {
-    const {start, end, questionSetID} = this.props.match.params;
-    const url = constructReportURL('export', new Date(start), new Date(end), questionSetID);
-    const qp = constructReportQueryParams(getTagsFromProps(this.props), getOpenStartFromProps(this.props), getOrFromProps(this.props));
-    this.props.setURL(url, qp);
-  }
-
-  private renderEmptyReport() {
-    const unqiueExcludedBens = this.props.JOCServiceReport.getJOCServiceReport.excluded
-      .filter((e) => e.beneficiary !== undefined)
-      .filter((e, i, a) => a.indexOf(e) === i);
-    if (unqiueExcludedBens.length > 0) {
-      return (
-        <Message warning={true}>
-          <Message.Header>We Need More Records</Message.Header>
-          <p>When generating your report, we only found beneficiaries with one record</p>
-          <p>We need <b>at least two records</b> to understand the impact your intervention is having on a beneficiary</p>
-          <p>Please collect more records and ensure that the time range you provided includes them</p>
-        </Message>
-      );
-    }
-    return (
-      <Message warning={true}>
-        <Message.Header>No Records</Message.Header>
-        <div>
-          <p>We couldn't generate your report as we found no records. This may be because:</p>
-          <p>There are no records in the system, <Link to={'/record'}>click here to create some</Link></p>
-          <p>or</p>
-          <p>The report's time range didn't contain any records</p>
-        </div>
-      </Message>
-    );
-
+  private export() {
+    exportReportData(this.props, this.props);
   }
 
   public render() {
@@ -137,54 +102,21 @@ class ServiceReportInner extends React.Component<IProp, any> {
       return wrapper(<Loader active={true} inline="centered" />);
     }
     if (this.props.JOCServiceReport.getJOCServiceReport && this.props.JOCServiceReport.getJOCServiceReport.beneficiaries.length === 0) {
-      return wrapper(this.renderEmptyReport());
+      return wrapper(renderEmptyReport(this.props.JOCServiceReport.getJOCServiceReport.excluded));
     }
     return wrapper((
       <div>
         <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
-        <VizControlPanel canCategoryAg={this.props.isCategoryAgPossible} allowGraph={false} export={this.exportReportData} allowCanvasSnapshot={this.props.isCanvasSnapshotPossible} />
+        <VizControlPanel
+          canCategoryAg={this.props.isCategoryAgPossible}
+          visualisations={allowedVisualisations}
+          export={this.export}
+          allowCanvasSnapshot={this.props.isCanvasSnapshotPossible}
+        />
         {this.renderVis()}
       </div>
     ), this.props.data.getOutcomeSet.name);
   }
-}
-
-function getQuestionSetIDFromProps(p: IProp): string {
-  return p.match.params.questionSetID;
-}
-
-function getStartDateFromProps(p: IProp): string {
-  return p.match.params.start;
-}
-
-function getEndDateFromProps(p: IProp): string {
-  return p.match.params.end;
-}
-
-function getTagsFromProps(p: IProp): string[] {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has('tags') === false) {
-    return [];
-  }
-  const tags = urlParams.get('tags');
-  const parsedTags = JSON.parse(tags);
-  return parsedTags;
-}
-
-function getOpenStartFromProps(p: IProp): boolean {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has('open') === false) {
-    return true;
-  }
-  return JSON.parse(urlParams.get('open'));
-}
-
-function getOrFromProps(p: IProp): boolean {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has('or') === false) {
-    return false;
-  }
-  return JSON.parse(urlParams.get('or'));
 }
 
 const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenStartFromProps, getOrFromProps)(ServiceReportInner));

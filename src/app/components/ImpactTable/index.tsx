@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Table, Header } from 'semantic-ui-react';
 import { renderArray } from 'helpers/react';
+import {Direction, directionSpec} from 'helpers/table';
 
 interface IRow {
   name: string;
@@ -13,15 +14,6 @@ interface IProp {
   nameColName: string;
   firstColName?: string;
   lastColName?: string;
-}
-
-enum Direction {
-  ASC,
-  DESC,
-}
-
-function directionSpec(d: Direction): 'ascending'|'descending' {
-  return d === Direction.ASC ? 'ascending' : 'descending';
 }
 
 enum Column {

@@ -9,7 +9,7 @@ import {pageRegex} from './index';
 
 export const sync: IParams = {
   [VisualisationKey]: {
-    selector: (store: IStore) => getVisualisation(store.pref, true),
+    selector: (store: IStore) => getVisualisation(store.pref),
     action: (value) => setPref(VisualisationKey, Visualisation[value]),
     stringToValue: (s) => Visualisation[s.toUpperCase()],
     valueToString: (v) => `${Visualisation[v]}`.toLowerCase(),

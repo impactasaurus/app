@@ -1,13 +1,18 @@
 import * as React from 'react';
-import { Loader } from 'semantic-ui-react';
+import {Loader} from 'semantic-ui-react';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import {VizControlPanel} from 'components/VizControlPanel';
-import { bindActionCreators } from 'redux';
+import {bindActionCreators} from 'redux';
 import {IStore} from 'redux/IStore';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {
-  Aggregation, Visualisation, getAggregation, getVisualisation,
-  getSelectedQuestionSetID, QuestionnaireKey} from 'models/pref';
+  Aggregation,
+  getAggregation,
+  getSelectedQuestionSetID,
+  getVisualisation,
+  QuestionnaireKey,
+  Visualisation,
+} from 'models/pref';
 import {getMeetings, IMeetingResult} from 'apollo/modules/meetings';
 import {IMeeting} from 'models/meeting';
 import {MeetingRadar} from 'components/MeetingRadar';
@@ -17,7 +22,10 @@ import {MeetingGraph} from 'components/MeetingGraph';
 import {Error} from 'components/Error';
 
 import {setPref, SetPrefFunc} from 'redux/modules/pref';
+
 const { connect } = require('react-redux');
+
+const allowedVisualisations = [Visualisation.RADAR, Visualisation.GRAPH, Visualisation.TABLE];
 
 interface IProps extends IURLConnector {
   match: {
@@ -82,7 +90,7 @@ function filterMeetings(m: IMeeting[], questionSetID: string): IMeeting[] {
 @connect((state: IStore, ownProps: IProps) => {
   const selectedQuestionSetID = getSelectedQuestionSetID(state.pref);
   const canCatAg = isCategoryAggregationAvailable(ownProps.data.getMeetings, selectedQuestionSetID);
-  const viz = getVisualisation(state.pref, true);
+  const viz = getVisualisation(state.pref, allowedVisualisations);
   return {
     vis: viz,
     agg: getAggregation(state.pref, canCatAg),
@@ -169,7 +177,7 @@ class JourneyInner extends React.Component<IProps, any> {
       <div>
         <VizControlPanel
           canCategoryAg={this.props.isCategoryAgPossible}
-          allowGraph={true}
+          visualisations={allowedVisualisations}
           export={this.exportBeneficiaryRecords}
           allowCanvasSnapshot={this.props.isCanvasSnapshotPossible}
         />

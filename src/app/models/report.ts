@@ -1,36 +1,11 @@
 import {gql} from 'react-apollo';
 
-export interface IDateTimeValue {
-  value: number;
-  timestamp: Date;
-}
-
-export interface IStats {
+export interface IDelta {
   delta: number;
 }
 
 export interface IID {
   id: string;
-}
-
-export interface IAnswerSummary {
-  aID: string;
-  initial: IDateTimeValue;
-  latest: IDateTimeValue;
-  noRecords: number;
-  reportCoverage: number;
-  stats: IStats;
-}
-
-export interface IBenSummary extends IID {
-  questions: IAnswerSummary[];
-  categories: IAnswerSummary[];
-}
-
-export interface IAnswerAggregation extends IID {
-  initial: number;
-  latest: number;
-  stats: IStats;
 }
 
 export interface IExclusion {
@@ -40,20 +15,14 @@ export interface IExclusion {
   reason: string;
 }
 
+export interface IAnswerAggregation extends IID {
+  initial: number;
+  latest: number;
+  stats: IDelta;
+}
+
 export interface IAnswerAggregationReport {
   beneficiaries: IID[];
-  questions: IAnswerAggregation[];
-  categories: IAnswerAggregation[];
-  excluded: IExclusion[];
-}
-
-export interface IBeneficiaryAggregationReport {
-  beneficiaries: IBenSummary[];
-  excluded: IExclusion[];
-}
-
-export interface IReport {
-  beneficiaries: IBenSummary[];
   questions: IAnswerAggregation[];
   categories: IAnswerAggregation[];
   excluded: IExclusion[];
@@ -88,46 +57,41 @@ export const answerAggregationFragment = gql`
     }
   }`;
 
-export const beneficiaryAggregationFragment = gql`
-  fragment beneficiaryAggregationFragment on Report {
+export interface IAnswerDelta {
+  aID: string;
+  stats: IDelta;
+}
+
+export interface IBenDeltaSummary extends IID {
+  questions: IAnswerDelta[];
+  categories: IAnswerDelta[];
+}
+
+export interface IBeneficiaryDeltaReport {
+  beneficiaries: IBenDeltaSummary[];
+  categories: IID[];
+  excluded: IExclusion[];
+}
+
+export const beneficiaryDeltaFragment = gql`
+  fragment beneficiaryDeltaFragment on Report {
     beneficiaries {
       id,
       categories {
         aID: id,
-        initial {
-          value,
-          timestamp
-        },
-        latest {
-          value,
-          timestamp
-        },
-        noRecords,
-        reportCoverage,
         stats {
-          delta,
-          lobfDelta,
-          roc
+          delta
         }
       }
       questions {
         aID: id,
-        initial {
-          value,
-          timestamp
-        },
-        latest {
-          value,
-          timestamp
-        },
-        noRecords,
-        reportCoverage,
         stats {
-          delta,
-          lobfDelta,
-          roc
+          delta
         }
       }
+    },
+    categories {
+      id
     },
     excluded {
       beneficiary,

@@ -5,15 +5,18 @@ export enum Visualisation {
   RADAR,
   TABLE,
   GRAPH,
+  BAR,
 }
-export function getVisualisation(prefState: PrefState, allowGraph: boolean): Visualisation {
+export function getVisualisation(prefState: PrefState, allowed: Visualisation[] = [Visualisation.TABLE, Visualisation.GRAPH, Visualisation.RADAR, Visualisation.BAR]): Visualisation {
+  const fallback = allowed.length > 0 ? allowed[0] : Visualisation.TABLE;
   const value: string|undefined = prefState[VisualisationKey];
   if (value === undefined) {
-    return Visualisation.RADAR;
+    return fallback;
   }
   const viz = Visualisation[value];
-  if (viz === Visualisation.GRAPH && allowGraph === false) {
-    return Visualisation.TABLE;
+  const valid = allowed.find((a) => a === viz) !== undefined;
+  if (!valid) {
+    return fallback;
   }
   return viz;
 }

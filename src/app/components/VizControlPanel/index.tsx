@@ -9,15 +9,14 @@ import {isNullOrUndefined} from 'util';
 const ReactGA = require('react-ga');
 const { connect } = require('react-redux');
 
-export const pageRegex = /(\/beneficiary\/[^\/]*\/journey|\/beneficiary\/[^\/]*$|\/beneficiary\/[^\/]*\/$|\/report\/service\/)/;
+export const pageRegex = /(\/beneficiary\/[^\/]*\/journey|\/beneficiary\/[^\/]*$|\/beneficiary\/[^\/]*\/$|\/report\/service\/|\/report\/delta\/)/;
 
 interface IProps {
   canCategoryAg: boolean;
   vis?: Visualisation;
   agg?: Aggregation;
   setPref?: SetPrefFunc;
-  showVizOptions?: boolean; // defaults to true
-  allowGraph?: boolean; // defaults to true
+  visualisations: Visualisation[];
   controls?: JSX.Element; // additional, optional controls
   export?: () => void; // if set, will be called if the export button is pressed
   allowCanvasSnapshot?: boolean; // default = false
@@ -25,7 +24,7 @@ interface IProps {
 
 @connect((state: IStore, ownProps: IProps) => {
   return {
-    vis: getVisualisation(state.pref, ownProps.allowGraph !== false),
+    vis: getVisualisation(state.pref, ownProps.visualisations),
     agg: getAggregation(state.pref, ownProps.canCategoryAg),
   };
 }, (dispatch) => ({
@@ -76,17 +75,31 @@ class VizControlPanel extends React.Component<IProps, any> {
   }
 
   private getVisButtons(): JSX.Element[] {
-    const buttons = [
-      (<Button key="radar" active={this.props.vis === Visualisation.RADAR} onClick={this.setVisPref(Visualisation.RADAR)}>Radar</Button>),
-      (<Button.Or key="vizOr"/>),
-      (<Button key="table" active={this.props.vis === Visualisation.TABLE} onClick={this.setVisPref(Visualisation.TABLE)}>Table</Button>),
-    ];
-    if (this.props.allowGraph !== false) {
-      buttons.push(
-        (<Button.Or key="vizOr2" />),
-        (<Button key="graph" active={this.props.vis === Visualisation.GRAPH} onClick={this.setVisPref(Visualisation.GRAPH)}>Graph</Button>),
-      );
-    }
+    const buttons: JSX.Element[] = [];
+    const addButton = (button: JSX.Element) => {
+      if (buttons.length > 0) {
+        buttons.push(<Button.Or key={'vizOr'+buttons.length}/>);
+      }
+      buttons.push(button);
+    };
+    this.props.visualisations.forEach((v) => {
+      switch (v) {
+        case Visualisation.GRAPH:
+          addButton(<Button key="graph" active={this.props.vis === Visualisation.GRAPH} onClick={this.setVisPref(Visualisation.GRAPH)}>Graph</Button>);
+          break;
+        case Visualisation.RADAR:
+          addButton(<Button key="radar" active={this.props.vis === Visualisation.RADAR} onClick={this.setVisPref(Visualisation.RADAR)}>Radar</Button>);
+          break;
+        case Visualisation.TABLE:
+          addButton(<Button key="table" active={this.props.vis === Visualisation.TABLE} onClick={this.setVisPref(Visualisation.TABLE)}>Table</Button>);
+          break;
+        case Visualisation.BAR:
+          addButton(<Button key="bar" active={this.props.vis === Visualisation.BAR} onClick={this.setVisPref(Visualisation.BAR)}>Bar</Button>);
+          break;
+        default:
+          throw new Error('not valid visualisation');
+      }
+    });
     return buttons;
   }
 
@@ -128,7 +141,7 @@ class VizControlPanel extends React.Component<IProps, any> {
         <Button key="agg-cat" disabled={!this.props.canCategoryAg} active={this.isAggActive(Aggregation.CATEGORY)} onClick={this.setAggPref(Aggregation.CATEGORY)}>Categories</Button>
       </Button.Group>
     ));
-    if (this.props.showVizOptions !== false) {
+    if (this.props.visualisations.length > 0) {
       cpItems.push((
         <Button.Group key="vis">
           {this.getVisButtons()}

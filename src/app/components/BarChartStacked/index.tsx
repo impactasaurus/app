@@ -30,6 +30,13 @@ const maxXValue = (d: BarChartData): number => {
   return Math.max(...sums);
 };
 
+function getAxisTitle(original: string): string {
+  if (original.length > 60) {
+    return original.substring(0,60) + '...';
+  }
+  return original;
+}
+
 class StackedBarChart extends React.Component<IProps, IState> {
 
   private canvasID: string;
@@ -81,7 +88,7 @@ class StackedBarChart extends React.Component<IProps, IState> {
     };
     return {
       datasets: data.series.map(seriesStyler),
-      labels: data.labels,
+      labels: data.labels.map(getAxisTitle),
     };
   }
 
@@ -115,11 +122,12 @@ class StackedBarChart extends React.Component<IProps, IState> {
             ticks: {
               beginAtZero: true,
               max: this.props.showPercentage ? maxX : undefined,
+              stepSize: this.props.showPercentage ? maxX/5 : undefined,
               callback: (value) => {
                 if (!this.props.showPercentage) {
                   return value;
                 } else {
-                  return `${precisionRound((value / maxX)*100, 2)}%`;
+                  return `${precisionRound((value / maxX)*100, 0)}%`;
                 }
               },
             },
