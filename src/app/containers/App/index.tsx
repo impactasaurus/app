@@ -55,10 +55,9 @@ class App extends React.Component<IProps, any> {
           <Route path="/meeting/:id/view" component={containers.RecordView} />
           <Route path="/meeting/:id" component={containers.Meeting} />
           <Route path="/smn/:id" component={containers.SummonAcceptance} />
-          <Route path="/report/service/:questionSetID/:start/:end" component={containers.ServiceReport} />
-          <Route path="/report/delta/:questionSetID/:start/:end" component={containers.DeltaReport} />
           <Route path="/report/export/:questionSetID/:start/:end" component={containers.ExportReport} />
-          <Route path="/report" component={containers.Report} />
+          <Route path="/report/:type/:questionSetID/:start/:end" component={containers.Report} />
+          <Route path="/report" component={containers.ReportForm} />
           <Route path="/jti/:jti" component={containers.BeneficiaryRedirect} />
           <Route path="/questions/new/custom" component={containers.NewQuestionnaireForm} />
           <Route path="/questions/new" component={containers.NewQuestionnaireTypeSelector} />

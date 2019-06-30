@@ -3,7 +3,7 @@ import {IBeneficiaryDeltaReport} from 'models/report';
 import {Table} from 'semantic-ui-react';
 import {renderArray} from 'helpers/react';
 import {Direction, directionSpec} from 'helpers/table';
-import {extractDeltas} from 'containers/DeltaReport/data';
+import {extractDeltas} from 'components/DeltaReport/data';
 import {IOutcomeSet} from 'models/outcomeSet';
 
 interface IProp {

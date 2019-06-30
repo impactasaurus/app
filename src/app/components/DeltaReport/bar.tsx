@@ -4,7 +4,7 @@ import {IOutcomeSet} from 'models/outcomeSet';
 import {StackedBarChart} from 'components/BarChartStacked';
 import {IBarChartData} from 'models/bar';
 import {getCategoryFriendlyName, getQuestionFriendlyName} from 'helpers/questionnaire';
-import {extractDeltas, IDelta} from 'containers/DeltaReport/data';
+import {extractDeltas, IDelta} from 'components/DeltaReport/data';
 
 interface IProp {
   report: IBeneficiaryDeltaReport;

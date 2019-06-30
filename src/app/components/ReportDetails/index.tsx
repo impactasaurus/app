@@ -46,7 +46,7 @@ class ReportDetails extends React.Component<IProp, any> {
   private renderOverview(includedBens: string[], excluded: IExcluded, qs: IOutcomeSet, excludedReason = 'they only have a single record'): JSX.Element {
     const noBens = includedBens.length;
     const info = noBens > 0;
-    const title = info ? 'Overview' : 'Report failed';
+    const title = info ? 'Overview' : 'ReportForm failed';
     const panels = [];
 
     if (noBens > 0) {

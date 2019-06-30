@@ -41,7 +41,7 @@ export interface IJOCResult extends QueryProps {
 }
 
 export interface IJOCReportResult {
-  JOCServiceReport: IJOCResult;
+  JOCServiceReport?: IJOCResult;
 }
 
 export const getDeltaReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>, open?: Extractor<T, boolean>, orTags?: Extractor<T, boolean>) => {
@@ -80,7 +80,7 @@ export interface IDeltaResult extends QueryProps {
 }
 
 export interface IDeltaReportResult {
-  DeltaReport: IDeltaResult;
+  DeltaReport?: IDeltaResult;
 }
 
 export const exportReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>, openStart: Extractor<T, boolean>, orTags?: Extractor<T, boolean>) => {
