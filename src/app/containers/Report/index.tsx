@@ -97,14 +97,14 @@ class Report extends React.Component<IProps, any> {
     }
     return (
       <div>
-        <SecondaryMenu signpost={'test'}>
-          <Menu.Item name="Journey" active={this.props.child === SubPage.SERVICE} onClick={this.innerPageSetter(SubPage.SERVICE)}>
-            <Icon name="chart line" />
-            Service
+        <SecondaryMenu signpost={'Impact Report'}>
+          <Menu.Item name="DT" active={this.props.child === SubPage.SERVICE} onClick={this.innerPageSetter(SubPage.SERVICE)}>
+            <Icon name="road" />
+            Distance Travelled
           </Menu.Item>
-          <Menu.Item name="Records" active={this.props.child === SubPage.DELTA} onClick={this.innerPageSetter(SubPage.DELTA)}>
-            <Icon name="file outline" />
-            Delta
+          <Menu.Item name="BC" active={this.props.child === SubPage.DELTA} onClick={this.innerPageSetter(SubPage.DELTA)}>
+            <Icon name="exchange" />
+            Beneficiary Change
           </Menu.Item>
         </SecondaryMenu>
         <Grid container={true} columns={1} id="report-picker">
