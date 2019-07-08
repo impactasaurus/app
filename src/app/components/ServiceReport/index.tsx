@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {getJOCServiceReport, IJOCReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
-import {ServiceReportDetails} from 'components/ServiceReportDetails';
-import {ServiceReportRadar} from 'components/ServiceReportRadar';
-import {ServiceReportTable} from 'components/ServiceReportTable';
+import {ServiceReportDetails} from './details';
+import {ServiceReportRadar} from './radar';
+import {ServiceReportTable} from './table';
 import {VizControlPanel} from 'components/VizControlPanel';
 import {IStore} from 'redux/IStore';
 import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'models/pref';

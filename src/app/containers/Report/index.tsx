@@ -11,8 +11,8 @@ import {ServiceReport} from 'components/ServiceReport';
 const { connect } = require('react-redux');
 
 export enum SubPage {
-  SERVICE,
-  DELTA,
+  DIST,
+  CHANGE,
 }
 
 interface IProps extends IURLConnector {
@@ -68,7 +68,7 @@ const getReportOptionsFromProps = (p: IProps): IReportOptions => {
 
 @connect((_: any, p: IProps) => {
   return {
-    child: SubPage[p.match.params.type.toUpperCase()],
+    child: SubPage[p.match.params.type.toUpperCase()] || SubPage.DIST,
   };
 }, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
@@ -92,17 +92,17 @@ class Report extends React.Component<IProps, any> {
   public render() {
     const options = getReportOptionsFromProps(this.props);
     let inner: JSX.Element = <ServiceReport {...options}/>;
-    if (this.props.child === SubPage.DELTA) {
+    if (this.props.child === SubPage.CHANGE) {
       inner = <DeltaReport {...options}/>;
     }
     return (
       <div>
         <SecondaryMenu signpost={'Impact Report'}>
-          <Menu.Item name="DT" active={this.props.child === SubPage.SERVICE} onClick={this.innerPageSetter(SubPage.SERVICE)}>
+          <Menu.Item name="DT" active={this.props.child === SubPage.DIST} onClick={this.innerPageSetter(SubPage.DIST)}>
             <Icon name="road" />
             Distance Travelled
           </Menu.Item>
-          <Menu.Item name="BC" active={this.props.child === SubPage.DELTA} onClick={this.innerPageSetter(SubPage.DELTA)}>
+          <Menu.Item name="BC" active={this.props.child === SubPage.CHANGE} onClick={this.innerPageSetter(SubPage.CHANGE)}>
             <Icon name="exchange" />
             Beneficiary Change
           </Menu.Item>
