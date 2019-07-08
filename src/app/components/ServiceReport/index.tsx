@@ -1,31 +1,25 @@
 import * as React from 'react';
-import { Helmet } from 'react-helmet';
-import { Grid, Loader } from 'semantic-ui-react';
 import {getJOCServiceReport, IJOCReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
-import {ServiceReportDetails} from 'components/ServiceReportDetails';
-import {ServiceReportRadar} from 'components/ServiceReportRadar';
-import {ServiceReportTable} from 'components/ServiceReportTable';
+import {ServiceReportDetails} from './details';
+import {ServiceReportRadar} from './radar';
+import {ServiceReportTable} from './table';
 import {VizControlPanel} from 'components/VizControlPanel';
-import {Error} from 'components/Error';
 import {IStore} from 'redux/IStore';
 import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'models/pref';
 import './style.less';
 import {bindActionCreators} from 'redux';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {
-  exportReportData,
-  getEndDateFromProps, getOpenStartFromProps, getOrFromProps,
-  getQuestionSetIDFromProps,
-  getStartDateFromProps, getTagsFromProps,
-  IReportProps, renderEmptyReport,
+  exportReportData, IReportOptions, renderEmptyReport,
 } from 'containers/Report/helpers';
+import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
 const { connect } = require('react-redux');
 
 const allowedVisualisations = [Visualisation.RADAR, Visualisation.TABLE];
 
-interface IProp extends IJOCReportResult, IURLConnector, IReportProps {
-  data: IOutcomeResult;
+interface IProp extends IJOCReportResult, IURLConnector, IReportOptions {
+  data?: IOutcomeResult;
   vis?: Visualisation;
   agg?: Aggregation;
   isCategoryAgPossible?: boolean;
@@ -76,35 +70,10 @@ class ServiceReportInner extends React.Component<IProp, any> {
   }
 
   public render() {
-    const wrapper = (inner: JSX.Element, questionnaireName?: string): JSX.Element => {
-      let title = 'Impact Report';
-      if (questionnaireName !== undefined) {
-        title = questionnaireName + ' ' + title;
-      }
-      return (
-        <Grid container={true} columns={1} id="service-report">
-          <Grid.Column>
-            <Helmet>
-              <title>{title}</title>
-            </Helmet>
-            <div>
-              <h1>{title}</h1>
-              {inner}
-            </div>
-          </Grid.Column>
-        </Grid>
-      );
-    };
-    if (this.props.JOCServiceReport.error || this.props.data.error) {
-      return wrapper(<Error text="Failed to load the report"/>);
-    }
-    if (this.props.data.loading || this.props.JOCServiceReport.loading) {
-      return wrapper(<Loader active={true} inline="centered" />);
-    }
     if (this.props.JOCServiceReport.getJOCServiceReport && this.props.JOCServiceReport.getJOCServiceReport.beneficiaries.length === 0) {
-      return wrapper(renderEmptyReport(this.props.JOCServiceReport.getJOCServiceReport.excluded));
+      return renderEmptyReport(this.props.JOCServiceReport.getJOCServiceReport.excluded);
     }
-    return wrapper((
+    return (
       <div>
         <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
         <VizControlPanel
@@ -115,9 +84,20 @@ class ServiceReportInner extends React.Component<IProp, any> {
         />
         {this.renderVis()}
       </div>
-    ), this.props.data.getOutcomeSet.name);
+    );
   }
 }
 
-const ServiceReport = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(getJOCServiceReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenStartFromProps, getOrFromProps)(ServiceReportInner));
+const ServiceInnerWithSpinner = ApolloLoaderHoC<IProp>('report', (p: IProp) => p.JOCServiceReport, ServiceReportInner);
+const ServiceInnerWithSpinners = ApolloLoaderHoC('questionnaire', (p: IProp) => p.data, ServiceInnerWithSpinner);
+
+const ServiceInnerWithReport = getJOCServiceReport<IProp>(
+  (p) => p.questionnaire,
+  (p) => p.start.toISOString(),
+  (p) => p.end.toISOString(),
+  (p) => p.tags,
+  (p) => p.openStart,
+  (p) => p.orTags)(ServiceInnerWithSpinners);
+const ServiceReport = getOutcomeSet<IProp>((p) => p.questionnaire)(ServiceInnerWithReport);
+
 export {ServiceReport};

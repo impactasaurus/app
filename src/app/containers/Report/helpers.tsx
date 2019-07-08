@@ -5,52 +5,18 @@ import {Link} from 'react-router-dom';
 import * as React from 'react';
 import {IExclusion} from 'models/report';
 
-export interface IReportProps {
-  match: {
-    params: {
-      questionSetID: string,
-      start: string,
-      end: string,
-    },
-  };
-  location: {
-    search: string,
-  };
+export interface IReportOptions {
+  start: Date;
+  end: Date;
+  questionnaire: string;
+  tags: string[];
+  openStart: boolean;
+  orTags: boolean;
 }
 
-export const getQuestionSetIDFromProps = (p: IReportProps): string => p.match.params.questionSetID;
-export const getStartDateFromProps = (p: IReportProps): string => p.match.params.start;
-export const getEndDateFromProps = (p: IReportProps): string => p.match.params.end;
-
-export const getTagsFromProps = (p: IReportProps): string[] => {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has('tags') === false) {
-    return [];
-  }
-  const tags = urlParams.get('tags');
-  return JSON.parse(tags);
-};
-
-export const getOpenStartFromProps = (p: IReportProps): boolean => {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has('open') === false) {
-    return true;
-  }
-  return JSON.parse(urlParams.get('open'));
-};
-
-export const getOrFromProps = (p: IReportProps): boolean => {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has('or') === false) {
-    return false;
-  }
-  return JSON.parse(urlParams.get('or'));
-};
-
-export const exportReportData = (urlConn: IURLConnector, p: IReportProps) => {
-  const {start, end, questionSetID} = p.match.params;
-  const url = constructReportURL('export', new Date(start), new Date(end), questionSetID);
-  const qp = constructReportQueryParams(getTagsFromProps(p), getOpenStartFromProps(p), getOrFromProps(p));
+export const exportReportData = (urlConn: IURLConnector, p: IReportOptions) => {
+  const url = constructReportURL('export', p.start, p.end, p.questionnaire);
+  const qp = constructReportQueryParams(p.tags, p.openStart, p.orTags);
   urlConn.setURL(url, qp);
 };
 

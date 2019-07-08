@@ -1,77 +1,121 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import {IURLConnector, setURL} from 'redux/modules/url';
-import { Grid } from 'semantic-ui-react';
+import {Grid, Icon, Menu} from 'semantic-ui-react';
 import { bindActionCreators } from 'redux';
-import {constructReportQueryParams, constructReportURL} from '../../helpers/report';
-import {IFormOutput, ReportForm as RFComponent} from 'components/ReportForm';
-import {QuestionnaireRequired} from 'components/QuestionnaireRequired';
+import {constructReportQueryParams, constructReportURL} from 'helpers/report';
+import {SecondaryMenu} from 'components/SecondaryMenu';
+import {IReportOptions} from 'containers/Report/helpers';
+import {DeltaReport} from 'components/DeltaReport';
+import {ServiceReport} from 'components/ServiceReport';
 const { connect } = require('react-redux');
-const ReactGA = require('react-ga');
 
-const ReportForm = QuestionnaireRequired('To generate a report', RFComponent);
+export enum SubPage {
+  DIST,
+  CHANGE,
+}
 
-const dateDiff = (date1: Date, date2: Date): number => {
-  const oneDay = 1000*60*60*24;
-  // converting both dates to milliseconds
-  const firstMs = date1.getTime();
-  const secondMs = date2.getTime();
-  // calculate the difference
-  const diff = secondMs - firstMs;
-  // returning the number of weeks
-  return(Math.round(diff/(oneDay*7)));
-};
+interface IProps extends IURLConnector {
+  match: {
+    params: {
+      questionSetID: string,
+      start: string,
+      end: string,
+      type: string,
+    },
+  };
+  location: {
+    search: string,
+  };
+  child: SubPage;
+}
 
-const logGAEvent = (v: IFormOutput): void => {
-  if (v.all) {
-    ReactGA.event({
-      category : 'servicereport',
-      action : 'all',
-    });
-  } else {
-    const value = dateDiff(v.start, v.end);
-    ReactGA.event({
-      category : 'servicereport',
-      action : 'range',
-      value,
-    });
+const getQuestionSetIDFromProps = (p: IProps): string => p.match.params.questionSetID;
+const getStartDateFromProps = (p: IProps): Date => new Date(p.match.params.start);
+const getEndDateFromProps = (p: IProps): Date => new Date(p.match.params.end);
+const getTagsFromProps = (p: IProps): string[] => {
+  const urlParams = new URLSearchParams(p.location.search);
+  if (urlParams.has('tags') === false) {
+    return [];
   }
+  const tags = urlParams.get('tags');
+  return JSON.parse(tags);
+};
+const getOpenStartFromProps = (p: IProps): boolean => {
+  const urlParams = new URLSearchParams(p.location.search);
+  if (urlParams.has('open') === false) {
+    return true;
+  }
+  return JSON.parse(urlParams.get('open'));
+};
+const getOrFromProps = (p: IProps): boolean => {
+  const urlParams = new URLSearchParams(p.location.search);
+  if (urlParams.has('or') === false) {
+    return false;
+  }
+  return JSON.parse(urlParams.get('or'));
+};
+const getReportOptionsFromProps = (p: IProps): IReportOptions => {
+  return {
+    start: getStartDateFromProps(p),
+    end: getEndDateFromProps(p),
+    questionnaire: getQuestionSetIDFromProps(p),
+    openStart: getOpenStartFromProps(p),
+    orTags: getOrFromProps(p),
+    tags: getTagsFromProps(p),
+  };
 };
 
-@connect(undefined, (dispatch) => ({
+@connect((_: any, p: IProps) => {
+  return {
+    child: SubPage[p.match.params.type.toUpperCase()] || SubPage.DIST,
+  };
+}, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
-class Report extends React.Component<IURLConnector, any> {
+class Report extends React.Component<IProps, any> {
 
   constructor(props) {
     super(props);
-    this.navigateToReport = this.navigateToReport.bind(this);
+    this.innerPageSetter = this.innerPageSetter.bind(this);
   }
 
-  private navigateToReport(v: IFormOutput) {
-    let start = v.start;
-    let end = v.end;
-    if (v.all) {
-      start = new Date(0);
-      end = new Date();
-    }
-    logGAEvent(v);
-    const url = constructReportURL('service', start, end, v.questionSetID);
-    const qp = constructReportQueryParams(v.tags, false, v.orTags);
-    this.props.setURL(url, qp);
+  private innerPageSetter(toSet: SubPage): () => void {
+    return () => {
+      const options = getReportOptionsFromProps(this.props);
+      const url = constructReportURL(SubPage[toSet].toLowerCase(), options.start, options.end, options.questionnaire);
+      const qs = constructReportQueryParams(options.tags, options.openStart, options.orTags);
+      this.props.setURL(url, qs);
+    };
   }
 
   public render() {
+    const options = getReportOptionsFromProps(this.props);
+    let inner: JSX.Element = <ServiceReport {...options}/>;
+    if (this.props.child === SubPage.CHANGE) {
+      inner = <DeltaReport {...options}/>;
+    }
     return (
-      <Grid container={true} columns={1} id="report-picker">
-        <Grid.Column>
-          <Helmet>
-            <title>Impact Report</title>
-          </Helmet>
-          <h1>Impact Report</h1>
-          <ReportForm onFormSubmit={this.navigateToReport} />
-        </Grid.Column>
-      </Grid>
+      <div>
+        <SecondaryMenu signpost={'Impact Report'}>
+          <Menu.Item name="DT" active={this.props.child === SubPage.DIST} onClick={this.innerPageSetter(SubPage.DIST)}>
+            <Icon name="road" />
+            Distance Travelled
+          </Menu.Item>
+          <Menu.Item name="BC" active={this.props.child === SubPage.CHANGE} onClick={this.innerPageSetter(SubPage.CHANGE)}>
+            <Icon name="exchange" />
+            Beneficiary Change
+          </Menu.Item>
+        </SecondaryMenu>
+        <Grid container={true} columns={1} id="report-picker">
+          <Grid.Column>
+            <Helmet>
+              <title>Report</title>
+            </Helmet>
+            {inner}
+          </Grid.Column>
+        </Grid>
+      </div>
     );
   }
 }

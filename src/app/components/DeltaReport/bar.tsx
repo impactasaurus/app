@@ -4,7 +4,7 @@ import {IOutcomeSet} from 'models/outcomeSet';
 import {StackedBarChart} from 'components/BarChartStacked';
 import {IBarChartData} from 'models/bar';
 import {getCategoryFriendlyName, getQuestionFriendlyName} from 'helpers/questionnaire';
-import {extractDeltas, IDelta} from 'containers/DeltaReport/data';
+import {extractDeltas, IDelta} from 'components/DeltaReport/data';
 
 interface IProp {
   report: IBeneficiaryDeltaReport;
@@ -40,7 +40,7 @@ class DeltaReportStackedBarGraph extends React.Component<IProp, any> {
   public render() {
     return (
       <div className="delta-report-stacked-bar-graph">
-        <StackedBarChart data={getBarChartData(this.props.category, this.props.report, this.props.questionSet)} xAxisLabel="Percentage" showPercentage={true}/>
+        <StackedBarChart data={getBarChartData(this.props.category, this.props.report, this.props.questionSet)} xAxisLabel="Beneficiaries" showPercentage={false}/>
       </div>
     );
   }

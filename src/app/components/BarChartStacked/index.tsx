@@ -39,7 +39,7 @@ function getAxisTitle(original: string): string {
 
 class StackedBarChart extends React.Component<IProps, IState> {
 
-  private canvasID: string;
+  private readonly canvasID: string;
   private graph;
 
   constructor(props) {
@@ -107,7 +107,7 @@ class StackedBarChart extends React.Component<IProps, IState> {
           intersect: false,
         },
         legend: {
-          display: false,
+          display: true,
         },
         title: {
           display: false,
@@ -121,7 +121,7 @@ class StackedBarChart extends React.Component<IProps, IState> {
             },
             ticks: {
               beginAtZero: true,
-              max: this.props.showPercentage ? maxX : undefined,
+              max: maxX,
               stepSize: this.props.showPercentage ? maxX/5 : undefined,
               callback: (value) => {
                 if (!this.props.showPercentage) {

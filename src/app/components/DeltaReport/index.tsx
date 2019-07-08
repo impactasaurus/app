@@ -4,34 +4,28 @@ import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {IStore} from 'redux/IStore';
 import {Aggregation, getAggregation, getVisualisation, Visualisation} from 'models/pref';
 import './style.less';
-import {bindActionCreators} from 'redux';
-import {IURLConnector, setURL} from 'redux/modules/url';
 import {
-  exportReportData,
-  getEndDateFromProps,
-  getOpenStartFromProps,
-  getOrFromProps,
-  getQuestionSetIDFromProps,
-  getStartDateFromProps,
-  getTagsFromProps,
-  IReportProps,
+  exportReportData, IReportOptions,
   renderEmptyReport,
 } from 'containers/Report/helpers';
 import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
-import {PageWrapperHoC} from 'components/PageWrapperHoC';
 import {VizControlPanel} from 'components/VizControlPanel';
 import {DeltaReportStackedBarGraph} from './bar';
 import {DeltaReportDetails} from './details';
 import {DeltaTable} from './table';
+import {IURLConnector, setURL} from 'redux/modules/url';
+import {bindActionCreators} from 'redux';
+import {Message} from 'semantic-ui-react';
 
 const { connect } = require('react-redux');
 
 const allowedVisualisations = [Visualisation.BAR, Visualisation.TABLE];
 
-interface IProp extends IDeltaReportResult, IURLConnector, IReportProps {
-  data: IOutcomeResult;
+interface IProp extends IDeltaReportResult, IURLConnector, IReportOptions {
+  data?: IOutcomeResult;
   vis?: Visualisation;
   agg?: Aggregation;
+
   isCategoryAgPossible?: boolean;
   isCanvasSnapshotPossible?: boolean;
 }
@@ -82,6 +76,9 @@ class DeltaReportInner extends React.Component<IProp, any> {
     }
     return (
       <div>
+        <Message warning={true}>
+          This is a new report which is still undergoing evaluation, <a href="mailto:support@impactasaurus.org?subject=change-report">we would love to know what you think</a>
+        </Message>
         <DeltaReportDetails report={this.props.DeltaReport.getDeltaReport} questionnaire={this.props.data.getOutcomeSet} />
         <VizControlPanel
           canCategoryAg={this.props.isCategoryAgPossible}
@@ -98,8 +95,13 @@ class DeltaReportInner extends React.Component<IProp, any> {
 const DeltaInnerWithSpinner = ApolloLoaderHoC<IProp>('report', (p: IProp) => p.DeltaReport, DeltaReportInner);
 const DeltaInnerWithSpinners = ApolloLoaderHoC('questionnaire', (p: IProp) => p.data, DeltaInnerWithSpinner);
 
-const DeltaInnerWithReport = getDeltaReport<IProp>(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenStartFromProps, getOrFromProps)(DeltaInnerWithSpinners);
-const DeltaInnerWithQuestionnaire = getOutcomeSet<IProp>(getQuestionSetIDFromProps)(DeltaInnerWithReport);
+const DeltaInnerWithReport = getDeltaReport<IProp>(
+  (p) => p.questionnaire,
+  (p) => p.start.toISOString(),
+  (p) => p.end.toISOString(),
+  (p) => p.tags,
+  (p) => p.openStart,
+  (p) => p.orTags)(DeltaInnerWithSpinners);
+const DeltaReport = getOutcomeSet<IProp>((p) => p.questionnaire)(DeltaInnerWithReport);
 
-const DeltaReport = PageWrapperHoC('Delta Report', 'delta-report', DeltaInnerWithQuestionnaire);
 export {DeltaReport};
