@@ -61,6 +61,7 @@ class App extends React.Component<IProps, any> {
           <Route path="/jti/:jti" component={containers.BeneficiaryRedirect} />
           <Route path="/questions/new/custom" component={containers.NewQuestionnaireForm} />
           <Route path="/questions/new" component={containers.NewQuestionnaireTypeSelector} />
+          <Route path="/questions/:id/print" component={containers.PrintQuestionnaire} />
           <Route path="/questions/:id" component={containers.OutcomeSet} />
           <Route path="/questions" component={containers.OutcomeSets} />
           <Route path="/catalogue/:id" component={containers.CatalogueQuestionnaire} />
