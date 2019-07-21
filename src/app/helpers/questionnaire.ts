@@ -1,5 +1,5 @@
 import {IOutcomeSet} from '../models/outcomeSet';
-import {IQuestion, Question} from 'models/question';
+import {ILabel, ILikertScale, IQuestion, Question} from 'models/question';
 import {ICategory} from '../models/category';
 import {isNullOrUndefined} from 'util';
 
@@ -116,4 +116,23 @@ export function getQuestionFriendlyName(qID: string, qs: IOutcomeSet, allowShort
     question = `${question} (archived)`;
   }
   return question;
+}
+
+export function sharedLabels(questionnaire: IOutcomeSet): boolean {
+  const doesMatch = (s1: ILabel[], s2: ILabel[]): boolean => {
+    if (s1.length !== s2.length) {
+      return false;
+    }
+    const ss1 = s1.map((l) => l.label).sort();
+    const ss2 = s2.map((l) => l.label).sort();
+    for (let ct = 0; ct < ss1.length; ct++) {
+      if (ss1[ct] !== ss2[ct]) {
+        return false;
+      }
+    }
+    return true;
+  };
+  return questionnaire.questions.reduce<boolean>((same: boolean, q: IQuestion): boolean => {
+    return same && doesMatch((q as ILikertScale).labels, ((questionnaire.questions[0] as ILikertScale).labels));
+  }, true);
 }
