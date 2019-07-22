@@ -3,9 +3,10 @@ import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {PageWrapperHoC} from 'components/PageWrapperHoC';
 import {ILikertScale} from 'models/question';
-import {sharedLabels} from 'helpers/questionnaire';
+import {sharedLabels} from 'helpers/likert';
 import {List} from 'containers/PrintQuestionnaire/list';
-import {Table} from 'containers/PrintQuestionnaire/table';
+import {PrintTable} from 'containers/PrintQuestionnaire/table';
+import {getQuestions} from 'helpers/questionnaire';
 
 interface IProps  {
   data: IOutcomeResult;
@@ -29,9 +30,10 @@ class PrintQuestionnaireInner extends React.Component<IProps, any> {
         </div>
       );
     }
-    const main = sharedLabels(this.props.data.getOutcomeSet) ?
-      <Table questions={this.props.data.getOutcomeSet.questions as ILikertScale[]}/> :
-      <List questions={this.props.data.getOutcomeSet.questions as ILikertScale[]} />;
+    const qq = getQuestions(this.props.data.getOutcomeSet) as ILikertScale[];
+    const main = sharedLabels(qq) ?
+      <PrintTable questions={qq}/> :
+      <List questions={qq} />;
     return (
       <div>
         {intro}
