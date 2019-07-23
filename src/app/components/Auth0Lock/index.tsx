@@ -62,9 +62,7 @@ class Auth0Lock extends React.Component<IProps, IState> {
         </Message>
       );
     }
-    return (
-      <div />
-    );
+    return <div>Redirecting to login...</div>;
   }
 }
 
