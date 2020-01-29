@@ -134,3 +134,32 @@ export function generateInvite<T>(component) {
 export interface IGenerateInvite {
   generateInvite(): Promise<string>;
 }
+
+export const getOrgUsers = <T>(component, name: string = undefined)  => {
+  return graphql<any, T>(gql`
+    query {
+      getOrganisation: organisation {
+        users {
+          name
+        }
+      }
+    }`, {
+    options: () => {
+      return {
+        fetchPolicy: 'no-cache',
+        notifyOnNetworkStatusChange: true,
+      };
+    },
+    props: ({ data }) => ({
+      getOrganisation: (): Promise<string[]> => {
+        console.log(data);
+        return data.users.name;
+      },
+    }),
+    name,
+  })(component);
+};
+
+export interface IGetOrgUsersResult extends QueryProps {
+  getOrganisation?: string[];
+}
