@@ -1,4 +1,4 @@
-export const fillCanvasWithColour = (canvas, color) => {
+export const fillCanvasWithColour = (canvas: HTMLCanvasElement, color: string) => {
   // see https://stackoverflow.com/questions/50104437/set-background-color-to-save-canvas-chart/50126796#50126796
   const context = canvas.getContext('2d');
   context.save();
