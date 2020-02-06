@@ -12,3 +12,12 @@ export const Error = (p: IProps) => (
     <div>{`${p.text}. ${failureMessage}`}</div>
   </Message>
 );
+
+export const CustomError = (p: {
+  inner: JSX.Element;
+}) => (
+  <Message error={true}>
+    <Message.Header>Error</Message.Header>
+    <div>{p.inner}</div>
+  </Message>
+);
