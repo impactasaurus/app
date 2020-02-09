@@ -17,8 +17,9 @@ import {isNullOrUndefined} from 'util';
 import {IOutcomeSet} from 'models/outcomeSet';
 import {Screen, IMeetingState, getPreviousState, canGoBack, getNextState, initialState} from './state-machine';
 import {journey} from 'helpers/url';
-import {isBeneficiaryUser} from '../../helpers/auth';
+import {isBeneficiaryUser} from 'helpers/auth';
 import {Thanks} from './thanks';
+import {EmptyQuestionnaire} from 'containers/Meeting/empty';
 const { connect } = require('react-redux');
 const ReactGA = require('react-ga');
 
@@ -77,7 +78,7 @@ class MeetingInner extends React.Component<IProps, IState> {
   public componentDidUpdate() {
     if (this.props.questions !== undefined && this.state.init === false) {
       this.setState({init: true});
-      this.setMeetingState(initialState(this.hasInstructions()));
+      this.setMeetingState(initialState(this.hasInstructions(), this.props.questions.length));
     }
   }
 
@@ -119,6 +120,9 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   private setMeetingState(s: IMeetingState) {
+    const state: IState = {
+      screen: s.screen,
+    };
     let idxx = s.qIdx;
     if (idxx < 0) {
       idxx = 0;
@@ -127,10 +131,10 @@ class MeetingInner extends React.Component<IProps, IState> {
       idxx = this.props.questions.length - 1;
     }
     const question = this.props.questions[idxx];
-    this.setState({
-      currentQuestion: question.id,
-      screen: s.screen,
-    });
+    if (question !== undefined) {
+      state.currentQuestion = question.id;
+    }
+    this.setState(state);
   }
 
   private goToPreviousScreen() {
@@ -217,6 +221,9 @@ class MeetingInner extends React.Component<IProps, IState> {
     }
     if (this.state.screen === Screen.THANKS) {
       return wrapper(<Thanks />);
+    }
+    if (this.state.screen === Screen.EMPTY) {
+      return wrapper(<EmptyQuestionnaire questionnaireID={this.props.questionnaire.id} isBeneficiary={isBeneficiaryUser()}/>);
     }
     const currentQuestionID = this.state.currentQuestion;
     if (currentQuestionID === undefined) {
