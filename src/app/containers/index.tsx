@@ -35,3 +35,4 @@ export {NewQuestionnaireTypeSelector, NewQuestionnaireForm} from './NewQuestionn
 export {SummonAcceptance} from './Summon';
 export {Unsubscribe} from './Unsubscribe';
 export {BeneficiaryConfig} from './BeneficiaryConfig';
+export {Users} from './Users';

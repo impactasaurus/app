@@ -1,9 +1,17 @@
 import * as React from 'react';
-import {getOrgUsers, IGetOrgUsersResult} from 'apollo/modules/organisation';
+import {getOrgUsers, IGetOrgUsersResult, IOrgUser} from 'apollo/modules/organisation';
 import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
+import {Table} from 'semantic-ui-react';
+import {renderArrayForArray} from 'helpers/react';
 
 interface IProps  {
   getOrgUsers?: IGetOrgUsersResult;
+}
+
+export function sortByName(users: IOrgUser[]): IOrgUser[] {
+  return users.concat().sort((a, b): number => {
+    return a.name.localeCompare(b.name);
+  });
 }
 
 class OrganisationUsersInner extends React.Component<IProps, any> {
@@ -12,12 +20,31 @@ class OrganisationUsersInner extends React.Component<IProps, any> {
     super(props);
   }
 
+  private renderUser(u: IOrgUser): JSX.Element[] {
+    return [(
+      <Table.Row key={u.id}>
+        <Table.Cell>{u.name}</Table.Cell>
+        <Table.Cell className="actions">Coming soon</Table.Cell>
+      </Table.Row>
+    )];
+  }
+
   public render() {
-    const userDivs = this.props.getOrgUsers.users.map((u) => <div key={u.id}>{u.name}</div>);
     return (
-      <div>
-        {userDivs}
+      <div id="org-users">
+        <Table celled={true} striped={true} className="org-user-table">
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Name</Table.HeaderCell>
+              <Table.HeaderCell className="actions-header">Actions</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {renderArrayForArray(this.renderUser, sortByName(this.props.getOrgUsers.users))}
+          </Table.Body>
+        </Table>
       </div>
+
     );
   }
 }

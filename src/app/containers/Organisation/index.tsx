@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet';
 import { Grid } from 'semantic-ui-react';
 import {OrganisationSettings} from 'components/OrganisationSettings';
 import {InviteGenerator} from 'components/InviteGenerator';
-import {OrganisationUsers} from 'components/OrganisationUsers';
 
 class Organisation extends React.Component<any, any> {
 
@@ -20,7 +19,6 @@ class Organisation extends React.Component<any, any> {
           <h3>Settings</h3>
           <p>The following settings apply to every user in your organisation:</p>
           <OrganisationSettings />
-          <OrganisationUsers />
         </Grid.Column>
       </Grid>
     );
