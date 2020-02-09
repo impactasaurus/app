@@ -3,7 +3,7 @@ import {getOrgUsers, IGetOrgUsersResult} from 'apollo/modules/organisation';
 import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
 
 interface IProps  {
-  users?: IGetOrgUsersResult;
+  getOrgUsers?: IGetOrgUsersResult;
 }
 
 class OrganisationUsersInner extends React.Component<IProps, any> {
@@ -13,7 +13,7 @@ class OrganisationUsersInner extends React.Component<IProps, any> {
   }
 
   public render() {
-    const userDivs = this.props.users.getOrganisation.map((u) => <div key={u}>{u}</div>);
+    const userDivs = this.props.getOrgUsers.users.map((u) => <div key={u.id}>{u.name}</div>);
     return (
       <div>
         {userDivs}
@@ -22,6 +22,6 @@ class OrganisationUsersInner extends React.Component<IProps, any> {
   }
 }
 
-const OrgUsersWithSpinner = ApolloLoaderHoC<IProps>('users', (p: IProps) => p.users, OrganisationUsersInner);
-const OrganisationUsers = getOrgUsers(OrgUsersWithSpinner, 'users');
+const OrgUsersWithSpinner = ApolloLoaderHoC<IProps>('users', (p: IProps) => p.getOrgUsers, OrganisationUsersInner);
+const OrganisationUsers = getOrgUsers(OrgUsersWithSpinner, 'getOrgUsers');
 export { OrganisationUsers };

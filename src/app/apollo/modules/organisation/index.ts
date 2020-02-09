@@ -135,31 +135,43 @@ export interface IGenerateInvite {
   generateInvite(): Promise<string>;
 }
 
+export interface IOrgUser {
+  name: string;
+  id: string;
+}
+
 export const getOrgUsers = <T>(component, name: string = undefined)  => {
   return graphql<any, T>(gql`
     query {
-      getOrganisation: organisation {
+      getOrgUsers: organisation {
+        id
         users {
+          id
           name
         }
       }
     }`, {
     options: () => {
       return {
-        fetchPolicy: 'no-cache',
         notifyOnNetworkStatusChange: true,
       };
     },
-    props: ({ data }) => ({
-      getOrganisation: (): Promise<string[]> => {
-        console.log(data);
-        return data.users.name;
-      },
-    }),
+    props: (query) => {
+      let users: IOrgUser[] = [];
+      if (query[name].getOrgUsers) {
+        users = query[name].getOrgUsers.users;
+      }
+      return {
+        [name]: {
+          ...query[name],
+          users,
+        },
+      };
+    },
     name,
   })(component);
 };
 
 export interface IGetOrgUsersResult extends QueryProps {
-  getOrganisation?: string[];
+  users?: IOrgUser[];
 }
