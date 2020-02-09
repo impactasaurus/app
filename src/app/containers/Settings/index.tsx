@@ -64,6 +64,7 @@ class Settings extends React.Component<IProps, any> {
           <Route path={`${match}/data/questionnaire/export/:id`} component={containers.ExportQuestionnaire} />
           <Route path={`${match}/data`} component={containers.Data} />
           <Route path={`${match}/organisation`}  component={containers.Organisation} />
+          <Route path={`${match}/users`}  component={containers.Users} />
         </Switch>
       </div>
     );
