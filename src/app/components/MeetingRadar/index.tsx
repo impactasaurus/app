@@ -24,12 +24,17 @@ export function MeetingRadarWithImpl<P extends ImplementationIProp>(RadarImpl: R
     private getQuestionLevelData(meetings: IMeeting[]): RadarData {
       const series = meetings.map((meeting): IRadarSeries => {
         const answers = meeting.answers.reduce<IRadarPoint[]>((answers: IRadarPoint[], answer: Answer): IRadarPoint[] => {
-          const q = meeting.outcomeSet.questions.find((q) => q.id === answer.questionID);
+          const idx = meeting.outcomeSet.questions.findIndex((q) => q.id === answer.questionID);
+          if (idx === -1) {
+            return answers;
+          }
+          const q = meeting.outcomeSet.questions[idx];
           if (q === undefined || q.archived) {
             return answers;
           }
           return answers.concat({
             axis: (q.short || q.question),
+            axisIndex: idx,
             value: answer.answer,
           });
         }, []);
@@ -49,12 +54,16 @@ export function MeetingRadarWithImpl<P extends ImplementationIProp>(RadarImpl: R
       const series = meetings.map((meeting): IRadarSeries => {
         const answers = meeting.aggregates.category.map((categoryAg): IRadarPoint => {
           let category = 'Unknown Category';
-          const cat = meeting.outcomeSet.categories.find((c) => c.id === categoryAg.categoryID);
-          if (cat !== undefined) {
-            category = cat.name;
+          const idx = meeting.outcomeSet.categories.findIndex((c) => c.id === categoryAg.categoryID);
+          if (idx !== -1) {
+            const cat = meeting.outcomeSet.categories[idx];
+            if (cat !== undefined) {
+              category = cat.name;
+            }
           }
           return {
             axis: category,
+            axisIndex: idx,
             value: categoryAg.value,
           };
         });
