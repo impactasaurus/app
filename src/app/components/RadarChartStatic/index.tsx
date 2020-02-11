@@ -14,7 +14,9 @@ export const RadarChartStatic = ({data, opt}: IProps) => {
     Raven.captureException('Expecting charts of containing one series');
     return (<div />);
   }
-  const columns: any = data.series[0].datapoints.reduce((m, dp) => {
+  const columns: any = data.series[0].datapoints.sort((a, b) => {
+    return a.axisIndex - b.axisIndex;
+  }).reduce((m, dp) => {
     m[dp.axis] = dp.axis;
     return m;
   }, {});
