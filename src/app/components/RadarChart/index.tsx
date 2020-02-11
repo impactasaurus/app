@@ -58,7 +58,9 @@ class RadarChart extends React.Component<IProp, IState> {
         notes: s.note,
         timestamp: (s.name instanceof Date) ? s.name.toISOString() : s.name,
         disabled: s.disabled,
-        outcomes: s.datapoints.map((d: IRadarPoint): IOutcomeGraphPoint => {
+        outcomes: s.datapoints.sort((a, b) => {
+          return a.axisIndex - b.axisIndex;
+        }).map((d: IRadarPoint): IOutcomeGraphPoint => {
           return {
             notes: d.note,
             value: d.value,
