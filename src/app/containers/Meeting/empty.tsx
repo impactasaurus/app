@@ -1,27 +1,17 @@
 import * as React from 'react';
-import {IURLConnector, setURL} from 'redux/modules/url';
-import { bindActionCreators } from 'redux';
-import {questionnaire} from 'helpers/url';
+import {questionnaireURI} from 'helpers/url';
 import {CustomError} from 'components/Error';
-const { connect } = require('react-redux');
+import {Link} from 'react-router-dom';
 
-interface IProps extends IURLConnector {
+interface IProps {
   questionnaireID: string;
   isBeneficiary: boolean;
 }
 
-@connect(undefined, (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-}))
 export class EmptyQuestionnaire extends React.Component<IProps, any> {
-
-  private navigateToQuestionnaire = function(qID: string): () => void {
-    return () => questionnaire(this.props.setURL, qID);
-  };
-
   public render() {
     let inner = (
-      <span>The questionnaire seems to be empty, <a onClick={this.navigateToQuestionnaire(this.props.questionnaireID)}>please try adding some questions</a></span>
+      <span>The questionnaire seems to be empty, <Link to={questionnaireURI(this.props.questionnaireID)}>please try adding some questions</Link></span>
     );
     if (this.props.isBeneficiary) {
       inner = <span>Sorry, this questionnaire is empty. Please contact your facilitator</span>;

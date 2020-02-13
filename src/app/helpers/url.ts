@@ -1,7 +1,7 @@
 export const journeyURI = (beneficiary: string, questionnaire?: string): string => {
   let uri = `/beneficiary/${beneficiary}`;
   const search = new URLSearchParams();
-  if (questionnaire !== undefined) {
+  if (questionnaire !== undefined && questionnaire !== null) {
     search.append('q', questionnaire);
   }
   if (search.toString().length > 0) {
@@ -20,14 +20,6 @@ export const questionnaireURI = (questionnaire: string): string => {
   return `/questions/${questionnaire}`;
 };
 
-export const questionnaire = (setURL: (url: string, query?: string) => void, questionnaire: string) => {
-  setURL(questionnaireURI(questionnaire));
-};
-
 export const recordURI = (record: string): string => {
   return `/meeting/${record}/view`;
-};
-
-export const record = (setURL: (url: string, query?: string) => void, record: string) => {
-  setURL(recordURI(record));
 };
