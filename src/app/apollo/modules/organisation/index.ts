@@ -138,6 +138,8 @@ export interface IGenerateInvite {
 export interface IOrgUser {
   name: string;
   id: string;
+  joined: Date;
+  active: boolean;
 }
 
 export const getOrgUsers = <T>(component, name: string = undefined)  => {
@@ -148,6 +150,8 @@ export const getOrgUsers = <T>(component, name: string = undefined)  => {
         users {
           id
           name
+          joined
+          active
         }
       }
     }`, {
@@ -159,7 +163,12 @@ export const getOrgUsers = <T>(component, name: string = undefined)  => {
     props: (query) => {
       let users: IOrgUser[] = [];
       if (query[name].getOrgUsers) {
-        users = query[name].getOrgUsers.users;
+        users = query[name].getOrgUsers.users.map((u) => ({
+          id: u.id,
+          name: u.name,
+          active: u.active,
+          joined: new Date(u.joined),
+        }));
       }
       return {
         [name]: {
