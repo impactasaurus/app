@@ -6,8 +6,9 @@ import {renderArrayForArray} from 'helpers/react';
 import {getHumanisedDate} from 'helpers/moment';
 import {ConfirmButton} from 'components/ConfirmButton';
 import './style.less';
+import {IUpdateUser, updateUser} from 'apollo/modules/user';
 
-interface IProps  {
+interface IProps extends IUpdateUser {
   getOrgUsers?: IGetOrgUsersResult;
 }
 
@@ -31,15 +32,13 @@ class OrganisationUsersInner extends React.Component<IProps, any> {
 
   private suspend(u: IOrgUser): () => Promise<any> {
     return () => {
-      console.log('suspend ' + u.name);
-      return Promise.resolve();
+      return this.props.updateUser(u.id, false);
     };
   }
 
   private reinstate(u: IOrgUser): () => Promise<any> {
     return () => {
-      console.log('reinstate ' + u.name);
-      return Promise.resolve();
+      return this.props.updateUser(u.id, true);
     };
   }
 
@@ -102,5 +101,5 @@ class OrganisationUsersInner extends React.Component<IProps, any> {
 }
 
 const OrgUsersWithSpinner = ApolloLoaderHoC<IProps>('users', (p: IProps) => p.getOrgUsers, OrganisationUsersInner);
-const OrganisationUsers = getOrgUsers(OrgUsersWithSpinner, 'getOrgUsers');
+const OrganisationUsers = updateUser(getOrgUsers(OrgUsersWithSpinner, 'getOrgUsers'));
 export { OrganisationUsers };
