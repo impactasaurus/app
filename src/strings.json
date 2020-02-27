@@ -10,5 +10,9 @@
   "failureGeneric": "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org",
   "valuesNotEditable": "We do not allow the values of the scale to be edited to ensure data consistency. If you would like to change them, please delete this question and recreate it or contact support@impactasaurus.org",
   "reportBeneficiariesIncluded": "Beneficiaries must have at least two included records, to be considered in the report",
-  "signupVsInvite": "If your organisation already has an account with Impactasaurus, please request an invite from your colleagues"
+  "signupVsInvite": "If your organisation already has an account with Impactasaurus, please request an invite from your colleagues",
+  "activeUser": "This user can access your organisation's data",
+  "suspendedUser": "This user cannot access your organisation's data",
+  "suspendUser": "Suspending a user blocks them from logging in to your Impactasaurus",
+  "reinstateUser": "Reinstating a user allows them to log in and access your organisation's data again"
 }

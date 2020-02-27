@@ -7,6 +7,7 @@ import {getHumanisedDate} from 'helpers/moment';
 import {ConfirmButton} from 'components/ConfirmButton';
 import './style.less';
 import {IUpdateUser, updateUser} from 'apollo/modules/user';
+const messages = require('../../../strings.json');
 
 interface IProps extends IUpdateUser {
   getOrgUsers?: IGetOrgUsersResult;
@@ -48,7 +49,7 @@ class OrganisationUsersInner extends React.Component<IProps, any> {
         onConfirm={this.suspend(u)}
         promptText="Are you sure you want to suspend this user?"
         buttonProps={{icon: 'delete', compact:true, size:'tiny'}}
-        tooltip="Suspend account"
+        tooltip={messages.suspendUser}
         stopSpinnerOnCompletion={true}
       />
     );
@@ -57,7 +58,7 @@ class OrganisationUsersInner extends React.Component<IProps, any> {
         onConfirm={this.reinstate(u)}
         promptText="Are you sure you want to reinstate this user?"
         buttonProps={{icon: 'undo', compact:true, size:'tiny'}}
-        tooltip="Reinstate account"
+        tooltip={messages.reinstateUser}
         stopSpinnerOnCompletion={true}
       />
     );
@@ -68,7 +69,7 @@ class OrganisationUsersInner extends React.Component<IProps, any> {
         <Table.Cell>
           <Popup
             trigger={<Label>{u.active ? 'Active' : 'Suspended'}</Label>}
-            content={u.active ? 'active' : 'suspended'}
+            content={u.active ? messages.activeUser : messages.suspendedUser}
           />
         </Table.Cell>
         <Table.Cell className="actions">
