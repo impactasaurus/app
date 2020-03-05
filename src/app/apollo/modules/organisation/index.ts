@@ -1,7 +1,6 @@
 import {gql, graphql, QueryProps} from 'react-apollo';
 import {IOrganisation} from 'models/organisation';
-import {mutationResultExtractor} from 'helpers/apollo';
-import {IDExtractor} from '../../../helpers/apollo';
+import {mutationResultExtractor, IDExtractor} from 'helpers/apollo';
 
 export const getOrganisation = <T>(component, name: string = undefined)  => {
   return graphql<any, T>(gql`
@@ -132,7 +131,7 @@ export function generateInvite<T>(component) {
 }
 
 export interface IGenerateInvite {
-  generateInvite(): Promise<string>;
+  generateInvite?(): Promise<string>;
 }
 
 export interface IOrgUser {
