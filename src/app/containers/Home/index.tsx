@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { Helmet } from 'react-helmet';
 import { TimelineEntry } from 'components/TimelineEntry';
-import {Grid, Card, Loader, Responsive, SemanticWIDTHS, Button} from 'semantic-ui-react';
+import {Card, Loader, Responsive, SemanticWIDTHS, Button} from 'semantic-ui-react';
 import {getMoreRecentMeetings, getRecentMeetings, IGetRecentMeetings} from '../../apollo/modules/meetings';
 import {renderArray} from '../../helpers/react';
 import * as InfiniteScroll from 'react-infinite-scroller';
@@ -11,6 +10,7 @@ import './style.less';
 import {IURLConnector, setURL} from '../../redux/modules/url';
 import {bindActionCreators} from 'redux';
 import {OnboardingChecklist} from 'components/OnboardingChecklist';
+import {MinimalPageWrapperHoC} from 'components/PageWrapperHoC';
 const { connect } = require('react-redux');
 
 const timelineEntry = (m: IMeeting): JSX.Element => <TimelineEntry key={m.id} meeting={m} />;
@@ -47,26 +47,19 @@ class HomeInner extends React.Component<IProps, any> {
   public render() {
     const recordsExist = hasRecords(this.props);
     const wrapper = (inner: JSX.Element): JSX.Element => (
-      <Grid container={true} columns={1} id="home">
-        <Grid.Column>
-          <Helmet>
-            <title>Home</title>
-          </Helmet>
+      <div>
+        <span className="title-holder">
+          <Responsive as={Button} minWidth={620} icon="plus" content="New Record" primary={true} onClick={this.newRecord} />
+          <Responsive as={Button} maxWidth={619} icon="plus" primary={true} onClick={this.newRecord} />
+        </span>
+        <OnboardingChecklist dismissible={recordsExist} />
+        {recordsExist !== false &&
           <div>
-            <span className="title-holder">
-              <Responsive as={Button} minWidth={620} icon="plus" content="New Record" primary={true} onClick={this.newRecord} />
-              <Responsive as={Button} maxWidth={619} icon="plus" primary={true} onClick={this.newRecord} />
-            </span>
-            <OnboardingChecklist dismissible={recordsExist} />
-            {recordsExist !== false &&
-              <div>
-                <h1>Activity</h1>
-                {inner}
-              </div>
-            }
+            <h1>Activity</h1>
+            {inner}
           </div>
-        </Grid.Column>
-      </Grid>
+        }
+      </div>
     );
     if (this.props.data.error) {
       return wrapper(<Error text="Failed to load activity feed" />);
@@ -107,4 +100,5 @@ class HomeInner extends React.Component<IProps, any> {
   }
 }
 
-export const Home = getRecentMeetings<any>(() => 0)(HomeInner);
+const homeWithPageWrapper = MinimalPageWrapperHoC('Home', 'home', HomeInner);
+export const Home = getRecentMeetings<any>(() => 0)(homeWithPageWrapper);

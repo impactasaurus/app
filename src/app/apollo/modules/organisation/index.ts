@@ -1,7 +1,6 @@
 import {gql, graphql, QueryProps} from 'react-apollo';
 import {IOrganisation} from 'models/organisation';
-import {mutationResultExtractor} from 'helpers/apollo';
-import {IDExtractor} from '../../../helpers/apollo';
+import {mutationResultExtractor, IDExtractor} from 'helpers/apollo';
 
 export const getOrganisation = <T>(component, name: string = undefined)  => {
   return graphql<any, T>(gql`
@@ -132,12 +131,14 @@ export function generateInvite<T>(component) {
 }
 
 export interface IGenerateInvite {
-  generateInvite(): Promise<string>;
+  generateInvite?(): Promise<string>;
 }
 
 export interface IOrgUser {
   name: string;
   id: string;
+  joined: Date;
+  active: boolean;
 }
 
 export const getOrgUsers = <T>(component, name: string = undefined)  => {
@@ -148,6 +149,8 @@ export const getOrgUsers = <T>(component, name: string = undefined)  => {
         users {
           id
           name
+          joined
+          active
         }
       }
     }`, {
@@ -159,7 +162,12 @@ export const getOrgUsers = <T>(component, name: string = undefined)  => {
     props: (query) => {
       let users: IOrgUser[] = [];
       if (query[name].getOrgUsers) {
-        users = query[name].getOrgUsers.users;
+        users = query[name].getOrgUsers.users.map((u) => ({
+          id: u.id,
+          name: u.name,
+          active: u.active,
+          joined: new Date(u.joined),
+        }));
       }
       return {
         [name]: {
