@@ -11,10 +11,20 @@ $react-dates-color-secondary: white;
 $react-dates-color-text-focus: white;
 $react-dates-color-focus: #935D8C;
 
-@import '~react-dates/css/variables.scss';
-@import '~react-dates/css/styles.scss';
+@import '~react-date-range/dist/styles.css';
+@import '~react-date-range/dist/theme/default.css';
 
 #impactasaurus .DateRangePickerInput {
   border: 1px solid rgba(34, 36, 38, 0.15);
   border-radius: 0.28571429rem;
+}
+
+#impactasaurus .rdrDateRangePickerWrapper {
+  .rdrDefinedRangesWrapper {
+    display: none;
+  }
+
+  .rdrDateDisplayWrapper {
+    background-color: transparent;
+  }
 }
