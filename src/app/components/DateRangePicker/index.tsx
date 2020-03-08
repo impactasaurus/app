@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {startOfDay, endOfDay, subYears} from 'date-fns';
 import {DateRangePicker as ReactDateRangePicker} from 'react-date-range';
-import './styles.scss';
+import './styles.less';
 
 interface IProp {
   future?: boolean;
@@ -33,6 +33,21 @@ class DateRangePicker extends React.Component<IProp, IState> {
   }
 
   private onDateChange(startDate: Date|null, endDate: Date|null) {
+    const currentlyNull = this.state.start === null && this.state.end === null;
+    const bothChanging = startDate !== this.state.start && endDate !== this.state.end;
+    const bothEqual = startDate && endDate && startDate.getTime() === endDate.getTime();
+    if (bothChanging && bothEqual && !currentlyNull) {
+      const newStartBeforeCurrentEnd = startDate.getTime() < this.state.end.getTime();
+      if (newStartBeforeCurrentEnd) {
+        endDate = this.state.end;
+      }
+    }
+    if (startDate && startDate.getTime() > Date.now()) {
+      startDate = new Date();
+    }
+    if (endDate && endDate.getTime() > Date.now()) {
+      endDate = new Date();
+    }
     this.setState({
       start: startDate,
       end: endDate,
@@ -69,9 +84,8 @@ class DateRangePicker extends React.Component<IProp, IState> {
         endDatePlaceholder={'End'}
         minDate={new Date('2000-01-01T00:00:00Z')}
         maxDate={this.props.future ? undefined : new Date()}
-        dateDisplayFormat="do MMM yyyy"
+        dateDisplayFormat="d MMM yyyy"
         editableDateInputs={true}
-        moveRangeOnFirstSelection={true}
       />
     );
   }
