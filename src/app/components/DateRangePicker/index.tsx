@@ -1,8 +1,7 @@
 import * as React from 'react';
-import {DateRangePicker as DRPicker} from 'react-dates';
-import {isInclusivelyBeforeDay, getStartOfDay, getEndOfDay} from 'helpers/moment';
-import './styles.scss';
-import * as moment from 'moment';
+import {startOfDay, endOfDay, subYears} from 'date-fns';
+import {DateRangePicker as ReactDateRangePicker} from 'react-date-range';
+import './styles.less';
 
 interface IProp {
   future?: boolean;
@@ -11,9 +10,8 @@ interface IProp {
 }
 
 interface IState {
-  focusedInput?: string;
-  start?: moment.Moment;
-  end?: moment.Moment;
+  start?: Date;
+  end?: Date;
 }
 
 class DateRangePicker extends React.Component<IProp, IState> {
@@ -21,55 +19,73 @@ class DateRangePicker extends React.Component<IProp, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      focusedInput: null,
       start: null,
       end: null,
     };
-    this.onFocusChange = this.onFocusChange.bind(this);
     this.onDateChange = this.onDateChange.bind(this);
-    this.isDateDisabled = this.isDateDisabled.bind(this);
+    this.onDateChangeDRP = this.onDateChangeDRP.bind(this);
   }
 
-  private onFocusChange(focusedInput: string) {
-    this.setState({
-      focusedInput,
-    });
+  public componentDidMount() {
+    if (this.state.start === null && this.state.end === null) {
+      this.onDateChange(subYears(new Date(), 1), new Date());
+    }
   }
 
-  private onDateChange({startDate, endDate}: {startDate: moment.Moment|null, endDate: moment.Moment|null}) {
+  private onDateChange(startDate: Date|null, endDate: Date|null) {
+    const currentlyNull = this.state.start === null && this.state.end === null;
+    const bothChanging = startDate !== this.state.start && endDate !== this.state.end;
+    const bothEqual = startDate && endDate && startDate.getTime() === endDate.getTime();
+    if (bothChanging && bothEqual && !currentlyNull) {
+      const newStartBeforeCurrentEnd = startDate.getTime() < this.state.end.getTime();
+      if (newStartBeforeCurrentEnd) {
+        endDate = this.state.end;
+      }
+    }
+    if (startDate && startDate.getTime() > Date.now()) {
+      startDate = new Date();
+    }
+    if (endDate && endDate.getTime() > Date.now()) {
+      endDate = new Date();
+    }
     this.setState({
       start: startDate,
       end: endDate,
     });
-    const s = startDate ? getStartOfDay(startDate.local()).toDate() : null;
-    const e = endDate ? getEndOfDay(endDate.local()).toDate() : null;
+    const s = startDate ? startOfDay(startDate) : null;
+    const e = endDate ? endOfDay(endDate) : null;
     if (this.props.onSelectUnfiltered !== undefined) {
       this.props.onSelectUnfiltered(s, e);
     }
-    if (startDate !== null && endDate !== null && this.props.onSelect !== undefined) {
+    if (s !== null && e !== null && this.props.onSelect !== undefined) {
       this.props.onSelect(s, e);
     }
   }
 
-  private isDateDisabled(day: moment.Moment): boolean {
-    if (this.props.future === false && !isInclusivelyBeforeDay(day, moment())) {
-      return true;
-    }
-    return false;
+  private onDateChangeDRP({selection: {startDate, endDate}}: {selection: {startDate: Date|null, endDate: Date|null}}) {
+    this.onDateChange(startDate, endDate);
   }
 
   public render() {
+    const selectionRange = {
+      startDate: this.state.start,
+      endDate: this.state.end,
+      key: 'selection',
+    };
     return (
-      <DRPicker
-        startDate={this.state.start}
-        endDate={this.state.end}
-        onDatesChange={this.onDateChange}
-        focusedInput={this.state.focusedInput}
-        onFocusChange={this.onFocusChange}
-        isOutsideRange={this.isDateDisabled}
-        hideKeyboardShortcutsPanel={true}
-        numberOfMonths={1}
-        displayFormat="Do MMM YYYY"
+      <ReactDateRangePicker
+        ranges={[selectionRange]}
+        onChange={this.onDateChangeDRP}
+        weekStartsOn={1}
+        rangeColors={['#935D8C']}
+        staticRanges={[]}
+        inputRanges={[]}
+        startDatePlaceholder={'Start'}
+        endDatePlaceholder={'End'}
+        minDate={new Date('2000-01-01T00:00:00Z')}
+        maxDate={this.props.future ? undefined : new Date()}
+        dateDisplayFormat="d MMM yyyy"
+        editableDateInputs={true}
       />
     );
   }
