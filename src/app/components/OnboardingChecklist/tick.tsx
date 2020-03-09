@@ -5,12 +5,20 @@ import './tick.less';
 interface IProps {
   complete: boolean;
   loading: boolean;
+  index: number;
 }
 
 export const Tick = (p: IProps) => {
   const wrapper = (inner: JSX.Element): JSX.Element => <div className="tick-wrapper">{inner} </div>;
-  const className = p.complete ? 'complete' : 'incomplete';
+  if (!p.complete) {
+    return wrapper((
+      <Icon.Group>
+        <Icon name="circle" />
+        <strong className="icon text">{`${p.index}`}</strong>
+      </Icon.Group>
+    ));
+  }
   return wrapper((
-    <Icon aria-hidden="true" name="check circle" className={className}/>
+    <Icon name="check circle" className="complete" />
   ));
 };

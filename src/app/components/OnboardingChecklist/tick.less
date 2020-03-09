@@ -1,12 +1,29 @@
 @import (reference) './../../theme/variables.less';
 
 .onboarding-checklist-item {
-  .tick-wrapper .icon {
-    font-size: 4rem;
-    line-height: 4rem;
-    color: rgba(0,0,0,0.04);
-    &.complete {
-      color: @primary;
+  .tick-wrapper {
+    margin-right: 1em;
+    .icon {
+      width: auto;
+      margin: 0;
+      font-size: 4rem;
+      line-height: 4rem;
+      color: rgba(0, 0, 0, 0.04);
+
+      &.complete {
+        color: @primary;
+      }
+
+      &.text {
+        font-style: normal;
+        font-size: 3rem;
+        line-height: 3rem;
+        color: white;
+      }
+    }
+    i.icons .icon:first-child {
+      // fixes text centering within circle
+      margin-right: 0;
     }
   }
 }

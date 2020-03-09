@@ -19,6 +19,7 @@
   &.incomplete {
     .title * {
       color: @primary;
+      text-decoration: underline;
     }
     .description {
       color: @text;
@@ -28,6 +29,7 @@
   &.incomplete ~ &.incomplete {
     .title * {
       color: @placeholder;
+      text-decoration: none;
     }
     .description {
       color: @placeholder;
@@ -37,12 +39,12 @@
   .content {
     margin-left: 1em;
     text-align: left;
-    padding: 1em 0;
+    padding: 1.5em 0;
     flex-grow: 1;
 
-    .title {
-      text-decoration: underline;
+    .title * {
       font-weight: normal;
+      text-decoration: underline;
     }
 
     .description {
