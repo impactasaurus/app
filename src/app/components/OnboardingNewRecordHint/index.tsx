@@ -13,12 +13,13 @@ const inner = (p: IProps) => {
   if (loading) {
     return (<div />);
   }
-  const hasOneQuestionnaire = p.data.allOutcomeSets &&
-    p.data.allOutcomeSets.length === 1;
+  const hasAtleastOneQuestionniare = p.data.allOutcomeSets &&
+    p.data.allOutcomeSets.length >= 1;
   const hasNoRecords = p.meetings.getRecentMeetings &&
     p.meetings.getRecentMeetings.meetings &&
     p.meetings.getRecentMeetings.meetings.length === 0;
-  if (!hasOneQuestionnaire || !hasNoRecords) {
+  const shouldShow = hasNoRecords && hasAtleastOneQuestionniare;
+  if (!shouldShow) {
     return (<div />);
   }
   return (
