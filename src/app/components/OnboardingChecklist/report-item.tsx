@@ -13,7 +13,7 @@ const Inner = (p: IProps) => {
   return (
     <OnboardingChecklistItem
       title="Generate a report"
-      description="To determine your impact, beneficiaries must have at least two records. Once you have created at least two records for a beneficiary, generate a report."
+      description="Reports are used to demonstrate your impact. A beneficiary must have at least two records to be included in a report. Create another record for the same beneficiary and then try generating a report."
       completed={completed}
       loading={loading}
       link="/report"
