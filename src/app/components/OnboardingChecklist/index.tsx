@@ -3,6 +3,7 @@ import {RecordChecklistItem} from './record-item';
 import {QuestionnaireChecklistItem} from './questionnaire-item';
 import {Segment, Divider, Icon} from 'semantic-ui-react';
 import './style.less';
+import {ReportChecklistItem} from 'components/OnboardingChecklist/report-item';
 
 const localStorageKey = 'onboarded';
 const localStorageValue = 'v1';
@@ -58,6 +59,7 @@ export class OnboardingChecklist extends React.Component<IProps, IState> {
         <Divider fitted={true} />
         <QuestionnaireChecklistItem index={1} />
         <RecordChecklistItem index={2} />
+        <ReportChecklistItem index={3} />
       </Segment>
     );
   }

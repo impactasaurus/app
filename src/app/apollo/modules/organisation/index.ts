@@ -183,3 +183,37 @@ export const getOrgUsers = <T>(component, name: string = undefined)  => {
 export interface IGetOrgUsersResult extends QueryProps {
   users?: IOrgUser[];
 }
+
+export const hasOrgGeneratedReport = <T>(component, name: string = 'data')  => {
+  return graphql<any, T>(gql`
+    query {
+      hasOrgGeneratedReport: organisation {
+        id
+        generatedReport
+      }
+    }`, {
+    options: () => {
+      return {
+        notifyOnNetworkStatusChange: true,
+        fetchPolicy: 'network-only',
+      };
+    },
+    props: (query) => {
+      let out = false;
+      if (query[name] && query[name].hasOrgGeneratedReport) {
+        out = query[name].hasOrgGeneratedReport.generatedReport;
+      }
+      return {
+        [name]: {
+          ...query[name],
+          reportGenerated: out,
+        },
+      };
+    },
+    name,
+  })(component);
+};
+
+export interface IHasOrgGeneratedReport extends QueryProps {
+  reportGenerated?: boolean;
+}
