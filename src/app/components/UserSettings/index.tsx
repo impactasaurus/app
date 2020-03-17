@@ -1,9 +1,10 @@
 import * as React from 'react';
-import {Form, Button, ButtonProps} from 'semantic-ui-react';
-import {isNullOrUndefined} from 'util';
+import {Form, Button, ButtonProps, Input} from 'semantic-ui-react';
 import {getSelf, IGetSelf, IUpdateSelf, updateSelf} from 'apollo/modules/user';
-import {ISelfPatch} from 'models/user';
+import { ISelfPatch} from 'models/user';
 import './style.less';
+import {FormField} from 'components/FormField';
+import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
 
 interface IProps extends IUpdateSelf {
   self?: IGetSelf;
@@ -17,28 +18,18 @@ interface IState {
 
 class UserSettingsInner extends React.Component<IProps, IState> {
 
-  constructor(props) {
+  constructor(props: IProps) {
     super(props);
     this.state = {};
-    this.syncState = this.syncState.bind(this);
     this.unsubscribedChanged = this.unsubscribedChanged.bind(this);
+    this.nameChanged = this.nameChanged.bind(this);
     this.save = this.save.bind(this);
-
-    this.syncState(props);
-  }
-
-  public componentWillUpdate(nextProps: IProps) {
-    this.syncState(nextProps);
-  }
-
-  private syncState(p: IProps) {
-    if (!isNullOrUndefined(p.self.getSelf) && isNullOrUndefined(this.state.patch)) {
-      this.setState({
-        patch: {
-          unsubscribed: p.self.getSelf.settings.unsubscribed,
-        },
-      });
-    }
+    this.state = {
+      patch: {
+        unsubscribed: props.self.getSelf.settings.unsubscribed,
+        name: props.self.getSelf.profile.name,
+      },
+    };
   }
 
   private save() {
@@ -50,7 +41,7 @@ class UserSettingsInner extends React.Component<IProps, IState> {
       saving: true,
       error: undefined,
     });
-    this.props.updateSelf(this.state.patch.unsubscribed)
+    this.props.updateSelf(this.state.patch.name, this.state.patch.unsubscribed)
       .then(() => {
         this.setState({
           saving: false,
@@ -74,10 +65,17 @@ class UserSettingsInner extends React.Component<IProps, IState> {
     });
   }
 
+  private nameChanged(_, e) {
+    this.setState({
+      patch: {
+        ...this.state.patch,
+        name: e.value,
+      },
+    });
+  }
+
   public render() {
-    const patch = this.state.patch || {
-      unsubscribed: false,
-    };
+    const patch: ISelfPatch = this.state.patch;
 
     const startProps: ButtonProps = {};
     if (this.state.saving) {
@@ -87,6 +85,9 @@ class UserSettingsInner extends React.Component<IProps, IState> {
 
     return (
       <Form loading={this.props.self.loading} id="user-settings">
+        <FormField touched={true} inputID="usn" required={true} label="Name">
+          <Input type="text" placeholder="Your Name" value={patch.name} onChange={this.nameChanged}/>
+        </FormField>
         <Form.Checkbox checked={!patch.unsubscribed} label="Email me occasional updates from Impactasaurus" onChange={this.unsubscribedChanged} />
         <Button {...startProps} onClick={this.save}>Save</Button>
         <p>{this.state.error}</p>
@@ -95,5 +96,6 @@ class UserSettingsInner extends React.Component<IProps, IState> {
   }
 }
 
-const UserSettings = updateSelf(getSelf(UserSettingsInner, 'self'));
+const UserSettingsWithLoader = ApolloLoaderHoC('user', (p: IProps) => p.self, UserSettingsInner);
+const UserSettings = updateSelf(getSelf(UserSettingsWithLoader, 'self'));
 export { UserSettings };
