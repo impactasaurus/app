@@ -80,19 +80,19 @@ class Account extends React.Component<any, IState> {
   private renderChangePassword() {
     if (this.state.changePasswordTriggered === false || this.state.changePasswordLoading === true) {
       return (
-        <Button loading={this.state.changePasswordLoading} onClick={this.startChangePassword}>{buttonText}</Button>
+        <Button key="security-loading" loading={this.state.changePasswordLoading} onClick={this.startChangePassword}>{buttonText}</Button>
       );
     }
     if (this.state.changePasswordError === null) {
       return (
-        <Message positive={true}>
+        <Message key="security-success" positive={true}>
           <Message.Header>Success</Message.Header>
           <Message.Content>You will shortly receive an email which will allow you to reset your password</Message.Content>
         </Message>
       );
     }
     return (
-      <Message warning={true}>
+      <Message key="security-fail" warning={true}>
         <Message.Header>Error</Message.Header>
         <Message.Content>{this.state.changePasswordError}</Message.Content>
       </Message>
@@ -101,6 +101,10 @@ class Account extends React.Component<any, IState> {
   }
 
   public render() {
+    const additionalFields = [
+      (<h3 key="security-header">Security</h3>),
+      this.renderChangePassword(),
+    ];
     return (
       <Grid container={true} columns={1} id="Account">
         <Grid.Column>
@@ -108,12 +112,7 @@ class Account extends React.Component<any, IState> {
             <title>Account</title>
           </Helmet>
           <h1>Account</h1>
-          <h3>Settings</h3>
-          <UserSettings />
-          <h3>Change Password</h3>
-          {this.renderChangePassword()}
-          <h3>Delete Account</h3>
-          <p>To delete your account, please send an email to <a href="mailto:support@impactasaurus.org?Subject=DeleteAccount">support@impactasaurus.org</a></p>
+          <UserSettings additionalFields={additionalFields}/>
         </Grid.Column>
       </Grid>
     );

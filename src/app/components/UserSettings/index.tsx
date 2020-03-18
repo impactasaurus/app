@@ -9,6 +9,7 @@ const strings = require('./../../../strings.json');
 
 interface IProps extends IUpdateSelf {
   self?: IGetSelf;
+  additionalFields?: JSX.Element[];
 }
 
 interface IFormOutput {
@@ -22,11 +23,12 @@ const InnerForm = (props: InjectedFormikProps<IProps, IFormOutput>) => {
   return (
     <Form className="screen" onSubmit={submitForm}>
       <FormField error={errors.name as string} touched={touched.name} inputID="usf-name" label="Name" required={true}>
-        <Input id="su-name" name="name" type="text" placeholder="Your Name" onChange={handleChange} onBlur={handleBlur} value={values.name} />
+        <Input id="usf-name" name="name" type="text" placeholder="Your Name" onChange={handleChange} onBlur={handleBlur} value={values.name} />
       </FormField>
-      <Form.Group error={errors.subscribed as string}>
+      <FormField error={errors.subscribed as string} touched={touched.subscribed} inputID="usf-subscribe" label="Notifications">
         <Form.Checkbox id="usf-subscribe" name="subscribed" label={checkboxLabel} onChange={handleChange} checked={values.subscribed} />
-      </Form.Group>
+      </FormField>
+      {props.additionalFields}
       <Form.Group>
         <Form.Button disabled={!dirty} onClick={handleReset}>Cancel</Form.Button>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Save</Form.Button>
@@ -68,5 +70,5 @@ export const UserSettingsInner = withFormik<IProps, IFormOutput>({
 })(InnerForm);
 
 const UserSettingsWithLoader = ApolloLoaderHoC('user', (p: IProps) => p.self, UserSettingsInner);
-const UserSettings = updateSelf(getSelf(UserSettingsWithLoader, 'self'));
+const UserSettings = updateSelf<IProps>(getSelf(UserSettingsWithLoader, 'self'));
 export { UserSettings };

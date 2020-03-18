@@ -41,7 +41,7 @@ export function updateSelf<T>(component) {
 }
 
 export interface IUpdateSelf {
-  updateSelf(name: string, unsubscribed: boolean): Promise<ISelf>;
+  updateSelf?(name: string, unsubscribed: boolean): Promise<ISelf>;
 }
 
 export function unsubscribe<T>(component) {
