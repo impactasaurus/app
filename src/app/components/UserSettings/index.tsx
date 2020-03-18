@@ -1,100 +1,71 @@
 import * as React from 'react';
-import {Form, Button, ButtonProps, Input} from 'semantic-ui-react';
+import {Form, Input, Icon} from 'semantic-ui-react';
 import {getSelf, IGetSelf, IUpdateSelf, updateSelf} from 'apollo/modules/user';
-import { ISelfPatch} from 'models/user';
 import './style.less';
 import {FormField} from 'components/FormField';
 import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
+import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
+const strings = require('./../../../strings.json');
 
 interface IProps extends IUpdateSelf {
   self?: IGetSelf;
 }
 
-interface IState {
-  patch?: ISelfPatch;
-  saving?: boolean;
-  error?: string;
+interface IFormOutput {
+  name: string;
+  subscribed: boolean;
 }
 
-class UserSettingsInner extends React.Component<IProps, IState> {
+const InnerForm = (props: InjectedFormikProps<IProps, IFormOutput>) => {
+  const { touched, error, errors, isSubmitting, submitForm, isValid, handleChange, handleBlur, values, dirty, handleReset } = props;
+  const checkboxLabel = <label>Email me occasional updates from Impactasaurus</label>;
+  return (
+    <Form className="screen" onSubmit={submitForm}>
+      <FormField error={errors.name as string} touched={touched.name} inputID="usf-name" label="Name" required={true}>
+        <Input id="su-name" name="name" type="text" placeholder="Your Name" onChange={handleChange} onBlur={handleBlur} value={values.name} />
+      </FormField>
+      <Form.Group error={errors.subscribed as string}>
+        <Form.Checkbox id="usf-subscribe" name="subscribed" label={checkboxLabel} onChange={handleChange} checked={values.subscribed} />
+      </Form.Group>
+      <Form.Group>
+        <Form.Button disabled={!dirty} onClick={handleReset}>Cancel</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Save</Form.Button>
+      </Form.Group>
+      {error && <span className="submit-error"><Icon name="exclamation" />Editing the questionnaire failed. {strings.formFailureGeneric}</span>}
+    </Form>
+  );
+};
 
-  constructor(props: IProps) {
-    super(props);
-    this.state = {};
-    this.unsubscribedChanged = this.unsubscribedChanged.bind(this);
-    this.nameChanged = this.nameChanged.bind(this);
-    this.save = this.save.bind(this);
-    this.state = {
-      patch: {
-        unsubscribed: props.self.getSelf.settings.unsubscribed,
-        name: props.self.getSelf.profile.name,
-      },
-    };
-  }
-
-  private save() {
-    if (this.state.saving) {
-      return;
+export const UserSettingsInner = withFormik<IProps, IFormOutput>({
+  validate: (values: IFormOutput) => {
+    const errors: FormikErrors<IFormOutput> = {};
+    if (!values.name || values.name.length === 0) {
+      errors.name = 'Please provide your name';
     }
-
-    this.setState({
-      saving: true,
-      error: undefined,
-    });
-    this.props.updateSelf(this.state.patch.name, this.state.patch.unsubscribed)
+    return errors;
+  },
+  handleSubmit: (v: FormikValues, formikBag: FormikBag<IProps, IFormOutput>): void => {
+    formikBag.setError(undefined);
+    formikBag.setSubmitting(true);
+    const vals = v as IFormOutput;
+    formikBag.props.updateSelf(vals.name, !vals.subscribed)
       .then(() => {
-        this.setState({
-          saving: false,
-          error: undefined,
-        });
+        formikBag.setSubmitting(false);
+        formikBag.setError(undefined);
+        formikBag.resetForm(vals);
       })
-      .catch(() => {
-        this.setState({
-          saving: false,
-          error: 'Failed to save, please try refreshing',
-        });
+      .catch((e) => {
+        formikBag.setSubmitting(false);
+        formikBag.setError(e);
       });
-  }
-
-  private unsubscribedChanged(_, e) {
-    this.setState({
-      patch: {
-        ...this.state.patch,
-        unsubscribed: !e.checked,
-      },
-    });
-  }
-
-  private nameChanged(_, e) {
-    this.setState({
-      patch: {
-        ...this.state.patch,
-        name: e.value,
-      },
-    });
-  }
-
-  public render() {
-    const patch: ISelfPatch = this.state.patch;
-
-    const startProps: ButtonProps = {};
-    if (this.state.saving) {
-      startProps.loading = true;
-      startProps.disabled = true;
-    }
-
-    return (
-      <Form loading={this.props.self.loading} id="user-settings">
-        <FormField touched={true} inputID="usn" required={true} label="Name">
-          <Input type="text" placeholder="Your Name" value={patch.name} onChange={this.nameChanged}/>
-        </FormField>
-        <Form.Checkbox checked={!patch.unsubscribed} label="Email me occasional updates from Impactasaurus" onChange={this.unsubscribedChanged} />
-        <Button {...startProps} onClick={this.save}>Save</Button>
-        <p>{this.state.error}</p>
-      </Form>
-    );
-  }
-}
+  },
+  mapPropsToValues: (p: IProps): IFormOutput => {
+    return {
+      name: p.self.getSelf.profile.name,
+      subscribed: !p.self.getSelf.settings.unsubscribed,
+    };
+  },
+})(InnerForm);
 
 const UserSettingsWithLoader = ApolloLoaderHoC('user', (p: IProps) => p.self, UserSettingsInner);
 const UserSettings = updateSelf(getSelf(UserSettingsWithLoader, 'self'));
