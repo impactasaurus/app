@@ -15,6 +15,7 @@ export interface ISelf {
 
 export interface ISelfPatch {
   unsubscribed: boolean;
+  name: string;
 }
 
 export const profileFragment = gql`
