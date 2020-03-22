@@ -3,6 +3,7 @@ import {RecordChecklistItem} from './record-item';
 import {QuestionnaireChecklistItem} from './questionnaire-item';
 import {Segment, Divider, Icon} from 'semantic-ui-react';
 import './style.less';
+import {ReportChecklistItem} from 'components/OnboardingChecklist/report-item';
 
 const localStorageKey = 'onboarded';
 const localStorageValue = 'v1';
@@ -53,11 +54,12 @@ export class OnboardingChecklist extends React.Component<IProps, IState> {
       <Segment id="onboarding-checklist" raised={true}>
         {canBeDismissed(this.props) && <Icon name="close" onClick={this.onClose} />}
         <h1>Welcome!</h1>
-        <p>To get started with Impactasaurus, try out the following two steps</p>
+        <p>To get started with Impactasaurus, try out the following steps</p>
         <p>If you have any questions, drop us an email at <a href="mailto:support@impactasaurus.org">support@impactasaurus.org</a> - we would love to help</p>
         <Divider fitted={true} />
-        <QuestionnaireChecklistItem />
-        <RecordChecklistItem />
+        <QuestionnaireChecklistItem index={1} />
+        <RecordChecklistItem index={2} />
+        <ReportChecklistItem index={3} />
       </Segment>
     );
   }

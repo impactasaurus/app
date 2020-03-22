@@ -8,6 +8,7 @@ const strings = require('./../../../strings.json');
 export interface IFormOutput {
   name: string;
   email: string;
+  emailCopy: string;
   password: string;
   organisation: string;
   policyAcceptance: boolean;
@@ -31,6 +32,9 @@ const InnerForm = (props: InjectedFormikProps<IProps, IFormOutput>) => {
       </FormField>
       <FormField error={errors.email as string} touched={touched.email} inputID="su-email" label="Email" required={true}>
         <Input id="su-email" name="email" type="text" placeholder="Your Email" onChange={handleChange} onBlur={handleBlur} value={values.email} />
+      </FormField>
+      <FormField error={errors.emailCopy as string} touched={touched.emailCopy} inputID="su-email-copy" label="Confirm Email" required={true}>
+        <Input id="su-email-copy" name="emailCopy" type="text" placeholder="Confirm Email" onChange={handleChange} onBlur={handleBlur} value={values.emailCopy} />
       </FormField>
       <FormField error={errors.password as string} touched={touched.password} inputID="su-password" label="Password" required={true}>
         <Input id="su-password" name="password" type="password" placeholder="Password" onChange={handleChange} onBlur={handleBlur} value={values.password} />
@@ -66,6 +70,9 @@ export const SignupForm = withFormik<IProps, IFormOutput>({
     if (values.email && !EmailValidator.validate(values.email)) {
       errors.email = 'Your email does not appear to be valid';
     }
+    if (values.email !== values.emailCopy) {
+      errors.emailCopy = 'The email addresses don\'t match';
+    }
     if (!values.password || values.password.length === 0) {
       errors.password = 'Please provide a password';
     }
@@ -98,6 +105,7 @@ export const SignupForm = withFormik<IProps, IFormOutput>({
     return {
       name: '',
       email: '',
+      emailCopy: '',
       password: '',
       organisation: '',
       policyAcceptance: false,

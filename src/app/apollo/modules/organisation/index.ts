@@ -1,7 +1,6 @@
 import {gql, graphql, QueryProps} from 'react-apollo';
 import {IOrganisation} from 'models/organisation';
-import {mutationResultExtractor} from 'helpers/apollo';
-import {IDExtractor} from '../../../helpers/apollo';
+import {mutationResultExtractor, IDExtractor} from 'helpers/apollo';
 
 export const getOrganisation = <T>(component, name: string = undefined)  => {
   return graphql<any, T>(gql`
@@ -132,5 +131,89 @@ export function generateInvite<T>(component) {
 }
 
 export interface IGenerateInvite {
-  generateInvite(): Promise<string>;
+  generateInvite?(): Promise<string>;
+}
+
+export interface IOrgUser {
+  name: string;
+  id: string;
+  joined: Date;
+  active: boolean;
+}
+
+export const getOrgUsers = <T>(component, name: string = undefined)  => {
+  return graphql<any, T>(gql`
+    query {
+      getOrgUsers: organisation {
+        id
+        users {
+          id
+          name
+          joined
+          active
+        }
+      }
+    }`, {
+    options: () => {
+      return {
+        notifyOnNetworkStatusChange: true,
+      };
+    },
+    props: (query) => {
+      let users: IOrgUser[] = [];
+      if (query[name].getOrgUsers) {
+        users = query[name].getOrgUsers.users.map((u) => ({
+          id: u.id,
+          name: u.name,
+          active: u.active,
+          joined: new Date(u.joined),
+        }));
+      }
+      return {
+        [name]: {
+          ...query[name],
+          users,
+        },
+      };
+    },
+    name,
+  })(component);
+};
+
+export interface IGetOrgUsersResult extends QueryProps {
+  users?: IOrgUser[];
+}
+
+export const hasOrgGeneratedReport = <T>(component, name: string = 'data')  => {
+  return graphql<any, T>(gql`
+    query {
+      hasOrgGeneratedReport: organisation {
+        id
+        generatedReport
+      }
+    }`, {
+    options: () => {
+      return {
+        notifyOnNetworkStatusChange: true,
+        fetchPolicy: 'network-only',
+      };
+    },
+    props: (query) => {
+      let out = false;
+      if (query[name] && query[name].hasOrgGeneratedReport) {
+        out = query[name].hasOrgGeneratedReport.generatedReport;
+      }
+      return {
+        [name]: {
+          ...query[name],
+          reportGenerated: out,
+        },
+      };
+    },
+    name,
+  })(component);
+};
+
+export interface IHasOrgGeneratedReport extends QueryProps {
+  reportGenerated?: boolean;
 }

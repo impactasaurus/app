@@ -22,7 +22,7 @@ interface IFormOutput {
 }
 
 const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
-  const { touched, error, errors, isSubmitting, values, submitForm, isValid, handleChange, handleBlur, handleReset } = props;
+  const { touched, error, errors, isSubmitting, values, submitForm, isValid, handleChange, handleBlur, handleReset, dirty } = props;
   const standardProps = {
     onChange: handleChange,
     onBlur: handleBlur,
@@ -40,7 +40,7 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
         <TextArea id="qg-instructions" name="instructions" type="text" placeholder="Instructions" value={values.instructions} autoHeight={true} {...standardProps}/>
       </FormField>
       <Form.Group>
-        <Form.Button onClick={handleReset}>Cancel</Form.Button>
+        <Form.Button disabled={!dirty} onClick={handleReset}>Cancel</Form.Button>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Save</Form.Button>
       </Form.Group>
       {error && <span className="submit-error"><Icon name="exclamation" />Editing the questionnaire failed. {strings.formFailureGeneric}</span>}

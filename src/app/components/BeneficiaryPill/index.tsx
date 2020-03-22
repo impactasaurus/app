@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {Label} from 'semantic-ui-react';
+import {journeyURI} from 'helpers/url';
 
 interface IProps {
   beneficiaryID: string;
@@ -9,13 +10,9 @@ interface IProps {
 
 class BeneficiaryPill extends React.Component<IProps, any> {
   public render() {
-    const b = this.props.beneficiaryID;
-    let link = `/beneficiary/${b}`;
-    if (this.props.questionnaireID !== undefined && this.props.questionnaireID !== null) {
-      link = `${link}?q=${this.props.questionnaireID}`;
-    }
+    const link = journeyURI(this.props.beneficiaryID, this.props.questionnaireID);
     return (
-      <Label as="a" target="_blank" href={link} key={b}>{b}</Label>
+      <Label as="a" target="_blank" href={link} key={this.props.beneficiaryID}>{this.props.beneficiaryID}</Label>
     );
   }
 }

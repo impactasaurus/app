@@ -1,5 +1,5 @@
 import {IOutcomeSet} from '../models/outcomeSet';
-import {ILabel, ILikertScale, IQuestion, Question} from 'models/question';
+import {IQuestion, Question} from 'models/question';
 import {ICategory} from '../models/category';
 import {isNullOrUndefined} from 'util';
 

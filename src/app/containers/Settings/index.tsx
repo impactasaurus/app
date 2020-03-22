@@ -56,6 +56,7 @@ class Settings extends React.Component<IProps, any> {
           <Menu.Item name="Account" active={this.isSelected('/settings/account') || this.isExact(`${match}/`) || this.isExact(`${match}`)} onClick={this.handleClick('/settings/account')} />
           <Menu.Item name="Data" active={this.isSelected('/settings/data')} onClick={this.handleClick('/settings/data')} />
           <Menu.Item name="Organisation" active={this.isSelected('/settings/organisation')} onClick={this.handleClick('/settings/organisation')} />
+          <Menu.Item name="Users" active={this.isSelected('/settings/users')} onClick={this.handleClick('/settings/users')} />
         </SecondaryMenu>
 
         <Switch>
@@ -64,6 +65,7 @@ class Settings extends React.Component<IProps, any> {
           <Route path={`${match}/data/questionnaire/export/:id`} component={containers.ExportQuestionnaire} />
           <Route path={`${match}/data`} component={containers.Data} />
           <Route path={`${match}/organisation`}  component={containers.Organisation} />
+          <Route path={`${match}/users`}  component={containers.Users} />
         </Switch>
       </div>
     );

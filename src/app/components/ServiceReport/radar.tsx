@@ -15,15 +15,18 @@ interface IProp {
   category?: boolean;
 }
 
-function getRadarSeries(aa: IAnswerAggregation[], labeller: (IAnswerAggregation) => string): IRadarSeries[] {
+function getRadarSeries(aa: IAnswerAggregation[], labeller: (IAnswerAggregation) => string, indexer: (IAnswerAggregation) => number): IRadarSeries[] {
   const pre = aa.reduce((pre, a) => {
     const label = labeller(a);
+    const idx = indexer(a);
     pre.initial.push({
       axis: label,
+      axisIndex: idx,
       value: a.initial,
     });
     pre.latest.push({
       axis: label,
+      axisIndex: idx,
       value: a.latest,
     });
     return pre;
@@ -46,8 +49,11 @@ class ServiceReportRadar extends React.Component<IProp, any> {
     const getCatLabel = (aa: IAnswerAggregation): string => {
       return getCategoryFriendlyName(aa.id, p.questionSet);
     };
+    const getCatIdx = (aa: IAnswerAggregation): number => {
+      return p.questionSet.categories.findIndex((c) => c.id === aa.id);
+    };
     return {
-      series: getRadarSeries(p.serviceReport.categories, getCatLabel),
+      series: getRadarSeries(p.serviceReport.categories, getCatLabel, getCatIdx),
       scaleMin: getMinCategoryValue(p.questionSet),
       scaleMax: getMaxCategoryValue(p.questionSet),
     };
@@ -57,8 +63,11 @@ class ServiceReportRadar extends React.Component<IProp, any> {
     const getQLabel = (aa: IAnswerAggregation): string => {
       return getQuestionFriendlyName(aa.id, p.questionSet);
     };
+    const getQIdx = (aa: IAnswerAggregation): number => {
+      return p.questionSet.questions.findIndex((q) => q.id === aa.id);
+    };
     return {
-      series: getRadarSeries(p.serviceReport.questions, getQLabel),
+      series: getRadarSeries(p.serviceReport.questions, getQLabel, getQIdx),
       scaleMin: getMinQuestionValue(p.questionSet),
       scaleMax: getMaxQuestionValue(p.questionSet),
     };

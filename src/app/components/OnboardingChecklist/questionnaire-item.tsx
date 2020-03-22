@@ -6,6 +6,7 @@ import {getQuestions} from 'helpers/questionnaire';
 
 interface IProps {
   data?: IOutcomeResult;
+  index: number;
 }
 
 const Inner = (p: IProps) => {
@@ -22,8 +23,9 @@ const Inner = (p: IProps) => {
       completed={completed}
       loading={loading}
       link="/questions/new"
+      index={p.index}
     />
   );
 };
 
-export const QuestionnaireChecklistItem = allOutcomeSets(Inner);
+export const QuestionnaireChecklistItem = allOutcomeSets<IProps>(Inner);

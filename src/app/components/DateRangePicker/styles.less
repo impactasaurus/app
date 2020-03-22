@@ -1,0 +1,40 @@
+@import '~react-date-range/dist/styles.css';
+@import '~react-date-range/dist/theme/default.css';
+@import (reference) './../../theme/variables.less';
+
+#impactasaurus .rdrDateRangePickerWrapper {
+  * {
+    font-size: 1rem;
+  }
+
+  .rdrDefinedRangesWrapper {
+    display: none;
+  }
+
+  .rdrDateDisplayWrapper {
+    background-color: transparent;
+  }
+
+  .rdrDateDisplayItem {
+    box-shadow: none;
+  }
+
+  .rdrMonth {
+    padding: 0 0 1.666em 0;
+    font-size: 0.8em;
+  }
+
+  .rdrNextPrevButton {
+    margin: 0px;
+    background-color: #E8E8E8;
+  }
+
+  .rdrDateDisplay {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .rdrDayToday .rdrDayNumber span:after {
+    background: @primaryl;
+  }
+}

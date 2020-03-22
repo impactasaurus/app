@@ -169,6 +169,7 @@ var config = {
   devServer: {
     hot: true,
     historyApiFallback: true,
+    disableHostCheck: true,
   }
 };
 

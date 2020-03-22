@@ -18,7 +18,7 @@ interface IProps {
 }
 
 const InnerForm = (props: InjectedFormikProps<IProps, IFormOutput>) => {
-  const {error, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values, beneficiaryID, onCancel} = props;
+  const {error, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values, beneficiaryID, onCancel, dirty} = props;
 
   const setTags = (tags: string[]) => {
     setFieldValue('tags', tags);
@@ -33,7 +33,7 @@ const InnerForm = (props: InjectedFormikProps<IProps, IFormOutput>) => {
         <TagInputWithBenSuggestions inputID="bf-tags" id={beneficiaryID} onChange={setTags} tags={values.tags} allowNewTags={true} />
       </FormField>
       <Form.Group>
-        <Form.Button onClick={onCancel}>Reset</Form.Button>
+        <Form.Button disabled={!dirty} onClick={onCancel}>Cancel</Form.Button>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Save</Form.Button>
       </Form.Group>
       {error && <span className="submit-error"><Icon name="exclamation" />Saving the beneficiary failed. {strings.formFailureGeneric}</span>}

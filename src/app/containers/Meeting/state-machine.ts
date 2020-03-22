@@ -4,6 +4,7 @@ export enum Screen {
   REVIEW,
   INSTRUCTIONS,
   THANKS,
+  EMPTY,
 }
 
 export interface IMeetingState {
@@ -11,7 +12,13 @@ export interface IMeetingState {
   qIdx: number;
 }
 
-export function initialState(hasInstructions: boolean): IMeetingState {
+export function initialState(hasInstructions: boolean, numQuestions: number): IMeetingState {
+  if (numQuestions === 0) {
+    return {
+      screen: Screen.EMPTY,
+      qIdx: 0,
+    };
+  }
   if (hasInstructions) {
     return {
       screen: Screen.INSTRUCTIONS,

@@ -4,6 +4,7 @@ import {getRecentMeetings, IGetRecentMeetings} from '../../apollo/modules/meetin
 
 interface IProps {
   data?: IGetRecentMeetings;
+  index: number;
 }
 
 const Inner = (p: IProps) => {
@@ -16,8 +17,9 @@ const Inner = (p: IProps) => {
       completed={completed}
       loading={loading}
       link="/record"
+      index={p.index}
     />
   );
 };
 
-export const RecordChecklistItem = getRecentMeetings(() => 0)(Inner);
+export const RecordChecklistItem = getRecentMeetings<IProps>(() => 0)(Inner);

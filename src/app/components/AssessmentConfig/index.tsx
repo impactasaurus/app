@@ -63,7 +63,7 @@ const InnerForm = (props: InjectedFormikProps<InnerFormProps, IAssessmentConfigA
     setFieldValue('debouncedBenID', undefined);
   };
 
-  const benLabel = <span><Hint text={strings.beneficiaryIDExplanation} />Beneficiary</span>;
+  const benLabel = <span><Hint text={strings.beneficiaryIDExplanation} />New or Existing Beneficiary</span>;
   const tagLabel = <span><Hint text={strings.tagExplanation} />Tags</span>;
 
   // if the beneficiary has been set via URL, hide the beneficiary field
@@ -103,7 +103,7 @@ export const AssessmentConfig = withFormik<IProps, IAssessmentConfigAndDebounce>
   validate: (values: IAssessmentConfigAndDebounce) => {
     const errors: FormikErrors<IAssessmentConfigAndDebounce> = {};
     if (!values.beneficiaryID || values.beneficiaryID === '') {
-      errors.beneficiaryID = 'Please select a beneficiary';
+      errors.beneficiaryID = 'Please enter a beneficiary ID';
     }
     if (!values.outcomeSetID || values.outcomeSetID === '') {
       errors.outcomeSetID = 'Please select a questionnaire';

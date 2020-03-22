@@ -64,7 +64,7 @@ class TagInputWithSuggestionsInner extends React.Component<IProps, any> {
       return wrap(<span>Loading...</span>);
     }
     if (props.data.suggestedTags.length === 0) {
-      return wrap(<span>No suggested tags available for this beneficiary</span>);
+      return wrap(<span>No tag suggestions available</span>);
     }
     const unselectedSuggestedTags = filterAlreadySelectedTags(props.data.suggestedTags, props.tags);
     if (unselectedSuggestedTags.length === 0) {
