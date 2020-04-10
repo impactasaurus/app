@@ -5,6 +5,7 @@ import {getRecentMeetings, IGetRecentMeetings} from '../../apollo/modules/meetin
 interface IProps {
   data?: IGetRecentMeetings;
   index: number;
+  minimal?: boolean; // defaults to false
 }
 
 const Inner = (p: IProps) => {
@@ -18,6 +19,7 @@ const Inner = (p: IProps) => {
       loading={loading}
       link="/record"
       index={p.index}
+      minimal={p.minimal}
     />
   );
 };

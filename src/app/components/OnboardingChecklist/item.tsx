@@ -10,16 +10,18 @@ interface IProps {
   loading: boolean;
   link: string;
   index: number;
+  minimal?: boolean; // defaults to false
 }
 
 export const OnboardingChecklistItem = (p: IProps) => {
   const classname = `onboarding-checklist-item ${p.completed === true ? 'complete' : 'incomplete'}`;
+
   return (
     <div className={classname}>
       <Tick complete={p.completed} loading={p.loading} index={p.index} />
       <div className="content">
         <h3 className="title"><Link to={p.link}>{p.title}</Link></h3>
-        <p className="description">{p.description}</p>
+        {(!p.completed || !p.minimal) && <p className="description">{p.description}</p>}
       </div>
     </div>
   );

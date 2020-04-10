@@ -5,6 +5,7 @@ import {hasOrgGeneratedReport, IHasOrgGeneratedReport} from 'apollo/modules/orga
 interface IProps {
   data?: IHasOrgGeneratedReport;
   index: number;
+  minimal?: boolean; // defaults to false
 }
 
 const Inner = (p: IProps) => {
@@ -18,6 +19,7 @@ const Inner = (p: IProps) => {
       loading={loading}
       link="/report"
       index={p.index}
+      minimal={p.minimal}
     />
   );
 };

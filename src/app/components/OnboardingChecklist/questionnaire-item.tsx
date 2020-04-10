@@ -7,6 +7,7 @@ import {getQuestions} from 'helpers/questionnaire';
 interface IProps {
   data?: IOutcomeResult;
   index: number;
+  minimal?: boolean; // defaults to false
 }
 
 const Inner = (p: IProps) => {
@@ -24,6 +25,7 @@ const Inner = (p: IProps) => {
       loading={loading}
       link="/questions/new"
       index={p.index}
+      minimal={p.minimal}
     />
   );
 };
