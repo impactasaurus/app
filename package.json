@@ -114,7 +114,7 @@
   },
   "dependencies": {
     "apollo-cache-invalidation": "0.0.3",
-    "auth0-js": "9.7.3",
+    "auth0-js": "9.13.2",
     "babel-polyfill": "6.26.0",
     "chart.js": "2.7.2",
     "chartjs-color": "2.2.0",
