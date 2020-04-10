@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {getRecentMeetings, IGetRecentMeetings} from '../../apollo/modules/meetings';
 import {allOutcomeSets,IOutcomeResult} from 'apollo/modules/outcomeSets';
-import {Message} from 'semantic-ui-react';
+import {OnboardingChecklist} from 'components/OnboardingChecklist';
 
 interface IProps {
   meetings?: IGetRecentMeetings;
@@ -23,11 +23,12 @@ const inner = (p: IProps) => {
     return (<div />);
   }
   return (
-    <Message info={true} className="new-record-signpost">
-      <Message.Header>What next?</Message.Header>
-      <p>Collect answers from your beneficiaries, these are stored as records in the system.</p>
-      <p>Press the plus button in the header to get started.</p>
-    </Message>
+    <OnboardingChecklist dismissible={false} minimal={true} customHeader={
+      <>
+        <h2>What next?</h2>
+        <p>Your questionnaire has been added to your account. Answer the questions to create your first record.</p>
+      </>
+    }/>
   );
 };
 

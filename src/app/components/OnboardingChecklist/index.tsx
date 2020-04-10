@@ -10,6 +10,8 @@ const localStorageValue = 'v1';
 
 interface IProps {
   dismissible?: boolean; // defaults to true
+  customHeader?: JSX.Element; // if not provided, defaults to normal Welcome text
+  minimal?: boolean; /// defaults to false
 }
 
 interface IState {
@@ -50,16 +52,24 @@ export class OnboardingChecklist extends React.Component<IProps, IState> {
     if (this.state.dismissed) {
       return (<div />);
     }
+    let header = (
+      <>
+      <h1>Welcome!</h1>
+      <p>To get started with Impactasaurus, try out the following steps</p>
+      <p>If you have any questions, drop us an email at <a href="mailto:support@impactasaurus.org">support@impactasaurus.org</a> - we would love to help</p>
+      </>
+    );
+    if(this.props.customHeader !== undefined) {
+      header = this.props.customHeader;
+    }
     return (
       <Segment id="onboarding-checklist" raised={true}>
         {canBeDismissed(this.props) && <Icon name="close" onClick={this.onClose} />}
-        <h1>Welcome!</h1>
-        <p>To get started with Impactasaurus, try out the following steps</p>
-        <p>If you have any questions, drop us an email at <a href="mailto:support@impactasaurus.org">support@impactasaurus.org</a> - we would love to help</p>
+        {header}
         <Divider fitted={true} />
-        <QuestionnaireChecklistItem index={1} />
-        <RecordChecklistItem index={2} />
-        <ReportChecklistItem index={3} />
+        <QuestionnaireChecklistItem index={1} minimal={this.props.minimal} />
+        <RecordChecklistItem index={2} minimal={this.props.minimal} />
+        <ReportChecklistItem index={3} minimal={this.props.minimal} />
       </Segment>
     );
   }
