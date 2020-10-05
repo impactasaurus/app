@@ -55,8 +55,9 @@ export class OnboardingChecklist extends React.Component<IProps, IState> {
     let header = (
       <>
       <h1>Welcome!</h1>
-      <p>To get started with Impactasaurus, try out the following steps</p>
-      <p>If you have any questions, drop us an email at <a href="mailto:support@impactasaurus.org">support@impactasaurus.org</a> - we would love to help</p>
+      <p><b>Let's get measuring your impact! We have prepared three simple steps to get you started</b></p>
+      <p>If you would prefer a guided tour, check out our <a href="https://youtu.be/sw-_m3fNVmE?t=185" target="_blank">recent webinar <Icon style={{color:'#c4302b'}} name="youtube" /></a></p>
+      <p>Drop us an email at <a href="mailto:support@impactasaurus.org">support@impactasaurus.org</a> if you have any questions - we would love to help</p>
       </>
     );
     if(this.props.customHeader !== undefined) {
