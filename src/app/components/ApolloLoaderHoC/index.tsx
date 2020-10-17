@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {QueryProps} from 'react-apollo';
+import {ApolloError, QueryProps} from 'react-apollo';
 import { Loader } from 'semantic-ui-react';
 import {Error} from 'components/Error';
 
@@ -10,6 +10,7 @@ export const ApolloLoaderHoC = <P extends object>(
   entity: string,
   queryProps: (p: P) => QueryProps,
   WrappedComponent: React.ComponentType<P>,
+  isErrorTerminal: (err: ApolloError) => boolean = () => true,
 ) => {
   class Inner extends React.Component<P, any> {
     public render() {
@@ -17,7 +18,7 @@ export const ApolloLoaderHoC = <P extends object>(
       if (!qp) {
         return <span />;
       }
-      if (qp.error) {
+      if (qp.error && isErrorTerminal(qp.error)) {
         return <Error text={`Failed to load ${entity}`} />;
       }
       if (qp.loading) {
