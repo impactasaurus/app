@@ -5,6 +5,7 @@ import {
   IEditBeneficiaryTags,
 } from 'apollo/modules/beneficiaries';
 import {ApolloLoaderHoC} from '../../components/ApolloLoaderHoC';
+import { ApolloError } from 'react-apollo';
 
 interface IProps extends IEditBeneficiaryTags {
   match: {
@@ -33,7 +34,13 @@ class BeneficiaryConfigInner extends React.Component<IProps, IState> {
   }
 
   private onSave(v: IFormOutput): Promise<any> {
-    return this.props.editBeneficiaryTags(getBen(this.props), v.tags);
+    return this.props.editBeneficiaryTags(getBen(this.props), v.tags)
+      .then(() => {
+        // if the beneficiary was missing, refresh the page to show the new tags
+        if(this.props.data.error) {
+          this.props.data.refetch().catch((e) => console.error(e));
+        }
+      });
   }
 
   private onCancel() {
@@ -43,13 +50,17 @@ class BeneficiaryConfigInner extends React.Component<IProps, IState> {
   }
 
   public render() {
+    let tags: string[] = [];
+    if(!this.props.data.error && this.props.data.getBeneficiary) {
+      tags = this.props.data.getBeneficiary.tags;
+    }
     return (
       <div>
         <BeneficiaryForm
           beneficiaryID={getBen(this.props)}
           onFormSubmit={this.onSave}
           onCancel={this.onCancel}
-          tags={this.props.data.getBeneficiary.tags}
+          tags={tags}
           key={this.state.formVersion}
         />
       </div>
@@ -57,6 +68,15 @@ class BeneficiaryConfigInner extends React.Component<IProps, IState> {
   }
 }
 
-const BeneficiaryConfigWithLoader = ApolloLoaderHoC<IProps>('beneficiary', (p: IProps) => p.data, BeneficiaryConfigInner);
+const BeneficiaryConfigWithLoader = ApolloLoaderHoC<IProps>('beneficiary',
+  (p: IProps) => p.data,
+  BeneficiaryConfigInner,
+  (e: ApolloError) => {
+    // tags can be set on beneficiaries not currently in the system
+    const notFound = e.graphQLErrors.length === 1 &&
+      e.graphQLErrors[0].message.includes('not found');
+    return !notFound;
+  },
+);
 const BeneficiaryConfig = getBeneficiary<IProps>(getBen)(editBeneficiaryTags<IProps>(BeneficiaryConfigWithLoader));
 export { BeneficiaryConfig };
