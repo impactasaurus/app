@@ -382,6 +382,29 @@ export function editMeetingDate<T>(component) {
   })(component);
 }
 
+export interface IEditMeetingBeneficiary {
+  editMeetingBeneficiary(meetingID: string, newBeneficiaryID: string): Promise<IMeeting>;
+}
+export function editMeetingBeneficiary<T>(component) {
+  return graphql<any, T>(gql`
+  mutation EditMeetingBeneficiary ($meetingID: String!, $newBeneficiaryID: String!) {
+    editMeetingBeneficiary: EditMeetingBeneficiary(meetingID: $meetingID, newBeneficiaryID: $newBeneficiaryID) {
+      ...meetingWithOutcomeSetAndAggregates
+    }
+  }
+  ${fragmentWithOutcomeSetAndAggregates}`, {
+    props: ({ mutate }) => ({
+      editMeetingBeneficiary: (meetingID: string, newBeneficiaryID: string) => mutate({
+        variables: {
+          meetingID,
+          newBeneficiaryID,
+        },
+        update: clearCacheOfAllMeetings(),
+      }).then(mutationResultExtractor<IMeeting>('editMeetingBeneficiary')),
+    }),
+  })(component);
+}
+
 export interface IMeetingResult extends QueryProps {
   getMeeting?: IMeeting;
   getMeetings?: IMeeting[];
