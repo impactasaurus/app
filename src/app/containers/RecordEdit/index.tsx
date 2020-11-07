@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import {Button, Loader, Grid, ButtonProps} from 'semantic-ui-react';
+import {Button, Loader, Grid, ButtonProps, Input, InputOnChangeData} from 'semantic-ui-react';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {
-  editMeetingDate, editMeetingTags, getMeeting, IEditMeetingDate, IEditMeetingTags,
-  IMeetingResult,
+  editMeetingDate, editMeetingTags, editMeetingBeneficiary, getMeeting, IEditMeetingDate, IEditMeetingTags,
+  IMeetingResult, IEditMeetingBeneficiary,
 } from 'apollo/modules/meetings';
 import {TagInputWithBenSuggestions} from 'components/TagInput';
 import {DateTimePicker} from 'components/DateTimePicker';
@@ -17,7 +17,7 @@ import {Tags} from 'components/Tag';
 const strings = require('./../../../strings.json');
 const { connect } = require('react-redux');
 
-interface IProps extends IURLConnector, IEditMeetingDate, IEditMeetingTags {
+interface IProps extends IURLConnector, IEditMeetingDate, IEditMeetingTags, IEditMeetingBeneficiary {
   match: {
     params: {
       id: string,
@@ -34,9 +34,11 @@ interface IState {
   saveError?: string;
   conducted?: moment.Moment;
   recordTags?: string[];
+  beneficiary?: string;
   saving?: boolean;
   tagEditing?: boolean;
   dateEditing?: boolean;
+  benEditing?: boolean;
 }
 
 function getNextPageURL(p: IProps): string|undefined {
@@ -56,11 +58,13 @@ class RecordEditInner extends React.Component<IProps, IState> {
     super(props);
     this.saveRecord = this.saveRecord.bind(this);
     this.setTags = this.setTags.bind(this);
+    this.setBen = this.setBen.bind(this);
     this.setConductedDate = this.setConductedDate.bind(this);
     this.nextPage = this.nextPage.bind(this);
     this.loadState = this.loadState.bind(this);
     this.renderTagSection = this.renderTagSection.bind(this);
     this.renderDateSection = this.renderDateSection.bind(this);
+    this.renderBeneficiaryID = this.renderBeneficiaryID.bind(this);
   }
 
   public componentWillMount() {
@@ -79,12 +83,13 @@ class RecordEditInner extends React.Component<IProps, IState> {
     this.setState({
       conducted: moment(p.data.getMeeting.conducted),
       recordTags: p.data.getMeeting.meetingTags,
+      beneficiary: p.data.getMeeting.beneficiary,
     });
   }
 
   private saveRecord() {
     const record = this.props.data.getMeeting;
-    const {conducted, recordTags} = this.state;
+    const {conducted, recordTags, beneficiary} = this.state;
     this.setState({
       saving: true,
       saveError: undefined,
@@ -106,6 +111,12 @@ class RecordEditInner extends React.Component<IProps, IState> {
       });
     }
 
+    if(beneficiary !== record.beneficiary) {
+      p = p.then(() => {
+        return this.props.editMeetingBeneficiary(record.id, beneficiary);
+      });
+    }
+
     return p
       .then(() => {
         this.nextPage();
@@ -124,12 +135,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
       this.props.setURL(nextPage);
       return;
     }
-    const record = this.props.data.getMeeting;
-    if (record !== undefined) {
-      this.props.setURL(`/beneficiary/${record.beneficiary}`);
-      return;
-    }
-    this.props.setURL('/');
+    this.props.setURL(`/beneficiary/${this.state.beneficiary}`);
   }
 
   private setConductedDate(date: moment.Moment) {
@@ -144,8 +150,34 @@ class RecordEditInner extends React.Component<IProps, IState> {
     });
   }
 
+  private setBen(beneficiary: string): void {
+    this.setState({beneficiary});
+  }
+
   private renderEditButton(onClick: ()=>void): JSX.Element {
     return (<Button className="field-edit" onClick={onClick} compact={true} size="tiny" primary={true}>Edit</Button>);
+  }
+
+  private renderBeneficiaryID(benEditing: boolean): JSX.Element {
+    let control = (<div />);
+    if(benEditing) {
+      const benChanged = (_, data: InputOnChangeData) => {
+        this.setBen(data.value);
+      };
+      control = <Input id="meeting-ben" type="text" onChange={benChanged} value={this.state.beneficiary} />;
+    } else {
+      const benEdit = () => {
+        this.setState({benEditing: true});
+      };
+      const editButton = this.renderEditButton(benEdit);
+      control = <span>{this.state.beneficiary} {editButton}</span>;
+    }
+    return (
+      <div>
+        <h4 className="label inline">Beneficiary</h4>
+        {control}
+      </div>
+    );
   }
 
   private renderDateSection(dateEditing: boolean): JSX.Element {
@@ -247,10 +279,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
 
     return wrapper((
       <div className="impactform">
-        <div>
-          <h4 className="label inline">Beneficiary</h4>
-          <span>{record.beneficiary}</span>
-        </div>
+        {this.renderBeneficiaryID(this.state.benEditing)}
         <div>
           <h4 className="label inline">Questionnaire</h4>
           <span>{record.outcomeSet.name}</span>
@@ -273,5 +302,5 @@ class RecordEditInner extends React.Component<IProps, IState> {
   }
 }
 
-const RecordEdit = editMeetingTags<IProps>(editMeetingDate<IProps>(getMeeting<IProps>((props) => props.match.params.id)(RecordEditInner)));
+const RecordEdit = editMeetingTags<IProps>(editMeetingDate<IProps>(editMeetingBeneficiary(getMeeting<IProps>((props) => props.match.params.id)(RecordEditInner))));
 export { RecordEdit };
