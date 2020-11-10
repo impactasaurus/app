@@ -65,6 +65,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
     this.renderTagSection = this.renderTagSection.bind(this);
     this.renderDateSection = this.renderDateSection.bind(this);
     this.renderBeneficiaryID = this.renderBeneficiaryID.bind(this);
+    this.editAnswers = this.editAnswers.bind(this);
   }
 
   public componentWillMount() {
@@ -152,6 +153,10 @@ class RecordEditInner extends React.Component<IProps, IState> {
 
   private setBen(beneficiary: string): void {
     this.setState({beneficiary});
+  }
+
+  private editAnswers(): void {
+    this.props.setURL(`/dataentry/${this.props.match.params.id}`);
   }
 
   private renderEditButton(onClick: ()=>void): JSX.Element {
@@ -290,6 +295,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
         </div>
         {this.renderTagSection(record.beneficiary, this.state.tagEditing)}
         {this.renderDateSection(this.state.dateEditing)}
+        <Button primary={true} onClick={this.editAnswers} style={{marginTop:'1em'}}>Edit Answers...</Button>
         <div>
           <div className="button-group">
             <Button className="cancel" onClick={this.nextPage}>Cancel</Button>
