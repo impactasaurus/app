@@ -3,11 +3,12 @@ import * as React from 'react';
 import {Item, MultiChoice} from 'components/MultiChoice';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {PageWrapperHoC} from 'components/PageWrapperHoC';
-import { Segment } from 'semantic-ui-react';
+import { Segment, Loader } from 'semantic-ui-react';
 import {ICatalogueImport, importQuestionnaire} from '../../apollo/modules/catalogue';
 import {allOutcomeSets, IOutcomeResult} from '../../apollo/modules/outcomeSets';
 const RocketIcon = require('./rocket.inline.svg');
 const { connect } = require('react-redux');
+const strings = require('./../../../strings.json');
 
 interface IProps extends ICatalogueImport, IURLConnector {
   data?: IOutcomeResult;
@@ -62,13 +63,23 @@ class NewQuestionnaireTypSelectionInner extends React.Component<IProps, IState> 
     if(data.loading !== false || (data.allOutcomeSets && data.allOutcomeSets.length > 0)) {
       return <div key="noQuickStart" />;
     }
+    let body: JSX.Element|JSX.Element[] = <p><a onClick={this.quickStart}>Click here to add the ONS Wellbeing questionnaire</a> which is perfect for trying out Impactasaurus</p>;
+    if(this.state.importing) {
+      body = <Loader active={true} inline={true} size="mini" />;
+    }
+    if(this.state.error) {
+      body = [
+        <p key="whoops">Whoops, something went wrong.</p>,
+        <p key="advice">{strings.failureGeneric}</p>,
+      ];
+    }
     return (
       <Segment key="quickStart" id="quick-start" raised={true} compact={true} style={{marginLeft:'auto',marginRight:'auto'}}>
         <h3>
           <RocketIcon style={{width:'1rem', marginRight:'.3rem'}}/>
           Quick start
         </h3>
-        <p><a onClick={this.quickStart}>Click here to add the ONS Wellbeing questionnaire</a> which is perfect for trying out Impactasaurus</p>
+        {body}
       </Segment>
     );
   }
