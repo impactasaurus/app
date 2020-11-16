@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {allOutcomeSets, IOutcomeResult} from 'apollo/modules/outcomeSets';
-import { Message } from 'semantic-ui-react';
+import { Segment } from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
 import {getQuestions} from 'helpers/questionnaire';
 
@@ -9,19 +9,23 @@ interface IProp {
 }
 
 const renderQuestionnaireNeeded = (action: string): JSX.Element => ((
-  <Message warning={true}>
-    <Message.Header>Questionnaire Required</Message.Header>
-    <p>{action}, you first need to define a questionnaire</p>
+  <Segment id="questionnaire-needed" raised={true} compact={true} style={{marginLeft:'auto',marginRight:'auto'}}>
+    <h3>
+      We love the enthusiasm!
+    </h3>
+    <p>Before we {action}, let's first define a questionnaire</p>
     <p>Head over to the <Link to="/questions">questionnaire page</Link> to create one</p>
-  </Message>
+  </Segment>
 ));
 
 const renderQuestionsNeeded = (action: string): JSX.Element => ((
-  <Message warning={true}>
-    <Message.Header>Questions Required</Message.Header>
-    <p>{action}, you first need to define some questions within your questionnaire</p>
+  <Segment id="questionnaire-needed" raised={true} compact={true} style={{marginLeft:'auto',marginRight:'auto'}}>
+    <h3>
+      We love the enthusiasm!
+    </h3>
+    <p>Before we {action}, let's first define some questions within your questionnaire</p>
     <p>Head over to the <Link to="/questions">questionnaire page</Link> to add some questions</p>
-  </Message>
+  </Segment>
 ));
 
 export const QuestionnaireRequired = <P extends object>(action: string, WrappedComponent: React.ComponentType<P>) => {
