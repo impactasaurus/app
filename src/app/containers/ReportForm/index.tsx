@@ -8,7 +8,7 @@ import {PageWrapperHoC} from 'components/PageWrapperHoC';
 const { connect } = require('react-redux');
 const ReactGA = require('react-ga');
 
-const RFWrapped = QuestionnaireRequired('To generate a report', RFComponent);
+const RFWrapped = QuestionnaireRequired('generate a report', RFComponent);
 
 const dateDiff = (date1: Date, date2: Date): number => {
   const oneDay = 1000*60*60*24;
