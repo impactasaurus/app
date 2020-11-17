@@ -14,7 +14,7 @@ const renderQuestionnaireNeeded = (action: string): JSX.Element => ((
       We love the enthusiasm!
     </h3>
     <p>Before we {action}, let's first define a questionnaire</p>
-    <p>Head over to the <Link to="/questions">questionnaire page</Link> to create one</p>
+    <p>Head over to the <Link to="/questions">questionnaires page</Link> to create one</p>
   </Segment>
 ));
 
@@ -24,7 +24,7 @@ const renderQuestionsNeeded = (action: string): JSX.Element => ((
       We love the enthusiasm!
     </h3>
     <p>Before we {action}, let's first define some questions within your questionnaire</p>
-    <p>Head over to the <Link to="/questions">questionnaire page</Link> to add some questions</p>
+    <p>Head over to the <Link to="/questions">questionnaires page</Link> to add some questions</p>
   </Segment>
 ));
 
