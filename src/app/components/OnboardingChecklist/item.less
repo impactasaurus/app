@@ -24,6 +24,9 @@
     .description {
       color: @text;
     }
+    .circle {
+      color: @primary;
+    }
   }
   // for subsequent incomplete entries, show faded colours
   &.incomplete ~ &.incomplete {
@@ -33,6 +36,15 @@
     }
     .description {
       color: @placeholder;
+    }
+    .circle {
+      color: rgba(0, 0, 0, 0.04);
+    }
+  }
+
+  &.complete {
+    .circle {
+      color: rgba(0, 0, 0, 0.04);
     }
   }
 
