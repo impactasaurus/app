@@ -3,7 +3,7 @@ import * as React from 'react';
 import {Item, MultiChoice} from 'components/MultiChoice';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {PageWrapperHoC} from 'components/PageWrapperHoC';
-import { Segment, Loader } from 'semantic-ui-react';
+import { Segment, Loader, Button } from 'semantic-ui-react';
 import {ICatalogueImport, importQuestionnaire} from '../../apollo/modules/catalogue';
 import {allOutcomeSets, IOutcomeResult} from '../../apollo/modules/outcomeSets';
 const RocketIcon = require('./rocket.inline.svg');
@@ -63,7 +63,7 @@ class NewQuestionnaireTypSelectionInner extends React.Component<IProps, IState> 
     if(data.loading !== false || (data.allOutcomeSets && data.allOutcomeSets.length > 0)) {
       return <div key="noQuickStart" />;
     }
-    let body: JSX.Element|JSX.Element[] = <p><a onClick={this.quickStart}>Click here to add the ONS Wellbeing questionnaire</a> which is perfect for trying out Impactasaurus</p>;
+    let body: JSX.Element|JSX.Element[] = <Button primary={true} onClick={this.quickStart}>Add the ONS Wellbeing questionnaire</Button>;
     if(this.state.importing) {
       body = <Loader active={true} inline={true} size="mini" />;
     }
@@ -75,7 +75,7 @@ class NewQuestionnaireTypSelectionInner extends React.Component<IProps, IState> 
     }
     return (
       <Segment key="quickStart" id="quick-start" raised={true} compact={true} style={{marginLeft:'auto',marginRight:'auto'}}>
-        <h3>
+        <h3 style={{fontWeight:'normal'}}>
           <RocketIcon style={{width:'1rem', marginRight:'.3rem'}}/>
           Quick start
         </h3>

@@ -20,7 +20,7 @@ const Inner = (p: IProps) => {
   return (
     <OnboardingChecklistItem
       title="Define a questionnaire"
-      description="Questionnaires are used to collect information from your beneficiaries. They should measure the outcomes you wish to achieve. Create a questionnaire with 3 or more questions."
+      description="Questionnaires are used to collect information from your beneficiaries. Create a questionnaire with 3 or more questions."
       completed={completed}
       loading={loading}
       link="/questions/new"
