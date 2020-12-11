@@ -1,5 +1,6 @@
 import {gql, graphql} from 'react-apollo';
 import {mutationResultExtractor} from 'helpers/apollo';
+import { defaultRemoteMeetingLimit } from 'models/assessment';
 
 export function newMeetingFromSummon <T>(component) {
   return graphql<any, T>(gql`
@@ -25,7 +26,7 @@ export interface ISummonAcceptanceMutation {
 export function generateSummon <T>(component) {
   return graphql<any, T>(gql`
   mutation($outcomeSetID: String!) {
-    generateSummon: NewMeetingSummon(outcomeSetID:$outcomeSetID, daysToComplete:30)
+    generateSummon: NewMeetingSummon(outcomeSetID:$outcomeSetID, daysToComplete: ${defaultRemoteMeetingLimit})
   }
 `, {
     props: ({ mutate }) => ({
