@@ -12,4 +12,4 @@ export interface IAssessmentConfig {
   tags?: string[];
 }
 
-export const defaultRemoteMeetingLimit = 30;
+export const defaultRemoteMeetingLimit = 100;
