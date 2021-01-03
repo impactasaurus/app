@@ -4,6 +4,7 @@ import {QuestionnaireChecklistItem} from './questionnaire-item';
 import {Segment, Divider, Icon} from 'semantic-ui-react';
 import './style.less';
 import {ReportChecklistItem} from 'components/OnboardingChecklist/report-item';
+const RocketIcon = require('./../../theme/rocket.inline.svg');
 
 const localStorageKey = 'onboarded';
 const localStorageValue = 'v1';
@@ -55,7 +56,7 @@ export class OnboardingChecklist extends React.Component<IProps, IState> {
     let header = (
       <>
       <h1>Welcome!</h1>
-      <p>We have prepared <b>three simple steps to get you started</b></p>
+      <p>We have prepared <b>three simple steps to get you started</b> <RocketIcon style={{marginLeft:'.3rem'}}/></p>
       </>
     );
     if(this.props.customHeader !== undefined) {
