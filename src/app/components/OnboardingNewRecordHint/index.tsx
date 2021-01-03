@@ -1,12 +1,17 @@
 import * as React from 'react';
+import { Segment, Button } from 'semantic-ui-react';
 import {getRecentMeetings, IGetRecentMeetings} from '../../apollo/modules/meetings';
 import {allOutcomeSets,IOutcomeResult} from 'apollo/modules/outcomeSets';
-import {OnboardingChecklist} from 'components/OnboardingChecklist';
+const RocketIcon = require('./../../theme/rocket.inline.svg');
 
 interface IProps {
   meetings?: IGetRecentMeetings;
   data?: IOutcomeResult;
 }
+
+const navigateToNewRecord = () => {
+  window.location.href = '/record';
+};
 
 const inner = (p: IProps) => {
   const loading = p.data.loading || p.meetings.loading;
@@ -23,12 +28,19 @@ const inner = (p: IProps) => {
     return (<div />);
   }
   return (
-    <OnboardingChecklist dismissible={false} minimal={true} customHeader={
-      <>
-        <h2>What next?</h2>
-        <p>Your questionnaire has been added to your account. Answer the questions to create your first record.</p>
-      </>
-    }/>
+    <Segment key="quickStart" id="quick-start" raised={true} compact={true} style={{marginLeft:'auto',marginRight:'auto'}}>
+      <h3 style={{fontWeight:'normal'}}>
+        <RocketIcon style={{width:'1rem', marginRight:'.3rem'}}/>
+        What next?
+      </h3>
+      <p>
+        Nice one, the questionnaire has been added to your organisation
+      </p>
+      <p>
+        Let's imitate a beneficiary and answer the questions, creating your first record
+      </p>
+      <Button primary={true} onClick={navigateToNewRecord}>New Record</Button>
+    </Segment>
   );
 };
 

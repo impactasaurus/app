@@ -6,7 +6,7 @@ import {PageWrapperHoC} from 'components/PageWrapperHoC';
 import { Segment, Loader, Button } from 'semantic-ui-react';
 import {ICatalogueImport, importQuestionnaire} from '../../apollo/modules/catalogue';
 import {allOutcomeSets, IOutcomeResult} from '../../apollo/modules/outcomeSets';
-const RocketIcon = require('./rocket.inline.svg');
+const RocketIcon = require('./../../theme/rocket.inline.svg');
 const { connect } = require('react-redux');
 const strings = require('./../../../strings.json');
 
