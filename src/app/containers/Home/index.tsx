@@ -14,11 +14,11 @@ import {MinimalPageWrapperHoC} from 'components/PageWrapperHoC';
 const { connect } = require('react-redux');
 
 const timelineEntry = (m: IMeeting): JSX.Element => <TimelineEntry key={m.id} meeting={m} />;
-const hasRecords = (p: IProps): boolean|undefined => {
+const hasRecords = (p: IProps, moreThan: number = 0): boolean|undefined => {
   if (!p.data || !p.data.getRecentMeetings || !p.data.getRecentMeetings.meetings) {
     return undefined;
   }
-  return p.data.getRecentMeetings.meetings.length > 0;
+  return p.data.getRecentMeetings.meetings.length > moreThan;
 };
 
 interface IProps extends IURLConnector {
@@ -52,7 +52,10 @@ class HomeInner extends React.Component<IProps, any> {
           <Responsive as={Button} minWidth={620} icon="plus" content="New Record" primary={true} onClick={this.newRecord} />
           <Responsive as={Button} maxWidth={619} icon="plus" primary={true} onClick={this.newRecord} />
         </span>
-        <OnboardingChecklist dismissible={recordsExist} />
+        <OnboardingChecklist
+          dismissible={recordsExist}
+          forceDismiss={hasRecords(this.props, 8)}
+        />
         {recordsExist !== false &&
           <div>
             <h1>Activity</h1>

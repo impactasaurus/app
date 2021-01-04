@@ -11,6 +11,7 @@ const localStorageValue = 'v1';
 
 interface IProps {
   dismissible?: boolean; // defaults to true
+  forceDismiss?: boolean; // defaults to false
   customHeader?: JSX.Element; // if not provided, defaults to normal Welcome text
   minimal?: boolean; /// defaults to false
 }
@@ -35,9 +36,13 @@ export class OnboardingChecklist extends React.Component<IProps, IState> {
   }
 
   public componentWillUpdate(nextProps: IProps) {
-    if (canBeDismissed(nextProps) !== canBeDismissed(this.props)) {
+    if(nextProps.forceDismiss === true && isDismissed() === false) {
+      setDismissed();
+    }
+    const nextDismissed = canBeDismissed(nextProps) && isDismissed();
+    if (this.state.dismissed !== nextDismissed) {
       this.setState({
-        dismissed: canBeDismissed(nextProps) && isDismissed(),
+        dismissed: nextDismissed,
       });
     }
   }
