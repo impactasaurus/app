@@ -9,7 +9,7 @@ var config = {
 
   app: {
     api: "https://api.impactasaurus.org",
-    root: (process.env.NODE_ENV === "production") ? "https://app.impactasaurus.org" : "http://localhost:8080",
+    root: location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: ''),
     head: {
       title: 'Impactasaurus',
       titleTemplate: '%s | Impactasaurus',
