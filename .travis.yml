@@ -1,8 +1,9 @@
 language: node_js
 node_js: 11.10.0
 before_install:
-  - echo -e "machine github.com\n  login $GH_TOKEN" > ~/.netrc
-  - git clone https://github.com/impactasaurus/branding.git ./branding
+  - echo -e $BRANDING_KEY | base64 -d > ~/.ssh/id_rsa
+  - chmod 600 ~/.ssh/id_rsa
+  - git clone git@github.com:impactasaurus/branding.git ./branding
 install:
   - npm ci
 script:
