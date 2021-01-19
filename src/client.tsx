@@ -57,6 +57,15 @@ Chart.plugins.register({
   },
 });
 
+const subDomain = window.location.hostname.split('.')[0];
+const loadBranding = subDomain !== 'app';
+if(loadBranding) {
+  import(`./branding/${subDomain}/${subDomain}.branding`)
+    .catch(() => {
+      console.log(`no branding for subdomain '${subDomain}'`);
+    });
+}
+
 ReactDOM.render(
   <ApolloProvider client={client} store={store}>
     <ConnectedRouter

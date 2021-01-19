@@ -39,7 +39,8 @@ var config = {
   },
 
   module: {
-    rules: [{
+    rules: [
+      {
         enforce: 'pre',
         test: /\.tsx?$/,
         loader: 'tslint-loader'
@@ -72,7 +73,7 @@ var config = {
         ]
       },
       {
-        test: /\.css$/,
+        test: /\.(css|branding)$/,
         exclude: path.resolve('./src/app'),
         loaders: [
           'style-loader',
