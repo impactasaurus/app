@@ -76,7 +76,7 @@ var config = {
         ]
       },
       {
-        test: /\.css$/,
+        test: /\.(css|branding)$/,
         exclude: path.resolve('./src/app'),
         loaders: [
           'style-loader',
