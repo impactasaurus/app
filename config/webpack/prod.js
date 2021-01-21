@@ -73,7 +73,7 @@ var config = {
         ]
       },
       {
-        test: /\.(css|branding)$/,
+        test: /\.css$/,
         exclude: path.resolve('./src/app'),
         loaders: [
           'style-loader',
@@ -81,7 +81,7 @@ var config = {
         ]
       },
       {
-        test: /\.less$/,
+        test: /\.(less|branding)$/,
         loader: ExtractTextPlugin.extract({
           use: [
             "css-loader",

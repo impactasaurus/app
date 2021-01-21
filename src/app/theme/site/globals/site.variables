@@ -13,6 +13,19 @@
 @lightPrimaryColor: @primaryl;
 @lightSecondaryColor: @accentl;
 
-
 @textColor: hsla(0, 0%, 0%, 0.8);
+
 @linkColor: @primary;
+@linkHoverColor: @primaryd;
+
+@primaryColorHover        : @primaryd;
+@lightPrimaryColorHover   : @primary;
+
+@primaryColorFocus        : @primaryd;
+@lightPrimaryColorFocus   : @primary;
+
+@primaryColorDown        : @primaryd;
+@lightPrimaryColorDown   : @primary;
+
+@primaryColorActive        : black;
+@lightPrimaryColorActive   : @primary;
