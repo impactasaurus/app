@@ -57,9 +57,6 @@ Chart.plugins.register({
   },
 });
 
-import cssVars from 'css-vars-ponyfill';
-cssVars({});
-import './app/theme/default.branding';
 const subDomain = window.location.hostname.split('.')[0];
 const loadBranding = subDomain !== 'app';
 if(loadBranding) {

@@ -20,17 +20,14 @@
     .active.item:hover {
       border-color: @primaryTextColor;
       color: @primaryTextColor;
-      opacity: 100%;
     }
 
     .item {
-      color: @primaryTextColor;
-      opacity: 70%;
+      color: mix(@primaryl, @primaryTextColor, 30%);
 
       &:hover {
-        color: @primaryTextColor;
-        opacity: 80%;
-        border-color: fade(@primaryTextColor, 80%);
+        color: mix(@primaryl, @primaryTextColor, 20%);
+        border-color: mix(@primaryl, @primaryTextColor, 20%);
       }
     }
   }
