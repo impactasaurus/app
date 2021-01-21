@@ -1,6 +1,6 @@
 @import (reference) './../../variables.less';
 
 @activeBackgroundColor: @primary;
-@activeHoverBackgroundColor: @primaryd;
+@activeHoverBackgroundColor: darken(@primary, 5%);
 @activeColor: @primaryTextColor;
 @fontWeight: normal;
