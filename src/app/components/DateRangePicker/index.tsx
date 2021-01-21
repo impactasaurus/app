@@ -77,7 +77,7 @@ class DateRangePicker extends React.Component<IProp, IState> {
         ranges={[selectionRange]}
         onChange={this.onDateChangeDRP}
         weekStartsOn={1}
-        rangeColors={['#935D8C']}
+        rangeColors={['var(--brand-color-light)']}
         staticRanges={[]}
         inputRanges={[]}
         startDatePlaceholder={'Start'}
