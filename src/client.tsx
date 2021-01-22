@@ -57,10 +57,19 @@ Chart.plugins.register({
   },
 });
 
+import cssVars from 'css-vars-ponyfill';
+cssVars({});
+import * as defaultBranding from './app/theme/default.branding';
+defaultBranding.use();
+
 const subDomain = window.location.hostname.split('.')[0];
 const loadBranding = subDomain !== 'app';
 if(loadBranding) {
   import(`./branding/${subDomain}/${subDomain}.branding`)
+    .then((branding) => {
+      branding.use();
+      defaultBranding.unuse();
+    })
     .catch(() => {
       console.log(`no branding for subdomain '${subDomain}'`);
     });

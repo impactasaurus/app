@@ -1,0 +1,2 @@
+echo "removing all LESS function usage for LESS variables which use CSS variables"
+find ./node_modules/semantic-ui-less -type f -printf '\n%p:\n' -exec sed -i -r "s=\S*\(\@(primaryColor|secondaryColor|lightPrimaryColor|lightSecondaryColor|linkColor).*\)=black=g w /dev/stdout" {} \;

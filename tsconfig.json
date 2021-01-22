@@ -35,6 +35,9 @@
     "moduleResolution": "node",
     "skipLibCheck": true
   },
+  "includes": [
+    "./src/externals.d.ts"
+  ],
   "exclude": [
     "node_modules",
     "build",

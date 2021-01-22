@@ -1,3 +1,7 @@
-.ui.massive.menu {
-    border-bottom: solid 3px red;
+:root{
+    --brand-color: #0505ff;
+    --brand-color-dark: #0000e0;
+    --brand-color-light: #3838ff;
+    --brand-color-darker: #0000b8;
+    --brand-color-lighter: #6b6bff;
 }

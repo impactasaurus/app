@@ -76,7 +76,7 @@ var config = {
         ]
       },
       {
-        test: /\.(css|branding)$/,
+        test: /\.css$/,
         exclude: path.resolve('./src/app'),
         loaders: [
           'style-loader',
@@ -85,11 +85,19 @@ var config = {
       },
       {
         test: /\.less$/,
-        loaders: [
-          "style-loader",
+        use: [
+          'style-loader',
           "css-loader",
           "less-loader"
         ]
+      },
+      {
+        test: /\.branding$/,
+        use: [
+          { loader: 'style-loader', options: { injectType: 'lazyStyleTag' } },
+          "css-loader",
+          "less-loader"
+        ] 
       },
       {
         test: /\.scss$/,

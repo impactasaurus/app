@@ -1,0 +1,7 @@
+:root{
+    --brand-color: #935D8C;
+    --brand-color-dark: #7B3C73;
+    --brand-color-light: #AD85A9;
+    --brand-color-darker: #65245D;
+    --brand-color-lighter: #D0B8CD;
+}
