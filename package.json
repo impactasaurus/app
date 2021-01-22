@@ -10,7 +10,8 @@
     "start": "webpack-dev-server --inline --config config/webpack/index.js --host 0.0.0.0",
     "start:prod": "cross-env NODE_ENV=production npm start",
     "test": "karma start config/test/karma.conf.js",
-    "lint": "tslint \"src/**/**.ts*\""
+    "lint": "tslint \"src/**/**.ts*\"",
+    "postinstall": "chmod +x ./src/app/theme/fixBranding.sh && ./src/app/theme/fixBranding.sh"
   },
   "author": "Impactasaurus <admin@impactasaurus.org>",
   "homepage": "https://impactasaurus.org",
@@ -119,6 +120,7 @@
     "chart.js": "2.9.3",
     "chartjs-color": "2.4.1",
     "connected-react-router": "4.3.0",
+    "css-vars-ponyfill": "2.4.2",
     "date-fns": "2.16.1",
     "distinct-colors": "1.0.4",
     "email-validator": "2.0.4",
