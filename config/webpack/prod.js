@@ -81,7 +81,7 @@ var config = {
         ]
       },
       {
-        test: /\.(less|branding)$/,
+        test: /\.less$/,
         loader: ExtractTextPlugin.extract({
           use: [
             "css-loader",
@@ -89,6 +89,14 @@ var config = {
           ],
           fallback: "style-loader"
         })
+      },
+      {
+        test: /\.branding$/,
+        use: [
+          { loader: 'style-loader', options: { injectType: 'lazyStyleTag' } },
+          "css-loader",
+          "less-loader"
+        ]
       },
       {
         test: /\.scss$/,

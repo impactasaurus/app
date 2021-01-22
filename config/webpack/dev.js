@@ -84,12 +84,20 @@ var config = {
         ]
       },
       {
-        test: /\.(less|branding)$/,
-        loaders: [
-          "style-loader",
+        test: /\.less$/,
+        use: [
+          'style-loader',
           "css-loader",
           "less-loader"
         ]
+      },
+      {
+        test: /\.branding$/,
+        use: [
+          { loader: 'style-loader', options: { injectType: 'lazyStyleTag' } },
+          "css-loader",
+          "less-loader"
+        ] 
       },
       {
         test: /\.scss$/,
