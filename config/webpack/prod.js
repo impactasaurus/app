@@ -35,7 +35,8 @@ var config = {
   output: {
     path: path.resolve('./build'),
     publicPath: '/',
-    filename: '[name].[hash].js'
+    filename: '[name].[contenthash].js',
+    chunkFilename: '[name].[contenthash].chunk.js'
   },
 
   module: {
@@ -55,30 +56,13 @@ var config = {
       },
       {
         test: /\.css$/,
-        include: path.resolve('./src/app'),
-        loaders: [
-          'style-loader',
-          'css-loader?modules&importLoaders=2&localIdentName=[local]___[hash:base64:5]',
-          {
-            loader: 'postcss-loader',
-            options: {
-              plugins: (loader) => [
-                require('postcss-import')({
-                  root: loader.resourcePath
-                }),
-                require('postcss-simple-vars')(),
-              ]
-            }
-          },
-        ]
-      },
-      {
-        test: /\.css$/,
         exclude: path.resolve('./src/app'),
-        loaders: [
-          'style-loader',
-          'css-loader'
-        ]
+        loader: ExtractTextPlugin.extract({
+          use: [
+            "css-loader"
+          ],
+          fallback: "style-loader"
+        })
       },
       {
         test: /\.less$/,
@@ -156,7 +140,7 @@ var config = {
       }
     }),
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new ExtractTextPlugin('css/[name].[hash].css'),
+    new ExtractTextPlugin('[name].[hash].css'),
     new ManifestPlugin({
       fileName: 'manifest.json'
     }),
@@ -173,7 +157,12 @@ var config = {
     new CopyWebpackPlugin([
       { from: './src/favicon.ico', to:"favicon.ico" },
     ])
-  ]
+  ],
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    },
+  }
 };
 
 const createIfDoesntExist = dest => {

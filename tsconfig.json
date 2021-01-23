@@ -23,7 +23,7 @@
       "esnext.asynciterable"
     ],
     "outDir": "build",
-    "module": "commonjs",
+    "module": "esnext",
     "target": "es5",
     "sourceMap": true,
     "inlineSourceMap": false,
@@ -33,7 +33,9 @@
     "noUnusedLocals": true,
     "jsx": "react",
     "moduleResolution": "node",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "includes": [
     "./src/externals.d.ts"

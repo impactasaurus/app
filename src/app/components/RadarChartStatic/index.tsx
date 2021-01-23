@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {RadarData} from 'models/radar';
 import {render} from './inner';
-import Raven = require('raven-js');
+import Raven from 'raven-js';
 import './style.less';
 
 interface IProps {

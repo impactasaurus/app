@@ -10,7 +10,7 @@ import {TagInputWithBenSuggestions} from 'components/TagInput';
 import {DateTimePicker} from 'components/DateTimePicker';
 import {Error} from 'components/Error';
 import {Hint} from 'components/Hint';
-import * as moment from 'moment';
+import moment from 'moment';
 import {bindActionCreators} from 'redux';
 import './style.less';
 import {Tags} from 'components/Tag';

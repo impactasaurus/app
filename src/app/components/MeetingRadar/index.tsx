@@ -4,7 +4,7 @@ import {RadarData, IRadarSeries, IRadarPoint} from 'models/radar';
 import {Answer} from 'models/answer';
 import {RadarChart} from 'components/RadarChart';
 import {Aggregation} from 'models/pref';
-import * as moment from 'moment';
+import moment from 'moment';
 import {Message, Icon} from 'semantic-ui-react';
 import {getMinQuestionValue, getMaxQuestionValue, getMinCategoryValue, getMaxCategoryValue} from 'helpers/questionnaire';
 
