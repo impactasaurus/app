@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {GraphData, getMaximumNumberOfPointsPerSeries} from 'models/graph';
-import * as Chart from 'chart.js';
-import * as color from 'chartjs-color';
-import * as distinctColors from 'distinct-colors';
+import Chart from 'chart.js';
+import color from 'chartjs-color';
+import distinctColors from 'distinct-colors';
 import {Message} from 'semantic-ui-react';
 
 let graphCount = 0;

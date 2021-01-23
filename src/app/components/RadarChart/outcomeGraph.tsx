@@ -1,4 +1,4 @@
-import * as Chart from 'chart.js';
+import Chart from 'chart.js';
 import {SessionsConverter} from './sessionsConverter';
 import {OutcomeGraphData} from './index';
 import {getChartJSTypographyStyle} from 'theme/chartStyle';

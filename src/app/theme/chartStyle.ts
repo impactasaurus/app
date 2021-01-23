@@ -1,4 +1,4 @@
-import * as Chart from 'chart.js';
+import Chart from 'chart.js';
 
 export const getChartJSTypographyStyle = () => ({
   fontSize: 14,

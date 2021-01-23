@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Search, Icon} from 'semantic-ui-react';
 import './base.less';
 import {ITagResult, getTags} from 'apollo/modules/tags';
-import * as TagsInput from 'react-tagsinput';
+import TagsInput from 'react-tagsinput';
 import {Tag} from '../Tag';
 
 interface IProps {
