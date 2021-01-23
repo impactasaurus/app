@@ -19,7 +19,7 @@ class Logo extends React.Component<any, any> {
   public componentDidMount() {
     const {loadBranding, subdomain} = this.state;
     if(loadBranding) {
-      import(`./../../../branding/${subdomain}/${subdomain}.tsx`)
+      import(/* webpackChunkName: "logo-[request]" */`./../../../branding/${subdomain}/${subdomain}.tsx`)
       .then((m) => {
         this.setState({
           logo: m.default,

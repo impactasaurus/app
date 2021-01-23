@@ -1,6 +1,6 @@
 import * as React from 'react';
 import InputMoment from 'input-moment';
-import * as moment from 'moment';
+import moment from 'moment';
 import './input-moment.less';
 import './overrides.less';
 

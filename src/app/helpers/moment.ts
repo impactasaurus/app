@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment from 'moment';
 
 export function isBeforeDay(a: moment.Moment, b: moment.Moment) {
   const aYear = a.year();

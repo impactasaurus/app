@@ -3,7 +3,7 @@ import { TimelineEntry } from 'components/TimelineEntry';
 import {Card, Loader, Responsive, SemanticWIDTHS, Button} from 'semantic-ui-react';
 import {getMoreRecentMeetings, getRecentMeetings, IGetRecentMeetings} from '../../apollo/modules/meetings';
 import {renderArray} from '../../helpers/react';
-import * as InfiniteScroll from 'react-infinite-scroller';
+import InfiniteScroll from 'react-infinite-scroller';
 import {Error} from 'components/Error';
 import {IMeeting} from 'models/meeting';
 import './style.less';

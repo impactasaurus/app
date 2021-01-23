@@ -1,7 +1,7 @@
 // originated from github.com/ALDLife/outcome-graph
 
 import * as color from 'chartjs-color';
-import * as moment from 'moment';
+import moment from 'moment';
 import * as distinctColors from 'distinct-colors';
 import {getHumanisedDateFromISO} from 'helpers/moment';
 import {OutcomeGraphData, IOutcomeGraphSeries} from './index';

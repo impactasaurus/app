@@ -4,7 +4,7 @@ import * as ReactDOM from 'react-dom';
 import * as Chart from 'chart.js';
 import { configureStore } from './app/redux/store';
 import { getToken } from 'helpers/auth';
-import Raven = require('raven-js');
+import Raven from 'raven-js';
 import { ApolloClient, ApolloProvider, createNetworkInterface, IntrospectionFragmentMatcher } from 'react-apollo';
 import * as containers from './app/containers';
 import withTracker from './app/containers/withTracking';
@@ -59,13 +59,14 @@ Chart.plugins.register({
 
 import cssVars from 'css-vars-ponyfill';
 cssVars({});
+
 import * as defaultBranding from './app/theme/default.branding';
 defaultBranding.use();
 
 const subDomain = window.location.hostname.split('.')[0];
 const loadBranding = subDomain !== 'app';
 if(loadBranding) {
-  import(`./branding/${subDomain}/${subDomain}.branding`)
+  import(/* webpackChunkName: "colors-[request]" */ `./branding/${subDomain}/${subDomain}.branding`)
     .then((branding) => {
       branding.use();
       defaultBranding.unuse();

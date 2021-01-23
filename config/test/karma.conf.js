@@ -1,7 +1,5 @@
 var path = require('path');
 var webpack = require('webpack');
-var postcssAssets = require('postcss-assets');
-var postcssNext = require('postcss-cssnext');
 var appConfig = require('../main');
 
 module.exports = function (config) {
@@ -76,8 +74,7 @@ module.exports = function (config) {
             include: path.resolve('./src/app'),
             loaders: [
               'style-loader',
-              'css-loader?modules&importLoaders=2&localIdentName=[local]___[hash:base64:5]',
-              'postcss-loader'
+              'css-loader'
             ]
           },
           {
@@ -104,14 +101,6 @@ module.exports = function (config) {
           options: {
             tslint: {
               failOnHint: true
-            },
-            postcss: function () {
-              return [
-                postcssNext(),
-                postcssAssets({
-                  relative: true
-                }),
-              ];
             },
           }
         }),

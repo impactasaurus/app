@@ -1,9 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 var webpack = require('webpack');
-var postcssAssets = require('postcss-assets');
-var postcssNext = require('postcss-cssnext');
-var stylelint = require('stylelint');
 var ManifestPlugin = require('webpack-manifest-plugin');
 var CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
 var HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -55,25 +52,6 @@ var config = {
       {
         test: /\.jsx$/,
         loader: 'babel-loader'
-      },
-      {
-        test: /\.css$/,
-        include: path.resolve('./src/app'),
-        loaders: [
-          'style-loader',
-          'css-loader?modules&importLoaders=2&localIdentName=[local]___[hash:base64:5]',
-          {
-            loader: 'postcss-loader',
-            options: {
-              plugins: (loader) => [
-                require('postcss-import')({
-                  root: loader.resourcePath
-                }),
-                require('postcss-simple-vars')(),
-              ]
-            }
-          },
-        ]
       },
       {
         test: /\.css$/,
@@ -142,17 +120,6 @@ var config = {
       options: {
         tslint: {
           failOnHint: true
-        },
-        postcss: function () {
-          return [
-            stylelint({
-              files: './src/app/*.css'
-            }),
-            postcssNext(),
-            postcssAssets({
-              relative: true
-            }),
-          ];
         },
       }
     }),

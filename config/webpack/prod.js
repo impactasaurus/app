@@ -1,9 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 var webpack = require('webpack');
-var postcssAssets = require('postcss-assets');
-var postcssNext = require('postcss-cssnext');
-var stylelint = require('stylelint');
 var ManifestPlugin = require('webpack-manifest-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -35,7 +32,8 @@ var config = {
   output: {
     path: path.resolve('./build'),
     publicPath: '/',
-    filename: '[name].[hash].js'
+    filename: '[name].[contenthash].js',
+    chunkFilename: '[name].[contenthash].chunk.js'
   },
 
   module: {
@@ -55,36 +53,21 @@ var config = {
       },
       {
         test: /\.css$/,
-        include: path.resolve('./src/app'),
-        loaders: [
-          'style-loader',
-          'css-loader?modules&importLoaders=2&localIdentName=[local]___[hash:base64:5]',
-          {
-            loader: 'postcss-loader',
-            options: {
-              plugins: (loader) => [
-                require('postcss-import')({
-                  root: loader.resourcePath
-                }),
-                require('postcss-simple-vars')(),
-              ]
-            }
-          },
-        ]
-      },
-      {
-        test: /\.css$/,
         exclude: path.resolve('./src/app'),
-        loaders: [
-          'style-loader',
-          'css-loader'
-        ]
+        loader: ExtractTextPlugin.extract({
+          use: [
+            "css-loader",
+            "postcss-loader"
+          ],
+          fallback: "style-loader"
+        })
       },
       {
         test: /\.less$/,
         loader: ExtractTextPlugin.extract({
           use: [
             "css-loader",
+            "postcss-loader",
             "less-loader"
           ],
           fallback: "style-loader"
@@ -95,6 +78,7 @@ var config = {
         use: [
           { loader: 'style-loader', options: { injectType: 'lazyStyleTag' } },
           "css-loader",
+          "postcss-loader",
           "less-loader"
         ]
       },
@@ -103,6 +87,7 @@ var config = {
         loader: ExtractTextPlugin.extract({
           use: [
             "css-loader",
+            "postcss-loader",
             "sass-loader"
           ],
           fallback: "style-loader"
@@ -142,21 +127,10 @@ var config = {
         tslint: {
           failOnHint: true
         },
-        postcss: function () {
-          return [
-            stylelint({
-              files: './src/app/*.css'
-            }),
-            postcssNext(),
-            postcssAssets({
-              relative: true
-            }),
-          ];
-        },
       }
     }),
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new ExtractTextPlugin('css/[name].[hash].css'),
+    new ExtractTextPlugin('[name].[hash].css'),
     new ManifestPlugin({
       fileName: 'manifest.json'
     }),
@@ -173,7 +147,12 @@ var config = {
     new CopyWebpackPlugin([
       { from: './src/favicon.ico', to:"favicon.ico" },
     ])
-  ]
+  ],
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    },
+  }
 };
 
 const createIfDoesntExist = dest => {
