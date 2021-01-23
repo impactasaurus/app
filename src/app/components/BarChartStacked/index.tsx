@@ -1,6 +1,6 @@
 import * as React from 'react';
-import * as Chart from 'chart.js';
-import * as color from 'chartjs-color';
+import Chart from 'chart.js';
+import color from 'chartjs-color';
 import {BarChartData} from 'models/bar';
 import {precisionRound} from 'helpers/numbers';
 

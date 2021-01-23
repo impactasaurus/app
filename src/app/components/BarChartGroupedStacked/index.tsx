@@ -1,6 +1,6 @@
 import * as React from 'react';
-import * as Chart from 'chart.js';
-import * as color from 'chartjs-color';
+import Chart from 'chart.js';
+import color from 'chartjs-color';
 import {precisionRound} from 'helpers/numbers';
 
 export interface IGroupedBarChartSeries {

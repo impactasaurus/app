@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Icon, Form, Input } from 'semantic-ui-react';
 import {FormField} from 'components/FormField';
 import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
-import * as EmailValidator from 'email-validator';
+import EmailValidator from 'email-validator';
 const strings = require('./../../../strings.json');
 
 export interface IFormOutput {

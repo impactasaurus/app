@@ -1,7 +1,7 @@
 import 'isomorphic-fetch';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as Chart from 'chart.js';
+import Chart from 'chart.js';
 import { configureStore } from './app/redux/store';
 import { getToken } from 'helpers/auth';
 import Raven from 'raven-js';
