@@ -1,9 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 var webpack = require('webpack');
-var postcssAssets = require('postcss-assets');
-var postcssNext = require('postcss-cssnext');
-var stylelint = require('stylelint');
 var ManifestPlugin = require('webpack-manifest-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -59,7 +56,8 @@ var config = {
         exclude: path.resolve('./src/app'),
         loader: ExtractTextPlugin.extract({
           use: [
-            "css-loader"
+            "css-loader",
+            "postcss-loader"
           ],
           fallback: "style-loader"
         })
@@ -69,6 +67,7 @@ var config = {
         loader: ExtractTextPlugin.extract({
           use: [
             "css-loader",
+            "postcss-loader",
             "less-loader"
           ],
           fallback: "style-loader"
@@ -79,6 +78,7 @@ var config = {
         use: [
           { loader: 'style-loader', options: { injectType: 'lazyStyleTag' } },
           "css-loader",
+          "postcss-loader",
           "less-loader"
         ]
       },
@@ -87,6 +87,7 @@ var config = {
         loader: ExtractTextPlugin.extract({
           use: [
             "css-loader",
+            "postcss-loader",
             "sass-loader"
           ],
           fallback: "style-loader"
@@ -125,17 +126,6 @@ var config = {
       options: {
         tslint: {
           failOnHint: true
-        },
-        postcss: function () {
-          return [
-            stylelint({
-              files: './src/app/*.css'
-            }),
-            postcssNext(),
-            postcssAssets({
-              relative: true
-            }),
-          ];
         },
       }
     }),
