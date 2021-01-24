@@ -8,6 +8,7 @@ export const getOrganisation = <T>(component, name: string = undefined)  => {
       getOrganisation: organisation {
         id,
         name,
+        don,
         settings{
           beneficiaryTypeAhead
         }
