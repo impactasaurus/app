@@ -5,5 +5,6 @@ export interface IOrgSettings {
 export interface IOrganisation {
   id: string;
   name: string;
+  don: boolean;
   settings: IOrgSettings;
 }
