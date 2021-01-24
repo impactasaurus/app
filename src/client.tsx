@@ -69,7 +69,7 @@ if(loadBranding) {
       branding.use();
     })
     .catch(() => {
-      console.log(`no branding for subdomain '${subDomain}'`);\
+      console.log(`no branding for subdomain '${subDomain}'`);
       defaultBranding.use();
     });
 } else {
