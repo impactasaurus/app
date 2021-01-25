@@ -1,32 +1,33 @@
 import * as React from 'react';
+import { shouldLoadBranding, loadBrandLogo } from 'theme/branding';
 const SVG = require('./logo.inline.svg');
 import './style.less';
 
-const subdomain = () => window.location.hostname.split('.')[0];
+interface IState {
+  logo?: React.ComponentClass;
+  loadBranding: boolean;
+}
 
-class Logo extends React.Component<any, any> {
+class Logo extends React.Component<any, IState> {
 
   constructor(props) {
     super(props);
-    const loadBranding = subdomain() !== 'app';
     this.state = {
       logo: null,
-      loadBranding,
-      subdomain: subdomain(),
+      loadBranding: shouldLoadBranding(),
     };
   }
 
   public componentDidMount() {
-    const {loadBranding, subdomain} = this.state;
-    if(loadBranding) {
-      import(/* webpackChunkName: "logo-[request]" */`./../../../branding/${subdomain}/${subdomain}.tsx`)
-      .then((m) => {
+    if(this.state.loadBranding) {
+      loadBrandLogo()
+      .then((logo) => {
         this.setState({
-          logo: m.default,
+          logo,
         });
       })
       .catch(() => {
-        console.log(`no logo for subdomain '${subdomain}'`);
+        console.log(`no logo for configured for subdomain`);
         this.setState({
           loadBranding: false,
         });
