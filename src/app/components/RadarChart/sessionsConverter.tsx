@@ -1,8 +1,6 @@
 // originated from github.com/ALDLife/outcome-graph
 
-import color from 'chartjs-color';
 import moment from 'moment';
-import distinctColors from 'distinct-colors';
 import {getHumanisedDateFromISO} from 'helpers/moment';
 import {OutcomeGraphData, IOutcomeGraphSeries} from './index';
 
@@ -20,17 +18,13 @@ export function SessionsConverter() {
 
   function getConvertedSessions(sessions: OutcomeGraphData) {
     const convertedSessions = [];
-    // get distinct colours of all the different ones we could have
-    const differentColours = distinctColors({count: sessions.length});
     sessions.forEach(function sessionIterator(session: IOutcomeGraphSeries) {
-      // remove the first element each time
-      const sessionColour = differentColours.splice(0, 1)[0];
-      convertedSessions.push(getConvertedSession(session, sessionColour));
+      convertedSessions.push(getConvertedSession(session));
     });
     return convertedSessions;
   }
 
-  function getConvertedSession(session: IOutcomeGraphSeries, chartColour) {
+  function getConvertedSession(session: IOutcomeGraphSeries) {
 
     const outcomes = session.outcomes;
     // data set item for session
@@ -47,11 +41,6 @@ export function SessionsConverter() {
     const extractedDataAndNotes = getExtractedDataAndTooltipNotes(convertedSession.valuesMap);
     convertedSession.data = extractedDataAndNotes.data;
     convertedSession.notes = extractedDataAndNotes.notes;
-
-    const colour = color().rgb(chartColour.rgba()).rgbString();
-    convertedSession.backgroundColor = color(colour).alpha(0.2).rgbString();
-    convertedSession.borderColor = colour;
-    convertedSession.pointBackgroundColor = colour;
 
     if (session.disabled === true) {
       convertedSession.hidden = true;
