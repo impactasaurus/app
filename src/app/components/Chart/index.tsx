@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {Chart as ChartJS} from 'chart.js';
 import { getColorScheme } from 'theme/chartStyle';
+import { loadBrandChartColorScheme, shouldLoadBranding } from 'theme/branding';
 
 let count = 0;
 
@@ -13,7 +14,11 @@ interface IProps {
   style?: IStyleOptions;
 }
 
-class Chart extends React.Component<IProps, any> {
+interface IState {
+  style: (noSeries: number) => string|string[];
+}
+
+class Chart extends React.Component<IProps, IState> {
 
   private canvasID: string;
   private chart;
@@ -21,10 +26,20 @@ class Chart extends React.Component<IProps, any> {
   constructor(props) {
     super(props);
     this.state = {
-      err: false,
+      style: getColorScheme,
     };
+    if(shouldLoadBranding()) {
+      loadBrandChartColorScheme()
+      .then((fn) => {
+        this.setState({style: fn});
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+    }
     this.canvasID = `chart-${count++}`;
     this.renderDOM = this.renderDOM.bind(this);
+    this.applyStyling = this.applyStyling.bind(this);
   }
 
   public componentDidMount() {
@@ -49,7 +64,7 @@ class Chart extends React.Component<IProps, any> {
       out.options.plugins = {};
     }
     out.options.plugins.colorschemes = {
-      scheme: getColorScheme(config.data.datasets.length),
+      scheme: this.state.style(config.data.datasets.length),
       fillAlpha: style.fillAlpha || 1,
     };
     return out;

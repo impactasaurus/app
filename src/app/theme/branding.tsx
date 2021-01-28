@@ -28,3 +28,8 @@ export function loadBrandLogo(): Promise<React.ComponentClass> {
   return import(/* webpackChunkName: "logo-[request]" */`./../../branding/${subdomain()}/${subdomain()}.tsx`)
   .then((m) => m.default);
 }
+
+export function loadBrandChartColorScheme(): Promise<(noSeries: number) => string|string[]> {
+  return import(/* webpackChunkName: "chart-[request]" */`./../../branding/${subdomain()}/chart.ts`)
+  .then((m) => m.default);
+}
