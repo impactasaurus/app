@@ -6,6 +6,7 @@ import {isUserLoggedIn, isBeneficiaryUser, RequestLogoutFunc, requestLogOut} fro
 import './style.less';
 import Logo from '../Logo';
 import {Link} from 'react-router-dom';
+import { shouldLoadBranding } from 'theme/branding';
 const { connect } = require('react-redux');
 const TwitterIcon = require('./twitter.inline.svg');
 
@@ -67,9 +68,11 @@ export class Header extends React.Component<IProps, any> {
           </Menu.Item>
 
           <Menu.Menu className="right" position="right">
-            <Menu.Item as="a" href="https://twitter.com/impactasaurus" target="blank" id="twitter-menu-link" className="icon-menu-item">
-              <TwitterIcon/>
-            </Menu.Item>
+            {!shouldLoadBranding() &&
+              <Menu.Item as="a" href="https://twitter.com/impactasaurus" target="blank" id="twitter-menu-link" className="icon-menu-item">
+                <TwitterIcon/>
+              </Menu.Item>
+            }
             <Menu.Item as={Link} to="/settings" active={this.isActive('/settings')}>
               <Icon name="cog"/>
               <span className="title">Settings</span>
