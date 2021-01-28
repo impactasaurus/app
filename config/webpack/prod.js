@@ -27,7 +27,7 @@ var config = {
     ]
   },
 
-  devtool: "source-map",
+  devtool: "hidden-source-map",
 
   output: {
     path: path.resolve('./build'),
