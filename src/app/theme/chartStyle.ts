@@ -14,8 +14,13 @@ export const getChartJSTypographyStyle = () => ({
   fontFamily: '"Source Sans Pro", "Arial", "Helvetica", "sans-serif"',
 });
 
-export const getColorScheme = (noSeries: number): string|string[] => {
-  if (noSeries === 3) {
+export enum SeriesType {
+  SCALE = 1,
+  INDEPENDENT = 2,
+}
+
+export const getColorScheme = (noSeries: number, seriesType: SeriesType): string|string[] => {
+  if (noSeries === 3 && seriesType === SeriesType.SCALE) {
     return ['#2f1d2d', '#774b71', '#b488ae'];
   }
   return distinctColors({count: noSeries}).map((c) => c.hex());

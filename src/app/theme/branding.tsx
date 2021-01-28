@@ -1,4 +1,5 @@
 import cssVars from 'css-vars-ponyfill';
+import { SeriesType } from './chartStyle';
 import * as defaultBranding from './default.branding';
 
 const subdomain = () => window.location.hostname.split('.')[0];
@@ -29,7 +30,7 @@ export function loadBrandLogo(): Promise<React.ComponentClass> {
   .then((m) => m.default);
 }
 
-export function loadBrandChartColorScheme(): Promise<(noSeries: number) => string|string[]> {
+export function loadBrandChartColorScheme(): Promise<(noSeries: number, seriesType: SeriesType) => string|string[]> {
   return import(/* webpackChunkName: "chart-[request]" */`./../../branding/${subdomain()}/chart.ts`)
   .then((m) => m.default);
 }

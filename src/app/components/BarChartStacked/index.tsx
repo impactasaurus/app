@@ -2,6 +2,7 @@ import * as React from 'react';
 import {BarChartData} from 'models/bar';
 import {precisionRound} from 'helpers/numbers';
 import { Chart } from 'components/Chart';
+import { SeriesType } from 'theme/chartStyle';
 
 interface IProps {
   data: BarChartData;
@@ -99,7 +100,7 @@ class StackedBarChart extends React.Component<IProps, any> {
 
     return (
       <div className="stacked-bar">
-        <Chart config={chartConfig(this.props)} style={{fillAlpha: 0.8}}/>
+        <Chart config={chartConfig(this.props)} style={{fillAlpha: 0.8, seriesType: SeriesType.SCALE}}/>
       </div>
     );
   }

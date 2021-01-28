@@ -1,12 +1,13 @@
 import * as React from 'react';
 import {Chart as ChartJS} from 'chart.js';
-import { getColorScheme } from 'theme/chartStyle';
+import { getColorScheme, SeriesType } from 'theme/chartStyle';
 import { loadBrandChartColorScheme, shouldLoadBranding } from 'theme/branding';
 
 let count = 0;
 
 interface IStyleOptions {
   fillAlpha?: number;
+  seriesType?: SeriesType;
 }
 
 interface IProps {
@@ -15,7 +16,7 @@ interface IProps {
 }
 
 interface IState {
-  style: (noSeries: number) => string|string[];
+  style: (noSeries: number, seriesType: SeriesType) => string|string[];
 }
 
 class Chart extends React.Component<IProps, IState> {
@@ -64,7 +65,7 @@ class Chart extends React.Component<IProps, IState> {
       out.options.plugins = {};
     }
     out.options.plugins.colorschemes = {
-      scheme: this.state.style(config.data.datasets.length),
+      scheme: this.state.style(config.data.datasets.length, style.seriesType || SeriesType.INDEPENDENT),
       fillAlpha: style.fillAlpha || 1,
     };
     return out;
