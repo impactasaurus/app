@@ -1,7 +1,6 @@
 import 'isomorphic-fetch';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import Chart from 'chart.js';
 import { configureStore } from './app/redux/store';
 import { getToken } from 'helpers/auth';
 import Raven from 'raven-js';
@@ -12,7 +11,7 @@ import {Route} from 'react-router-dom';
 
 import { createBrowserHistory } from 'history';
 import {ConnectedRouter} from 'connected-react-router';
-import {fillCanvasWithColour} from 'helpers/canvas';
+import { setupBrandColors } from 'theme/branding';
 
 const appConfig = require('../config/main');
 const introspectionQueryResultData = require('./app/apollo/fragmentTypes.json');
@@ -51,30 +50,7 @@ const store = configureStore(
   window.__INITIAL_STATE__,
 );
 
-Chart.plugins.register({
-  afterRender: (c) => {
-    fillCanvasWithColour(c.canvas, 'white');
-  },
-});
-
-import cssVars from 'css-vars-ponyfill';
-cssVars({});
-
-import * as defaultBranding from './app/theme/default.branding';
-const subDomain = window.location.hostname.split('.')[0];
-const loadBranding = subDomain !== 'app';
-if(loadBranding) {
-  import(/* webpackChunkName: "colors-[request]" */ `./branding/${subDomain}/${subDomain}.branding`)
-    .then((branding) => {
-      branding.use();
-    })
-    .catch(() => {
-      console.log(`no branding for subdomain '${subDomain}'`);
-      defaultBranding.use();
-    });
-} else {
-  defaultBranding.use();
-}
+setupBrandColors();
 
 ReactDOM.render(
   <ApolloProvider client={client} store={store}>
