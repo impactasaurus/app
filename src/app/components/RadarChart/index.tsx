@@ -98,7 +98,12 @@ class RadarChart extends React.Component<IProp, any> {
       return wrapper(this.renderError());
     }
 
-    return wrapper(<Chart config={getConfig(this.convertData(this.props.data.series), this.props.data.scaleMin, this.props.data.scaleMax)} />);
+    return wrapper((
+      <Chart
+        config={getConfig(this.convertData(this.props.data.series), this.props.data.scaleMin, this.props.data.scaleMax)}
+        style={{fillAlpha: 0.2}}
+      />
+    ));
   }
 }
 

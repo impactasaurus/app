@@ -1,7 +1,6 @@
 import 'isomorphic-fetch';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import Chart from 'chart.js';
 import { configureStore } from './app/redux/store';
 import { getToken } from 'helpers/auth';
 import Raven from 'raven-js';
@@ -12,7 +11,6 @@ import {Route} from 'react-router-dom';
 
 import { createBrowserHistory } from 'history';
 import {ConnectedRouter} from 'connected-react-router';
-import {fillCanvasWithColour} from 'helpers/canvas';
 import { setupBrandColors } from 'theme/branding';
 
 const appConfig = require('../config/main');
@@ -51,12 +49,6 @@ const store = configureStore(
   [client.middleware()],
   window.__INITIAL_STATE__,
 );
-
-Chart.plugins.register({
-  afterRender: (c) => {
-    fillCanvasWithColour(c.canvas, 'white');
-  },
-});
 
 setupBrandColors();
 

@@ -99,7 +99,7 @@ class StackedBarChart extends React.Component<IProps, any> {
 
     return (
       <div className="stacked-bar">
-        <Chart config={chartConfig(this.props)} />
+        <Chart config={chartConfig(this.props)} style={{fillAlpha: 0.8}}/>
       </div>
     );
   }

@@ -117,6 +117,7 @@
     "babel-polyfill": "6.26.0",
     "chart.js": "2.9.3",
     "chartjs-color": "2.4.1",
+    "chartjs-plugin-colorschemes": "^0.4.0",
     "connected-react-router": "4.3.0",
     "css-vars-ponyfill": "2.4.2",
     "date-fns": "2.16.1",
