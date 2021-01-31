@@ -1,0 +1,66 @@
+name: ci
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    name: Build and Test App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Remove previous branding folder
+        run: rm -rf ./src/branding
+      - name: Checkout branding repository
+        uses: actions/checkout@v2
+        with:
+          repository: impactasaurus/branding
+          token: ${{ secrets.BRANDING_PERSONAL_ACCESS_TOKEN }}
+          path: ./src/branding
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 11.10.0
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Linter
+        run: npm run lint
+      - name: Run Tests
+        run: npm test
+      - name: Generate Production Files
+        run: npm run build:prod
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: app
+          path: build
+  deploy:
+    name: Deploy App
+    if: github.ref == 'refs/heads/master'
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: app
+      - name: Deploy app to S3
+        uses: reggionick/s3-deploy@v3
+        with:
+          folder: app
+          bucket: ${{ secrets.S3_BUCKET }}
+          bucket-region: ${{ secrets.S3_BUCKET_REGION }}
+          dist-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          invalidation: /
+          delete-removed: true
+          no-cache: false
+          private: true
