@@ -17,7 +17,6 @@ deploy:
   provider: s3
   bucket: impact-web-app
   local_dir: build
-  acl: public_read
   skip_cleanup: true
   on:
     repo: impactasaurus/app
