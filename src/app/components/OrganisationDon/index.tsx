@@ -50,7 +50,7 @@ class OrganisationDonInner extends React.Component<IProps, IState> {
   }
 
   public render() {
-    if(this.props.org.loading || !this.props.org.getOrganisation.don) {
+    if(this.props.org.loading || this.props.org.error || !this.props.org.getOrganisation.don) {
         return <div />;
     }
 
