@@ -1,4 +1,5 @@
 import 'isomorphic-fetch';
+import 'core-js';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { configureStore } from './app/redux/store';

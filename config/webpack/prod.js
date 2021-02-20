@@ -21,9 +21,7 @@ var config = {
 
   entry: {
     app: [
-      'babel-polyfill',
-      './src/client.tsx',
-      './src/vendor/main.ts'
+      './src/client.tsx'
     ]
   },
 

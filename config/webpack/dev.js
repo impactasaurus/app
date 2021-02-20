@@ -26,9 +26,7 @@ var config = {
   entry: {
     app: [
       'webpack-hot-middleware/client?reload=true',
-      'babel-polyfill',
-      './src/client.tsx',
-      './src/vendor/main.ts'
+      './src/client.tsx'
     ]
   },
 
@@ -75,7 +73,7 @@ var config = {
           { loader: 'style-loader', options: { injectType: 'lazyStyleTag' } },
           "css-loader",
           "less-loader"
-        ] 
+        ]
       },
       {
         test: /\.scss$/,
