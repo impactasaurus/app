@@ -12,7 +12,9 @@
     "test": "karma start config/test/karma.conf.js",
     "lint": "tslint \"src/**/**.ts*\"",
     "postinstall": "chmod +x ./src/app/theme/fixBranding.sh && ./src/app/theme/fixBranding.sh",
-    "extract": "i18next 'src/**/*.tsx' -c 'src/locales/i18next-parser.config.js'"
+    "i18n-extract": "i18next 'src/**/*.tsx' -c 'src/i18n/parser.config.js'",
+    "i18n-push": "crowdin push --config src/i18n/crowdin.yml",
+    "i18n-pull": "crowdin pull --config src/i18n/crowdin.yml"
   },
   "author": "Impactasaurus <admin@impactasaurus.org>",
   "homepage": "https://impactasaurus.org",
@@ -26,6 +28,8 @@
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
+    "@alienfast/i18next-loader": "^1.1.4",
+    "@crowdin/cli": "^3.5.3",
     "@types/auth0-js": "8.11.2",
     "@types/base16": "1.0.1",
     "@types/chai": "4.1.4",
@@ -130,6 +134,7 @@
     "history": "4.7.2",
     "i18next": "^19.8.9",
     "i18next-browser-languagedetector": "6.0.1",
+    "i18next-pseudo": "2.2.1",
     "input-moment": "0.4.0",
     "isomorphic-fetch": "3.0.0",
     "moment": "2.29.0",

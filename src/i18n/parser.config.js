@@ -5,8 +5,8 @@ module.exports = {
     lexer: 'JsxLexer',
     attr: 'i18nKey',
   }],
-  locales: ['en', 'pt', 'cy'],
-  output: 'src/locales/$LOCALE.json',
+  locales: ['en'],
+  output: 'src/i18n/locales/$LOCALE/translation.json',
   sort: true,
   useKeysAsDefaultValue: true
 }

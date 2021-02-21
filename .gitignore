@@ -44,3 +44,8 @@ typings
 
 # vscode
 .vscode
+
+# translations
+# - source is auto generated
+# - translations are downloaded at deployment
+src/i18n/locales/**/*.json

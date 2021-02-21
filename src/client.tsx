@@ -13,7 +13,7 @@ import {Route} from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import {ConnectedRouter} from 'connected-react-router';
 import { setupBrandColors } from 'theme/branding';
-import { setupI18n } from './locales/i18n';
+import { setupI18n } from './i18n/setup';
 
 const appConfig = require('../config/main');
 const introspectionQueryResultData = require('./app/apollo/fragmentTypes.json');

@@ -37,6 +37,13 @@ var config = {
   module: {
     rules: [
       {
+        test: /i18n\/locales/,
+        loader: '@alienfast/i18next-loader',
+        query:{
+          relativePathAsNamespace: true,
+        }
+      },
+      {
         enforce: 'pre',
         test: /\.tsx?$/,
         loader: 'tslint-loader'
