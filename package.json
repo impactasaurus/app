@@ -11,7 +11,8 @@
     "start:prod": "npm run build:prod && http-server ./build/  --proxy http://localhost:8080?",
     "test": "karma start config/test/karma.conf.js",
     "lint": "tslint \"src/**/**.ts*\"",
-    "postinstall": "chmod +x ./src/app/theme/fixBranding.sh && ./src/app/theme/fixBranding.sh"
+    "postinstall": "chmod +x ./src/app/theme/fixBranding.sh && ./src/app/theme/fixBranding.sh",
+    "extract": "i18next 'src/**/*.tsx' -c 'src/locales/i18next-parser.config.js'"
   },
   "author": "Impactasaurus <admin@impactasaurus.org>",
   "homepage": "https://impactasaurus.org",
@@ -128,6 +129,7 @@
     "formik": "1.5.7",
     "history": "4.7.2",
     "i18next": "^19.8.9",
+    "i18next-browser-languagedetector": "6.0.1",
     "input-moment": "0.4.0",
     "isomorphic-fetch": "3.0.0",
     "moment": "2.29.0",
