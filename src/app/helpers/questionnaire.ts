@@ -103,7 +103,7 @@ export function getCategoryFriendlyName(catID: string, qs: IOutcomeSet): string 
   return cat.name;
 }
 
-export function getQuestionFriendlyName(qID: string, qs: IOutcomeSet, allowShort: boolean = true): string {
+export function getQuestionFriendlyName(qID: string, qs: IOutcomeSet, allowShort = true): string {
   const q = qs.questions.find((q) => q.id === qID);
   if (q === undefined) {
     return 'Unknown Question';

@@ -43,7 +43,7 @@ function delta(r: IRow): number|undefined {
  */
 
 function sum(numArray: number[]): number {
-  let total: number = 0;
+  let total = 0;
   for(const num of numArray) {
     if(num !== undefined) {
       total += num;

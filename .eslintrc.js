@@ -19,5 +19,13 @@ module.exports = {
     react: {
       version: "detect"
     }
+  },
+  rules: {
+    "@typescript-eslint/no-var-requires": "warn",
+    "react/no-deprecated": "warn",
+    "react/no-unescaped-entities": "warn",
+    "no-irregular-whitespace": "warn",
+    "no-empty": ["error", { "allowEmptyCatch": true }],
+    "react/display-name": "warn"
   }
 };

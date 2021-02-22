@@ -26,7 +26,7 @@ const getReturnURL = (p: IProps): string|undefined => {
 @connect(undefined, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
-class LoginInner extends React.Component<IProps, {}> {
+class LoginInner extends React.Component<IProps, null> {
 
   constructor(props: IProps) {
     super(props);

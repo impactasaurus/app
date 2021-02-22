@@ -69,7 +69,7 @@ export function SessionsConverter() {
   // check if our set has the value or not
   function updateLabels(potentialLabel) {
     const lowerCaseLabel = potentialLabel.toLowerCase();
-    if (!labelSet.hasOwnProperty(lowerCaseLabel)) {
+    if (!Object.prototype.hasOwnProperty.call(labelSet, lowerCaseLabel)) {
       labels.push(potentialLabel);
       // now value is in our set
       labelSet[lowerCaseLabel] = true;
