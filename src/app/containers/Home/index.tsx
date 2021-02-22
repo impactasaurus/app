@@ -14,7 +14,7 @@ import {MinimalPageWrapperHoC} from 'components/PageWrapperHoC';
 const { connect } = require('react-redux');
 
 const timelineEntry = (m: IMeeting): JSX.Element => <TimelineEntry key={m.id} meeting={m} />;
-const hasRecords = (p: IProps, moreThan: number = 0): boolean|undefined => {
+const hasRecords = (p: IProps, moreThan = 0): boolean|undefined => {
   if (!p.data || !p.data.getRecentMeetings || !p.data.getRecentMeetings.meetings) {
     return undefined;
   }

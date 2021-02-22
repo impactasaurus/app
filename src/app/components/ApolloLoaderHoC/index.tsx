@@ -6,7 +6,7 @@ import {Error} from 'components/Error';
 // entity is a description of what is loading, it is used in a sentence `Failed to load X`
 // queryProps takes the props and should return the QueryProps we are waiting for
 // WrappedComponent should be the react component being wrapped by this HoC
-export const ApolloLoaderHoC = <P extends object>(
+export const ApolloLoaderHoC = <P extends unknown>(
   entity: string,
   queryProps: (p: P) => QueryProps,
   WrappedComponent: React.ComponentType<P>,

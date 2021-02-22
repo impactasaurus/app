@@ -9,7 +9,7 @@ import {isNullOrUndefined} from 'util';
 const ReactGA = require('react-ga');
 const { connect } = require('react-redux');
 
-export const pageRegex = /(\/beneficiary\/[^\/]*\/journey|\/beneficiary\/[^\/]*$|\/beneficiary\/[^\/]*\/$|\/report\/service\/|\/report\/delta\/)/;
+export const pageRegex = /(\/beneficiary\/[^/]*\/journey|\/beneficiary\/[^/]*$|\/beneficiary\/[^/]*\/$|\/report\/service\/|\/report\/delta\/)/;
 
 interface IProps {
   canCategoryAg: boolean;

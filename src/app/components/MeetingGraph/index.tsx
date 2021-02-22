@@ -27,7 +27,7 @@ class MeetingGraph extends React.Component<IProp, any> {
     }, {});
     const result: IGraphSeries[] = [];
     for (const series in seriesMap) {
-      if (seriesMap.hasOwnProperty(series)) {
+      if (Object.prototype.hasOwnProperty.call(seriesMap, series)) {
         result.push({
           label: series,
           data: seriesMap[series],

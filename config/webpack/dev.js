@@ -44,10 +44,6 @@ var config = {
         query:{
           relativePathAsNamespace: true,
         }
-      }, {
-        enforce: 'pre',
-        test: /\.tsx?$/,
-        loader: 'tslint-loader'
       },
       {
         test: /\.tsx?$/,

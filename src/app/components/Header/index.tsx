@@ -32,7 +32,7 @@ class HeaderInner extends React.Component<IProps, any> {
     this.isActive = this.isActive.bind(this);
   }
 
-  private isActive(url: string, exact: boolean = false): boolean {
+  private isActive(url: string, exact = false): boolean {
     if (exact) {
       return this.props.currentURL === url;
     }

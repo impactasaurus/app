@@ -61,14 +61,14 @@ export function signup<T>(component) {
     }
   }`, {
     props: ({ mutate }) => ({
-      signup: (name: string, email: string, password: string, org: string): Promise<void> => mutate({
+      signup: (name: string, email: string, password: string, org: string): Promise<any> => mutate({
         variables: {
           name,
           email,
           password,
           org,
         },
-      }).then(()=> {}),
+      }),
     }),
   })(component);
 }
@@ -83,14 +83,14 @@ export function acceptInvite<T>(component) {
     acceptInvite: AcceptInvite(name:$name, invite:$invite, email:$email, password:$password)
   }`, {
     props: ({ mutate }) => ({
-      acceptInvite: (name: string, email: string, password: string, invite: string): Promise<void> => mutate({
+      acceptInvite: (name: string, email: string, password: string, invite: string): Promise<any> => mutate({
         variables: {
           name,
           email,
           password,
           invite,
         },
-      }).then(()=> {}),
+      }),
     }),
   })(component);
 }
@@ -185,7 +185,7 @@ export interface IGetOrgUsersResult extends QueryProps {
   users?: IOrgUser[];
 }
 
-export const hasOrgGeneratedReport = <T>(component, name: string = 'data')  => {
+export const hasOrgGeneratedReport = <T>(component, name = 'data')  => {
   return graphql<any, T>(gql`
     query {
       hasOrgGeneratedReport: organisation {

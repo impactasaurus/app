@@ -28,7 +28,7 @@ const renderQuestionsNeeded = (action: string): JSX.Element => ((
   </Segment>
 ));
 
-export const QuestionnaireRequired = <P extends object>(action: string, WrappedComponent: React.ComponentType<P>) => {
+export const QuestionnaireRequired = <P extends unknown>(action: string, WrappedComponent: React.ComponentType<P>) => {
   class Inner extends React.Component<P & IProp, any> {
     public render() {
       if (Array.isArray(this.props.data.allOutcomeSets)) {

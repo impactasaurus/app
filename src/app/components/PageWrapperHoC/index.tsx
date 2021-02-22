@@ -2,7 +2,7 @@ import * as React from 'react';
 import Helmet from 'react-helmet';
 import {Grid} from 'semantic-ui-react';
 
-export const MinimalPageWrapperHoC = <P extends object>(
+export const MinimalPageWrapperHoC = <P extends unknown>(
   title: string,
   id: string,
   WrappedComponent: React.ComponentType<P>,
@@ -24,7 +24,7 @@ export const MinimalPageWrapperHoC = <P extends object>(
   return Inner;
 };
 
-export const PageWrapperHoC = <P extends object>(
+export const PageWrapperHoC = <P extends unknown>(
   title: string,
   id: string,
   WrappedComponent: React.ComponentType<P>,
@@ -33,8 +33,8 @@ export const PageWrapperHoC = <P extends object>(
   class Inner extends React.Component<P, any> {
     public render() {
       return [
-        (<h1>{title}</h1>),
-        (<WrappedComponent {...this.props} />),
+        (<h1 key="title">{title}</h1>),
+        (<WrappedComponent key="content" {...this.props} />),
       ];
     }
   }
