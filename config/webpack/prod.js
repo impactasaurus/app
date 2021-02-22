@@ -44,11 +44,6 @@ var config = {
         }
       },
       {
-        enforce: 'pre',
-        test: /\.tsx?$/,
-        loader: 'tslint-loader'
-      },
-      {
         test: /\.tsx?$/,
         loader: 'awesome-typescript-loader'
       },
