@@ -26,9 +26,7 @@ var config = {
   entry: {
     app: [
       'webpack-hot-middleware/client?reload=true',
-      'babel-polyfill',
-      './src/client.tsx',
-      './src/vendor/main.ts'
+      './src/client.tsx'
     ]
   },
 
@@ -41,6 +39,12 @@ var config = {
 
   module: {
     rules: [{
+        test: /i18n\/locales/,
+        loader: '@alienfast/i18next-loader',
+        query:{
+          relativePathAsNamespace: true,
+        }
+      }, {
         enforce: 'pre',
         test: /\.tsx?$/,
         loader: 'tslint-loader'
@@ -75,7 +79,7 @@ var config = {
           { loader: 'style-loader', options: { injectType: 'lazyStyleTag' } },
           "css-loader",
           "less-loader"
-        ] 
+        ]
       },
       {
         test: /\.scss$/,

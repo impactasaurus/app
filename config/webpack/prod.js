@@ -21,9 +21,7 @@ var config = {
 
   entry: {
     app: [
-      'babel-polyfill',
-      './src/client.tsx',
-      './src/vendor/main.ts'
+      './src/client.tsx'
     ]
   },
 
@@ -38,6 +36,13 @@ var config = {
 
   module: {
     rules: [
+      {
+        test: /i18n\/locales/,
+        loader: '@alienfast/i18next-loader',
+        query:{
+          relativePathAsNamespace: true,
+        }
+      },
       {
         enforce: 'pre',
         test: /\.tsx?$/,

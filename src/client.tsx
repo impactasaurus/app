@@ -1,4 +1,5 @@
 import 'isomorphic-fetch';
+import 'core-js';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { configureStore } from './app/redux/store';
@@ -12,6 +13,7 @@ import {Route} from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import {ConnectedRouter} from 'connected-react-router';
 import { setupBrandColors } from 'theme/branding';
+import { setupI18n } from './i18n/setup';
 
 const appConfig = require('../config/main');
 const introspectionQueryResultData = require('./app/apollo/fragmentTypes.json');
@@ -50,6 +52,7 @@ const store = configureStore(
   window.__INITIAL_STATE__,
 );
 
+setupI18n();
 setupBrandColors();
 
 ReactDOM.render(
