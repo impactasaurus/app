@@ -74,6 +74,7 @@
     "css-loader": "1.0.0",
     "enzyme": "3.3.0",
     "eslint": "7.20.0",
+    "eslint-plugin-i18next": "5.0.0",
     "eslint-plugin-react": "7.22.0",
     "express": "4.16.3",
     "extract-text-webpack-plugin": "4.0.0-beta.0",
