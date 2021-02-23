@@ -11,6 +11,7 @@ export function setupI18n() {
     .use(new Pseudo({
       enabled: true,
       languageToPseudo: 'tlh',
+      letterMultiplier: 1,
     }))
     .use(LanguageDetector)
     .init({
@@ -20,9 +21,6 @@ export function setupI18n() {
       },
       resources,
       fallbackLng: 'en',
-      interpolation: {
-        escapeValue: false,
-      },
       postProcess: ['pseudo'],
     });
 }
