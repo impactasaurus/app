@@ -9,18 +9,19 @@ import {getHumanisedDateFromISO, getHumanisedTimeSinceDate} from 'helpers/moment
 import {journeyURI, questionnaireURI, recordURI} from 'helpers/url';
 import {Tags} from '../Tag';
 import {Link} from 'react-router-dom';
+import {Trans} from 'react-i18next'
 
 interface IProp {
   meeting: IMeeting;
 }
 
-export class TimelineEntry extends React.Component<IProp, any> {
+export class TimelineEntry extends React.Component<IProp, null> {
 
-  constructor(props) {
+  constructor(props: IProp) {
     super(props);
   }
 
-  public render() {
+  public render(): JSX.Element {
     const Radar = MeetingRadarWithImpl(RadarChartStatic);
     const m = this.props.meeting;
     return (
@@ -30,7 +31,17 @@ export class TimelineEntry extends React.Component<IProp, any> {
         </Link>
         <Card.Content>
           <Card.Header>
-            <Link to={journeyURI(m.beneficiary, m.outcomeSet.id)}>{m.beneficiary}</Link> completed <Link to={questionnaireURI(m.outcomeSet.id)}>{m.outcomeSet.name}</Link>
+            <Trans
+              defaults="<bLink>{{beneficiaryID}}</bLink> completed <qLink>{{questionnaireName}}</qLink>"
+              values={{
+                beneficiaryID: m.beneficiary,
+                questionnaireName: m.outcomeSet.name,
+              }}
+              components={{
+                bLink: <Link to={journeyURI(m.beneficiary, m.outcomeSet.id)} />,
+                qLink: <Link to={questionnaireURI(m.outcomeSet.id)} />,
+              }}
+            />
           </Card.Header>
           <Card.Meta>
             <Popup trigger={(

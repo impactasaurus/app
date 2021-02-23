@@ -7,11 +7,10 @@ import InfiniteScroll from 'react-infinite-scroller';
 import {Error} from 'components/Error';
 import {IMeeting} from 'models/meeting';
 import './style.less';
-import {IURLConnector, setURL} from '../../redux/modules/url';
-import {bindActionCreators} from 'redux';
+import {IURLConnector, UrlHOC} from '../../redux/modules/url';
 import {OnboardingChecklist} from 'components/OnboardingChecklist';
 import {MinimalPageWrapperHoC} from 'components/PageWrapperHoC';
-const { connect } = require('react-redux');
+import { withTranslation, WithTranslation } from 'react-i18next';
 
 const timelineEntry = (m: IMeeting): JSX.Element => <TimelineEntry key={m.id} meeting={m} />;
 const hasRecords = (p: IProps, moreThan = 0): boolean|undefined => {
@@ -21,14 +20,11 @@ const hasRecords = (p: IProps, moreThan = 0): boolean|undefined => {
   return p.data.getRecentMeetings.meetings.length > moreThan;
 };
 
-interface IProps extends IURLConnector {
+interface IProps extends IURLConnector, WithTranslation {
   data?: IGetRecentMeetings;
 }
 
-@connect(undefined, (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-}))
-class HomeInner extends React.Component<IProps, any> {
+class HomeInner extends React.Component<IProps, null> {
 
   constructor(props) {
     super(props);
@@ -45,11 +41,12 @@ class HomeInner extends React.Component<IProps, any> {
   }
 
   public render() {
+    const t = this.props.t;
     const recordsExist = hasRecords(this.props);
     const wrapper = (inner: JSX.Element): JSX.Element => (
       <div>
         <span className="title-holder">
-          <Responsive as={Button} minWidth={620} icon="plus" content="New Record" primary={true} onClick={this.newRecord} />
+          <Responsive as={Button} minWidth={620} icon="plus" content={t("New Record")} primary={true} onClick={this.newRecord} />
           <Responsive as={Button} maxWidth={619} icon="plus" primary={true} onClick={this.newRecord} />
         </span>
         <OnboardingChecklist
@@ -58,14 +55,14 @@ class HomeInner extends React.Component<IProps, any> {
         />
         {recordsExist !== false &&
           <div>
-            <h1>Activity</h1>
+            <h1>{t("Activity")}</h1>
             {inner}
           </div>
         }
       </div>
     );
     if (this.props.data.error) {
-      return wrapper(<Error text="Failed to load activity feed" />);
+      return wrapper(<Error text={t("Failed to load activity feed")} />);
     }
     const d = this.props.data.getRecentMeetings;
     if (this.props.data.loading && !d) {
@@ -103,5 +100,7 @@ class HomeInner extends React.Component<IProps, any> {
   }
 }
 
-const homeWithPageWrapper = MinimalPageWrapperHoC('Home', 'home', HomeInner);
-export const Home = getRecentMeetings<any>(() => 0)(homeWithPageWrapper);
+const homeWithPageWrapper = MinimalPageWrapperHoC<IProps>('Home', 'home', HomeInner);
+const homeWithConnection = UrlHOC(homeWithPageWrapper);
+const i18nHome = withTranslation()(homeWithConnection);
+export const Home = getRecentMeetings<any>(() => 0)(i18nHome);
