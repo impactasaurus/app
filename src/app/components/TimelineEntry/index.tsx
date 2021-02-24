@@ -32,7 +32,7 @@ export class TimelineEntry extends React.Component<IProp, null> {
         <Card.Content>
           <Card.Header>
             <Trans
-              defaults="<bLink>{{beneficiaryID}}</bLink> completed <qLink>{{questionnaireName}}</qLink>"
+              defaults="<bLink>{beneficiaryID}</bLink> completed <qLink>{questionnaireName}</qLink>"
               values={{
                 beneficiaryID: m.beneficiary,
                 questionnaireName: m.outcomeSet.name,
