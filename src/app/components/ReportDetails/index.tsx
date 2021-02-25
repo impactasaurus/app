@@ -1,28 +1,26 @@
 import * as React from 'react';
 import {IExcluded} from 'models/report';
 import {IOutcomeSet} from 'models/outcomeSet';
-import {Message, Accordion, Label} from 'semantic-ui-react';
+import {Message, Accordion, Label, SemanticShorthandCollection, AccordionPanelProps} from 'semantic-ui-react';
 import {renderArray} from 'helpers/react';
 import './style.less';
 import {BeneficiaryPill} from 'components/BeneficiaryPill';
+import {WithTranslation, withTranslation} from 'react-i18next';
 
-interface IProp {
+interface IProp extends WithTranslation {
   introduction?: string;
   includedBeneficiaries: string[];
   excluded: IExcluded;
   warnings: string[];
   questionSet: IOutcomeSet;
-  // N beneficiaries have been excluded because :excludedReason
-  excludedReason?: string;
 }
 
-class ReportDetails extends React.Component<IProp, any> {
+class ReportDetailsInner extends React.Component<IProp, null> {
 
-  private dealWithSingularOrMultiple(num: number, singular: string, multiple: string): string {
-    if (num === 1) {
-      return `${num} ${singular}`;
-    }
-    return `${num} ${multiple}`;
+  constructor(props) {
+    super(props);
+    this.renderWarnings = this.renderWarnings.bind(this);
+    this.renderOverview = this.renderOverview.bind(this);
   }
 
   private getCategoryString(catID: string, qs: IOutcomeSet): string {
@@ -43,20 +41,29 @@ class ReportDetails extends React.Component<IProp, any> {
     }
   }
 
-  private renderOverview(includedBens: string[], excluded: IExcluded, qs: IOutcomeSet, excludedReason = 'they only have a single record'): JSX.Element {
+  private renderOverview(): JSX.Element {
+    const {
+      includedBeneficiaries: includedBens,
+      excluded,
+      questionSet: qs,
+      t,
+    } = this.props;
     const noBens = includedBens.length;
     const info = noBens > 0;
-    const title = info ? 'Overview' : 'Report failed';
-    const panels = [];
+    const title = info ? t('Overview') : t('Report failed');
+    const panels: SemanticShorthandCollection<AccordionPanelProps> = [];
 
     if (noBens > 0) {
       panels.push({
         key: 'bens-included',
-        title: `This report aggregates data covering ${this.dealWithSingularOrMultiple(noBens, 'beneficiary', 'beneficiaries')}.`,
+        title: t(
+          'This report aggregates data covering {noBens, plural, one {# beneficiary} other {# beneficiaries}}.',
+          {noBens},
+        ),
         content: {
           content: (
             <div>
-              {includedBens.map((bID) => (<BeneficiaryPill key={bID} beneficiaryID={bID} questionnaireID={qs.id}/>))}
+              {includedBens.sort().map((bID) => (<BeneficiaryPill key={bID} beneficiaryID={bID} questionnaireID={qs.id}/>))}
             </div>
           ),
         },
@@ -65,11 +72,16 @@ class ReportDetails extends React.Component<IProp, any> {
     if (excluded.beneficiaryIDs.length > 0) {
       panels.push({
         key: 'bens-excluded',
-        title: `${this.dealWithSingularOrMultiple(excluded.beneficiaryIDs.length, 'beneficiary has', 'beneficiaries have')} been excluded because ${excludedReason}.`,
+        title: t(
+          '{excludedBens, plural, one {# beneficiary has} other {# beneficiaries have}} been excluded because they only have a single record.',
+          {
+            excludedBens: excluded.beneficiaryIDs.length
+          },
+        ),
         content: {
           content: (
             <div>
-              {excluded.beneficiaryIDs.map((bID) => (<BeneficiaryPill key={bID} beneficiaryID={bID} questionnaireID={qs.id}/>))}
+              {excluded.beneficiaryIDs.sort().map((bID) => (<BeneficiaryPill key={bID} beneficiaryID={bID} questionnaireID={qs.id}/>))}
             </div>
           ),
         },
@@ -78,7 +90,13 @@ class ReportDetails extends React.Component<IProp, any> {
     if (excluded.categoryIDs.length > 0 || excluded.questionIDs.length > 0) {
       panels.push({
         key: 'qs+cats',
-        title: `${this.dealWithSingularOrMultiple(excluded.categoryIDs.length, 'category', 'categories')} and ${this.dealWithSingularOrMultiple(excluded.questionIDs.length, 'question', 'questions')} have been excluded because they are not present within the records.`,
+        title: t(
+          '{noCategories, plural, one {# category} other {# categories}} and {noQuestions, plural, one {# question} other {# questions}} have been excluded because they are not present within the records.',
+          {
+            noCategories: excluded.categoryIDs.length,
+            noQuestions: excluded.questionIDs.length,
+          },
+        ),
         content: {
           content: (
             <div>
@@ -102,13 +120,14 @@ class ReportDetails extends React.Component<IProp, any> {
     return (<div key={str}>{str}</div>);
   }
 
-  private renderWarnings(warnings: string[]): JSX.Element {
+  private renderWarnings(): JSX.Element {
+    const {t, warnings} = this.props;
     if (!Array.isArray(warnings) || warnings.length === 0) {
       return (<div />);
     }
     return (
       <Message warning={true}>
-        <Message.Header>Warnings</Message.Header>
+        <Message.Header>{t("Warnings")}</Message.Header>
         {renderArray<string>(this.renderWarning, warnings)}
       </Message>
     );
@@ -117,11 +136,13 @@ class ReportDetails extends React.Component<IProp, any> {
   public render() {
     return (
       <div className="report-details">
-        {this.renderOverview(this.props.includedBeneficiaries, this.props.excluded, this.props.questionSet, this.props.excludedReason)}
-        {this.renderWarnings(this.props.warnings)}
+        {this.renderOverview()}
+        {this.renderWarnings()}
       </div>
     );
   }
 }
 
+const TranslatedReportDetails = withTranslation()(ReportDetailsInner);
+const ReportDetails = TranslatedReportDetails;
 export {ReportDetails};

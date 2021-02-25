@@ -5,7 +5,7 @@ import Pseudo from 'i18next-pseudo';
 import resources from './locales';
 import ICU from "i18next-icu";
 
-export function setupI18n() {
+export function setupI18n(): void {
   i18n
     .use(ICU)
     .use(initReactI18next)
@@ -26,5 +26,6 @@ export function setupI18n() {
       interpolation: {
         escapeValue: false, // not needed for react
       },
+      keySeparator: false,
     });
 }
