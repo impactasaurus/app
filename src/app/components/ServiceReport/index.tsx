@@ -11,7 +11,7 @@ import './style.less';
 import {bindActionCreators} from 'redux';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {
-  exportReportData, IReportOptions, renderEmptyReport,
+  exportReportData, IReportOptions, EmptyReport,
 } from 'containers/Report/helpers';
 import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
 const { connect } = require('react-redux');
@@ -45,7 +45,7 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
 }, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
-class ServiceReportInner extends React.Component<IProp, any> {
+class ServiceReportInner extends React.Component<IProp, null> {
 
   constructor(props) {
     super(props);
@@ -71,7 +71,7 @@ class ServiceReportInner extends React.Component<IProp, any> {
 
   public render() {
     if (this.props.JOCServiceReport.getJOCServiceReport && this.props.JOCServiceReport.getJOCServiceReport.beneficiaries.length === 0) {
-      return renderEmptyReport(this.props.JOCServiceReport.getJOCServiceReport.excluded);
+      return <EmptyReport ie={this.props.JOCServiceReport.getJOCServiceReport.excluded} />;
     }
     return (
       <div>
