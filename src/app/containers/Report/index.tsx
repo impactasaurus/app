@@ -8,6 +8,7 @@ import {SecondaryMenu} from 'components/SecondaryMenu';
 import {IReportOptions} from 'containers/Report/helpers';
 import {DeltaReport} from 'components/DeltaReport';
 import {ServiceReport} from 'components/ServiceReport';
+import { WithTranslation, withTranslation } from 'react-i18next';
 const { connect } = require('react-redux');
 
 export enum SubPage {
@@ -15,7 +16,7 @@ export enum SubPage {
   CHANGE,
 }
 
-interface IProps extends IURLConnector {
+interface IProps extends IURLConnector, WithTranslation {
   match: {
     params: {
       questionSetID: string,
@@ -66,16 +67,16 @@ const getReportOptionsFromProps = (p: IProps): IReportOptions => {
   };
 };
 
-@connect((_: any, p: IProps) => {
+@connect((_: unknown, p: IProps) => {
   return {
     child: SubPage[p.match.params.type.toUpperCase()] || SubPage.DIST,
   };
 }, (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
 }))
-class Report extends React.Component<IProps, any> {
+class ReportInner extends React.Component<IProps, null> {
 
-  constructor(props) {
+  constructor(props: IProps) {
     super(props);
     this.innerPageSetter = this.innerPageSetter.bind(this);
   }
@@ -89,28 +90,29 @@ class Report extends React.Component<IProps, any> {
     };
   }
 
-  public render() {
+  public render(): JSX.Element {
+    const {t, child} = this.props;
     const options = getReportOptionsFromProps(this.props);
     let inner: JSX.Element = <ServiceReport {...options}/>;
-    if (this.props.child === SubPage.CHANGE) {
+    if (child === SubPage.CHANGE) {
       inner = <DeltaReport {...options}/>;
     }
     return (
       <div>
-        <SecondaryMenu signpost={'Impact Report'}>
-          <Menu.Item name="DT" active={this.props.child === SubPage.DIST} onClick={this.innerPageSetter(SubPage.DIST)}>
+        <SecondaryMenu signpost={t('Impact Report')}>
+          <Menu.Item name="DT" active={child === SubPage.DIST} onClick={this.innerPageSetter(SubPage.DIST)}>
             <Icon name="road" />
-            Distance Travelled
+            {t('Distance Travelled')}
           </Menu.Item>
-          <Menu.Item name="BC" active={this.props.child === SubPage.CHANGE} onClick={this.innerPageSetter(SubPage.CHANGE)}>
+          <Menu.Item name="BC" active={child === SubPage.CHANGE} onClick={this.innerPageSetter(SubPage.CHANGE)}>
             <Icon name="exchange" />
-            Beneficiary Change
+            {t('Beneficiary Change')}
           </Menu.Item>
         </SecondaryMenu>
         <Grid container={true} columns={1} id="report-picker">
           <Grid.Column>
             <Helmet>
-              <title>Report</title>
+              <title>{t('Report')}</title>
             </Helmet>
             {inner}
           </Grid.Column>
@@ -120,4 +122,4 @@ class Report extends React.Component<IProps, any> {
   }
 }
 
-export {Report};
+export const Report = withTranslation()(ReportInner);

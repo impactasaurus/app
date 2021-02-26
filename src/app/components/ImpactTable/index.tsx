@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Table, Header } from 'semantic-ui-react';
 import { renderArray } from 'helpers/react';
 import {Direction, directionSpec} from 'helpers/table';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
 interface IRow {
   name: string;
@@ -9,7 +10,7 @@ interface IRow {
   last: number|undefined;
 }
 
-interface IProp {
+interface IProp extends WithTranslation {
   data: IRow[];
   nameColName: string;
   firstColName?: string;
@@ -120,7 +121,7 @@ function renderRow(r: IRow): JSX.Element {
   );
 }
 
-class ImpactTable extends React.Component<IProp, IState> {
+class ImpactTableInner extends React.Component<IProp, IState> {
 
   constructor(props) {
     super(props);
@@ -163,6 +164,7 @@ class ImpactTable extends React.Component<IProp, IState> {
     if (this.state.data.length === 0) {
       return (<div />);
     }
+    const {t} = this.props;
     const rows = this.state.data;
     const initialColumnValues = rows.map((row) => row.first); // get values from initial column
     const latestColumnValues = rows.map((row) => row.last); // get values from latest column
@@ -172,9 +174,9 @@ class ImpactTable extends React.Component<IProp, IState> {
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell sorted={this.state.column === Column.NAME ? directionSpec(this.state.direction) : null} onClick={this.handleSort(Column.NAME)}>{this.props.nameColName}</Table.HeaderCell>
-            <Table.HeaderCell sorted={this.state.column === Column.FIRST ? directionSpec(this.state.direction) : null} onClick={this.handleSort(Column.FIRST)}>{this.props.firstColName || 'Initial'}</Table.HeaderCell>
-            <Table.HeaderCell sorted={this.state.column === Column.LAST ? directionSpec(this.state.direction) : null} onClick={this.handleSort(Column.LAST)}>{this.props.lastColName || 'Latest'}</Table.HeaderCell>
-            <Table.HeaderCell sorted={this.state.column === Column.DELTA ? directionSpec(this.state.direction) : null} onClick={this.handleSort(Column.DELTA)}>Difference</Table.HeaderCell>
+            <Table.HeaderCell sorted={this.state.column === Column.FIRST ? directionSpec(this.state.direction) : null} onClick={this.handleSort(Column.FIRST)}>{this.props.firstColName || t('Initial')}</Table.HeaderCell>
+            <Table.HeaderCell sorted={this.state.column === Column.LAST ? directionSpec(this.state.direction) : null} onClick={this.handleSort(Column.LAST)}>{this.props.lastColName || t('Latest')}</Table.HeaderCell>
+            <Table.HeaderCell sorted={this.state.column === Column.DELTA ? directionSpec(this.state.direction) : null} onClick={this.handleSort(Column.DELTA)}>{t('Difference')}</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
 
@@ -182,7 +184,7 @@ class ImpactTable extends React.Component<IProp, IState> {
           {renderArray(renderRow, rows)}
           <Table.Row>
             <Table.Cell>
-              <Header as="h5" textAlign="left">Total</Header>
+              <Header as="h5" textAlign="left">{t("Total")}</Header>
             </Table.Cell>
             <Table.Cell>{sum(initialColumnValues).toFixed(2)}</Table.Cell>
             <Table.Cell>{sum(latestColumnValues).toFixed(2)}</Table.Cell>
@@ -190,7 +192,7 @@ class ImpactTable extends React.Component<IProp, IState> {
           </Table.Row>
           <Table.Row>
               <Table.Cell>
-                <Header as="h5" textAlign="left">Average</Header>
+                <Header as="h5" textAlign="left">{t("Average")}</Header>
               </Table.Cell>
               <Table.Cell>{average(initialColumnValues).toFixed(2)}</Table.Cell>
               <Table.Cell>{average(latestColumnValues).toFixed(2)}</Table.Cell>
@@ -210,4 +212,5 @@ class ImpactTable extends React.Component<IProp, IState> {
   }
 }
 
+const ImpactTable = withTranslation()(ImpactTableInner);
 export {ImpactTable, IRow};

@@ -6,7 +6,7 @@ import {Aggregation, getAggregation, getVisualisation, Visualisation} from 'mode
 import './style.less';
 import {
   exportReportData, IReportOptions,
-  renderEmptyReport,
+  EmptyReport,
 } from 'containers/Report/helpers';
 import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
 import {VizControlPanel} from 'components/VizControlPanel';
@@ -15,7 +15,6 @@ import {DeltaReportDetails} from './details';
 import {DeltaTable} from './table';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {bindActionCreators} from 'redux';
-import {Message} from 'semantic-ui-react';
 
 const { connect } = require('react-redux');
 
@@ -72,13 +71,10 @@ class DeltaReportInner extends React.Component<IProp, any> {
 
   public render() {
     if (this.props.DeltaReport.getDeltaReport && this.props.DeltaReport.getDeltaReport.beneficiaries.length === 0) {
-      return renderEmptyReport(this.props.DeltaReport.getDeltaReport.excluded);
+      return <EmptyReport ie={this.props.DeltaReport.getDeltaReport.excluded} />
     }
     return (
       <div>
-        <Message warning={true}>
-          This is a new report which is still undergoing evaluation, <a href="mailto:support@impactasaurus.org?subject=change-report">we would love to know what you think</a>
-        </Message>
         <DeltaReportDetails report={this.props.DeltaReport.getDeltaReport} questionnaire={this.props.data.getOutcomeSet} />
         <VizControlPanel
           canCategoryAg={this.props.isCategoryAgPossible}

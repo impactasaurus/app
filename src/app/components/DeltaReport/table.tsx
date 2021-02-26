@@ -5,8 +5,9 @@ import {renderArray} from 'helpers/react';
 import {Direction, directionSpec} from 'helpers/table';
 import {extractDeltas} from 'components/DeltaReport/data';
 import {IOutcomeSet} from 'models/outcomeSet';
+import {withTranslation, WithTranslation} from 'react-i18next';
 
-interface IProp {
+interface IProp extends WithTranslation {
   report: IBeneficiaryDeltaReport;
   questionSet: IOutcomeSet;
   category?: boolean;
@@ -81,7 +82,7 @@ const getRows = (p: IProp): IRow[] => {
   }));
 };
 
-export class DeltaTable extends React.Component<IProp, IState> {
+class DeltaTableInner extends React.Component<IProp, IState> {
 
   constructor(props: IProp) {
     super(props);
@@ -121,8 +122,9 @@ export class DeltaTable extends React.Component<IProp, IState> {
   }
 
   public render() {
+    const {t, category} = this.props;
     const rows = this.state.data;
-    const nameCol = this.props.category ? 'Category' : 'Question';
+    const nameCol = category ? t('Category') : t('Question');
     return (
       <Table striped={true} celled={true} sortable={true}>
         <Table.Header>
@@ -130,11 +132,11 @@ export class DeltaTable extends React.Component<IProp, IState> {
             <Table.HeaderCell sorted={this.state.column === Column.NAME ? directionSpec(this.state.direction) : null}
                               onClick={this.handleSort(Column.NAME)}>{nameCol}</Table.HeaderCell>
             <Table.HeaderCell sorted={this.state.column === Column.DEC ? directionSpec(this.state.direction) : null}
-                              onClick={this.handleSort(Column.DEC)}>Decreased</Table.HeaderCell>
+                              onClick={this.handleSort(Column.DEC)}>{t('Decreased')}</Table.HeaderCell>
             <Table.HeaderCell sorted={this.state.column === Column.SAME ? directionSpec(this.state.direction) : null}
-                              onClick={this.handleSort(Column.SAME)}>Same</Table.HeaderCell>
+                              onClick={this.handleSort(Column.SAME)}>{t('Same')}</Table.HeaderCell>
             <Table.HeaderCell sorted={this.state.column === Column.INC ? directionSpec(this.state.direction) : null}
-                              onClick={this.handleSort(Column.INC)}>Increased</Table.HeaderCell>
+                              onClick={this.handleSort(Column.INC)}>{t('Increased')}</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
 
@@ -145,3 +147,6 @@ export class DeltaTable extends React.Component<IProp, IState> {
     );
   }
 }
+
+const TranslatedDeltaTable = withTranslation()(DeltaTableInner);
+export const DeltaTable = TranslatedDeltaTable;
