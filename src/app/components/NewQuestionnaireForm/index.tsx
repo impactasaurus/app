@@ -19,7 +19,7 @@ interface IOnCancel {
 }
 
 const InnerForm = (props: InjectedFormikProps<IOnCancel, INewQuestionnaire>) => {
-  const { touched, error, errors, isSubmitting, handleChange, onCancel, submitForm, handleBlur, isValid } = props;
+  const { touched, status, errors, isSubmitting, handleChange, onCancel, submitForm, handleBlur, isValid } = props;
   const submitProps: ButtonProps = {};
   if (isSubmitting) {
     submitProps.loading = true;
@@ -38,7 +38,7 @@ const InnerForm = (props: InjectedFormikProps<IOnCancel, INewQuestionnaire>) => 
         <Form.Button onClick={onCancel}>Cancel</Form.Button>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} {...submitProps}>Create</Form.Button>
       </Form.Group>
-      {error && <span className="submit-error"><Icon name="exclamation" />Creating the questionnaire failed. {formFailureGeneric}</span>}
+      {status && <span className="submit-error"><Icon name="exclamation" />Creating the questionnaire failed. {formFailureGeneric}</span>}
     </Form>
   );
 };
@@ -54,13 +54,14 @@ const NewQuestionnaireForm = withFormik<IProps, INewQuestionnaire>({
 
   handleSubmit: (v: FormikValues, formikBag: FormikBag<IProps, INewQuestionnaire>): void => {
     formikBag.setSubmitting(true);
-    formikBag.setError(undefined);
+    formikBag.setStatus(undefined);
     formikBag.props.submit(v)
       .catch((e: Error) => {
         formikBag.setSubmitting(false);
-        formikBag.setError(e.message);
+        formikBag.setStatus(e.message);
       });
   },
+  validateOnMount: true,
 })(InnerForm);
 
 export {NewQuestionnaireForm};

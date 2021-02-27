@@ -22,7 +22,7 @@ interface IFormOutput {
 }
 
 const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
-  const { touched, error, errors, isSubmitting, values, submitForm, isValid, handleChange, handleBlur, handleReset, dirty } = props;
+  const { touched, status, errors, isSubmitting, values, submitForm, isValid, handleChange, handleBlur, handleReset, dirty } = props;
   const standardProps = {
     onChange: handleChange,
     onBlur: handleBlur,
@@ -41,9 +41,9 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
       </FormField>
       <Form.Group>
         <Form.Button disabled={!dirty} onClick={handleReset}>Cancel</Form.Button>
-        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Save</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!dirty || !isValid || isSubmitting} loading={isSubmitting}>Save</Form.Button>
       </Form.Group>
-      {error && <span className="submit-error"><Icon name="exclamation" />Editing the questionnaire failed. {strings.formFailureGeneric}</span>}
+      {status && <span className="submit-error"><Icon name="exclamation" />Editing the questionnaire failed. {strings.formFailureGeneric}</span>}
     </Form>
   );
 };
@@ -58,15 +58,15 @@ const GeneralInner = withFormik<IProps, IFormOutput>({
   },
   handleSubmit: (v: FormikValues, formikBag: FormikBag<IProps, IFormOutput>): void => {
     formikBag.setSubmitting(true);
+    formikBag.setStatus(undefined);
     formikBag.props.editQuestionSet(formikBag.props.match.params.id, v.name, v.description, v.instructions)
       .then(() => {
         formikBag.setSubmitting(false);
-        formikBag.setError(undefined);
-        formikBag.resetForm();
+        formikBag.resetForm({values: v as IFormOutput});
       })
       .catch((e) => {
         formikBag.setSubmitting(false);
-        formikBag.setError(e);
+        formikBag.setStatus(e);
       });
   },
   mapPropsToValues: (p: IProps): IFormOutput => {
@@ -82,6 +82,7 @@ const GeneralInner = withFormik<IProps, IFormOutput>({
       instructions: os.instructions || '',
     };
   },
+  validateOnMount: true,
 })(InnerForm);
 
 export const General = editQuestionSet<IProps>(getOutcomeSet<IProps>((props) => props.match.params.id)(GeneralInner));

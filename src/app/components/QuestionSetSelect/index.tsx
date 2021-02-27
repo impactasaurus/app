@@ -82,17 +82,16 @@ class QuestionSetSelectInner extends React.Component<IProp, any> {
     });
   }
 
-  public componentWillReceiveProps(nextProps: IProp) {
-    if (nextProps.selectedQuestionSetID === undefined &&
-      nextProps.autoSelectFirst === true &&
-      Array.isArray(nextProps.allowedQuestionSets) &&
-      nextProps.allowedQuestionSets.length > 0) {
+  public componentDidUpdate() {
+    const {selectedQuestionSetID, allowedQuestionSets, autoSelectFirst} = this.props;
+    if (selectedQuestionSetID === undefined && autoSelectFirst === true &&
+      Array.isArray(allowedQuestionSets) && allowedQuestionSets.length > 0) {
         this.setQuestionSetID({}, {
-          value: nextProps.allowedQuestionSets[0].id,
+          value: allowedQuestionSets[0].id,
         });
     }
     if (this.props.onQuestionSetSelected !== undefined) {
-      this.props.onQuestionSetSelected(nextProps.selectedQuestionSetID);
+      this.props.onQuestionSetSelected(selectedQuestionSetID);
     }
   }
 

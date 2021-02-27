@@ -12,7 +12,7 @@ interface IProps  {
 }
 
 const InnerForm = (props: InjectedFormikProps<IProps, IAssessmentConfig>) => {
-  const { touched, error, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values } = props;
+  const { touched, status, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values } = props;
 
   const qsOnBlur = () => setFieldTouched('outcomeSetID');
   const qsOnChange = (qsID: string) => {
@@ -29,7 +29,7 @@ const InnerForm = (props: InjectedFormikProps<IProps, IAssessmentConfig>) => {
       <Form.Group>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>{props.buttonText}</Form.Button>
       </Form.Group>
-      {error && <span className="submit-error"><Icon name="exclamation" />Starting the assessment failed. {strings.formFailureGeneric}</span>}
+      {status && <span className="submit-error"><Icon name="exclamation" />Starting the assessment failed. {strings.formFailureGeneric}</span>}
     </Form>
   );
 };
@@ -43,6 +43,7 @@ export const SummonConfig = withFormik<IProps, IAssessmentConfig>({
     return errors;
   },
   handleSubmit: (v: FormikValues, formikBag: FormikBag<IProps, IAssessmentConfig>): void => {
+    formikBag.setStatus(undefined);
     formikBag.setSubmitting(true);
     formikBag.props.onSubmit(v.outcomeSetID)
       .then(() => {
@@ -50,7 +51,8 @@ export const SummonConfig = withFormik<IProps, IAssessmentConfig>({
       })
       .catch((e) => {
         formikBag.setSubmitting(false);
-        formikBag.setError(e);
+        formikBag.setStatus(e);
       });
   },
+  validateOnMount: true,
 })(InnerForm);

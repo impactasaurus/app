@@ -9,7 +9,7 @@ import {IAssessmentConfig} from 'models/assessment';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import {BeneficiaryTags} from 'components/BeneficiaryTags';
 import moment from 'moment';
-import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
+import {FormikBag, FormikErrors, FormikValues, FormikProps, withFormik} from 'formik';
 import './style.less';
 const strings = require('./../../../strings.json');
 
@@ -30,8 +30,8 @@ interface InnerFormProps {
   buttonText: string;
 }
 
-const InnerForm = (props: InjectedFormikProps<InnerFormProps, IAssessmentConfigAndDebounce>) => {
-  const { touched, error, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values } = props;
+const InnerForm = (props: InnerFormProps & FormikProps<IAssessmentConfigAndDebounce>) => {
+  const { touched, status, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values } = props;
 
   const qsOnBlur = () => setFieldTouched('outcomeSetID');
   const qsOnChange = (qsID: string) => {
@@ -94,7 +94,7 @@ const InnerForm = (props: InjectedFormikProps<InnerFormProps, IAssessmentConfigA
       <Form.Group>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>{props.buttonText}</Form.Button>
       </Form.Group>
-      {error && <span className="submit-error"><Icon name="exclamation" />Starting the assessment failed. {strings.formFailureGeneric}</span>}
+      {status && <span className="submit-error"><Icon name="exclamation" />Starting the assessment failed. {strings.formFailureGeneric}</span>}
     </Form>
   );
 };
@@ -109,11 +109,12 @@ export const AssessmentConfig = withFormik<IProps, IAssessmentConfigAndDebounce>
       errors.outcomeSetID = 'Please select a questionnaire';
     }
     if (!values.date || values.date.getTime() > Date.now()) {
-      errors.date = 'Please select a date in the past' as any;
+      errors.date = 'Please select a date in the past';
     }
     return errors;
   },
   handleSubmit: (v: FormikValues, formikBag: FormikBag<IProps, IAssessmentConfigAndDebounce>): void => {
+    formikBag.setStatus(null);
     formikBag.setSubmitting(true);
     formikBag.props.onSubmit({
       outcomeSetID: v.outcomeSetID,
@@ -126,7 +127,7 @@ export const AssessmentConfig = withFormik<IProps, IAssessmentConfigAndDebounce>
       })
       .catch((e) => {
         formikBag.setSubmitting(false);
-        formikBag.setError(e);
+        formikBag.setStatus(e);
       });
   },
   mapPropsToValues: (p: IProps): IAssessmentConfigAndDebounce => {
@@ -139,4 +140,5 @@ export const AssessmentConfig = withFormik<IProps, IAssessmentConfigAndDebounce>
       date: new Date(),
     };
   },
+  validateOnMount: true,
 })(InnerForm);
