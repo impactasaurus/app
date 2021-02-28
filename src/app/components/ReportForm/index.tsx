@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { Radio, Icon, Form, Button } from 'semantic-ui-react';
+import { Radio, Form, Button } from 'semantic-ui-react';
 import {DateRangePicker} from 'components/DateRangePicker';
 import {Hint} from 'components/Hint';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import {FormField} from 'components/FormField';
 import './style.less';
-import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
+import {FormikBag, FormikErrors, FormikValues, FormikProps, withFormik} from 'formik';
 import {TagInputWithQuestionnaireSuggestions} from 'components/TagInput';
-const strings = require('./../../../strings.json');
+import {Trans} from 'react-i18next';
 
 export interface IFormOutput {
   questionSetID: string;
@@ -20,11 +20,11 @@ export interface IFormOutput {
 
 interface IProps {
   onFormSubmit(v: IFormOutput): void;
+  t: (text: string) => string;
 }
 
-const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
-  const { touched, error, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values } = props;
-
+const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
+  const { touched, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values, t } = props;
   const qsOnBlur = () => setFieldTouched('questionSetID');
   const qsOnChange = (qsID: string) => {
     if (qsID !== values.questionSetID) {
@@ -50,66 +50,80 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
     setFieldTouched('orTags');
   };
 
-  const dateRangeStyle = {} as any;
+  const dateRangeStyle: React.CSSProperties = {};
   if (values.all) {
     dateRangeStyle.display = 'none';
   }
 
-  const tagLabel = <span><Hint text={strings.tagUsage} />Tags</span>;
-  const incRecordLabel = <span><Hint text={strings.reportBeneficiariesIncluded} />Included Records</span>;
+  const tagLabel = (
+    <span
+      ><Hint text={t("Use tags to filter the records you would like included within the report. Common uses of tag filtering include generating reports for a particular intervention or location.")} />
+      {t("Tags")}
+    </span>
+  );
+  const incRecordLabel = (
+    <span>
+      <Hint text={t("Beneficiaries must have at least two included records, to be considered in the report")} />
+      {t("Included Records")}
+    </span>
+  );
 
   return (
     <Form className="screen" onSubmit={submitForm}>
-      <FormField error={errors.questionSetID} touched={touched.questionSetID} inputID="rf-qid" required={true} label="Questionnaire">
+      <FormField error={errors.questionSetID} touched={touched.questionSetID} inputID="rf-qid" required={true} label={t("Questionnaire")}>
         <QuestionSetSelect inputID="rf-qid" onQuestionSetSelected={qsOnChange} onBlur={qsOnBlur} />
       </FormField>
-      <FormField label={incRecordLabel} required={true} inputID="filter-options" error={errors.all as string} touched={touched.all}>
+      <FormField label={incRecordLabel} required={true} inputID="filter-options" error={errors.all} touched={touched.all}>
         <div id="filter-options">
-          <Radio checked={values.all === true} onChange={allOnChange(true)} label="All" />
-          <Radio checked={values.all === false} onChange={allOnChange(false)} label="Date Range"/>
+          <Radio checked={values.all === true} onChange={allOnChange(true)} label={t("All")} />
+          <Radio checked={values.all === false} onChange={allOnChange(false)} label={t("Date Range")}/>
         </div>
       </FormField>
       <div style={dateRangeStyle}>
-        <FormField  label="Date Range" required={true} inputID="rf-date-picker" error={errors.start as string || errors.end as string} touched={touched.end as boolean || touched.start as boolean}>
+        <FormField label={t("Date Range")} required={true} inputID="rf-date-picker" error={errors.start as string || errors.end as string} touched={touched.end as boolean || touched.start as boolean}>
           <div id="rf-date-picker">
             <DateRangePicker onSelectUnfiltered={setDateRange} future={false}/>
           </div>
         </FormField>
       </div>
-      <FormField inputID="rf-tags" label={tagLabel} touched={touched.tags as boolean} error={errors.tags as string}>
+      <FormField inputID="rf-tags" label={tagLabel} touched={touched.tags} error={errors.tags as string}>
         <TagInputWithQuestionnaireSuggestions inputID="rf-tags" id={values.questionSetID} onChange={setTags} tags={values.tags} allowNewTags={false}>
           {values.tags.length >= 2 && (
             <div style={{marginTop: '1em'}}>
-              Records must have <Button.Group size="mini" style={{margin: '0 0.3rem'}}>
-                <Button type="button" active={!values.orTags} onClick={orTagsOnChange(false)}>all</Button>
-                <Button.Or />
-                <Button type="button" active={values.orTags} onClick={orTagsOnChange(true)}>any</Button>
-              </Button.Group> of the tags to be included in the report
+              <Trans
+                defaults="Records must have <bg><bAll>all</bAll><or /><bAny>any</bAny></bg> of the tags to be included in the report"
+                components={{
+                  bg: <Button.Group size="mini" style={{margin: '0 0.3rem'}} />,
+                  bAll: <Button type="button" active={!values.orTags} onClick={orTagsOnChange(false)} />,
+                  bAny: <Button type="button" active={values.orTags} onClick={orTagsOnChange(true)} />,
+                  or: <Button.Or text={t("or")} />
+                }}
+              />
             </div>
           )}
         </TagInputWithQuestionnaireSuggestions>
       </FormField>
 
       <Form.Group>
-        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Generate</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>{t("Generate")}</Form.Button>
       </Form.Group>
-      {error && <span className="submit-error"><Icon name="exclamation" />Generating the report failed. {strings.formFailureGeneric}</span>}
     </Form>
   );
 };
 
 export const ReportForm = withFormik<IProps, IFormOutput>({
-  validate: (values: IFormOutput) => {
+  validate: (values: IFormOutput, props: IProps) => {
+    const t = props.t;
     const errors: FormikErrors<IFormOutput> = {};
     if (!values.questionSetID || values.questionSetID === '') {
-      errors.questionSetID = 'Please select a questionnaire';
+      errors.questionSetID = t('Please select a questionnaire');
     }
     const noTimeRange = !values.start || !values.end;
     if (!values.all && noTimeRange) {
-      errors.start = 'Please select a time range' as any;
+      errors.start = t('Please select a time range');
     }
     if (!values.all && values.start >= values.end) {
-      errors.start = 'Please select a valid time range' as any;
+      errors.start = t('Please select a valid time range');
     }
     return errors;
   },
@@ -117,7 +131,7 @@ export const ReportForm = withFormik<IProps, IFormOutput>({
     formikBag.setSubmitting(true);
     formikBag.props.onFormSubmit(v as IFormOutput);
   },
-  mapPropsToValues: (_: IProps): IFormOutput => {
+  mapPropsToValues: (): IFormOutput => {
     return {
       questionSetID: '',
       all: true,
@@ -125,4 +139,5 @@ export const ReportForm = withFormik<IProps, IFormOutput>({
       orTags: false,
     };
   },
+  validateOnMount: true,
 })(InnerForm);
