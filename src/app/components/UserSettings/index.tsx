@@ -18,7 +18,7 @@ interface IFormOutput {
 }
 
 const InnerForm = (props: InjectedFormikProps<IProps, IFormOutput>) => {
-  const { touched, error, errors, isSubmitting, submitForm, isValid, handleChange, handleBlur, values, dirty, handleReset } = props;
+  const { touched, status, errors, isSubmitting, submitForm, isValid, handleChange, handleBlur, values, dirty, handleReset } = props;
   const checkboxLabel = <label>Email me occasional updates from Impactasaurus</label>;
   return (
     <Form className="screen" onSubmit={submitForm}>
@@ -31,9 +31,9 @@ const InnerForm = (props: InjectedFormikProps<IProps, IFormOutput>) => {
       {props.additionalFields}
       <Form.Group>
         <Form.Button disabled={!dirty} onClick={handleReset}>Cancel</Form.Button>
-        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Save</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!dirty || !isValid || isSubmitting} loading={isSubmitting}>Save</Form.Button>
       </Form.Group>
-      {error && <span className="submit-error"><Icon name="exclamation" />Editing the questionnaire failed. {strings.formFailureGeneric}</span>}
+      {status && <span className="submit-error"><Icon name="exclamation" />Editing your user account failed. {strings.formFailureGeneric}</span>}
     </Form>
   );
 };
@@ -47,18 +47,17 @@ export const UserSettingsInner = withFormik<IProps, IFormOutput>({
     return errors;
   },
   handleSubmit: (v: FormikValues, formikBag: FormikBag<IProps, IFormOutput>): void => {
-    formikBag.setError(undefined);
+    formikBag.setStatus(undefined);
     formikBag.setSubmitting(true);
     const vals = v as IFormOutput;
     formikBag.props.updateSelf(vals.name, !vals.subscribed)
       .then(() => {
         formikBag.setSubmitting(false);
-        formikBag.setError(undefined);
-        formikBag.resetForm(vals);
+        formikBag.resetForm({values: vals});
       })
       .catch((e) => {
         formikBag.setSubmitting(false);
-        formikBag.setError(e);
+        formikBag.setStatus(e);
       });
   },
   mapPropsToValues: (p: IProps): IFormOutput => {
@@ -67,6 +66,7 @@ export const UserSettingsInner = withFormik<IProps, IFormOutput>({
       subscribed: !p.self.getSelf.settings.unsubscribed,
     };
   },
+  validateOnMount: true,
 })(InnerForm);
 
 const UserSettingsWithLoader = ApolloLoaderHoC('user', (p: IProps) => p.self, UserSettingsInner);

@@ -1,14 +1,13 @@
 import * as React from 'react';
-import {IURLConnector, setURL} from 'redux/modules/url';
-import { bindActionCreators } from 'redux';
+import {IURLConnector, UrlHOC} from 'redux/modules/url';
 import {constructReportQueryParams, constructReportURL} from 'helpers/report';
 import {IFormOutput, ReportForm as RFComponent} from 'components/ReportForm';
 import {QuestionnaireRequired} from 'components/QuestionnaireRequired';
 import {PageWrapperHoC} from 'components/PageWrapperHoC';
-const { connect } = require('react-redux');
-const ReactGA = require('react-ga');
+import ReactGA from 'react-ga';
+import { useTranslation } from 'react-i18next';
 
-const RFWrapped = QuestionnaireRequired('generate a report', RFComponent);
+const RFWrapped = QuestionnaireRequired(RFComponent);
 
 const dateDiff = (date1: Date, date2: Date): number => {
   const oneDay = 1000*60*60*24;
@@ -37,17 +36,9 @@ const logGAEvent = (v: IFormOutput): void => {
   }
 };
 
-@connect(undefined, (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-}))
-class ReportFormInner extends React.Component<IURLConnector, any> {
+const ReportFormInner = (p: IURLConnector) => {
 
-  constructor(props) {
-    super(props);
-    this.navigateToReport = this.navigateToReport.bind(this);
-  }
-
-  private navigateToReport(v: IFormOutput) {
+  const navigateToReport = (v: IFormOutput) => {
     let start = v.start;
     let end = v.end;
     if (v.all) {
@@ -57,15 +48,14 @@ class ReportFormInner extends React.Component<IURLConnector, any> {
     logGAEvent(v);
     const url = constructReportURL('service', start, end, v.questionSetID);
     const qp = constructReportQueryParams(v.tags, false, v.orTags);
-    this.props.setURL(url, qp);
+    p.setURL(url, qp);
   }
 
-  public render() {
-    return (
-      <RFWrapped onFormSubmit={this.navigateToReport} />
-    );
-  }
+  const {t} = useTranslation();
+  return <RFWrapped t={t} onFormSubmit={navigateToReport} />;
 }
 
-const ReportForm = PageWrapperHoC('Report', 'report-form-page', ReportFormInner);
+// t('Report')
+const ReportFormWrapped = PageWrapperHoC('Report', 'report-form-page', ReportFormInner);
+const ReportForm = UrlHOC(ReportFormWrapped);
 export {ReportForm};

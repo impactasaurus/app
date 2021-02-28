@@ -13,7 +13,7 @@ const { connect } = require('react-redux');
 const config = require('../../../../config/main');
 const ReactGA = require('react-ga');
 
-const ConfigComponent = QuestionnaireRequired('create a record', AssessmentConfigComponent);
+const ConfigComponent = QuestionnaireRequired(AssessmentConfigComponent);
 
 interface IProp extends IMeetingMutation, IURLConnector, IGenerateSummon {
   match: {

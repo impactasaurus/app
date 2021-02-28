@@ -3,41 +3,48 @@ import {allOutcomeSets, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import { Segment } from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
 import {getQuestions} from 'helpers/questionnaire';
+import {Trans} from 'react-i18next';
 
 interface IProp {
   data?: IOutcomeResult;
 }
 
-const renderQuestionnaireNeeded = (action: string): JSX.Element => ((
+const renderQuestionnaireNeeded = (): JSX.Element => ((
   <Segment id="questionnaire-needed" raised={true} compact={true} style={{marginLeft:'auto',marginRight:'auto'}}>
-    <h3>
-      We love the enthusiasm!
-    </h3>
-    <p>Before we {action}, let's first define a questionnaire</p>
-    <p>Head over to the <Link to="/questions">questionnaires page</Link> to create one</p>
+    <Trans
+      defaults="<h>We love the enthusiasm!</h><p>But before that, let's define a questionnaire</p><p>Head over to the <qLink>questionnaires page</qLink> to create one</p>"
+      components={{
+        h: <h3 />,
+        p: <p />,
+        qLink: <Link to="/questions" />
+      }}
+    />
   </Segment>
 ));
 
-const renderQuestionsNeeded = (action: string): JSX.Element => ((
+const renderQuestionsNeeded = (): JSX.Element => ((
   <Segment id="questionnaire-needed" raised={true} compact={true} style={{marginLeft:'auto',marginRight:'auto'}}>
-    <h3>
-      We love the enthusiasm!
-    </h3>
-    <p>Before we {action}, let's first define some questions within your questionnaire</p>
-    <p>Head over to the <Link to="/questions">questionnaires page</Link> to add some questions</p>
+    <Trans
+      defaults="<h>We love the enthusiasm!</h><p>But before that, let's define some questions within your questionnaire</p><p>Head over to the <qLink>questionnaires page</qLink> to add some questions</p>"
+      components={{
+        h: <h3 />,
+        p: <p />,
+        qLink: <Link to="/questions" />
+      }}
+    />
   </Segment>
 ));
 
-export const QuestionnaireRequired = <P extends unknown>(action: string, WrappedComponent: React.ComponentType<P>) => {
-  class Inner extends React.Component<P & IProp, any> {
+export const QuestionnaireRequired = <P extends unknown>(WrappedComponent: React.ComponentType<P>): React.ComponentClass<P & IProp> => {
+  class Inner extends React.Component<P & IProp, null> {
     public render() {
       if (Array.isArray(this.props.data.allOutcomeSets)) {
         if (this.props.data.allOutcomeSets.length === 0) {
-          return renderQuestionnaireNeeded(action);
+          return renderQuestionnaireNeeded();
         }
         const noQuestions = this.props.data.allOutcomeSets.reduce((max, q) => Math.max(max, getQuestions(q).length), 0);
         if (noQuestions === 0) {
-          return renderQuestionsNeeded(action);
+          return renderQuestionsNeeded();
         }
       }
       return <WrappedComponent {...this.props} />;

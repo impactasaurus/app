@@ -38,7 +38,7 @@ const getAggregationOptions = () => {
 };
 
 const InnerForm = (props: InjectedFormikProps<IInnerFormProps, IQuestionCategory>) => {
-  const { touched, values, error, errors, isSubmitting, handleChange, OnCancel,
+  const { touched, values, status, errors, isSubmitting, handleChange, OnCancel, dirty,
           submitForm, handleBlur, isValid, submitButtonText, setFieldValue, setFieldTouched } = props;
 
   const standardProps = {
@@ -63,9 +63,9 @@ const InnerForm = (props: InjectedFormikProps<IInnerFormProps, IQuestionCategory
 
       <Form.Group>
         <Form.Button onClick={OnCancel}>Cancel</Form.Button>
-        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>{submitButtonText}</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!dirty || !isValid || isSubmitting} loading={isSubmitting}>{submitButtonText}</Form.Button>
       </Form.Group>
-      {error && <span className="submit-error"><Icon name="exclamation" />Saving the category failed. {formFailureGeneric}</span>}
+      {status && <span className="submit-error"><Icon name="exclamation" />Saving the category failed. {formFailureGeneric}</span>}
     </Form>
   );
 };
@@ -83,12 +83,15 @@ export const QuestionCategoryForm = withFormik<IProps, IQuestionCategory>({
   },
 
   mapPropsToValues: (p: IProps) => {
-    return p.values;
+    return p.values || {
+      name: "",
+      aggregation: getAggregationOptions()[0].value,
+    };
   },
 
   handleSubmit: (v: FormikValues, formikBag: FormikBag<IProps, IQuestionCategory>): void => {
     formikBag.setSubmitting(true);
-    formikBag.setError(undefined);
+    formikBag.setStatus(undefined);
     formikBag.props.onSubmitButtonPress(v.name, v.aggregation, v.description)
       .then(() => {
         formikBag.setSubmitting(false);
@@ -96,7 +99,8 @@ export const QuestionCategoryForm = withFormik<IProps, IQuestionCategory>({
       })
       .catch((e: Error) => {
         formikBag.setSubmitting(false);
-        formikBag.setError(e.message);
+        formikBag.setStatus(e.message);
       });
   },
+  validateOnMount: true,
 })(InnerForm);

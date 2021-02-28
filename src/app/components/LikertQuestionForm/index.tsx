@@ -38,7 +38,7 @@ const shortenedLabel: JSX.Element = (
 );
 
 const InnerForm = (props: InjectedFormikProps<IInnerFormProps, ILikertQuestionForm>) => {
-  const { touched, values, error, errors, isSubmitting, handleChange, onCancel, edit,
+  const { touched, values, status, errors, isSubmitting, handleChange, onCancel, edit, dirty,
           submitForm, handleBlur, isValid, submitButtonText, setFieldValue, setFieldTouched} = props;
   const categoryOptions = (values as any).categoryOptions;
 
@@ -105,9 +105,9 @@ const InnerForm = (props: InjectedFormikProps<IInnerFormProps, ILikertQuestionFo
       />
       <Form.Group>
         <Form.Button onClick={onCancel}>Cancel</Form.Button>
-        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>{submitButtonText}</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!dirty || !isValid || isSubmitting} loading={isSubmitting}>{submitButtonText}</Form.Button>
       </Form.Group>
-      {error && <span className="submit-error"><Icon name="exclamation" />Saving the question failed. {formFailureGeneric}</span>}
+      {status && <span className="submit-error"><Icon name="exclamation" />Saving the question failed. {formFailureGeneric}</span>}
     </Form>
   );
 };
@@ -145,7 +145,7 @@ const LikertQuestionFormInner = withFormik<IProps, ILikertQuestionForm>({
 
   handleSubmit: (v: FormikValues, formikBag: FormikBag<IProps, ILikertQuestionForm>): void => {
     formikBag.setSubmitting(true);
-    formikBag.setError(undefined);
+    formikBag.setStatus(undefined);
     formikBag.props.onSubmitButtonClick(v as ILikertQuestionForm)
       .then(() => {
         logQuestionGAEvent(formikBag.props.edit ? 'edited' : 'created');
@@ -154,9 +154,10 @@ const LikertQuestionFormInner = withFormik<IProps, ILikertQuestionForm>({
       })
       .catch((e: Error) => {
         formikBag.setSubmitting(false);
-        formikBag.setError(e.message);
+        formikBag.setStatus(e.message);
       });
   },
+  validateOnMount: true,
 })(InnerForm);
 
 export const LikertQuestionForm = getOutcomeSet<IProps>((props) => props.QuestionSetID)(LikertQuestionFormInner);

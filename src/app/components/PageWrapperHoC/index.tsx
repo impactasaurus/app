@@ -1,42 +1,42 @@
 import * as React from 'react';
 import Helmet from 'react-helmet';
+import { useTranslation } from 'react-i18next';
 import {Grid} from 'semantic-ui-react';
 
 export const MinimalPageWrapperHoC = <P extends unknown>(
   title: string,
   id: string,
   WrappedComponent: React.ComponentType<P>,
-) => {
-  class Inner extends React.Component<P, any> {
-    public render() {
-      return (
-        <Grid container={true} columns={1} id={id}>
-          <Grid.Column>
-            <Helmet>
-              <title>{title}</title>
-            </Helmet>
-            <WrappedComponent {...this.props} />
-          </Grid.Column>
-        </Grid>
-      );
-    }
-  }
-  return Inner;
+): React.ComponentType => {
+  const minPageWrapper = (p: P) => {
+    const {t} = useTranslation();
+    return (
+      <Grid container={true} columns={1} id={id}>
+        <Grid.Column>
+          <Helmet>
+            <title>{t(title)}</title>
+          </Helmet>
+          <WrappedComponent {...p} />
+        </Grid.Column>
+      </Grid>
+    );
+  };
+  return minPageWrapper;
 };
 
 export const PageWrapperHoC = <P extends unknown>(
   title: string,
   id: string,
   WrappedComponent: React.ComponentType<P>,
-) => {
-  // tslint:disable-next-line:max-classes-per-file
-  class Inner extends React.Component<P, any> {
-    public render() {
-      return [
-        (<h1 key="title">{title}</h1>),
-        (<WrappedComponent key="content" {...this.props} />),
-      ];
-    }
-  }
-  return MinimalPageWrapperHoC(title, id, Inner);
+): React.ComponentType => {
+  const pageWrapper = (p: P) => {
+    const {t} = useTranslation();
+    return (
+      <>
+        <h1 key="title">{t(title)}</h1>
+        <WrappedComponent key="content" {...p} />
+      </>
+    );
+  };
+  return MinimalPageWrapperHoC(title, id, pageWrapper);
 };

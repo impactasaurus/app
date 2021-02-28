@@ -12,7 +12,7 @@ interface IFormProps {
 }
 
 const InnerForm = (props: InjectedFormikProps<any, IFormOuput>) => {
-  const { touched, error, errors, isSubmitting, submitForm, isValid, handleChange, handleBlur } = props;
+  const { touched, status, errors, isSubmitting, submitForm, isValid, handleChange, handleBlur } = props;
   return (
     <Form className="screen" onSubmit={submitForm}>
       <FormField error={errors.beneficiaryID as string} touched={touched.beneficiaryID} inputID="smn-ben" required={true} label="Your ID">
@@ -21,7 +21,7 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOuput>) => {
       <Form.Group>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Submit</Form.Button>
       </Form.Group>
-      {error && <span className="submit-error"><Icon name="exclamation" />{error}</span>}
+      {status && <span className="submit-error"><Icon name="exclamation" />{status}</span>}
     </Form>
   );
 };
@@ -36,13 +36,15 @@ export const SummonForm = withFormik<IFormProps, IFormOuput>({
   },
   handleSubmit: (v: FormikValues, formikBag: FormikBag<IFormProps, IFormOuput>): void => {
     formikBag.setSubmitting(true);
+    formikBag.setStatus(undefined);
     formikBag.props.onBeneficiarySelect(v.beneficiaryID)
       .then(() => {
         // will move on from this component so no need to do anything
       })
       .catch((e: Error) => {
         formikBag.setSubmitting(false);
-        formikBag.setError(e.message);
+        formikBag.setStatus(e.message);
       });
   },
+  validateOnMount: true,
 })(InnerForm);

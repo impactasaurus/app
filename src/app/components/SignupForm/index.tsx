@@ -23,7 +23,7 @@ interface IProps {
 const shouldCollectOrg = (p: IProps) => p.collectOrgName !== false;
 
 const InnerForm = (props: InjectedFormikProps<IProps, IFormOutput>) => {
-  const { touched, error, errors, isSubmitting, submitForm, isValid, handleChange, handleBlur, values } = props;
+  const { touched, status, errors, isSubmitting, submitForm, isValid, handleChange, handleBlur, values } = props;
   const termsLabel = <label>I agree to the <a href="https://impactasaurus.org/terms">Terms of Use</a>, <a href="https://impactasaurus.org/privacy">Privacy Policy</a> and <a href="https://impactasaurus.org/cookie">Cookie Policy</a></label>;
   return (
     <Form className="screen" onSubmit={submitForm}>
@@ -50,7 +50,7 @@ const InnerForm = (props: InjectedFormikProps<IProps, IFormOutput>) => {
       <Form.Group>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Get Started</Form.Button>
       </Form.Group>
-      {error && <span className="submit-error"><Icon name="exclamation" />{error}</span>}
+      {status && <span className="submit-error"><Icon name="exclamation" />{status}</span>}
     </Form>
   );
 };
@@ -85,16 +85,16 @@ export const SignupForm = withFormik<IProps, IFormOutput>({
     return errors;
   },
   handleSubmit: (v: FormikValues, formikBag: FormikBag<IProps, IFormOutput>): void => {
-    formikBag.setError(undefined);
+    formikBag.setStatus(undefined);
     formikBag.setSubmitting(true);
     formikBag.props.onFormSubmit(v as IFormOutput)
       .catch((e: Error) => {
         formikBag.setSubmitting(false);
         console.error(e);
         if (e.message.includes('already')) {
-          formikBag.setError(`User with email address ${v.email} already exists`);
+          formikBag.setStatus(`User with email address ${v.email} already exists`);
         } else {
-          formikBag.setError(`Signup failed. ${strings.formFailureGeneric}`);
+          formikBag.setStatus(`Signup failed. ${strings.formFailureGeneric}`);
         }
       });
   },
@@ -111,4 +111,5 @@ export const SignupForm = withFormik<IProps, IFormOutput>({
       policyAcceptance: false,
     };
   },
+  validateOnMount: true,
 })(InnerForm);
