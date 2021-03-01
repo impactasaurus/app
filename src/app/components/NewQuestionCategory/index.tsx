@@ -2,6 +2,7 @@ import * as React from 'react';
 import {QuestionCategoryForm} from '../QuestionCategoryForm';
 import {ICategoryMutation, addQuestionCategory} from 'apollo/modules/categories';
 import {IOutcomeSet} from 'models/outcomeSet';
+import {useTranslation} from 'react-i18next';
 
 interface IProps extends ICategoryMutation {
   QuestionSetID: string;
@@ -9,27 +10,21 @@ interface IProps extends ICategoryMutation {
   OnCancel: ()=>void;
 }
 
-class NewQuestionCategoryInner extends React.Component<IProps, any> {
+const NewQuestionCategoryInner = (p: IProps) => {
 
-  constructor(props) {
-    super(props);
-    this.onSubmitButtonPress = this.onSubmitButtonPress.bind(this);
+  const onSubmitButtonPress = (name: string, aggregation: string, description: string): Promise<IOutcomeSet> => {
+    return p.addCategory(p.QuestionSetID, name, aggregation, description);
   }
 
-  private onSubmitButtonPress(name: string, aggregation: string, description: string): Promise<IOutcomeSet> {
-    return this.props.addCategory(this.props.QuestionSetID, name, aggregation, description);
-  }
-
-  public render() {
-    return (
-      <QuestionCategoryForm
-        OnSuccess={this.props.OnSuccess}
-        OnCancel={this.props.OnCancel}
-        onSubmitButtonPress={this.onSubmitButtonPress}
-        submitButtonText="Add"
-      />
-    );
-  }
+  const {t} = useTranslation();
+  return (
+    <QuestionCategoryForm
+      OnSuccess={p.OnSuccess}
+      OnCancel={p.OnCancel}
+      onSubmitButtonPress={onSubmitButtonPress}
+      submitButtonText={t("Add")}
+    />
+  );
 }
 
 const NewQuestionCategory = addQuestionCategory<IProps>(NewQuestionCategoryInner);

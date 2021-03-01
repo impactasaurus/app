@@ -3,6 +3,7 @@ import {QuestionCategoryForm} from '../QuestionCategoryForm';
 import {ICategoryMutation, editQuestionCategory} from 'apollo/modules/categories';
 import {ICategory} from 'models/category';
 import {IOutcomeSet} from 'models/outcomeSet';
+import {useTranslation} from 'react-i18next';
 
 interface IProps extends ICategoryMutation {
   QuestionSetID: string;
@@ -11,32 +12,26 @@ interface IProps extends ICategoryMutation {
   OnCancel: ()=>void;
 }
 
-class EditQuestionCategoryInner extends React.Component<IProps, any> {
+const EditQuestionCategoryInner = (p: IProps) => {
 
-  constructor(props) {
-    super(props);
-    this.onSubmitButtonPress = this.onSubmitButtonPress.bind(this);
+  const onSubmitButtonPress = (name: string, aggregation: string, description: string): Promise<IOutcomeSet> => {
+    return p.editCategory(p.QuestionSetID, p.category.id, name, aggregation, description);
   }
 
-  private onSubmitButtonPress(name: string, aggregation: string, description: string): Promise<IOutcomeSet> {
-    return this.props.editCategory(this.props.QuestionSetID, this.props.category.id, name, aggregation, description);
-  }
-
-  public render() {
-    return (
-      <QuestionCategoryForm
-        OnSuccess={this.props.OnSuccess}
-        OnCancel={this.props.OnCancel}
-        onSubmitButtonPress={this.onSubmitButtonPress}
-        submitButtonText="Save changes"
-        values={{
-          name: this.props.category.name,
-          description: this.props.category.description,
-          aggregation: this.props.category.aggregation,
-        }}
-      />
-    );
-  }
+  const {t} = useTranslation();
+  return (
+    <QuestionCategoryForm
+      OnSuccess={p.OnSuccess}
+      OnCancel={p.OnCancel}
+      onSubmitButtonPress={onSubmitButtonPress}
+      submitButtonText={t("Save changes")}
+      values={{
+        name: p.category.name,
+        description: p.category.description,
+        aggregation: p.category.aggregation,
+      }}
+    />
+  );
 }
 
 const EditQuestionCategory = editQuestionCategory<IProps>(EditQuestionCategoryInner);
