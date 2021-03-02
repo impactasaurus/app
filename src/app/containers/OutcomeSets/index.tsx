@@ -2,18 +2,17 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import {IOutcomeResult, IOutcomeMutation, allOutcomeSets, deleteQuestionSet} from 'apollo/modules/outcomeSets';
 import {IOutcomeSet} from 'models/outcomeSet';
-import {IURLConnector, setURL} from 'redux/modules/url';
+import {IURLConnector, UrlHOC} from 'redux/modules/url';
 import {renderArray} from 'helpers/react';
-import { bindActionCreators } from 'redux';
 import { List, Icon, Grid, Loader } from 'semantic-ui-react';
 import {ConfirmButton} from 'components/ConfirmButton';
 import {Error} from 'components/Error';
 import './style.less';
 import {OnboardingNewRecordHint} from 'components/OnboardingNewRecordHint';
-const { connect } = require('react-redux');
-const ReactGA = require('react-ga');
+import ReactGA from 'react-ga';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-interface IProps extends IOutcomeMutation, IURLConnector {
+interface IProps extends IOutcomeMutation, IURLConnector, WithTranslation {
   data: IOutcomeResult;
 }
 
@@ -21,9 +20,6 @@ interface IState {
   deleteError?: string;
 }
 
-@connect(undefined, (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-}))
 class SettingQuestionsInner extends React.Component<IProps, IState> {
 
   constructor(props) {
@@ -63,11 +59,14 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
   }
 
   private renderOutcomeSet(os: IOutcomeSet): JSX.Element {
+    const {t} = this.props;
     return (
       <List.Item className="question-set" key={os.id}>
         <List.Content floated="right">
           <ConfirmButton buttonProps={{icon: true}}
-                         promptText={`Are you sure you want to delete the '${os.name}' question set?`}
+                         promptText={t(`Are you sure you want to delete the '{questionnaireName}' questionnaire?`, {
+                          questionnaireName: os.name,
+                         })}
                          onConfirm={this.deleteQS(os.id)}>
             <Icon name="delete"/>
           </ConfirmButton>
@@ -87,19 +86,21 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
   }
 
   private renderNewControl(): JSX.Element {
+    const {t} = this.props;
     return (
       <List.Item className="new-control" key="new">
         <List.Content onClick={this.newClicked}>
-          <List.Header as="a">New Questionnaire</List.Header>
+          <List.Header as="a">{t("New Questionnaire")}</List.Header>
         </List.Content>
       </List.Item>
     );
   }
 
   public render() {
+    const {t} = this.props;
     let inner: JSX.Element;
     if (this.props.data.error) {
-      inner = (<Error text="Failed to load questionnaires" />);
+      inner = (<Error text={t("Failed to load questionnaires")} />);
     } else if (this.props.data.loading) {
       inner = (
         <Loader active={true} inline="centered" />
@@ -117,9 +118,9 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
       <Grid container={true} columns={1} id="question-sets">
         <Grid.Column>
           <Helmet>
-            <title>Questionnaires</title>
+            <title>{t("Questionnaires")}</title>
           </Helmet>
-          <h1>Questionnaires</h1>
+          <h1>{t("Questionnaires")}</h1>
           <OnboardingNewRecordHint />
           {inner}
         </Grid.Column>
@@ -127,5 +128,7 @@ class SettingQuestionsInner extends React.Component<IProps, IState> {
     );
   }
 }
-const OutcomeSets = allOutcomeSets<IProps>(deleteQuestionSet(SettingQuestionsInner));
+const OutcomeSetsConnected = UrlHOC(SettingQuestionsInner);
+const OutcomeSetsWithData = allOutcomeSets<IProps>(deleteQuestionSet(OutcomeSetsConnected));
+const OutcomeSets = withTranslation()(OutcomeSetsWithData);
 export {OutcomeSets };

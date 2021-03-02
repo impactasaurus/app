@@ -10,11 +10,10 @@ import {Error} from 'components/Error';
 import { Switch, Route } from 'react-router-dom';
 import './style.less';
 import {IStore} from 'redux/IStore';
-import {bindActionCreators} from 'redux';
-import {IURLConnector, setURL} from 'redux/modules/url';
+import {IURLConnector, UrlConnector} from 'redux/modules/url';
 import {Hint} from 'components/Hint';
-const { connect } = require('react-redux');
-const strings = require('./../../../strings.json');
+import { connect } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 export enum Page {
   GENERAL,
@@ -31,37 +30,18 @@ interface IProps extends IURLConnector {
     path: string,
     url: string,
   };
-  page: Page;
+  page?: Page;
 }
 
-@connect((state: IStore) => {
-  let page = Page.GENERAL;
-  if (state.router.location.pathname.endsWith('questions')) {
-    page = Page.QUESTIONS;
-  } else if (state.router.location.pathname.endsWith('categories')) {
-    page = Page.CATEGORIES;
-  }
-  return {
-    page,
-  };
-}, (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-}))
-class OutcomeSetInner extends React.Component<IProps, any> {
+const OutcomeSetInner = (p: IProps) => {
 
-  constructor(props) {
-    super(props);
-    this.handleClick = this.handleClick.bind(this);
-    this.innerPageSetter = this.innerPageSetter.bind(this);
-  }
-
-  private handleClick(url: string, search?: string) {
+  const handleClick = (url: string, search?: string) => {
     return () => {
-      this.props.setURL(url, search);
+      p.setURL(url, search);
     };
-  }
+  };
 
-  private innerPageSetter(toSet: Page): () => void {
+  const innerPageSetter = (toSet: Page): () => void => {
     return () => {
       let subPage: string;
       switch(toSet) {
@@ -78,54 +58,69 @@ class OutcomeSetInner extends React.Component<IProps, any> {
           break;
         }
       }
-      this.handleClick(`/questions/${this.props.match.params.id}/${subPage}`)();
+      handleClick(`/questions/${p.match.params.id}/${subPage}`)();
     };
+  };
+
+  const wrapper = (inner: JSX.Element, signpost?: string): JSX.Element => {
+    return (
+      <div>
+        <SecondaryMenu signpost={signpost}>
+          <Menu.Item name={t("General")} active={page === Page.GENERAL} onClick={innerPageSetter(Page.GENERAL)} />
+          <Menu.Item name={t("Questions")} active={page === Page.QUESTIONS} onClick={innerPageSetter(Page.QUESTIONS)} />
+          <Menu.Item active={page === Page.CATEGORIES} onClick={innerPageSetter(Page.CATEGORIES)}>
+            <Hint text={t("Group related questions into categories. This allows aggregation of multiple questions into a single value.")} />
+            {t("Categories")}
+          </Menu.Item>
+        </SecondaryMenu>
+        <Grid container={true} columns={1} id="question-set">
+          <Grid.Column>
+            <Helmet>
+              <title>{signpost ? signpost : t('Questionnaire')}</title>
+            </Helmet>
+            <div>
+              {inner}
+            </div>
+          </Grid.Column>
+        </Grid>
+      </div>
+    );
+  };
+
+  const {t} = useTranslation();
+  const { data: {loading, getOutcomeSet, error}, page} = p;
+
+  if (error) {
+    return wrapper((<Error text={t("Failed to load questionnaire")} />), 'Unknown');
+  }
+  if (loading) {
+    return wrapper((<Loader active={true} inline="centered" />), t('Loading...'));
+  }
+  if (getOutcomeSet === undefined) {
+    return wrapper((<div />), t('Loading...'));
   }
 
-  public render() {
-    const wrapper = (inner: JSX.Element, signpost?: string): JSX.Element => {
-      const page = this.props.page;
-      return (
-        <div>
-          <SecondaryMenu signpost={signpost}>
-            <Menu.Item name="General" active={page === Page.GENERAL} onClick={this.innerPageSetter(Page.GENERAL)} />
-            <Menu.Item name="Questions" active={page === Page.QUESTIONS} onClick={this.innerPageSetter(Page.QUESTIONS)} />
-            <Menu.Item active={page === Page.CATEGORIES} onClick={this.innerPageSetter(Page.CATEGORIES)}>
-              <Hint text={strings.questionCategoryExplanation} /> Categories
-            </Menu.Item>
-          </SecondaryMenu>
-          <Grid container={true} columns={1} id="question-set">
-            <Grid.Column>
-              <Helmet>
-                <title>{signpost ? signpost : 'Questionnaire'}</title>
-              </Helmet>
-              <div>
-                {inner}
-              </div>
-            </Grid.Column>
-          </Grid>
-        </div>
-      );
-    };
-    const { data: {loading, getOutcomeSet, error}} = this.props;
-    if (error) {
-      return wrapper((<Error text="Failed to load questionnaire" />), 'Unknown');
-    }
-    if (loading) {
-      return wrapper((<Loader active={true} inline="centered" />), 'Loading...');
-    }
-    if (getOutcomeSet === undefined) {
-      return wrapper((<div />), 'Loading...');
-    }
-    const match = this.props.match.path;
-    return wrapper((
-      <Switch>
-        <Route exact={true} path={`${match}/`} component={General} />
-        <Route path={`${match}/questions`} component={Questions} />
-        <Route path={`${match}/categories`} component={Categories} />
-      </Switch>
-    ), getOutcomeSet.name);
-  }
+  const match = p.match.path;
+  return wrapper((
+    <Switch>
+      <Route exact={true} path={`${match}/`} component={General} />
+      <Route path={`${match}/questions`} component={Questions} />
+      <Route path={`${match}/categories`} component={Categories} />
+    </Switch>
+  ), getOutcomeSet.name);
 }
 
-export const OutcomeSet = getOutcomeSet<IProps>((props) => props.match.params.id)(OutcomeSetInner);
+const extractPageFromStore = (state: IStore) => {
+  let page = Page.GENERAL;
+  if (state.router.location.pathname.endsWith('questions')) {
+    page = Page.QUESTIONS;
+  } else if (state.router.location.pathname.endsWith('categories')) {
+    page = Page.CATEGORIES;
+  }
+  return {
+    page,
+  };
+}
+
+const OutcomeSetConnected = connect(extractPageFromStore, UrlConnector)(OutcomeSetInner)
+export const OutcomeSet = getOutcomeSet<IProps>((props) => props.match.params.id)(OutcomeSetConnected);

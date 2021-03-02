@@ -1,11 +1,11 @@
 import {push, replace} from 'connected-react-router';
 import { IStore } from 'redux/IStore';
-import {Action, bindActionCreators} from 'redux';
+import {Action, bindActionCreators, Dispatch} from 'redux';
 import { connect } from 'react-redux';
 
 export function setURL(url: string, search?: string) {
-  return (dispatch, getState): void => {
-    const routerState = (getState() as IStore).router.location;
+  return (dispatch: Dispatch, getState: () => IStore): void => {
+    const routerState = getState().router.location;
     if (routerState.pathname === url) {
       return;
     }
@@ -23,11 +23,13 @@ export function replaceSearchAction(search: string): Action {
 }
 
 export interface IURLConnector {
-    setURL?(url: string, search?: string);
+    setURL?(url: string, search?: string): void;
 }
 
+export const UrlConnector = (dispatch: Dispatch): IURLConnector => ({
+  setURL: bindActionCreators(setURL, dispatch),
+});
+
 export const UrlHOC = <P extends IURLConnector>(WrappedComponent: React.ComponentType<P>): React.ComponentType<P> => {
-  return connect<P>(undefined, (dispatch) => ({
-    setURL: bindActionCreators(setURL, dispatch),
-  }))(WrappedComponent);
+  return connect<P>(undefined, UrlConnector)(WrappedComponent);
 }

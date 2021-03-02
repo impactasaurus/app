@@ -23,29 +23,24 @@ interface IProps {
   className?: string;
 }
 
-class ListInner extends React.Component<IProps, any> {
+const ListInner = (p: IProps) => {
 
-  constructor(props) {
-    super(props);
-    this.renderQuestion = this.renderQuestion.bind(this);
-  }
-
-  private renderQuestion(q: Question, idx: number) {
-    if (this.props.editedQuestionID && this.props.editedQuestionID === q.id) {
-      return this.props.renderEditQuestionForm(q);
+  const renderQuestion = (q: Question, idx: number) => {
+    if (p.editedQuestionID && p.editedQuestionID === q.id) {
+      return p.renderEditQuestionForm(q);
     }
 
-    const draggable = !(this.props.editedQuestionID !== undefined && this.props.editedQuestionID !== null);
+    const draggable = !(p.editedQuestionID !== undefined && p.editedQuestionID !== null);
 
     return (
       <ListItem
         key={q.id}
-        questionnaire={this.props.questionnaire}
-        categoryPillStyle={this.props.getCategoryPillClass(q.categoryID)}
-        deleteQuestion={this.props.deleteQuestion(q.id)}
-        editQuestion={this.props.setEditedQuestionId(q.id)}
-        outcomeSetID={this.props.outcomeSetID}
-        readOnly={this.props.readOnly}
+        questionnaire={p.questionnaire}
+        categoryPillStyle={p.getCategoryPillClass(q.categoryID)}
+        deleteQuestion={p.deleteQuestion(q.id)}
+        editQuestion={p.setEditedQuestionId(q.id)}
+        outcomeSetID={p.outcomeSetID}
+        readOnly={p.readOnly}
         question={q}
         index={idx}
         draggable={draggable}
@@ -54,17 +49,15 @@ class ListInner extends React.Component<IProps, any> {
     );
   }
 
-  public render() {
-    if (this.props.questionnaire === undefined) {
-      return (<div />);
-    }
-    return (
-      <SemanticUIList divided={true} relaxed={true} verticalAlign="middle" className={this.props.className+' list question'}>
-        {renderArray(this.renderQuestion, getQuestions(this.props.questionnaire))}
-        {this.props.readOnly !== true && this.props.newQuestionControl}
-      </SemanticUIList>
-    );
+  if (p.questionnaire === undefined) {
+    return (<div />);
   }
+  return (
+    <SemanticUIList divided={true} relaxed={true} verticalAlign="middle" className={p.className+' list question'}>
+      {renderArray(renderQuestion, getQuestions(p.questionnaire))}
+      {p.readOnly !== true && p.newQuestionControl}
+    </SemanticUIList>
+  );
 }
 
 export const List = SortableContainer(ListInner);

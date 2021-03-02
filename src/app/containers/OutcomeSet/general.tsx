@@ -3,12 +3,12 @@ import {IOutcomeResult, getOutcomeSet, IOutcomeMutation, editQuestionSet} from '
 import {FormField} from 'components/FormField';
 import { Icon, Input, Form, TextArea } from 'semantic-ui-react';
 import {Hint} from 'components/Hint';
-import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
-const strings = require('./../../../strings.json');
+import {FormikBag, FormikErrors, FormikValues, FormikProps, withFormik} from 'formik';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-interface IProps extends IOutcomeMutation {
-  data: IOutcomeResult;
-  match: {
+interface IProps extends IOutcomeMutation, Partial<WithTranslation> {
+  data?: IOutcomeResult;
+  match?: {
     params: {
       id: string,
     },
@@ -21,29 +21,34 @@ interface IFormOutput {
   instructions?: string;
 }
 
-const InnerForm = (props: InjectedFormikProps<any, IFormOutput>) => {
-  const { touched, status, errors, isSubmitting, values, submitForm, isValid, handleChange, handleBlur, handleReset, dirty } = props;
+const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
+  const { touched, status, errors, isSubmitting, values, submitForm, isValid, handleChange, handleBlur, handleReset, dirty, t } = props;
   const standardProps = {
     onChange: handleChange,
     onBlur: handleBlur,
   };
-  const instructionLabel = <span><Hint text={strings.instructionsExplanation} />Instructions</span>;
+  const instructionLabel = (<span>
+    <Hint text={t("Instructions are shown to beneficiaries before they begin a questionnaire")} />
+    {t("Instructions")}
+  </span>);
   return (
     <Form className="screen" onSubmit={submitForm}>
-      <FormField error={errors.name as string} touched={touched.name} inputID="qg-name" required={true} label="Name">
-        <Input id="qg-name" name="name" type="text" placeholder="Name" value={values.name} {...standardProps}/>
+      <FormField error={errors.name as string} touched={touched.name} inputID="qg-name" required={true} label={t("Name")}>
+        <Input id="qg-name" name="name" type="text" placeholder={t("Name")} value={values.name} {...standardProps}/>
       </FormField>
-      <FormField error={errors.description as string} touched={touched.description} inputID="qg-description" label="Description">
-        <Input id="qg-description" name="description" type="text" placeholder="Description" value={values.description} {...standardProps}/>
+      <FormField error={errors.description as string} touched={touched.description} inputID="qg-description" label={t("Description")}>
+        <Input id="qg-description" name="description" type="text" placeholder={t("Description")} value={values.description} {...standardProps}/>
       </FormField>
       <FormField error={errors.instructions as string} touched={touched.instructions} inputID="qg-instructions" label={instructionLabel}>
-        <TextArea id="qg-instructions" name="instructions" type="text" placeholder="Instructions" value={values.instructions} autoHeight={true} {...standardProps}/>
+        <TextArea id="qg-instructions" name="instructions" type="text" placeholder={t("Instructions")} value={values.instructions} autoHeight={true} {...standardProps}/>
       </FormField>
       <Form.Group>
-        <Form.Button disabled={!dirty} onClick={handleReset}>Cancel</Form.Button>
-        <Form.Button type="submit" primary={true} disabled={!dirty || !isValid || isSubmitting} loading={isSubmitting}>Save</Form.Button>
+        <Form.Button disabled={!dirty} onClick={handleReset}>{t("Cancel")}</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!dirty || !isValid || isSubmitting} loading={isSubmitting}>{t("Save")}</Form.Button>
       </Form.Group>
-      {status && <span className="submit-error"><Icon name="exclamation" />Editing the questionnaire failed. {strings.formFailureGeneric}</span>}
+      {status && <span className="submit-error"><Icon name="exclamation" />
+        {t("Editing the questionnaire failed.")} {t("Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org")}
+      </span>}
     </Form>
   );
 };
@@ -85,4 +90,5 @@ const GeneralInner = withFormik<IProps, IFormOutput>({
   validateOnMount: true,
 })(InnerForm);
 
-export const General = editQuestionSet<IProps>(getOutcomeSet<IProps>((props) => props.match.params.id)(GeneralInner));
+const GeneralTranslated = withTranslation()(GeneralInner);
+export const General = editQuestionSet<IProps>(getOutcomeSet<IProps>((props) => props.match.params.id)(GeneralTranslated));

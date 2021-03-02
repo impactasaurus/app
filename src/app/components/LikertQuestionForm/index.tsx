@@ -6,18 +6,14 @@ import {ILabel, ILikertQuestionForm, ILikertForm} from 'models/question';
 import {LikertFormField} from 'components/LikertFormField';
 import {FormField} from 'components/FormField';
 import {Hint} from 'components/Hint';
+import {FormikBag, FormikErrors, FormikProps, FormikValues, withFormik} from 'formik';
+import ReactGA from 'react-ga';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import './style.less';
-import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
-const ReactGA = require('react-ga');
-const formFailureGeneric = require('../../../strings.json').formFailureGeneric;
 
-interface IInnerFormProps {
-  onCancel: ()=>void;
-  submitButtonText: string;
-  edit?: boolean;
-}
+interface IProps extends WithTranslation {
+  data?: IOutcomeResult;
 
-interface IExternalProps {
   QuestionSetID: string;
   OnSuccess: ()=>void;
   onCancel: ()=>void;
@@ -27,18 +23,8 @@ interface IExternalProps {
   submitButtonText: string;
 }
 
-interface IProps extends IExternalProps {
-  data?: IOutcomeResult;
-}
-
-const shortenedLabel: JSX.Element = (
-  <span>
-    Shortened Form <Hint text="Shortened form of the question. Used instead of the question, when reviewing data in visualisations and exports"/>
-  </span>
-);
-
-const InnerForm = (props: InjectedFormikProps<IInnerFormProps, ILikertQuestionForm>) => {
-  const { touched, values, status, errors, isSubmitting, handleChange, onCancel, edit, dirty,
+const InnerForm = (props: IProps & FormikProps<ILikertQuestionForm>) => {
+  const { touched, values, status, errors, isSubmitting, handleChange, onCancel, edit, dirty, t,
           submitForm, handleBlur, isValid, submitButtonText, setFieldValue, setFieldTouched} = props;
   const categoryOptions = (values as any).categoryOptions;
 
@@ -66,22 +52,29 @@ const InnerForm = (props: InjectedFormikProps<IInnerFormProps, ILikertQuestionFo
     setFieldTouched('categoryID');
   };
 
+  const shortenedLabel: JSX.Element = (
+    <span>
+      {t("Shortened Form")}
+      <Hint text={t("Shortened form of the question. Used instead of the question, when reviewing data in visualisations and exports")}/>
+    </span>
+  );
+
   return (
     <Form onSubmit={submitForm}>
       <Form.Group>
-        <FormField error={errors.question as string} touched={touched.question} inputID="lqf-question" label="Question" required={true} width={12}>
-          <Input id="lqf-question" name="question" type="text" placeholder="Question" autoFocus={true} value={values.question} {...standardActions} />
+        <FormField error={errors.question as string} touched={touched.question} inputID="lqf-question" label={t("Question")} required={true} width={12}>
+          <Input id="lqf-question" name="question" type="text" placeholder={t("Question")} autoFocus={true} value={values.question} {...standardActions} />
         </FormField>
         <FormField error={errors.short as string} touched={touched.short} inputID="lqf-short" label={shortenedLabel} width={4}>
-          <Input id="lqf-short" name="short" type="text" placeholder="Shortened Form" value={values.short} {...standardActions} />
+          <Input id="lqf-short" name="short" type="text" placeholder={t("Shortened Form")} value={values.short} {...standardActions} />
         </FormField>
       </Form.Group>
       <Form.Group>
-        <FormField error={errors.description as string} touched={touched.description} inputID="lqf-desc" label="Description" width={12}>
-          <Input id="lqf-desc" name="description" type="text" placeholder="Description" value={values.description} {...standardActions} />
+        <FormField error={errors.description as string} touched={touched.description} inputID="lqf-desc" label={t("Description")} width={12}>
+          <Input id="lqf-desc" name="description" type="text" placeholder={t("Description")} value={values.description} {...standardActions} />
         </FormField>
-        <FormField error={errors.categoryID as string} touched={touched.categoryID} inputID="lqf-cat" label="Category" width={4}>
-          <Select id="lqf-cat" options={categoryOptions} placeholder="Category" value={values.categoryID} onChange={onCategoryChanged} onBlur={onCategoryBlur} />
+        <FormField error={errors.categoryID as string} touched={touched.categoryID} inputID="lqf-cat" label={t("Category")} width={4}>
+          <Select id="lqf-cat" options={categoryOptions} placeholder={t("Category")} value={values.categoryID} onChange={onCategoryChanged} onBlur={onCategoryBlur} />
         </FormField>
       </Form.Group>
       <LikertFormField
@@ -92,7 +85,7 @@ const InnerForm = (props: InjectedFormikProps<IInnerFormProps, ILikertQuestionFo
           rightValue: values.rightValue,
         }}
         errors={{
-          labels: errors.labels as any,
+          labels: errors.labels as string,
           leftValue: errors.leftValue as string,
           rightValue: errors.rightValue as string,
         }}
@@ -104,32 +97,36 @@ const InnerForm = (props: InjectedFormikProps<IInnerFormProps, ILikertQuestionFo
         onChange={setLikertOptions}
       />
       <Form.Group>
-        <Form.Button onClick={onCancel}>Cancel</Form.Button>
+        <Form.Button onClick={onCancel}>{t("Cancel")}</Form.Button>
         <Form.Button type="submit" primary={true} disabled={!dirty || !isValid || isSubmitting} loading={isSubmitting}>{submitButtonText}</Form.Button>
       </Form.Group>
-      {status && <span className="submit-error"><Icon name="exclamation" />Saving the question failed. {formFailureGeneric}</span>}
+      {status &&
+        <span className="submit-error"><Icon name="exclamation" />
+          {t("Saving the question failed.")} {t("Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org")}
+        </span>}
     </Form>
   );
 };
 
 const LikertQuestionFormInner = withFormik<IProps, ILikertQuestionForm>({
-  validate: (values: ILikertQuestionForm) => {
+  validate: (values: ILikertQuestionForm, p: IProps) => {
+    const {t} = p;
     const errors: FormikErrors<ILikertQuestionForm> = {};
     if (!values.question || typeof values.question !== 'string' || values.question.length === 0) {
-      errors.question = 'Please enter a question';
+      errors.question = t('Please enter a question');
     }
     if (values.leftValue === undefined || typeof values.leftValue !== 'number') {
-      errors.leftValue = 'Please enter a value for the left extreme of the scale' as any;
+      errors.leftValue = t('Please enter a value for the left extreme of the scale');
     }
     if (values.rightValue === undefined || typeof values.rightValue !== 'number') {
-      errors.leftValue = 'Please enter a value for the right extreme of the scale' as any;
+      errors.leftValue = t('Please enter a value for the right extreme of the scale');
     }
     if (values.leftValue === values.rightValue) {
-      errors.leftValue = 'The left and right values cannot be equal' as any;
+      errors.leftValue = t('The left and right values cannot be equal');
     }
     const findLabelForValue = (val: number): ILabel|undefined => values.labels.find((l) => l.value === val);
     if (findLabelForValue(values.leftValue) === undefined || findLabelForValue(values.rightValue) === undefined) {
-      errors.labels = 'Please set labels for at least the left and right extremes of the scale' as any;
+      errors.labels = t('Please set labels for at least the left and right extremes of the scale');
     }
     return errors;
   },
@@ -160,7 +157,9 @@ const LikertQuestionFormInner = withFormik<IProps, ILikertQuestionForm>({
   validateOnMount: true,
 })(InnerForm);
 
-export const LikertQuestionForm = getOutcomeSet<IProps>((props) => props.QuestionSetID)(LikertQuestionFormInner);
+const LikertQuestionFormData = getOutcomeSet<IProps>((props) => props.QuestionSetID)(LikertQuestionFormInner);
+const LikertQuestionFormTranslated = withTranslation()(LikertQuestionFormData);
+export const LikertQuestionForm = LikertQuestionFormTranslated;
 
 function logQuestionGAEvent(action) {
   ReactGA.event({
@@ -181,7 +180,7 @@ function getCategoryOptions(p: IProps): DropdownItemProps[] {
   categories.unshift({
     key: null,
     value: null,
-    text: 'No Category',
+    text: p.t('No Category'),
   });
   return categories;
 }

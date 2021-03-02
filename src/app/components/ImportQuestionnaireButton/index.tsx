@@ -1,9 +1,8 @@
-import * as React from 'react';
+import React, {useState} from 'react';
 import {Button, ButtonProps, Popup, Icon, SemanticICONS} from 'semantic-ui-react';
 import {ICatalogueImport, importQuestionnaire} from '../../apollo/modules/catalogue';
-import {IURLConnector, setURL} from '../../redux/modules/url';
-import {bindActionCreators} from 'redux';
-const { connect } = require('react-redux');
+import {IURLConnector, UrlHOC} from '../../redux/modules/url';
+import { useTranslation } from 'react-i18next';
 
 interface IProps extends ICatalogueImport, IURLConnector {
   questionnaireID: string;
@@ -11,65 +10,47 @@ interface IProps extends ICatalogueImport, IURLConnector {
   options?: ButtonProps;
 }
 
-interface IState {
-  loading: boolean;
-  error: boolean;
-}
+const Inner = (p: IProps) => {
 
-@connect(undefined, (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-}))
-class Inner extends React.Component<IProps, IState> {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const {t} = useTranslation();
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      loading: false,
-      error: false,
-    };
-    this.import = this.import.bind(this);
-  }
-
-  private import() {
-    this.setState({
-      loading: true,
-      error: false,
-    });
-    this.props.importQuestionnaire(this.props.questionnaireID)
+  const importQuestionnaire = () => {
+    setLoading(true);
+    setError(false);
+    p.importQuestionnaire(p.questionnaireID)
       .then(() => {
-        this.props.setURL('/questions');
+        p.setURL('/questions');
       })
       .catch(() => {
-        this.setState({
-          loading: false,
-          error: true,
-        });
+        setLoading(false);
+        setError(true);
       });
   }
 
-  public render() {
-    const options: ButtonProps = {...this.props.options};
-    let icon: SemanticICONS = 'add';
-    const text = 'Add to your questionnaires';
-    let popup = text;
-    if (this.state.error) {
-      options.color = 'red';
-      icon = 'close';
-      popup = 'Failed to import';
-    } else {
-      options.primary = true;
-    }
-    if (this.props.text) {
-      options.children = <span><Icon name={icon} />{text}</span>;
-    } else {
-      options.icon = icon;
-    }
-    return (
-      <Popup content={popup} trigger={(
-        <Button onClick={this.import} loading={this.state.loading} {...options} />
-      )} />
-    );
+  const options: ButtonProps = {...p.options};
+  let icon: SemanticICONS = 'add';
+  const text = t('Add to your questionnaires');
+  let popup = text;
+  if (error) {
+    options.color = 'red';
+    icon = 'close';
+    popup = t('Failed to import');
+  } else {
+    options.primary = true;
   }
+  if (p.text) {
+    options.children = <span><Icon name={icon} />{text}</span>;
+  } else {
+    options.icon = icon;
+  }
+  return (
+    <Popup content={popup} trigger={(
+      <Button onClick={importQuestionnaire} loading={loading} {...options} />
+    )} />
+  );
 }
 
-export const ImportQuestionnaireButton = importQuestionnaire<IProps>(Inner);
+const InnerConnected = UrlHOC(Inner);
+export const ImportQuestionnaireButton = importQuestionnaire<IProps>(InnerConnected);
