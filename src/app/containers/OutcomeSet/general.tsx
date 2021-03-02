@@ -47,7 +47,7 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
         <Form.Button type="submit" primary={true} disabled={!dirty || !isValid || isSubmitting} loading={isSubmitting}>{t("Save")}</Form.Button>
       </Form.Group>
       {status && <span className="submit-error"><Icon name="exclamation" />
-        {t("Editing the questionnaire failed. Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org")}
+        {t("Editing the questionnaire failed.")} {t("Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org")}
       </span>}
     </Form>
   );

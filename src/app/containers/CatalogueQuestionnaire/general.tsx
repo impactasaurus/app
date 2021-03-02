@@ -4,7 +4,7 @@ import {Hint} from 'components/Hint';
 import { Form } from 'semantic-ui-react';
 import {getCatalogueQuestionnaire, ICatalogueQuestionnaire} from 'apollo/modules/catalogue';
 import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
-const strings = require('./../../../strings.json');
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
   data: ICatalogueQuestionnaire;
@@ -15,29 +15,32 @@ interface IProps {
   };
 }
 
-const GeneralReadOnlyForm = (p: IProps) => (
-  <Form className="screen">
-    <FormField touched={false} inputID="qg-name" required={true} label="Name">
-      <span>{p.data.getCatalogueQuestionnaire.outcomeset.name}</span>
-    </FormField>
-    <FormField touched={false} inputID="qg-description" label="Description">
-      <span>{p.data.getCatalogueQuestionnaire.outcomeset.description}</span>
-    </FormField>
-    <FormField touched={false} inputID="qg-license" label="License">
-      <span>{p.data.getCatalogueQuestionnaire.license}</span>
-    </FormField>
-    {p.data.getCatalogueQuestionnaire.attribution && (
-      <FormField touched={false} inputID="qg-attr" label="Attribution">
-        <span>{p.data.getCatalogueQuestionnaire.attribution}</span>
+const GeneralReadOnlyForm = (p: IProps) => {
+  const {t} = useTranslation();
+  return (
+    <Form className="screen">
+      <FormField touched={false} inputID="qg-name" required={true} label={t("Name")}>
+        <span>{p.data.getCatalogueQuestionnaire.outcomeset.name}</span>
       </FormField>
-    )}
-    <FormField touched={false} inputID="qg-instructions" label={(
-      <span><Hint text={strings.instructionsExplanation} />Instructions</span>
-    )}>
-      <span>{p.data.getCatalogueQuestionnaire.outcomeset.instructions}</span>
-    </FormField>
-  </Form>
-);
+      <FormField touched={false} inputID="qg-description" label={t("Description")}>
+        <span>{p.data.getCatalogueQuestionnaire.outcomeset.description}</span>
+      </FormField>
+      <FormField touched={false} inputID="qg-license" label={t("License")}>
+        <span>{p.data.getCatalogueQuestionnaire.license}</span>
+      </FormField>
+      {p.data.getCatalogueQuestionnaire.attribution && (
+        <FormField touched={false} inputID="qg-attr" label={t("Attribution")}>
+          <span>{p.data.getCatalogueQuestionnaire.attribution}</span>
+        </FormField>
+      )}
+      <FormField touched={false} inputID="qg-instructions" label={(
+        <span><Hint text={t("Instructions are shown to beneficiaries before they begin a questionnaire")} />{t("Instructions")}</span>
+      )}>
+        <span>{p.data.getCatalogueQuestionnaire.outcomeset.instructions}</span>
+      </FormField>
+    </Form>
+  );
+};
 
 const GeneralInner = ApolloLoaderHoC<IProps>('questionnaire', (p: IProps) => p.data, GeneralReadOnlyForm);
 

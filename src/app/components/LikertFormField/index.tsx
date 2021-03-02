@@ -5,7 +5,7 @@ import { Likert } from 'components/Likert';
 import './style.less';
 import {ILabel, ILikertForm} from 'models/question';
 import {isNullOrUndefined} from 'util';
-const strings = require('./../../../strings.json');
+import { withTranslation, WithTranslation } from 'react-i18next';
 
 interface ILikertFormFields<T> {
   labels: T;
@@ -13,7 +13,7 @@ interface ILikertFormFields<T> {
   rightValue: T;
 }
 
-interface IProps  {
+interface IProps extends WithTranslation {
   onChange(likert: ILikertForm);
   edit: boolean;
   values: ILikertForm;
@@ -46,7 +46,7 @@ const replaceLabel = (oldVal: number, newVal: number, label: string, labels: ILa
   }, removedOldLabel);
 };
 
-class LikertFormField extends React.Component<IProps, IState> {
+class LikertFormFieldInner extends React.Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
@@ -132,29 +132,32 @@ class LikertFormField extends React.Component<IProps, IState> {
       props.autoFocus = true;
     }
     const editedLabel = this.props.values.labels.find((l) => l.value === this.state.selectedLabel);
-    const {errors, touched} = this.props;
-    const desc = 'Click a point on the scale to set or edit labels';
+    const {errors, touched, t} = this.props;
+    const desc = t('Click a point on the scale to set or edit labels');
     return (
-      <FormField description={desc} key={'fflc-'+this.state.selectedLabel} error={errors.labels as string} touched={touched.labels} inputID="lff-labels" label="Scale Labels" required={true}>
-        <Input {...props} id="lff-labels" name="labels" placeholder="Label for highlighted point" value={editedLabel ? editedLabel.label : ''} onChange={this.setLabel} />
+      <FormField description={desc} key={'fflc-'+this.state.selectedLabel} error={errors.labels as string} touched={touched.labels} inputID="lff-labels" label={t("Scale Labels")} required={true}>
+        <Input {...props} id="lff-labels" name="labels" placeholder={t("Label for highlighted point")} value={editedLabel ? editedLabel.label : ''} onChange={this.setLabel} />
       </FormField>
     );
   }
 
   private renderValueInputs(): JSX.Element {
-    if (this.props.edit) {
-      return (<Message content={strings.valuesNotEditable} info={true}/>);
+    const {errors, touched, values, t, edit} = this.props;
+    if (edit) {
+      return (<Message
+        content={t("We do not allow the values of the scale to be edited to ensure data consistency. If you would like to change them, please delete this question and recreate it or contact support@impactasaurus.org")}
+        info={true}
+      />);
     }
-    const {errors, touched, values} = this.props;
     return (
       <div>
         <Form.Group>
-          <FormField error={errors.leftValue as string} touched={touched.leftValue} inputID="lff-left" label="Left Value" required={true} width={4}>
-            <Input id="lff-left" name="leftValue" type="number" placeholder="Left Value" value={values.leftValue} onChange={this.setLeftValue} />
+          <FormField error={errors.leftValue as string} touched={touched.leftValue} inputID="lff-left" label={t("Left Value")} required={true} width={4}>
+            <Input id="lff-left" name="leftValue" type="number" placeholder={t("Left Value")} value={values.leftValue} onChange={this.setLeftValue} />
           </FormField>
           <Form.Input className="padding" width={8} />
-          <FormField error={errors.rightValue as string} touched={touched.rightValue} inputID="lff-right" label="Right Value" required={true} width={4}>
-            <Input id="lff-right" name="rightValue" type="number" placeholder="Right Value" value={values.rightValue} onChange={this.setRightValue} />
+          <FormField error={errors.rightValue as string} touched={touched.rightValue} inputID="lff-right" label={t("Right Value")} required={true} width={4}>
+            <Input id="lff-right" name="rightValue" type="number" placeholder={t("Right Value")} value={values.rightValue} onChange={this.setRightValue} />
           </FormField>
         </Form.Group>
       </div>
@@ -186,4 +189,5 @@ class LikertFormField extends React.Component<IProps, IState> {
   }
 }
 
+const LikertFormField = withTranslation()(LikertFormFieldInner);
 export { LikertFormField };

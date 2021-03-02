@@ -61,7 +61,7 @@ const InnerForm = (props: IProps & FormikProps<IQuestionCategory>) => {
         <Form.Button type="submit" primary={true} disabled={!dirty || !isValid || isSubmitting} loading={isSubmitting}>{submitButtonText}</Form.Button>
       </Form.Group>
       {status && <span className="submit-error"><Icon name="exclamation" />
-        {t("Saving the category failed. Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org")}
+        {t("Saving the category failed.")} {t("Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org")}
       </span>}
     </Form>
   );

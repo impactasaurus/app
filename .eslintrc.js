@@ -32,7 +32,7 @@ module.exports = {
     "react/display-name": "warn",
     "i18next/no-literal-string": ["warn", {
       markupOnly: true,
-      ignoreAttribute: ["icon", "inline", "name", "inputID", "to", "path", "size", "as", "floated", "verticalAlign", "textAlign", "position", "href", "target"]
+      ignoreAttribute: ["icon", "inline", "name", "inputID", "to", "path", "size", "as", "floated", "verticalAlign", "textAlign", "position", "href", "target", "axis", "lockAxis"]
     }]
   }
 };

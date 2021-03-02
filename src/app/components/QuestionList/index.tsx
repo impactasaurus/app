@@ -6,12 +6,13 @@ import { Loader, Message, List } from 'semantic-ui-react';
 import {NewLikertQuestion} from 'components/NewLikertQuestion';
 import {EditLikertQuestion} from 'components/EditLikertQuestion';
 import {List as QList} from './List';
-import './style.less';
 import {isNullOrUndefined} from 'util';
 import {getQuestions} from 'helpers/questionnaire';
-const ReactGA = require('react-ga');
+import ReactGA from 'react-ga';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import './style.less';
 
-interface IProps extends IQuestionMutation, IQuestionMover {
+interface IProps extends IQuestionMutation, IQuestionMover, WithTranslation {
   questionnaire: IOutcomeSet;
   outcomeSetID: string;
   readOnly?: boolean; // defaults to false
@@ -115,7 +116,8 @@ class QuestionListInner extends React.Component<IProps, IState> {
   }
 
   private renderEditQuestionForm(q: Question): JSX.Element {
-    return wrapQuestionForm('Edit Likert Question', (
+    const {t} = this.props;
+    return wrapQuestionForm(t('Edit Likert Question'), (
       <EditLikertQuestion
         key={'edit-' + q.id}
         question={q}
@@ -131,6 +133,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
   }
 
   private renderNewQuestionControl(): JSX.Element {
+    const {t} = this.props;
     if (this.state.newQuestionClicked === true) {
       let defaults: ILikertForm;
       const qs = getQuestions(this.props.questionnaire) || [];
@@ -145,7 +148,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
       return (
         <List.Item className="new-control">
           <List.Content>
-            {wrapQuestionForm('New Likert Question', (
+            {wrapQuestionForm(t('New Likert Question'), (
               <NewLikertQuestion
                 QuestionSetID={this.props.outcomeSetID}
                 OnSuccess={this.setNewQuestionClicked(false)}
@@ -160,7 +163,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
       return (
         <List.Item className="new-control">
           <List.Content onClick={this.setNewQuestionClicked(true)}>
-            <List.Header as="a">New Question</List.Header>
+            <List.Header as="a">{t("New Question")}</List.Header>
           </List.Content>
         </List.Item>
       );
@@ -232,5 +235,6 @@ class QuestionListInner extends React.Component<IProps, IState> {
     );
   }
 }
-const QuestionList = moveQuestion<IProps>(deleteQuestion<IProps>(QuestionListInner));
+const QuestionListConnected = moveQuestion<IProps>(deleteQuestion<IProps>(QuestionListInner));
+const QuestionList = withTranslation()(QuestionListConnected);
 export { QuestionList };

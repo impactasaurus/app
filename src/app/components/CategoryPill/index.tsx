@@ -2,11 +2,12 @@ import * as React from 'react';
 import {ICategoryMutation, setCategory} from 'apollo/modules/categories';
 import {ICategory} from 'models/category';
 import { Label, Select, Loader } from 'semantic-ui-react';
-import './style.less';
 import {IOutcomeSet} from 'models/outcomeSet';
-const ReactGA = require('react-ga');
+import { WithTranslation, withTranslation } from 'react-i18next';
+import ReactGA from 'react-ga';
+import './style.less';
 
-interface IProps extends ICategoryMutation {
+interface IProps extends ICategoryMutation, WithTranslation {
   questionID: string;
   outcomeSetID: string;
   questionnaire: IOutcomeSet;
@@ -76,7 +77,7 @@ class CategoryPillInner extends React.Component<IProps, IState> {
     categories.unshift({
         key: null,
         value: null,
-        text: 'No Category',
+        text: this.props.t('No Category'),
     });
     return categories;
   }
@@ -145,22 +146,19 @@ class CategoryPillInner extends React.Component<IProps, IState> {
     })
     .catch(() => {
       this.setState({
-        error: 'Setting category failed',
+        error: this.props.t('Setting category failed'),
         settingCategory: null,
       });
     });
   }
 
-  private renderEditControl(): JSX.Element {
-    return (<Select placeholder="Select new category" options={this.getCategoryOptions()} onChange={this.setCategory} />);
-  }
-
   public render() {
-    if (!this.props.questionnaire) {
+    const {t, questionnaire} = this.props;
+    if (!questionnaire) {
       return this.renderPill('empty', 'Loading...', true);
     }
     if (this.state.editClicked) {
-      return this.renderEditControl();
+      return (<Select placeholder={t("Select new category")} options={this.getCategoryOptions()} onChange={this.setCategory} />);
     }
     if (this.state.settingCategory !== null) {
       return this.renderSavingControl();
@@ -168,21 +166,22 @@ class CategoryPillInner extends React.Component<IProps, IState> {
     if (this.state.error !== null) {
       return this.renderPill('failure', this.state.error);
     }
-    const os = this.props.questionnaire;
-    const q = os.questions.find((q) => q.id === this.props.questionID);
+
+    const q = questionnaire.questions.find((q) => q.id === this.props.questionID);
     if (q === undefined) {
-      return this.renderPill('empty', 'Unknown Category');
+      return this.renderPill('empty', t('Unknown Category'));
     }
     if (q.categoryID === null || q.categoryID === undefined) {
-      return this.renderPill('empty', 'No Category');
+      return this.renderPill('empty', t('No Category'));
     }
     const cat = this.getCategory(q.categoryID);
     if (cat === null || cat === undefined) {
-      return this.renderPill('empty', 'Unknown Category');
+      return this.renderPill('empty', t('Unknown Category'));
     }
     return this.renderPill('set', cat.name);
   }
 }
 
-const CategoryPill = setCategory<IProps>(CategoryPillInner);
+const CategoryPillConnected = setCategory<IProps>(CategoryPillInner);
+const CategoryPill = withTranslation()(CategoryPillConnected);
 export { CategoryPill };

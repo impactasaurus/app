@@ -4,6 +4,7 @@ import {IOutcomeSet} from 'models/outcomeSet';
 import {LikertQuestionForm} from '../LikertQuestionForm/index';
 import {ILikertQuestionForm, Question} from 'models/question';
 import {ICategoryMutation, setCategory} from '../../apollo/modules/categories';
+import { useTranslation } from 'react-i18next';
 
 interface IProps extends IQuestionMutation, ICategoryMutation {
   QuestionSetID: string;
@@ -12,45 +13,40 @@ interface IProps extends IQuestionMutation, ICategoryMutation {
   question: Question;
 }
 
-class EditLikertQuestionInner extends React.Component<IProps, any> {
+const EditLikertQuestionInner = (p: IProps) => {
 
-  constructor(props) {
-    super(props);
-    this.editQuestion = this.editQuestion.bind(this);
-  }
-
-  private editQuestion(q: ILikertQuestionForm): Promise<IOutcomeSet> {
-    let p = this.props.editLikertQuestion(this.props.QuestionSetID, this.props.question.id, q.question, q.description, q.short, q.labels);
-    if (q.categoryID !== this.props.question.categoryID) {
-      p = p.then(() => {
-        return this.props.setCategory(this.props.QuestionSetID, this.props.question.id, q.categoryID);
+  const editQuestion = (q: ILikertQuestionForm): Promise<IOutcomeSet> => {
+    let prom = p.editLikertQuestion(p.QuestionSetID, p.question.id, q.question, q.description, q.short, q.labels);
+    if (q.categoryID !== p.question.categoryID) {
+      prom = prom.then(() => {
+        return p.setCategory(p.QuestionSetID, p.question.id, q.categoryID);
       });
     }
-    return p;
+    return prom;
   }
 
-  public render() {
-    const q = this.props.question;
+  const q = p.question;
+  const {t} = useTranslation();
 
-    return (
-      <LikertQuestionForm
-        edit={true}
-        values={{
-          question:q.question,
-          categoryID: q.categoryID,
-          description: q.description,
-          short: q.short,
-          labels: q.labels,
-          leftValue: q.leftValue,
-          rightValue: q.rightValue,
-        }}
-        submitButtonText="Save changes"
-        onSubmitButtonClick={this.editQuestion}
-        onCancel={this.props.OnCancel}
-        {...this.props}
-      />
-    );
-  }
+  return (
+    <LikertQuestionForm
+      edit={true}
+      values={{
+        question:q.question,
+        categoryID: q.categoryID,
+        description: q.description,
+        short: q.short,
+        labels: q.labels,
+        leftValue: q.leftValue,
+        rightValue: q.rightValue,
+      }}
+      submitButtonText={t("Save changes")}
+      onSubmitButtonClick={editQuestion}
+      onCancel={p.OnCancel}
+      {...p}
+    />
+  );
+
 }
 
 const EditLikertQuestion = setCategory<IProps>(editLikertQuestion<IProps>(EditLikertQuestionInner));
