@@ -1,6 +1,4 @@
-@smallScreenIcon: ~'i.icon:not(.required)';
-
-
+@smallScreenIcon: ~'i.icon.replacement';
 
 #impactasaurus {
   .menu.massive {
@@ -9,52 +7,55 @@
       display: none;
     }
 
-    #twitter-icon {
-      width: 25px;
-      height: 25px;
+    .item i {
+      font-size: 0.7em !important;
     }
 
     .item.icon-menu-item {
       padding: 0.5em 1em;
     }
 
-    i.icon {
-      margin: 0px;
+    #user-menu .text {
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    @{smallScreenIcon} {
-      display: none;
-    }
-
-    @media only screen and (max-width: 920px) {
-      #twitter-menu-link {
-        display: none;
-      }
-      .right .title, #home-link .title {
+    @media only screen and (max-width: 1030px) {
+      .right .title {
         display: none;
       }
       .right @{smallScreenIcon} {
-        display: block;
+        margin: 0px;
+        font-size: 1em !important;
       }
     }
 
-    @media only screen and (max-width: 650px) {
+    @media only screen and (max-width: 930px) {
+      #home-link .title {
+        display: none;
+      }
+    }
+
+    @media only screen and (max-width: 790px) {
       .title {
         display: none;
       }
       @{smallScreenIcon} {
-        display: block;
+        margin: 0px;
+        font-size: 1em !important;
       }
     }
 
-    @media only screen and (max-width: 450px) {
+    @media only screen and (max-width: 560px) {
       .item {
         padding-left: 0.8em;
         padding-right: 0.8em;
       }
     }
 
-    @media only screen and (max-width: 385px) {
+    @media only screen and (max-width: 450px) {
       .right .item {
         display: none;
       }

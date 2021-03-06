@@ -1,15 +1,14 @@
 import * as React from 'react';
-import { Menu, Icon } from 'semantic-ui-react';
+import { Menu, Icon, Dropdown } from 'semantic-ui-react';
 import { bindActionCreators } from 'redux';
 import { IStore } from 'redux/IStore';
 import {isUserLoggedIn, isBeneficiaryUser, RequestLogoutFunc, requestLogOut} from 'redux/modules/user';
 import './style.less';
 import Logo from '../Logo';
 import {Link} from 'react-router-dom';
-import { shouldLoadBranding } from 'theme/branding';
+import {getUserName} from 'helpers/auth';
 import { withTranslation, WithTranslation } from 'react-i18next';
 const { connect } = require('react-redux');
-const TwitterIcon = require('./twitter.inline.svg');
 
 interface IProps extends WithTranslation {
   currentURL?: string;
@@ -54,15 +53,15 @@ class HeaderInner extends React.Component<IProps, any> {
             <Logo />
           </Menu.Item>
           <Menu.Item as={Link} to="/beneficiary" active={this.isActive('/beneficiary')}>
-            <Icon name="user"/>
+            <Icon name="user" className="replacement" />
             <span className="title">{t('Beneficiary')}</span>
           </Menu.Item>
           <Menu.Item as={Link} to="/report" active={this.isActive('/report')}>
-            <Icon name="line graph"/>
+            <Icon name="line graph" className="replacement" />
             <span className="title">{t('Report')}</span>
           </Menu.Item>
           <Menu.Item as={Link} to="/questions" active={this.isActive('/catalogue') || this.isActive('/questions')}>
-            <Icon name="question"/>
+            <Icon name="question" className="replacement" />
             <span className="title">{t('Questionnaires')}</span>
           </Menu.Item>
           <Menu.Item as={Link} to="/record" active={this.isActive('/record') || this.isActive('/meeting') || this.isActive('/dataentry')} id="add-menu-link">
@@ -70,19 +69,16 @@ class HeaderInner extends React.Component<IProps, any> {
           </Menu.Item>
 
           <Menu.Menu className="right" position="right">
-            {!shouldLoadBranding() &&
-              <Menu.Item as="a" href="https://twitter.com/impactasaurus" target="blank" id="twitter-menu-link" className="icon-menu-item">
-                <TwitterIcon/>
-              </Menu.Item>
-            }
             <Menu.Item as={Link} to="/settings" active={this.isActive('/settings')}>
-              <Icon name="cog"/>
+              <Icon name="cog" className="replacement" />
               <span className="title">{t('Settings')}</span>
             </Menu.Item>
-            <Menu.Item onClick={this.logOut()}>
-              <Icon name="log out"/>
-              <span className="title">{t('Log Out')}</span>
-            </Menu.Item>
+            <Dropdown item trigger={`${getUserName()}`}id="user-menu">
+              <Dropdown.Menu>
+                <Dropdown.Item as={Link} to="/profile" ><Icon name="user circle" className="required"/> {t('Profile')}</Dropdown.Item>
+                <Dropdown.Item onClick={this.logOut()}><Icon name="log out" className="required"/> {t('Log Out')}</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           </Menu.Menu>
         </Menu>
       );
