@@ -1,6 +1,4 @@
-@smallScreenIcon: ~'i.icon:not(.required)';
-
-
+@smallScreenIcon: ~'i.icon.replacement';
 
 #impactasaurus {
   .menu.massive {
@@ -9,52 +7,76 @@
       display: none;
     }
 
-    #twitter-icon {
-      width: 25px;
-      height: 25px;
+    .item i {
+      font-size: 0.7em !important;
     }
 
     .item.icon-menu-item {
       padding: 0.5em 1em;
     }
 
-    i.icon {
-      margin: 0px;
-    }
+    #user-menu {
+      padding: 0 0.9em;
 
-    @{smallScreenIcon} {
-      display: none;
-    }
-
-    @media only screen and (max-width: 920px) {
-      #twitter-menu-link {
-        display: none;
+      .item {
+        padding: 0.6em 0.8em !important;
       }
-      .right .title, #home-link .title {
+
+      .divider {
+        margin: 0.1em 0em;
+      }
+
+      #user-profile-dd-item {
+        .user-image {
+          color: white;
+          background-color: var(--brand-color);
+          display: inline-block;
+          margin-right: .6em;
+        }
+        .user-name {
+          display: inline-block;
+          max-width: 180px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    @media only screen and (max-width: 950px) {
+      .right .title {
         display: none;
       }
       .right @{smallScreenIcon} {
-        display: block;
+        margin: 0px;
+        font-size: 1em !important;
       }
     }
 
-    @media only screen and (max-width: 650px) {
+    @media only screen and (max-width: 900px) {
+      #home-link .title {
+        display: none;
+      }
+    }
+
+    @media only screen and (max-width: 750px) {
       .title {
         display: none;
       }
       @{smallScreenIcon} {
-        display: block;
+        margin: 0px;
+        font-size: 1em !important;
       }
     }
 
-    @media only screen and (max-width: 450px) {
+    @media only screen and (max-width: 520px) {
       .item {
         padding-left: 0.8em;
         padding-right: 0.8em;
       }
     }
 
-    @media only screen and (max-width: 385px) {
+    @media only screen and (max-width: 445px) {
       .right .item {
         display: none;
       }

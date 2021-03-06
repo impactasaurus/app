@@ -109,9 +109,9 @@ class Account extends React.Component<any, IState> {
       <Grid container={true} columns={1} id="Account">
         <Grid.Column>
           <Helmet>
-            <title>Account</title>
+            <title>Profile</title>
           </Helmet>
-          <h1>Account</h1>
+          <h1>Profile</h1>
           <UserSettings additionalFields={additionalFields}/>
         </Grid.Column>
       </Grid>
