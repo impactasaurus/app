@@ -18,7 +18,7 @@ var config = {
     },
     auth: {
       clientID: "pfKiAOUJh5r6jCxRn5vUYq7odQsjPUKf",
-      domain: "impact.eu.auth0.com",
+      domain: "auth.impactasaurus.org",
       scope : "openid profile email",
       connection: "Username-Password-Authentication",
       publicPages: [/login/, /jti\/.*/, /smn\/.*/, /redirect/, /signup/,  /invite\/.*/, /unsubscribe\/.*/]
