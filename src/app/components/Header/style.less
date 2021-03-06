@@ -15,14 +15,35 @@
       padding: 0.5em 1em;
     }
 
-    #user-menu .text {
-      max-width: 200px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    #user-menu {
+      padding: 0 0.9em;
+
+      .item {
+        padding: 0.6em 0.8em !important;
+      }
+
+      .divider {
+        margin: 0.1em 0em;
+      }
+
+      #user-profile-dd-item {
+        .user-image {
+          color: white;
+          background-color: var(--brand-color);
+          display: inline-block;
+          margin-right: .6em;
+        }
+        .user-name {
+          display: inline-block;
+          max-width: 180px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
     }
 
-    @media only screen and (max-width: 1030px) {
+    @media only screen and (max-width: 950px) {
       .right .title {
         display: none;
       }
@@ -32,13 +53,13 @@
       }
     }
 
-    @media only screen and (max-width: 930px) {
+    @media only screen and (max-width: 900px) {
       #home-link .title {
         display: none;
       }
     }
 
-    @media only screen and (max-width: 790px) {
+    @media only screen and (max-width: 750px) {
       .title {
         display: none;
       }
@@ -48,14 +69,14 @@
       }
     }
 
-    @media only screen and (max-width: 560px) {
+    @media only screen and (max-width: 520px) {
       .item {
         padding-left: 0.8em;
         padding-right: 0.8em;
       }
     }
 
-    @media only screen and (max-width: 450px) {
+    @media only screen and (max-width: 445px) {
       .right .item {
         display: none;
       }
