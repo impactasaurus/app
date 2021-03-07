@@ -234,7 +234,6 @@ export const getOrganisations = <T>(component, name: string = undefined) => {
     }`, {
     options: () => {
       return {
-        fetchPolicy: 'network-only',
         notifyOnNetworkStatusChange: true,
       };
     },
