@@ -218,3 +218,29 @@ export const hasOrgGeneratedReport = <T>(component, name = 'data')  => {
 export interface IHasOrgGeneratedReport extends QueryProps {
   reportGenerated?: boolean;
 }
+
+export interface IUserOrg {
+  id: string;
+  name: string;
+}
+
+export const getOrganisations = <T>(component, name: string = undefined) => {
+  return graphql<IUserOrg, T>(gql`
+    query {
+      getOrganisations: organisations {
+        id,
+        name,
+      }
+    }`, {
+    options: () => {
+      return {
+        notifyOnNetworkStatusChange: true,
+      };
+    },
+    name,
+  })(component);
+};
+
+export interface IGetOrgsResult extends QueryProps {
+  getOrganisations?: IUserOrg[];
+}
