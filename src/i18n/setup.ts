@@ -27,5 +27,6 @@ export function setupI18n(): void {
         escapeValue: false, // not needed for react
       },
       keySeparator: false,
+      nsSeparator: false,
     });
 }
