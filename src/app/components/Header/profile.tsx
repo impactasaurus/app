@@ -1,5 +1,5 @@
-import React from 'react';
-import { Icon, Dropdown } from 'semantic-ui-react';
+import React, {useState} from 'react';
+import { Icon, Dropdown, Loader } from 'semantic-ui-react';
 import {UserImage} from './../UserImage';
 import {Link} from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -32,14 +32,23 @@ const ActiveOrg = (p: {data?: IGetOrgsResult}) => {
 const ProfileMenuInner = (p: IProps): JSX.Element => {
   const {t} = useTranslation();
   const oo = orgs(p.data, true);
+  const [changingOrg, setChangingOrg] = useState(false);
+  const [changingOrgErr, setChangingOrgErr] = useState(false);
   const setActiveOrg = (id: string): () => void => {
     return () => {
+      setChangingOrg(true);
+      setChangingOrgErr(false);
       p.setOrganisation(id)
       .then(() => {
         return refreshToken();
       })
       .then(() => {
         location.reload();
+      })
+      .catch((e) => {
+        console.error(e);
+        setChangingOrg(false);
+        setChangingOrgErr(true);
       });
     };
   };
@@ -47,7 +56,11 @@ const ProfileMenuInner = (p: IProps): JSX.Element => {
     <Dropdown.Item key={o.id} className="org-option" onClick={setActiveOrg(o.id)}>{o.name}</Dropdown.Item>
   ));
   return (
-    <Dropdown item trigger={<UserImage />} id="user-menu">
+    <Dropdown item
+      trigger={changingOrg ? <Loader inline="centered" active={true} size="small" inverted={true} /> : <UserImage />}
+      id="user-menu"
+      className={changingOrgErr ? 'error' : ''}
+    >
       <Dropdown.Menu>
         <Dropdown.Item id="user-profile-dd-item" className="not-clickable">
           <div style={{display: "flex"}}>
