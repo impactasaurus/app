@@ -7,11 +7,11 @@ export function getToken(): string|null {
   return localStorage.getItem('token');
 }
 
-export function saveAuth(token: string) {
+export function saveAuth(token: string): void {
   localStorage.setItem(localStorageKey, token);
 }
 
-export function clearAuth() {
+export function clearAuth(): void {
   localStorage.removeItem(localStorageKey);
 }
 
@@ -130,6 +130,19 @@ export function getWebAuth(): WebAuth {
 
   return new WebAuth(options);
 }
+
+export const refreshToken = (): Promise<null> => {
+  return new Promise<null>((resolve, reject) => {
+    getWebAuth().checkSession({}, (err, authResult) => {
+      if(err) {
+        reject(err);
+        return;
+      }
+      saveAuth(authResult.idToken);
+      resolve(null);
+    });
+  });
+};
 
 export function getLogoutOptions(redirect?: string): LogoutOptions {
   let returnTo = `${appConfig.app.root}/redirect`;

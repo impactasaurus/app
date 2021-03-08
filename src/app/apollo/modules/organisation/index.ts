@@ -1,6 +1,7 @@
 import {gql, graphql, QueryProps} from 'react-apollo';
 import {IOrganisation} from 'models/organisation';
 import {mutationResultExtractor, IDExtractor} from 'helpers/apollo';
+import { ComponentClass } from 'react';
 
 export const getOrganisation = <T>(component, name: string = undefined)  => {
   return graphql<any, T>(gql`
@@ -243,4 +244,24 @@ export const getOrganisations = <T>(component, name: string = undefined) => {
 
 export interface IGetOrgsResult extends QueryProps {
   getOrganisations?: IUserOrg[];
+}
+
+export const setOrganisation = <T>(component: ComponentClass<T>):  ComponentClass<T> => {
+  return graphql<boolean, T>(gql`
+    mutation ($id: String!) {
+      setOrganisation: SetActiveOrganisation(orgID:$id)
+    }`, {
+      props: ({ mutate }) => ({
+        setOrganisation: (orgID: string): Promise<boolean> => mutate({
+          variables: {
+            id: orgID,
+          },
+        }).then(mutationResultExtractor<boolean>('setOrganisation')),
+      }),
+    }
+  )(component);
+}
+
+export interface ISetOrganisation {
+  setOrganisation?(orgID: string): Promise<boolean>;
 }

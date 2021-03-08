@@ -3,10 +3,10 @@ import { Icon, Dropdown } from 'semantic-ui-react';
 import {UserImage} from './../UserImage';
 import {Link} from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getUserName, getOrganisation } from 'helpers/auth';
-import {IGetOrgsResult, getOrganisations, IUserOrg} from 'apollo/modules/organisation';
+import { getUserName, getOrganisation, refreshToken } from 'helpers/auth';
+import {IGetOrgsResult, getOrganisations, IUserOrg, setOrganisation, ISetOrganisation} from 'apollo/modules/organisation';
 
-interface IProps {
+interface IProps extends ISetOrganisation {
   logOut: () => void;
   data?: IGetOrgsResult;
 }
@@ -32,7 +32,20 @@ const ActiveOrg = (p: {data?: IGetOrgsResult}) => {
 const ProfileMenuInner = (p: IProps): JSX.Element => {
   const {t} = useTranslation();
   const oo = orgs(p.data, true);
-  const orgSelectionUI: JSX.Element[] = oo.map((o) => <Dropdown.Item key={o.id} className="org-option">{o.name}</Dropdown.Item>)
+  const setActiveOrg = (id: string): () => void => {
+    return () => {
+      p.setOrganisation(id)
+      .then(() => {
+        return refreshToken();
+      })
+      .then(() => {
+        location.reload();
+      });
+    };
+  };
+  const orgSelectionUI: JSX.Element[] = oo.map((o) => (
+    <Dropdown.Item key={o.id} className="org-option" onClick={setActiveOrg(o.id)}>{o.name}</Dropdown.Item>
+  ));
   return (
     <Dropdown item trigger={<UserImage />} id="user-menu">
       <Dropdown.Menu>
@@ -61,4 +74,4 @@ const ProfileMenuInner = (p: IProps): JSX.Element => {
 };
 
 
-export const ProfileMenu = getOrganisations<IProps>(ProfileMenuInner);
+export const ProfileMenu = setOrganisation<IProps>(getOrganisations<IProps>(ProfileMenuInner));
