@@ -1,36 +1,38 @@
-import * as React from 'react';
-import { Helmet } from 'react-helmet';
-import { Icon, Grid, Form } from 'semantic-ui-react';
+import React from 'react';
+import { Form } from 'semantic-ui-react';
 import {BeneficiaryInput} from 'components/BeneficiaryInput';
 import {FormField} from 'components/FormField';
-import { bindActionCreators } from 'redux';
-import { IURLConnector, setURL } from 'redux/modules/url';
+import { IURLConnector, UrlHOC } from 'redux/modules/url';
 import { Hint } from 'components/Hint';
-import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
-const formFailureGeneric = require('../../../strings.json').formFailureGeneric;
-const { connect } = require('react-redux');
-const strings = require('./../../../strings.json');
+import {FormikBag, FormikErrors, FormikValues, FormikProps, withFormik} from 'formik';
+import { PageWrapperHoC } from 'components/PageWrapperHoC';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-interface IFormOuput {
+interface IFormOutput {
   beneficiaryID: string;
   existing?: boolean;
 }
 
-interface IFormProps {
+interface IFormProps extends WithTranslation {
   onBeneficiarySelect(benID: string, newBen: boolean|undefined): void;
 }
 
-const InnerForm = (props: InjectedFormikProps<any, IFormOuput>) => {
-  const { touched, error, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values } = props;
+const InnerForm = (props: FormikProps<IFormOutput> & IFormProps) => {
+  const { touched, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values, t } = props;
   const onChange = (benID: string, existing: boolean|undefined) => {
     setFieldValue('beneficiaryID', benID);
     setFieldValue('existing', existing);
   };
   const onBlur = () => setFieldTouched('beneficiaryID');
-  const label = <span><Hint text={strings.beneficiaryIDExplanation} />New or Existing Beneficiary</span>;
-  let submitText = 'Submit';
+  const label = (
+    <span>
+      <Hint text={t("Beneficiary identifiers should not contain personal information. Ideally this would be the ID of the beneficiary within your other systems (e.g. CRM)")} />
+      {t("New or Existing Beneficiary")}
+    </span>
+  );
+  let submitText = t('Submit');
   if (values.existing !== undefined) {
-    submitText = values.existing ? 'View' : 'Create';
+    submitText = values.existing ? t('View') : t('Create');
   }
   return (
     <Form className="screen" onSubmit={submitForm}>
@@ -40,59 +42,42 @@ const InnerForm = (props: InjectedFormikProps<any, IFormOuput>) => {
       <Form.Group>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>{submitText}</Form.Button>
       </Form.Group>
-      {error && <span className="submit-error"><Icon name="exclamation" />Editing the questionnaire failed. {formFailureGeneric}</span>}
     </Form>
   );
 };
 
-const BeneficairyForm = withFormik<IFormProps, IFormOuput>({
-  validate: (values: IFormOuput) => {
-    const errors: FormikErrors<IFormOuput> = {};
+const BeneficairyFormInner = withFormik<IFormProps, IFormOutput>({
+  validate: (values: IFormOutput, p: IFormProps) => {
+    const errors: FormikErrors<IFormOutput> = {};
     if (!values.beneficiaryID) {
-      errors.beneficiaryID = 'Please select a beneficiary';
+      errors.beneficiaryID = p.t('Please select a beneficiary');
     }
     return errors;
   },
-  handleSubmit: (v: FormikValues, formikBag: FormikBag<IFormProps, IFormOuput>): void => {
+  handleSubmit: (v: FormikValues, formikBag: FormikBag<IFormProps, IFormOutput>): void => {
     formikBag.setSubmitting(true);
     formikBag.props.onBeneficiarySelect(v.beneficiaryID, v.existing === false);
   },
 })(InnerForm);
 
-@connect(undefined, (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-}))
-class BeneficiarySelector extends React.Component<IURLConnector, any> {
+const BeneficairyForm = withTranslation()(BeneficairyFormInner);
 
-  constructor(props) {
-    super(props);
-    this.review = this.review.bind(this);
-  }
+const BeneficiarySelectorInner = (p: IURLConnector) => {
 
-  private review(benID: string, newBen: boolean) {
+  const review = (benID: string, newBen: boolean) => {
     let url = `/beneficiary/${benID}`;
     if (newBen) {
       url = url + '/record';
     }
-    this.props.setURL(url, `?ben=${benID}`);
+    p.setURL(url, `?ben=${benID}`);
   }
 
-  public render() {
-    return (
-      <Grid container={true} columns={1} >
-        <Grid.Column>
-          <div id="reviewselector">
-            <Helmet>
-              <title>Beneficiary</title>
-            </Helmet>
-            <h1>Beneficiary</h1>
-            <BeneficairyForm onBeneficiarySelect={this.review} />
-          </div>
-          {this.props.children}
-        </Grid.Column>
-      </Grid>
-    );
-  }
-}
+  return (
+    <BeneficairyForm onBeneficiarySelect={review} />
+  );
+};
 
+// t('Beneficiary')
+const BeneficiarySelectorPage = PageWrapperHoC("Beneficiary", "reviewselector", BeneficiarySelectorInner);
+const BeneficiarySelector = UrlHOC(BeneficiarySelectorPage);
 export { BeneficiarySelector };
