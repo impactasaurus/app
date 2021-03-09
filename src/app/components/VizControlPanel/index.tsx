@@ -6,8 +6,9 @@ import {setPref, SetPrefFunc} from 'redux/modules/pref';
 import {IStore} from 'redux/IStore';
 import {Aggregation, AggregationKey, Visualisation, VisualisationKey, getAggregation, getVisualisation} from 'models/pref';
 import {isNullOrUndefined} from 'util';
-const ReactGA = require('react-ga');
-const { connect } = require('react-redux');
+import ReactGA from 'react-ga';
+import { connect } from 'react-redux';
+import {useTranslation} from 'react-i18next';
 
 export const pageRegex = /(\/beneficiary\/[^/]*\/journey|\/beneficiary\/[^/]*$|\/beneficiary\/[^/]*\/$|\/report\/service\/|\/report\/delta\/)/;
 
@@ -22,88 +23,76 @@ interface IProps {
   allowCanvasSnapshot?: boolean; // default = false
 }
 
-@connect((state: IStore, ownProps: IProps) => {
-  return {
-    vis: getVisualisation(state.pref, ownProps.visualisations),
-    agg: getAggregation(state.pref, ownProps.canCategoryAg),
-  };
-}, (dispatch) => ({
-  setPref: bindActionCreators(setPref, dispatch),
-}))
-class VizControlPanel extends React.Component<IProps, any> {
-  constructor(props) {
-    super(props);
-    this.setAggPref = this.setAggPref.bind(this);
-    this.setVisPref = this.setVisPref.bind(this);
-    this.isAggActive = this.isAggActive.bind(this);
-    this.canvasSnapshot = this.canvasSnapshot.bind(this);
-  }
+const VizControlPanelInner = (p: IProps) => {
+  const {t} = useTranslation();
 
-  private reactGAVis(label: string) {
+  const reactGAVis = (label: string) => {
     ReactGA.event({
       category : 'visualisation',
       action : 'changed',
       label,
     });
-  }
-  private reactGAAgg(label: string) {
+  };
+
+  const reactGAAgg = (label: string) => {
     ReactGA.event({
       category : 'aggregation',
       action : 'changed',
       label,
     });
-  }
-  private setAggPref(value: Aggregation): () => void {
-    return () => {
-      this.reactGAAgg(Aggregation[value]);
-      this.props.setPref(AggregationKey, Aggregation[value]);
-    };
-  }
+  };
 
-  private setVisPref(value: Visualisation): () => void {
+  const setAggPref = (value: Aggregation): () => void => {
     return () => {
-      this.reactGAVis(Visualisation[value]);
-      this.props.setPref(VisualisationKey, Visualisation[value]);
+      reactGAAgg(Aggregation[value]);
+      p.setPref(AggregationKey, Aggregation[value]);
     };
-  }
+  };
 
-  private isAggActive(agg: Aggregation): boolean {
-    if (agg === Aggregation.CATEGORY && this.props.canCategoryAg === false) {
+  const setVisPref = (value: Visualisation): () => void => {
+    return () => {
+      reactGAVis(Visualisation[value]);
+      p.setPref(VisualisationKey, Visualisation[value]);
+    };
+  };
+
+  const isAggActive = (agg: Aggregation): boolean => {
+    if (agg === Aggregation.CATEGORY && p.canCategoryAg === false) {
       return false;
     }
-    return this.props.agg === agg;
-  }
+    return p.agg === agg;
+  };
 
-  private getVisButtons(): JSX.Element[] {
+  const getVisButtons = (): JSX.Element[] => {
     const buttons: JSX.Element[] = [];
     const addButton = (button: JSX.Element) => {
       if (buttons.length > 0) {
-        buttons.push(<Button.Or key={'vizOr'+buttons.length}/>);
+        buttons.push(<Button.Or key={'vizOr'+buttons.length} text={t<string>("or")}/>);
       }
       buttons.push(button);
     };
-    this.props.visualisations.forEach((v) => {
+    p.visualisations.forEach((v) => {
       switch (v) {
         case Visualisation.GRAPH:
-          addButton(<Button key="graph" active={this.props.vis === Visualisation.GRAPH} onClick={this.setVisPref(Visualisation.GRAPH)}>Graph</Button>);
+          addButton(<Button key="graph" active={p.vis === Visualisation.GRAPH} onClick={setVisPref(Visualisation.GRAPH)}>{t("Graph")}</Button>);
           break;
         case Visualisation.RADAR:
-          addButton(<Button key="radar" active={this.props.vis === Visualisation.RADAR} onClick={this.setVisPref(Visualisation.RADAR)}>Radar</Button>);
+          addButton(<Button key="radar" active={p.vis === Visualisation.RADAR} onClick={setVisPref(Visualisation.RADAR)}>{t("Radar")}</Button>);
           break;
         case Visualisation.TABLE:
-          addButton(<Button key="table" active={this.props.vis === Visualisation.TABLE} onClick={this.setVisPref(Visualisation.TABLE)}>Table</Button>);
+          addButton(<Button key="table" active={p.vis === Visualisation.TABLE} onClick={setVisPref(Visualisation.TABLE)}>{t("Table")}</Button>);
           break;
         case Visualisation.BAR:
-          addButton(<Button key="bar" active={this.props.vis === Visualisation.BAR} onClick={this.setVisPref(Visualisation.BAR)}>Bar</Button>);
+          addButton(<Button key="bar" active={p.vis === Visualisation.BAR} onClick={setVisPref(Visualisation.BAR)}>{t("Bar")}</Button>);
           break;
         default:
           throw new Error('not valid visualisation');
       }
     });
     return buttons;
-  }
+  };
 
-  private canvasSnapshot() {
+  const canvasSnapshot = () => {
     const cs = document.getElementsByTagName('canvas');
     if (cs.length !== 1) {
       throw new Error('A single canvas was not found when trying to export image');
@@ -112,15 +101,15 @@ class VizControlPanel extends React.Component<IProps, any> {
     link.download = 'impactasaurus-graph.png';
     link.href = cs[0].toDataURL();
     link.click();
-  }
+  };
 
-  private renderExportControls(): JSX.Element {
+  const renderExportControls = (): JSX.Element => {
     const cpItems: JSX.Element[] = [];
-    if (!isNullOrUndefined(this.props.export)) {
-      cpItems.push((<Popup key="excel" trigger={<Button icon="download" onClick={this.props.export} />} content="Export data" />));
+    if (!isNullOrUndefined(p.export)) {
+      cpItems.push((<Popup key="excel" trigger={<Button icon="download" onClick={p.export} />} content={t("Export data")} />));
     }
-    if (this.props.allowCanvasSnapshot === true) {
-      cpItems.push((<Popup key="image" trigger={<Button icon="image outline" onClick={this.canvasSnapshot} />} content="Download image" />));
+    if (p.allowCanvasSnapshot === true) {
+      cpItems.push((<Popup key="image" trigger={<Button icon="image outline" onClick={canvasSnapshot} />} content={t("Download image")} />));
     }
     if (cpItems.length === 0) {
       return undefined;
@@ -130,35 +119,45 @@ class VizControlPanel extends React.Component<IProps, any> {
         {cpItems}
       </Button.Group>
     );
-  }
+  };
 
-  public render() {
-    const cpItems: JSX.Element[] = [];
+  const cpItems: JSX.Element[] = [];
+  cpItems.push((
+    <Button.Group key="agg">
+      <Button key="agg-q" active={isAggActive(Aggregation.QUESTION)} onClick={setAggPref(Aggregation.QUESTION)}>{t("Questions")}</Button>
+      <Button.Or key="agg-or" text={t<string>("or")}/>
+      <Button key="agg-cat" disabled={!p.canCategoryAg} active={isAggActive(Aggregation.CATEGORY)} onClick={setAggPref(Aggregation.CATEGORY)}>{t("Categories")}</Button>
+    </Button.Group>
+  ));
+  if (p.visualisations.length > 0) {
     cpItems.push((
-      <Button.Group key="agg">
-        <Button key="agg-q" active={this.isAggActive(Aggregation.QUESTION)} onClick={this.setAggPref(Aggregation.QUESTION)}>Questions</Button>
-        <Button.Or key="agg-or" />
-        <Button key="agg-cat" disabled={!this.props.canCategoryAg} active={this.isAggActive(Aggregation.CATEGORY)} onClick={this.setAggPref(Aggregation.CATEGORY)}>Categories</Button>
+      <Button.Group key="vis">
+        {getVisButtons()}
       </Button.Group>
     ));
-    if (this.props.visualisations.length > 0) {
-      cpItems.push((
-        <Button.Group key="vis">
-          {this.getVisButtons()}
-        </Button.Group>
-      ));
-    }
-    const exportControls = this.renderExportControls();
-    if (!isNullOrUndefined(exportControls)) {
-      cpItems.push(exportControls);
-    }
-    return (
-      <div className="viz-cp">
-        {cpItems}
-        {this.props.controls}
-      </div>
-    );
   }
+  const exportControls = renderExportControls();
+  if (!isNullOrUndefined(exportControls)) {
+    cpItems.push(exportControls);
+  }
+  return (
+    <div className="viz-cp">
+      {cpItems}
+      {p.controls}
+    </div>
+  );
 }
 
+const stateToProps = (state: IStore, ownProps: IProps) => {
+  return {
+    vis: getVisualisation(state.pref, ownProps.visualisations),
+    agg: getAggregation(state.pref, ownProps.canCategoryAg),
+  };
+};
+
+const dispatchToProps = (dispatch) => ({
+  setPref: bindActionCreators(setPref, dispatch),
+});
+
+const VizControlPanel = connect(stateToProps, dispatchToProps)(VizControlPanelInner);
 export { VizControlPanel };
