@@ -1,12 +1,13 @@
-import * as React from 'react';
+import React, {useState, useEffect} from 'react';
 import {setMeetingNotes, ISetMeetingNotes} from 'apollo/modules/meetings';
-import 'rc-slider/assets/index.css';
 import { Button, ButtonProps} from 'semantic-ui-react';
 import {Notepad} from 'components/Notepad';
 import {IMeeting} from 'models/meeting';
 import {isNullOrUndefined} from 'util';
+import ReactGA from 'react-ga';
+import { useTranslation } from 'react-i18next';
+import 'rc-slider/assets/index.css';
 import './style.less';
-const ReactGA = require('react-ga');
 
 interface IProps extends ISetMeetingNotes {
   record: IMeeting;
@@ -14,87 +15,54 @@ interface IProps extends ISetMeetingNotes {
   onComplete: () => void;
 }
 
-interface IState {
-  saving?: boolean;
-  savingError?: string;
-  notes?: string;
-}
+const MeetingNotepadInner = (p: IProps) => {
 
-class MeetingNotepadInner extends React.Component<IProps, IState> {
+  const {t} = useTranslation();
+  const [saving, setSaving] = useState(false);
+  const [savingError, setSavingError] = useState(undefined);
+  const [notes, setNotes] = useState((p.record || {}).notes);
+  useEffect(() => {
+    setNotes((p.record || {}).notes);
+  }, [p.record]);
 
-  constructor(props) {
-    super(props);
-    let notes: string;
-    if (this.props.record !== undefined && this.props.record.notes !== undefined) {
-      notes = this.props.record.notes;
-    }
-    this.state = {
-      saving: false,
-      notes,
-    };
-    this.saveNotes = this.saveNotes.bind(this);
-    this.setNotes = this.setNotes.bind(this);
-  }
-
-  public componentWillUpdate(nextProps: IProps) {
-    const recordBeenSet = this.props.record === undefined && nextProps.record !== undefined;
-    const newRecord = this.props.record !== undefined && nextProps.record !== undefined && this.props.record.id !== nextProps.record.id;
-    if (recordBeenSet || newRecord) {
-      this.setState({
-        notes: nextProps.record.notes,
-      });
-    }
-  }
-
-  private setNotes(notes: string) {
-    this.setState({
-      notes,
-    });
-  }
-
-  private saveNotes() {
-    const notesNotChanged = this.props.record.notes === this.state.notes;
-    const bothEmpty = isNullOrUndefined(this.props.record.notes) && isNullOrUndefined(this.state.notes);
+  const saveNotes = () => {
+    const notesNotChanged = p.record.notes === notes;
+    const bothEmpty = isNullOrUndefined(p.record.notes) && isNullOrUndefined(notes);
     if (notesNotChanged || bothEmpty) {
-      return this.props.onComplete();
+      return p.onComplete();
     }
-    this.setState({
-      saving: true,
-      savingError: undefined,
-    });
-    this.props.setMeetingNotes(this.props.record.id, this.state.notes)
+    setSaving(true);
+    setSavingError(undefined);
+    p.setMeetingNotes(p.record.id, notes)
       .then(() => {
         ReactGA.event({
           category : 'assessment',
           label : 'notes',
           action: 'provided',
         });
-        this.props.onComplete();
+        p.onComplete();
       })
       .catch((e) => {
-        this.setState({
-          saving: false,
-          savingError: e,
-        });
+        setSavingError(false);
+        setSavingError(e);
       });
   }
 
-  public render() {
-    const placeholder = 'Record any additional comments, goals or actions';
-    const nextProps: ButtonProps = {};
-    if (this.state.saving) {
-      nextProps.loading = true;
-      nextProps.disabled = true;
-    }
-    return (
-      <div className="meeting-notepad">
-        <h1>Additional Comments</h1>
-        <Notepad onChange={this.setNotes} notes={this.state.notes} collapsible={false} placeholder={placeholder}/>
-        <Button onClick={this.props.onBack}>Back</Button>
-        <Button {...nextProps} onClick={this.saveNotes}>Next</Button>
-        <p>{this.state.savingError}</p>
-      </div>);
+  const placeholder = t('Record any additional comments, goals or actions');
+  const nextProps: ButtonProps = {};
+  if (saving) {
+    nextProps.loading = true;
+    nextProps.disabled = true;
   }
+  return (
+    <div className="meeting-notepad">
+      <h1>{t("Additional Comments")}</h1>
+      <Notepad onChange={setNotes} notes={notes} collapsible={false} placeholder={placeholder}/>
+      <Button onClick={p.onBack}>{t("Back")}</Button>
+      <Button {...nextProps} onClick={saveNotes}>{t("Next")}</Button>
+      <p>{savingError}</p>
+    </div>
+  );
 }
 const MeetingNotepad = setMeetingNotes<IProps>(MeetingNotepadInner);
 export { MeetingNotepad };

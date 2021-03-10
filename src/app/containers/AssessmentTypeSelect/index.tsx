@@ -1,12 +1,9 @@
 import * as React from 'react';
-import { Helmet } from 'react-helmet';
-import { Grid } from 'semantic-ui-react';
 import {AssessmentTypeSelector} from 'components/AssessmentTypeSelector';
-import {IURLConnector, setURL} from 'redux/modules/url';
-import { bindActionCreators } from 'redux';
-import './style.less';
+import {IURLConnector, UrlHOC} from 'redux/modules/url';
 import { AssessmentType } from 'models/assessment';
-const { connect } = require('react-redux');
+import { PageWrapperHoC } from 'components/PageWrapperHoC';
+import './style.less';
 
 interface IProps extends IURLConnector {
   location: {
@@ -15,31 +12,14 @@ interface IProps extends IURLConnector {
   };
 }
 
-@connect(undefined, (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-}))
-class AssessmentTypeSelect extends React.Component<IProps, any> {
-
-  constructor(props) {
-    super(props);
-    this.typeSelected = this.typeSelected.bind(this);
-  }
-
-  private typeSelected(selected: AssessmentType) {
-    this.props.setURL(`${this.props.location.pathname}/${AssessmentType[selected]}`, this.props.location.search);
-  }
-
-  public render() {
-    return (
-      <Grid container={true} columns={1} id="conduct">
-        <Grid.Column>
-          <Helmet title="New Record"/>
-          <h1>New Record</h1>
-          <AssessmentTypeSelector typeSelector={this.typeSelected}/>
-        </Grid.Column>
-      </Grid>
-    );
-  }
+const AssessmentTypeSelectInner = (p: IProps) => {
+  const typeSelected = (selected: AssessmentType) => {
+    p.setURL(`${p.location.pathname}/${AssessmentType[selected]}`, p.location.search);
+  };
+  return <AssessmentTypeSelector typeSelector={typeSelected}/>;
 }
 
+// t("New Record")
+const AssementTypePage = PageWrapperHoC("New Record", "conduct", AssessmentTypeSelectInner);
+const AssessmentTypeSelect = UrlHOC(AssementTypePage);
 export { AssessmentTypeSelect };
