@@ -33,7 +33,7 @@ class BeneficiaryConfigInner extends React.Component<IProps, IState> {
     this.onCancel = this.onCancel.bind(this);
   }
 
-  private onSave(v: IFormOutput): Promise<any> {
+  private onSave(v: IFormOutput): Promise<void> {
     return this.props.editBeneficiaryTags(getBen(this.props), v.tags)
       .then(() => {
         // if the beneficiary was missing, refresh the page to show the new tags

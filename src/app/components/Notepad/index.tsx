@@ -1,7 +1,7 @@
-import * as React from 'react';
+import React, {useState, useEffect} from 'react';
 import {Icon, Form, Accordion, TextArea, TextAreaProps} from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 import './style.less';
-import {isNullOrUndefined} from 'util';
 
 interface IProps {
   notes: string | undefined | null;
@@ -13,73 +13,55 @@ interface IProps {
   disabled?: boolean;
 }
 
-interface IState {
-  open: boolean;
-}
+const Notepad = (p: IProps): JSX.Element => {
 
-class Notepad extends React.Component<IProps, IState> {
-
-  constructor(props: IProps) {
-    super(props);
-    this.state = {
-      open: props.notes !== undefined && props.notes !== null && props.notes.length > 0,
-    };
-    this.onChange = this.onChange.bind(this);
-    this.toggleOpen = this.toggleOpen.bind(this);
-    this.renderTextArea = this.renderTextArea.bind(this);
-  }
-
-  public componentWillUpdate(nextProps: IProps) {
-    if (isNullOrUndefined(this.props.notes) && !isNullOrUndefined(nextProps.notes)) {
-      this.setState({
-        open: true,
-      });
+  const [open, setOpen] = useState(p.notes !== undefined && p.notes !== null && p.notes.length > 0);
+  useEffect(() => {
+    if(!open && p.notes) {
+      setOpen(true);
     }
-  }
+  }, [p.notes]);
+  const {t} = useTranslation();
 
-  private onChange(_: React.FormEvent<HTMLTextAreaElement>, data: TextAreaProps): void {
+  const onChange = (_: React.FormEvent<HTMLTextAreaElement>, data: TextAreaProps): void => {
     if (typeof data.value === 'string') {
-      this.props.onChange(data.value);
+      p.onChange(data.value);
     }
   }
 
-  private toggleOpen() {
-    this.setState({
-      open: !this.state.open,
-    });
+  const toggleOpen = () => {
+    setOpen(!open);
   }
 
-  public renderTextArea(): JSX.Element {
-    let placeholder = this.props.placeholder || 'Record any additional information';
-    placeholder = placeholder + '. Please ensure the notes do not contain personally identifiable information.';
-    const notesNotNull: string | undefined = this.props.notes ? this.props.notes : undefined;
+  const renderTextArea = (): JSX.Element => {
+    let placeholder = p.placeholder || t('Record any additional information');
+    placeholder = placeholder + '. ' + t("Please ensure the notes do not contain personally identifiable information.");
+    const notesNotNull: string | undefined = p.notes ? p.notes : undefined;
     return (
       <Form>
-        <TextArea disabled={this.props.disabled === true} autoHeight={true} placeholder={placeholder} rows={2} onChange={this.onChange} value={notesNotNull} onBlur={this.props.onBlur} />
+        <TextArea disabled={p.disabled === true} autoHeight={true} placeholder={placeholder} rows={2} onChange={onChange} value={notesNotNull} onBlur={p.onBlur} />
       </Form>
     );
   }
 
-  public render() {
-    if (this.props.collapsible === false) {
-      return (
-        <div className="notepad">
-          {this.renderTextArea()}
-        </div>
-      );
-    }
+  if (p.collapsible === false) {
     return (
-      <Accordion className="notepad">
-        <Accordion.Title className="accordion" active={this.state.open} index={0} onClick={this.toggleOpen}>
-          <Icon name="dropdown" />
-          Notes
-        </Accordion.Title>
-        <Accordion.Content active={this.state.open}>
-          {this.renderTextArea()}
-        </Accordion.Content>
-      </Accordion>
+      <div className="notepad">
+        {renderTextArea()}
+      </div>
     );
   }
+  return (
+    <Accordion className="notepad">
+      <Accordion.Title className="accordion" active={open} index={0} onClick={toggleOpen}>
+        <Icon name="dropdown" />
+        {t("Notes")}
+      </Accordion.Title>
+      <Accordion.Content active={open}>
+        {renderTextArea()}
+      </Accordion.Content>
+    </Accordion>
+  );
 }
 
 export { Notepad };

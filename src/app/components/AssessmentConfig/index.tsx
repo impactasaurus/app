@@ -10,10 +10,10 @@ import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import {BeneficiaryTags} from 'components/BeneficiaryTags';
 import moment from 'moment';
 import {FormikBag, FormikErrors, FormikValues, FormikProps, withFormik} from 'formik';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import './style.less';
-const strings = require('./../../../strings.json');
 
-interface IProps  {
+interface IProps extends WithTranslation {
   showDatePicker: boolean;
   buttonText: string;
   onSubmit: (config: IAssessmentConfig) => Promise<void>;
@@ -25,13 +25,8 @@ interface IAssessmentConfigAndDebounce extends IAssessmentConfig {
   defaultBen?: string;
 }
 
-interface InnerFormProps {
-  showDatePicker: boolean;
-  buttonText: string;
-}
-
-const InnerForm = (props: InnerFormProps & FormikProps<IAssessmentConfigAndDebounce>) => {
-  const { touched, status, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values } = props;
+const InnerForm = (props: IProps & FormikProps<IAssessmentConfigAndDebounce>) => {
+  const {touched, status, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values, t} = props;
 
   const qsOnBlur = () => setFieldTouched('outcomeSetID');
   const qsOnChange = (qsID: string) => {
@@ -48,7 +43,7 @@ const InnerForm = (props: InnerFormProps & FormikProps<IAssessmentConfigAndDebou
     setFieldTouched('tags');
   };
 
-  const datePickerStyle = {} as any;
+  const datePickerStyle = {} as React.CSSProperties;
   if (!props.showDatePicker) {
     datePickerStyle.display = 'none';
   }
@@ -63,8 +58,18 @@ const InnerForm = (props: InnerFormProps & FormikProps<IAssessmentConfigAndDebou
     setFieldValue('debouncedBenID', undefined);
   };
 
-  const benLabel = <span><Hint text={strings.beneficiaryIDExplanation} />New or Existing Beneficiary</span>;
-  const tagLabel = <span><Hint text={strings.tagExplanation} />Tags</span>;
+  const benLabel = (
+    <span>
+      <Hint text={t("Beneficiary identifiers should not contain personal information. Ideally this would be the ID of the beneficiary within your other systems (e.g. CRM)")} />
+      {t("New or Existing Beneficiary")}
+    </span>
+  );
+  const tagLabel = (
+    <span>
+      <Hint text={t("Tags are words which can be saved against records. They can be used to filter your records when reporting. Common uses of tags include demographic or intervention information.")} />
+      {t("Tags")}
+    </span>
+  );
 
   // if the beneficiary has been set via URL, hide the beneficiary field
   const benField = (
@@ -76,15 +81,15 @@ const InnerForm = (props: InnerFormProps & FormikProps<IAssessmentConfigAndDebou
   return (
     <Form className="screen assessment-config" onSubmit={submitForm}>
       {!values.defaultBen && benField}
-      <FormField error={errors.outcomeSetID as string} touched={touched.outcomeSetID} inputID="as-qid" required={true} label="Questionnaire">
+      <FormField error={errors.outcomeSetID as string} touched={touched.outcomeSetID} inputID="as-qid" required={true} label={t("Questionnaire")}>
         <QuestionSetSelect inputID="as-qid" onQuestionSetSelected={qsOnChange} onBlur={qsOnBlur} />
       </FormField>
-      <FormField inputID="as-tags" label={tagLabel} touched={touched.tags as any} error={errors.tags as any}>
+      <FormField inputID="as-tags" label={tagLabel} touched={touched.tags} error={errors.tags as string}>
         <BeneficiaryTags beneficiaryID={values.debouncedBenID} />
         <TagInputWithBenSuggestions inputID="as-tags" onChange={setTags} tags={values.tags} id={values.debouncedBenID} allowNewTags={true} />
       </FormField>
       <div style={datePickerStyle}>
-        <FormField inputID="as-datepicker" label="Date Conducted" touched={touched.date as boolean} error={errors.date as string}>
+        <FormField inputID="as-datepicker" label={t("Date Conducted")} touched={touched.date as boolean} error={errors.date as string}>
           <div id="as-datepicker">
             <span className="conductedDate">{moment(values.date).format('llll')}</span>
             <DateTimePicker moment={moment(values.date)} onChange={setConductedDate} allowFutureDates={true} />
@@ -94,22 +99,23 @@ const InnerForm = (props: InnerFormProps & FormikProps<IAssessmentConfigAndDebou
       <Form.Group>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>{props.buttonText}</Form.Button>
       </Form.Group>
-      {status && <span className="submit-error"><Icon name="exclamation" />Starting the assessment failed. {strings.formFailureGeneric}</span>}
+      {status && <span className="submit-error"><Icon name="exclamation" />{t("Starting the assessment failed.")} {t("Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org")}</span>}
     </Form>
   );
 };
 
-export const AssessmentConfig = withFormik<IProps, IAssessmentConfigAndDebounce>({
-  validate: (values: IAssessmentConfigAndDebounce) => {
+const AssessmentConfigInner = withFormik<IProps, IAssessmentConfigAndDebounce>({
+  validate: (values: IAssessmentConfigAndDebounce, p: IProps) => {
+    const {t} = p;
     const errors: FormikErrors<IAssessmentConfigAndDebounce> = {};
     if (!values.beneficiaryID || values.beneficiaryID === '') {
-      errors.beneficiaryID = 'Please enter a beneficiary ID';
+      errors.beneficiaryID = t('Please enter a beneficiary ID');
     }
     if (!values.outcomeSetID || values.outcomeSetID === '') {
-      errors.outcomeSetID = 'Please select a questionnaire';
+      errors.outcomeSetID = t('Please select a questionnaire');
     }
     if (!values.date || values.date.getTime() > Date.now()) {
-      errors.date = 'Please select a date in the past';
+      errors.date = t('Please select a date in the past');
     }
     return errors;
   },
@@ -142,3 +148,5 @@ export const AssessmentConfig = withFormik<IProps, IAssessmentConfigAndDebounce>
   },
   validateOnMount: true,
 })(InnerForm);
+
+export const AssessmentConfig = withTranslation()(AssessmentConfigInner);

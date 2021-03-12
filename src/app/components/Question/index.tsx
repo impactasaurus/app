@@ -7,9 +7,10 @@ import 'rc-slider/assets/index.css';
 import { Button, ButtonProps } from 'semantic-ui-react';
 import {IIntAnswer, Answer, IAnswer} from 'models/answer';
 import {IMeeting} from 'models/meeting';
-const ReactGA = require('react-ga');
+import ReactGA from 'react-ga';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-interface IProps extends IMeetingMutation {
+interface IProps extends IMeetingMutation, Partial<WithTranslation> {
   record: IMeeting;
   questionID: string;
   // defaults to true
@@ -58,9 +59,9 @@ class QuestionInner extends React.Component<IProps, IState> {
     this.loadQuestionIntoState(this.props);
   }
 
-  public componentWillUpdate(nextProps: IProps) {
-    if (this.props.questionID !== nextProps.questionID || this.props.record === undefined && nextProps.record !== undefined) {
-      this.loadQuestionIntoState(nextProps);
+  public componentDidUpdate(prevProps: IProps) {
+    if (prevProps.questionID !== this.props.questionID || prevProps.record === undefined && this.props.record !== undefined) {
+      this.loadQuestionIntoState(this.props);
     }
   }
 
@@ -135,13 +136,13 @@ class QuestionInner extends React.Component<IProps, IState> {
   }
 
   public render(): JSX.Element {
-    const record = this.props.record;
+    const {record, t} = this.props;
     if (record === undefined) {
       return (<div />);
     }
     const question = this.getQuestion();
     if (question === undefined) {
-      return (<div>Unknown question</div>);
+      return (<div>{t("Unknown question")}</div>);
     }
     const q = question as QuestionType;
     const nextProps: ButtonProps = {};
@@ -158,12 +159,13 @@ class QuestionInner extends React.Component<IProps, IState> {
         <h3>{q.description}</h3>
         <Likert key={'l-' + q.id} leftValue={q.leftValue} rightValue={q.rightValue} labels={q.labels} onChange={this.setAnswer} value={this.state.value} />
         <Notepad key={'np-' + q.id} onChange={this.setNotes} notes={this.state.notes} />
-        {(this.props.showPrevious !== false) && <Button onClick={this.goToPreviousQuestion}>Back</Button>}
-        <Button {...nextProps} onClick={this.next}>Next</Button>
+        {(this.props.showPrevious !== false) && <Button onClick={this.goToPreviousQuestion}>{t("Back")}</Button>}
+        <Button {...nextProps} onClick={this.next}>{t("Next")}</Button>
         <p>{this.state.saveError}</p>
       </div>
     );
   }
 }
-const Question = addLikertAnswer<IProps>(QuestionInner);
+const QuestionTranslated = withTranslation()(QuestionInner);
+const Question = addLikertAnswer<IProps>(QuestionTranslated);
 export { Question };

@@ -2,11 +2,8 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import {IMeetingResult, getMeeting} from 'apollo/modules/meetings';
 import {Question} from 'components/Question';
-import 'rc-slider/assets/index.css';
 import { Grid, Loader, Progress } from 'semantic-ui-react';
-import './style.less';
-import { bindActionCreators } from 'redux';
-import {IURLConnector, setURL} from 'redux/modules/url';
+import {IURLConnector, UrlConnector} from 'redux/modules/url';
 import {Error} from 'components/Error';
 import {IAnswer} from 'models/answer';
 import {IQuestion} from 'models/question';
@@ -20,10 +17,13 @@ import {journey} from 'helpers/url';
 import {isBeneficiaryUser} from 'helpers/auth';
 import {Thanks} from './thanks';
 import {EmptyQuestionnaire} from 'containers/Meeting/empty';
-const { connect } = require('react-redux');
-const ReactGA = require('react-ga');
+import {WithTranslation, withTranslation} from 'react-i18next';
+import {connect} from 'react-redux';
+import ReactGA from 'react-ga';
+import 'rc-slider/assets/index.css';
+import './style.less';
 
-interface IProps extends IURLConnector {
+interface IProps extends IURLConnector, WithTranslation {
   data: IMeetingResult;
   match: {
     params: {
@@ -41,18 +41,6 @@ interface IState {
     init?: boolean;
 }
 
-@connect((_, ownProps: IProps) => {
-  const out: any = {};
-  if (ownProps.data !== undefined && ownProps.data.getMeeting !== undefined) {
-    out.questions = (ownProps.data.getMeeting.outcomeSet.questions || [])
-      .filter((q) => !q.archived);
-    out.answers = ownProps.data.getMeeting.answers;
-    out.questionnaire = ownProps.data.getMeeting.outcomeSet;
-  }
-  return out;
-}, (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-}))
 class MeetingInner extends React.Component<IProps, IState> {
 
   constructor(props) {
@@ -186,6 +174,8 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 
   public render() {
+    const {data, t} = this.props;
+    const {screen} = this.state;
     const wrapper = (inner: JSX.Element, progress: JSX.Element = <div />): JSX.Element => {
       return (
         <div id="meeting">
@@ -193,7 +183,7 @@ class MeetingInner extends React.Component<IProps, IState> {
           <Grid container={true} columns={1}>
             <Grid.Column>
               <Helmet>
-                <title>Questionnaire</title>
+                <title>{t("Questionnaire")}</title>
               </Helmet>
               <div>
                 {inner}
@@ -204,34 +194,34 @@ class MeetingInner extends React.Component<IProps, IState> {
       );
     };
 
-    if (this.props.data.error) {
-      return wrapper((<Error text="Failed to load" />));
+    if (data.error) {
+      return wrapper((<Error text={t("Failed to load")} />));
     }
-    if (this.props.data.loading || this.props.data.getMeeting === undefined) {
+    if (data.loading || data.getMeeting === undefined) {
         return wrapper(<Loader active={true} inline="centered" />);
     }
-    if (this.state.screen === Screen.REVIEW) {
+    if (screen === Screen.REVIEW) {
       return wrapper(this.renderFinished(), this.renderProgressBar());
     }
-    if (this.state.screen === Screen.NOTES) {
+    if (screen === Screen.NOTES) {
       return wrapper(this.renderNotepad(), this.renderProgressBar());
     }
-    if (this.state.screen === Screen.INSTRUCTIONS) {
+    if (screen === Screen.INSTRUCTIONS) {
       return wrapper(this.renderInstructions(), this.renderProgressBar());
     }
-    if (this.state.screen === Screen.THANKS) {
+    if (screen === Screen.THANKS) {
       return wrapper(<Thanks />);
     }
-    if (this.state.screen === Screen.EMPTY) {
+    if (screen === Screen.EMPTY) {
       return wrapper(<EmptyQuestionnaire questionnaireID={this.props.questionnaire.id} isBeneficiary={isBeneficiaryUser()}/>);
     }
     const currentQuestionID = this.state.currentQuestion;
     if (currentQuestionID === undefined) {
       return wrapper(<Loader active={true} inline="centered" />);
     }
-    const meeting = this.props.data.getMeeting;
+    const meeting = data.getMeeting;
     return wrapper((
-        <Question
+      <Question
         key={currentQuestionID}
         record={meeting}
         questionID={currentQuestionID}
@@ -242,5 +232,19 @@ class MeetingInner extends React.Component<IProps, IState> {
     ), this.renderProgressBar());
   }
 }
-const Meeting = getMeeting<IProps>((props) => props.match.params.id)(MeetingInner);
+
+const propTransform = (_, ownProps: IProps) => {
+  if (ownProps.data !== undefined && ownProps.data.getMeeting !== undefined) {
+    return {
+      questions: (ownProps.data.getMeeting.outcomeSet.questions || []).filter((q) => !q.archived),
+      answers: ownProps.data.getMeeting.answers,
+      questionnaire: ownProps.data.getMeeting.outcomeSet
+    };
+  }
+  return {};
+};
+
+const MeetingWithConnection = connect(propTransform, UrlConnector)(MeetingInner);
+const MeetingWithData = getMeeting<IProps>((props) => props.match.params.id)(MeetingWithConnection);
+const Meeting = withTranslation()(MeetingWithData);
 export { Meeting };
