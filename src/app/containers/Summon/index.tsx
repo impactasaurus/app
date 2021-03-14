@@ -3,14 +3,13 @@ import {isUserLoggedIn, isBeneficiaryUser as isCurrentUserABeneficiary} from 're
 import { IStore } from 'redux/IStore';
 import {LoggedInUserConfirmation} from 'components/LogoutConfirmation';
 import {SummonForm} from './form';
-import {bindActionCreators} from 'redux';
-import {IURLConnector, setURL} from 'redux/modules/url';
+import {IURLConnector, UrlConnector} from 'redux/modules/url';
 import {ISummonAcceptanceMutation} from 'apollo/modules/summon';
 import {newMeetingFromSummon} from '../../apollo/modules/summon';
 import {PageWrapperHoC} from '../../components/PageWrapperHoC';
-const { connect } = require('react-redux');
-const ReactGA = require('react-ga');
-const strings = require('./../../../strings.json');
+import { connect } from 'react-redux';
+import ReactGA from 'react-ga';
+import { useTranslation } from 'react-i18next';
 
 interface IProps extends IURLConnector, ISummonAcceptanceMutation {
   match: {
@@ -22,54 +21,52 @@ interface IProps extends IURLConnector, ISummonAcceptanceMutation {
   isBeneficiary?: boolean;
 }
 
-@connect((state: IStore) => ({
-  isLoggedIn: isUserLoggedIn(state.user),
-  isBeneficiary: isCurrentUserABeneficiary(state.user),
-}), (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-}))
-class SummonAcceptanceInner extends React.Component<IProps, any> {
+const SummonAcceptanceInner = (p: IProps) => {
 
-  constructor(props) {
-    super(props);
-    this.logResult = this.logResult.bind(this);
-    this.createRecord = this.createRecord.bind(this);
-  }
+  const {t} = useTranslation();
 
-  private logResult(label: string) {
+  const logResult = (label: string) => {
     ReactGA.event({
       category: 'summon',
       action: 'acceptance',
       label,
     });
-  }
+  };
 
-  private createRecord(beneficiaryID: string): Promise<void> {
-    return this.props.newMeetingFromSummon(this.props.match.params.id, beneficiaryID)
+  const createRecord = (beneficiaryID: string): Promise<void> => {
+    return p.newMeetingFromSummon(p.match.params.id, beneficiaryID)
       .then((jti) => {
-        this.logResult('success');
-        this.props.setURL(`/jti/${jti}`);
+        logResult('success');
+        p.setURL(`/jti/${jti}`);
       })
       .catch((e: Error) => {
-        this.logResult(e.message);
+        logResult(e.message);
         if (e.message.includes('expired')) {
-          throw new Error('This link has expired. Please request a new link');
+          throw new Error(t('This link has expired. Please request a new link'));
         } else if (e.message.includes('exhausted')) {
-          throw new Error('This link has been exhausted. Please request a new link');
+          throw new Error(t('This link has been exhausted. Please request a new link'));
         } else if (e.message.includes('found')) {
-          throw new Error('We did not recognise this link. Please request a new link');
+          throw new Error(t('We did not recognise this link. Please request a new link'));
         } else {
-          throw new Error(`Loading questionnaire failed. ${strings.formFailureGeneric}`);
+          const e1 = t('Loading questionnaire failed.');
+          const e2 = t("Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org");
+          throw new Error(`${e1} ${e2}`);
         }
       });
-  }
+  };
 
-  public render() {
-    if (this.props.isLoggedIn && !this.props.isBeneficiary) {
-      return <LoggedInUserConfirmation />;
-    }
-    return <SummonForm onBeneficiarySelect={this.createRecord}/>;
+  if (p.isLoggedIn && !p.isBeneficiary) {
+    return <LoggedInUserConfirmation />;
   }
+  return <SummonForm onBeneficiarySelect={createRecord}/>;
 }
 
-export const SummonAcceptance = newMeetingFromSummon(PageWrapperHoC<IProps>('Welcome', 'summonAcceptance', SummonAcceptanceInner));
+const storeToProps = (state: IStore) => ({
+  isLoggedIn: isUserLoggedIn(state.user),
+  isBeneficiary: isCurrentUserABeneficiary(state.user),
+})
+
+const SummonAcceptanceConnected = connect(storeToProps, UrlConnector)(SummonAcceptanceInner);
+const SummonAcceptanceData = newMeetingFromSummon<IProps>(SummonAcceptanceConnected);
+// t("Welcome")
+export const SummonAcceptance = PageWrapperHoC<IProps>('Welcome', 'summonAcceptance', SummonAcceptanceData);

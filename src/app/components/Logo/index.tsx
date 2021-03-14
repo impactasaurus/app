@@ -1,55 +1,41 @@
-import * as React from 'react';
+import React, {useEffect, useState} from 'react';
 import { shouldLoadBranding, loadBrandLogo } from 'theme/branding';
-const SVG = require('./logo.inline.svg');
+import * as SVG from './logo.inline.svg';
 import './style.less';
 
-interface IState {
-  logo?: React.ComponentClass;
-  loadBranding: boolean;
-}
+const Logo = (): JSX.Element => {
+  const [loadBranding, setLoadBranding] = useState(shouldLoadBranding());
+  const [logo, setLogo] = useState(null);
 
-class Logo extends React.Component<any, IState> {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      logo: null,
-      loadBranding: shouldLoadBranding(),
-    };
-  }
-
-  public componentDidMount() {
-    if(this.state.loadBranding) {
+  useEffect(() => {
+    if(loadBranding) {
       loadBrandLogo()
       .then((logo) => {
-        this.setState({
-          logo,
-        });
+        // logo is a fn, if we pass it to setLogo, react will execute it
+        // to work around this, pass logo in a fn
+        setLogo(() => logo);
       })
       .catch(() => {
         console.log(`no logo for configured for subdomain`);
-        this.setState({
-          loadBranding: false,
-        });
+        setLoadBranding(false);
       });
     }
-  }
+  }, []);
 
-  public render() {
-    if(this.state.loadBranding) {
-      const BrandedLogo = this.state.logo;
-      if(BrandedLogo) {
-        return <BrandedLogo />;
-      }
-      return <span />;
+  if(loadBranding) {
+    const BrandedLogo = logo;
+    if(BrandedLogo) {
+      return <BrandedLogo />;
     }
-    return (
-      <span className="impactasaurus-logo">
-        <SVG />
-        <span className="title">Impactasaurus</span>
-      </span>
-    );
+    return <span />;
   }
+  const name = "Impactasaurus";
+  return (
+    <span className="impactasaurus-logo">
+      <SVG />
+      <span className="title">{name}</span>
+    </span>
+  );
 }
 
 export default Logo;
