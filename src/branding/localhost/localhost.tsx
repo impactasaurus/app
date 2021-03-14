@@ -1,12 +1,14 @@
 import * as React from 'react';
-const SVG = require('./logo.inline.svg');
+import SVG from './logo.inline.svg';
 import './style.less';
 
-const Logo = () => {
+const Logo = (): JSX.Element => {
   return (
     <span className="localhost-logo">
       <SVG />
+      {/* eslint-disable-next-line i18next/no-literal-string */}
       <span className="title">Impactasaurus</span>
+      {/* eslint-disable-next-line i18next/no-literal-string */}
       <span className="little">LH</span>
     </span>
   );

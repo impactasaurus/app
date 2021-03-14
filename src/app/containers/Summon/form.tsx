@@ -1,36 +1,37 @@
-import * as React from 'react';
-import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
+import React from 'react';
+import {FormikBag, FormikErrors, FormikValues, FormikProps, withFormik} from 'formik';
 import {FormField} from 'components/FormField';
 import {Form, Input, Icon } from 'semantic-ui-react';
+import {WithTranslation, withTranslation} from 'react-i18next';
 
 interface IFormOuput {
   beneficiaryID: string;
 }
 
-interface IFormProps {
+interface IFormProps extends WithTranslation {
   onBeneficiarySelect(benID: string): Promise<void>;
 }
 
-const InnerForm = (props: InjectedFormikProps<any, IFormOuput>) => {
-  const { touched, status, errors, isSubmitting, submitForm, isValid, handleChange, handleBlur } = props;
+const InnerForm = (props: IFormProps & FormikProps<IFormOuput>) => {
+  const { touched, status, errors, isSubmitting, submitForm, isValid, handleChange, handleBlur, t } = props;
   return (
     <Form className="screen" onSubmit={submitForm}>
-      <FormField error={errors.beneficiaryID as string} touched={touched.beneficiaryID} inputID="smn-ben" required={true} label="Your ID">
+      <FormField error={errors.beneficiaryID as string} touched={touched.beneficiaryID} inputID="smn-ben" required={true} label={t("Your ID")}>
         <Input type="text" id="beneficiaryID" placeholder="ID" onChange={handleChange} onBlur={handleBlur} />
       </FormField>
       <Form.Group>
-        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>Submit</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>{t("Start")}</Form.Button>
       </Form.Group>
       {status && <span className="submit-error"><Icon name="exclamation" />{status}</span>}
     </Form>
   );
 };
 
-export const SummonForm = withFormik<IFormProps, IFormOuput>({
-  validate: (values: IFormOuput) => {
+const SummonFormInner = withFormik<IFormProps, IFormOuput>({
+  validate: (values: IFormOuput, p: IFormProps) => {
     const errors: FormikErrors<IFormOuput> = {};
     if (!values.beneficiaryID) {
-      errors.beneficiaryID = 'Please enter your ID';
+      errors.beneficiaryID = p.t('Please enter your ID');
     }
     return errors;
   },
@@ -48,3 +49,5 @@ export const SummonForm = withFormik<IFormProps, IFormOuput>({
   },
   validateOnMount: true,
 })(InnerForm);
+
+export const SummonForm = withTranslation()(SummonFormInner);

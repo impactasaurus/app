@@ -1,23 +1,29 @@
-import * as React from 'react';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {Message} from 'semantic-ui-react';
-const failureMessage = require('../../../strings.json').failureGeneric;
 
 interface IProps {
   text: string;
 }
 
-export const Error = (p: IProps) => (
-  <Message error={true}>
-    <Message.Header>Error</Message.Header>
-    <div>{`${p.text}. ${failureMessage}`}</div>
-  </Message>
-);
+export const Error = (p: IProps): JSX.Element => {
+  const {t} = useTranslation();
+  return (
+    <Message error={true}>
+      <Message.Header>{t("Error")}</Message.Header>
+      <div>{`${p.text}. ${t("Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org")}`}</div>
+    </Message>
+  );
+};
 
 export const CustomError = (p: {
   inner: JSX.Element;
-}) => (
-  <Message error={true}>
-    <Message.Header>Error</Message.Header>
-    <div>{p.inner}</div>
-  </Message>
-);
+}): JSX.Element => {
+  const {t} = useTranslation();
+  return (
+    <Message error={true}>
+      <Message.Header>{t("Error")}</Message.Header>
+      <div>{p.inner}</div>
+    </Message>
+  );
+};

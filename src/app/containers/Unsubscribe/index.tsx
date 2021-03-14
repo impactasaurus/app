@@ -1,8 +1,8 @@
-import * as React from 'react';
+import React, {useState, useEffect} from 'react';
 import {PageWrapperHoC} from '../../components/PageWrapperHoC';
 import {IUnsubscribe, unsubscribe} from '../../apollo/modules/user';
-const formFailureGeneric = require('../../../strings.json').formFailureGeneric;
 import { Message, Loader } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 
 interface IProps extends IUnsubscribe {
   match: {
@@ -12,56 +12,42 @@ interface IProps extends IUnsubscribe {
   };
 }
 
-interface IState {
-  error: Error;
-  loading: boolean;
-}
+const UnsubscribeInner = (p: IProps) => {
+  const [error, setError] = useState(undefined);
+  const [loading, setLoading] = useState(true);
 
-class UnsubscribeInner extends React.Component<IProps, IState> {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      error: undefined,
-      loading: true,
-    };
-  }
-
-  public componentDidMount() {
-    this.props.unsubscribe(this.props.match.params.uid)
+  useEffect(() => {
+    p.unsubscribe(p.match.params.uid)
       .then(() => {
-          this.setState({
-            loading: false,
-            error: undefined,
-          });
+        setLoading(false);
+        setError(undefined);
       })
       .catch((e) => {
-        this.setState({
-          loading: false,
-          error: e,
-        });
+        setLoading(false);
+        setError(e);
       });
-  }
+  }, []);
 
-  public render() {
-    if (this.state.loading) {
-      return <Loader active={true} inline="centered" />;
-    }
-    if (this.state.error) {
-      return (
-        <Message error={true}>
-          <Message.Header>Failed to unsubscribe</Message.Header>
-          <Message.Content>{formFailureGeneric}</Message.Content>
-        </Message>
-      );
-    }
+  const {t} = useTranslation();
+
+  if (loading) {
+    return <Loader active={true} inline="centered" />;
+  }
+  if (error) {
     return (
-      <Message success={true}>
-        <Message.Header>Success</Message.Header>
-        <div>You have been unsubscribed</div>
+      <Message error={true}>
+        <Message.Header>{t("Failed to unsubscribe")}</Message.Header>
+        <Message.Content>{t("Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org")}</Message.Content>
       </Message>
     );
   }
+  return (
+    <Message success={true}>
+      <Message.Header>{t("Success")}</Message.Header>
+      <div>{t("You have been unsubscribed")}</div>
+    </Message>
+  );
 }
 
+// t("Unsubscribe")
 export const Unsubscribe = unsubscribe(PageWrapperHoC<IProps>('Unsubscribe', 'unsubscribe', UnsubscribeInner));

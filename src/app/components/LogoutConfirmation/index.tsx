@@ -3,33 +3,37 @@ import { Message, Button } from 'semantic-ui-react';
 import {requestLogOut, RequestLogoutFunc} from '../../redux/modules/user';
 import {bindActionCreators} from 'redux';
 import {IStore} from '../../redux/IStore';
-const { connect } = require('react-redux');
+import {useTranslation} from 'react-i18next';
+import {connect} from 'react-redux';
 
 interface IProps {
   currentURL?: string;
   logout?: RequestLogoutFunc;
 }
 
-@connect((state: IStore) => ({
-  currentURL: state.router.location.pathname,
-}), (dispatch) => ({
-  logout: bindActionCreators(requestLogOut, dispatch),
-}))
-export class LoggedInUserConfirmation extends React.Component<IProps, any> {
+const LoggedInUserConfirmationInner = (p: IProps) => {
 
-  private confirmed() {
-    this.props.logout(this.props.currentURL);
+  const confirmed = () => {
+    p.logout(p.currentURL);
   }
 
-  public render() {
-    const confirmed = this.confirmed.bind(this);
-    return (
-      <Message warning={true}>
-        <Message.Header>Warning</Message.Header>
-        <div>Using this link will log you out of Impactasaurus</div>
-        <br />
-        <Button onClick={confirmed}>Continue</Button>
-      </Message>
-    );
-  }
+  const {t} = useTranslation();
+  return (
+    <Message warning={true}>
+      <Message.Header>{t("Warning")}</Message.Header>
+      <div>{t("Using this link will log you out of Impactasaurus")}</div>
+      <br />
+      <Button onClick={confirmed}>{t("Continue")}</Button>
+    </Message>
+  );
 }
+
+const storeToProps = (state: IStore) => ({
+  currentURL: state.router.location.pathname,
+});
+
+const dispatchToProps = (dispatch) => ({
+  logout: bindActionCreators(requestLogOut, dispatch),
+});
+
+export const LoggedInUserConfirmation = connect(storeToProps, dispatchToProps)(LoggedInUserConfirmationInner);
