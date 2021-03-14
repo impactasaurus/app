@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { shouldLoadBranding, loadBrandLogo } from 'theme/branding';
-import * as SVG from './logo.inline.svg';
+import SVG from './logo.inline.svg';
 import './style.less';
 
 const Logo = (): JSX.Element => {
