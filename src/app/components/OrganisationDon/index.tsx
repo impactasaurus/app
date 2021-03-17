@@ -1,35 +1,27 @@
-import * as React from 'react';
+import React, {useState} from 'react';
 import {Button, ButtonProps} from 'semantic-ui-react';
 import {getOrganisation, IGetOrgResult} from 'apollo/modules/organisation';
-const appConfig = require('../../../../config/main');
 import { getToken } from 'helpers/auth';
+import { useTranslation } from 'react-i18next';
+import * as appConfig from '../../../../config/main';
 
 interface IProps {
   org?: IGetOrgResult;
 }
 
-interface IState {
-  loading?: boolean;
-  error?: string;
-}
+const OrganisationDonInner = (p: IProps) => {
 
-class OrganisationDonInner extends React.Component<IProps, IState> {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>(undefined);
+  const {t} = useTranslation();
 
-  constructor(props) {
-    super(props);
-    this.state = {};
-    this.redirect = this.redirect.bind(this);
-  }
-
-  private redirect() {
-    if (this.state.loading) {
+  const redirect = () => {
+    if (loading) {
       return;
     }
 
-    this.setState({
-      loading: true,
-      error: undefined,
-    });
+    setLoading(true);
+    setError(undefined);
 
     fetch(`${appConfig.app.api}/v1/don/redirect?return=${window.location.href}`, {
       headers: {
@@ -42,30 +34,26 @@ class OrganisationDonInner extends React.Component<IProps, IState> {
     })
     .catch((err) => {
       console.error(err);
-      this.setState({
-        loading: false,
-        error: 'Failed to redrect, please try refreshing',
-      });
+      setLoading(false);
+      setError(t('Failed to redrect, please try refreshing'));
     });
   }
 
-  public render() {
-    if(this.props.org.loading || this.props.org.error || !this.props.org.getOrganisation.don) {
-        return <div />;
-    }
-
-    const redirectProps: ButtonProps = {};
-    if (this.state.loading) {
-      redirectProps.loading = true;
-      redirectProps.disabled = true;
-    }
-
-    return [
-      <h3 key="h3-don">Billing</h3>,
-      <Button key="don-button" {...redirectProps} onClick={this.redirect}>Manage</Button>,
-      <p key="don-err">{this.state.error}</p>,
-    ];
+  if(p.org.loading || p.org.error || !p.org.getOrganisation.don) {
+      return <div />;
   }
+
+  const redirectProps: ButtonProps = {};
+  if (loading) {
+    redirectProps.loading = true;
+    redirectProps.disabled = true;
+  }
+
+  return [
+    <h3 key="h3-don">{t("Billing")}</h3>,
+    <Button key="don-button" {...redirectProps} onClick={redirect}>{t("Manage")}</Button>,
+    <p key="don-err">{error}</p>,
+  ];
 }
 
 const OrganisationDon = getOrganisation(OrganisationDonInner, 'org');

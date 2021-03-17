@@ -1,13 +1,13 @@
-import * as React from 'react';
+import React from 'react';
 import {Form, Input, Icon} from 'semantic-ui-react';
 import {getSelf, IGetSelf, IUpdateSelf, updateSelf} from 'apollo/modules/user';
-import './style.less';
 import {FormField} from 'components/FormField';
 import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
-import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
-const strings = require('./../../../strings.json');
+import {FormikBag, FormikErrors, FormikValues, FormikProps, withFormik} from 'formik';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import './style.less';
 
-interface IProps extends IUpdateSelf {
+interface IProps extends IUpdateSelf, Partial<WithTranslation> {
   self?: IGetSelf;
   additionalFields?: JSX.Element[];
 }
@@ -17,32 +17,32 @@ interface IFormOutput {
   subscribed: boolean;
 }
 
-const InnerForm = (props: InjectedFormikProps<IProps, IFormOutput>) => {
-  const { touched, status, errors, isSubmitting, submitForm, isValid, handleChange, handleBlur, values, dirty, handleReset } = props;
-  const checkboxLabel = <label>Email me occasional updates from Impactasaurus</label>;
+const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
+  const { touched, status, errors, isSubmitting, submitForm, isValid, handleChange, handleBlur, values, dirty, handleReset, t } = props;
+  const checkboxLabel = <label>{t("Email me occasional updates from Impactasaurus")}</label>;
   return (
     <Form className="screen" onSubmit={submitForm}>
-      <FormField error={errors.name as string} touched={touched.name} inputID="usf-name" label="Name" required={true}>
-        <Input id="usf-name" name="name" type="text" placeholder="Your Name" onChange={handleChange} onBlur={handleBlur} value={values.name} />
+      <FormField error={errors.name as string} touched={touched.name} inputID="usf-name" label={t("Name")} required={true}>
+        <Input id="usf-name" name="name" type="text" placeholder={t("Your Name")} onChange={handleChange} onBlur={handleBlur} value={values.name} />
       </FormField>
-      <FormField error={errors.subscribed as string} touched={touched.subscribed} inputID="usf-subscribe" label="Notifications">
+      <FormField error={errors.subscribed as string} touched={touched.subscribed} inputID="usf-subscribe" label={t("Notifications")}>
         <Form.Checkbox id="usf-subscribe" name="subscribed" label={checkboxLabel} onChange={handleChange} checked={values.subscribed} />
       </FormField>
       {props.additionalFields}
       <Form.Group>
-        <Form.Button disabled={!dirty} onClick={handleReset}>Cancel</Form.Button>
-        <Form.Button type="submit" primary={true} disabled={!dirty || !isValid || isSubmitting} loading={isSubmitting}>Save</Form.Button>
+        <Form.Button disabled={!dirty} onClick={handleReset}>{t("Cancel")}</Form.Button>
+        <Form.Button type="submit" primary={true} disabled={!dirty || !isValid || isSubmitting} loading={isSubmitting}>{t("Save")}</Form.Button>
       </Form.Group>
-      {status && <span className="submit-error"><Icon name="exclamation" />Editing your user account failed. {strings.formFailureGeneric}</span>}
+      {status && <span className="submit-error"><Icon name="exclamation" />{t("Editing your user account failed.")} {t("Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org")}</span>}
     </Form>
   );
 };
 
 export const UserSettingsInner = withFormik<IProps, IFormOutput>({
-  validate: (values: IFormOutput) => {
+  validate: (values: IFormOutput, p: IProps) => {
     const errors: FormikErrors<IFormOutput> = {};
     if (!values.name || values.name.length === 0) {
-      errors.name = 'Please provide your name';
+      errors.name = p.t('Please provide your name');
     }
     return errors;
   },
@@ -70,5 +70,6 @@ export const UserSettingsInner = withFormik<IProps, IFormOutput>({
 })(InnerForm);
 
 const UserSettingsWithLoader = ApolloLoaderHoC('user', (p: IProps) => p.self, UserSettingsInner);
-const UserSettings = updateSelf<IProps>(getSelf(UserSettingsWithLoader, 'self'));
+const UserSettingsWithTrans = withTranslation()(UserSettingsWithLoader);
+const UserSettings = updateSelf<IProps>(getSelf(UserSettingsWithTrans, 'self'));
 export { UserSettings };

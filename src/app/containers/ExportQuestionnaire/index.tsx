@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { Helmet } from 'react-helmet';
-import { Grid, Loader } from 'semantic-ui-react';
-import {isNullOrUndefined} from 'util';
+import React, {useEffect} from 'react';
+import { Loader } from 'semantic-ui-react';
 import {exportMeetings, IExportMeetingsResult} from 'apollo/modules/meetings';
 import {Error} from 'components/Error';
-const appConfig = require('../../../../config/main');
+import { MinimalPageWrapperHoC } from 'components/PageWrapperHoC';
+import { useTranslation } from 'react-i18next';
+import * as appConfig from '../../../../config/main';
 
 interface IProps  {
   data: IExportMeetingsResult;
@@ -15,34 +15,24 @@ interface IProps  {
   };
 }
 
-class ExportQuestionnaireInner extends React.Component<IProps, any> {
+const ExportQuestionnaireInner = (p: IProps) => {
+  useEffect(() => {
+    if (p.data.exportMeetings) {
+      window.location.href = appConfig.app.api + p.data.exportMeetings;
+    }
+  }, [p.data.exportMeetings])
 
-  public componentDidUpdate(prevProps: IProps) {
-    if (this.props.data.exportMeetings !== prevProps.data.exportMeetings && !isNullOrUndefined(this.props.data.exportMeetings)) {
-      window.location.href = appConfig.app.api + this.props.data.exportMeetings;
-    }
+  const {t} = useTranslation();
+  if (p.data.error) {
+    return <Error text={t("Export failed")} />;
   }
-
-  public render() {
-    const wrapper = (inner: JSX.Element) => (
-      <Grid container={true} columns={1} id="data">
-        <Grid.Column>
-          <Helmet>
-            <title>Questionnaire Export</title>
-          </Helmet>
-          {inner}
-        </Grid.Column>
-      </Grid>
-    );
-    if (this.props.data.error) {
-      return wrapper(<Error text="Export failed" />);
-    }
-    if (this.props.data.loading) {
-      return wrapper(<Loader active={true} inline="centered" />);
-    }
-    return wrapper(<span>Download started</span>);
+  if (p.data.loading) {
+    return <Loader active={true} inline="centered" />;
   }
+  return <span>{t("Download started")}</span>;
 }
 
-const ExportQuestionnaire = exportMeetings((p: IProps) => p.match.params.id)(ExportQuestionnaireInner);
+const ExportQuestionnaireData = exportMeetings((p: IProps) => p.match.params.id)(ExportQuestionnaireInner);
+// t("Questionnaire Export")
+const ExportQuestionnaire = MinimalPageWrapperHoC("Questionnaire Export", "data", ExportQuestionnaireData);
 export { ExportQuestionnaire };
