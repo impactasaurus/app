@@ -1,27 +1,20 @@
-import * as React from 'react';
-import { Helmet } from 'react-helmet';
-import { Grid } from 'semantic-ui-react';
+import React from 'react';
 import {OrganisationSettings} from 'components/OrganisationSettings';
 import {OrganisationDon} from 'components/OrganisationDon';
+import { PageWrapperHoC } from 'components/PageWrapperHoC';
+import { useTranslation } from 'react-i18next';
 
-class Organisation extends React.Component<any, any> {
-
-  public render() {
-    return (
-      <Grid container={true} columns={1} id="organisation">
-        <Grid.Column>
-          <Helmet>
-            <title>Organisation</title>
-          </Helmet>
-          <h1>Organisation</h1>
-          <OrganisationDon />
-          <h3>Settings</h3>
-          <p>The following settings apply to every user in your organisation:</p>
-          <OrganisationSettings />
-        </Grid.Column>
-      </Grid>
-    );
-  }
+const OrganisationInner = () => {
+  const {t} = useTranslation();
+  return (
+    <>
+    <OrganisationDon />
+    <h3>{t("Settings")}</h3>
+    <p>{t("The following settings apply to every user in your organisation:")}</p>
+    <OrganisationSettings />
+    </>
+  );
 }
 
+const Organisation = PageWrapperHoC("Organisation", "organisation", OrganisationInner);
 export { Organisation };
