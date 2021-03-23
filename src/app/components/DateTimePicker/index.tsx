@@ -1,6 +1,7 @@
-import * as React from 'react';
+import React, {useState} from 'react';
 import InputMoment from 'input-moment';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 import './input-moment.less';
 import './overrides.less';
 
@@ -10,40 +11,28 @@ interface IProps {
   allowFutureDates?: boolean;
 }
 
-interface IState {
-  error?: string;
-}
+const DateTimePicker = (p: IProps): JSX.Element => {
+  const [error, setError] = useState<string>(undefined);
+  const {t} = useTranslation();
 
-class DateTimePicker extends React.Component<IProps, IState> {
-
-  constructor(props) {
-    super(props);
-    this.state = {};
-    this.onChange = this.onChange.bind(this);
-  }
-
-  private onChange(newDate: moment.Moment): void {
-    if (this.props.allowFutureDates === false && newDate > moment()) {
-      this.setState({
-        error: 'Date must be in the past',
-      });
+  const onChange = (newDate: moment.Moment): void => {
+    if (p.allowFutureDates === false && newDate > moment()) {
+      setError(t('Date must be in the past'));
       return;
     }
-    this.setState({
-      error: undefined,
-    });
-    this.props.onChange(newDate);
+    setError(undefined);
+    p.onChange(newDate);
   }
 
-  public render() {
-    const copy = this.props.moment.clone();
-    return (
-      <div>
-        <InputMoment className="DateTimePicker" moment={copy} onChange={this.onChange} prevMonthIcon="chevron left icon" nextMonthIcon="chevron right icon" />
-        <p>{this.state.error}</p>
-      </div>
-    );
-  }
+  const copy = p.moment.clone();
+  const leftIcon = "chevron left icon";
+  const rightIcon = "chevron right icon";
+  return (
+    <div>
+      <InputMoment className="DateTimePicker" moment={copy} onChange={onChange} prevMonthIcon={leftIcon} nextMonthIcon={rightIcon} />
+      <p>{error}</p>
+    </div>
+  );
 }
 
 export {DateTimePicker};

@@ -118,7 +118,7 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
       <Message success={true}>
         <Message.Header>{t("Success")}</Message.Header>
         <div>{t(
-          "Please provide the following link to your {noBeneficiaries, plural, one {beneficiary} other {beneficiaries}}. They have {noDays} days to complete the questionnaire",
+          "Please provide the following link to your {noBeneficiaries, plural, one {beneficiary} other {beneficiaries}}. They have {noDays, plural, one {# day} other {# days}} to complete the questionnaire",
           {
             noBeneficiaries: this.getType() === AssessmentType.summon ? 100 : 1,
             noDays: defaultRemoteMeetingLimit,

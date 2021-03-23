@@ -1,15 +1,17 @@
-import * as React from 'react';
+import React from 'react';
 import {GraphData, getMaximumNumberOfPointsPerSeries} from 'models/graph';
 import {Message} from 'semantic-ui-react';
 import { Chart } from 'components/Chart';
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
   data: GraphData;
 }
 
-class Graph extends React.Component<IProps, any> {
+const Graph = (p: IProps): JSX.Element => {
+  const {t} = useTranslation();
 
-  private prepareDataset(data: GraphData): any {
+  const prepareDataset = (data: GraphData): any => {
     return data.series.map((x) => {
       return {
         label: x.label,
@@ -21,11 +23,11 @@ class Graph extends React.Component<IProps, any> {
     });
   }
 
-  private chartConfig(data: GraphData) {
+  const chartConfig = (data: GraphData) => {
     return {
       type: 'line',
       data: {
-        datasets: this.prepareDataset(data),
+        datasets: prepareDataset(data),
       },
       options: {
         tooltips: {
@@ -52,32 +54,30 @@ class Graph extends React.Component<IProps, any> {
     };
   }
 
-  public render() {
-    if (Array.isArray(this.props.data.series) === false) {
-      return <div />;
-    }
+  if (Array.isArray(p.data.series) === false) {
+    return <div />;
+  }
 
-    const wrapper = (inner: JSX.Element): JSX.Element => {
-      return (
-        <div className="graph">
-          {inner}
-        </div>
-      );
-    };
+  const wrapper = (inner: JSX.Element): JSX.Element => {
+    return (
+      <div className="graph">
+        {inner}
+      </div>
+    );
+  };
 
-    const noRecords = getMaximumNumberOfPointsPerSeries(this.props.data);
-    if (noRecords <= 1) {
-      return wrapper((
-        <Message info={true} >
-          <Message.Header>Incompatible Visualisation</Message.Header>
-          <Message.Content>The data contains less than two records, and as such, cannot be visualised as a line graph. Please select a different visualisation.</Message.Content>
-        </Message>
-      ));
-    }
+  const noRecords = getMaximumNumberOfPointsPerSeries(p.data);
+  if (noRecords <= 1) {
     return wrapper((
-      <Chart config={this.chartConfig(this.props.data)} />
+      <Message info={true} >
+        <Message.Header>{t("Incompatible Visualisation")}</Message.Header>
+        <Message.Content>{t("The data contains less than two records, and as such, cannot be visualised as a line graph. Please select a different visualisation.")}</Message.Content>
+      </Message>
     ));
   }
+  return wrapper((
+    <Chart config={chartConfig(p.data)} />
+  ));
 }
 
 export {Graph};
