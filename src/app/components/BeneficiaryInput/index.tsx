@@ -1,10 +1,11 @@
-import * as React from 'react';
+import React, {useState} from 'react';
 import {isNullOrUndefined} from 'util';
-import {Search, Input} from 'semantic-ui-react';
+import {Search, Input, InputOnChangeData, SearchResultData} from 'semantic-ui-react';
 import {getBeneficiaries, IBeneficiariesResult} from 'apollo/modules/beneficiaries';
 import {getOrganisation, IGetOrgResult} from 'apollo/modules/organisation';
-import './style.less';
+import { useTranslation } from 'react-i18next';
 const escapeStringRegexp = require('escape-string-regexp');
+import './style.less';
 
 interface IProps {
   onChange?: (ben: string, existing: boolean|undefined) => void;
@@ -17,117 +18,99 @@ interface IProps {
   data?: IGetOrgResult;
 }
 
-interface IState {
-  benID?: string;
-  searchResults?: any[];
-}
+const BeneficiaryInputInner = (p: IProps) => {
+  const [benID, setBenID] = useState<string>(undefined);
+  const [searchResults, setSearchResults] = useState<{title: string, description?: string}[]>(undefined);
+  const {t} = useTranslation();
 
-class BeneficiaryInputInner extends React.Component<IProps, IState> {
 
-  constructor(props) {
-    super(props);
-    this.state = {};
-    this.onChange = this.onChange.bind(this);
-    this.onBlur = this.onBlur.bind(this);
-    this.handleSearchChange = this.handleSearchChange.bind(this);
-    this.onSearchResultSelect = this.onSearchResultSelect.bind(this);
-    this.onInputChange = this.onInputChange.bind(this);
-  }
-
-  private onChange(benID) {
-    this.setState({
-      benID,
-    });
-    if (!isNullOrUndefined(this.props.onChange)) {
-      let existingBen;
+  const onChange = (benID) => {
+    setBenID(benID);
+    if (p.onChange) {
+      let existingBen = false;
       try {
-        existingBen = this.props.bens.getBeneficiaries.find((b) => b === benID) !== undefined;
+        existingBen = p.bens.getBeneficiaries.find((b) => b === benID) !== undefined;
       } catch {}
-      this.props.onChange(benID, existingBen);
+      p.onChange(benID, existingBen);
     }
   }
 
-  private onInputChange(_, data) {
-    this.onChange(data.value);
+  const onInputChange = (_, data: InputOnChangeData) => {
+    onChange(data.value);
   }
 
-  private onSearchResultSelect(_, data) {
-    this.onChange(data.result.title);
-    if (!isNullOrUndefined(this.props.onBlur)) {
-      this.props.onBlur(data.result.title);
+  const onSearchResultSelect = (_, data: SearchResultData) => {
+    onChange(data.result.title);
+    if (p.onBlur) {
+      p.onBlur(data.result.title);
     }
   }
 
-  private onBlur() {
-    if (!isNullOrUndefined(this.props.onBlur)) {
-      this.props.onBlur(this.state.benID);
+  const onBlur = () => {
+    if (p.onBlur) {
+      p.onBlur(benID);
     }
   }
 
-  private handleSearchChange(_, { value }) {
-    this.onChange(value);
+  const handleSearchChange = (_, { value }) => {
+    onChange(value);
     const newBeneficiaryResult = {
       title: value,
-      description: `Create ${value}'s first record`,
+      description: t(`Create {name}'s first record`, {name: value}),
     };
 
-    if (isNullOrUndefined(this.props.bens.getBeneficiaries) || value.length < 1) {
+    if (isNullOrUndefined(p.bens.getBeneficiaries) || value.length < 1) {
       const noMatches = [];
-      if (this.props.allowUnknown === true) {
+      if (p.allowUnknown === true) {
         noMatches.push(newBeneficiaryResult);
       }
-      return this.setState({
-        searchResults: noMatches,
-      });
+      setSearchResults(noMatches);
+      return;
     }
 
     const re = new RegExp(escapeStringRegexp(value), 'i');
-    const isMatch = (x) => re.test(x);
-    const matchingBens = this.props.bens.getBeneficiaries.filter(isMatch);
+    const isMatch = (x: string) => re.test(x);
+    const matchingBens = p.bens.getBeneficiaries.filter(isMatch);
 
     const searchResults = matchingBens.map((b) => ({
       title: b,
     }));
 
-    const exactMatch = this.props.bens.getBeneficiaries.find((b) => b === value);
-    if (exactMatch === undefined && this.props.allowUnknown === true) {
+    const exactMatch = p.bens.getBeneficiaries.find((b) => b === value);
+    if (exactMatch === undefined && p.allowUnknown === true) {
       searchResults.push(newBeneficiaryResult);
     }
 
-    this.setState({
-      searchResults,
-    });
+    setSearchResults(searchResults);
   }
 
-  public render() {
-    let shouldShowTypeahead = false;
-    if (!isNullOrUndefined(this.props.data.getOrganisation)) {
-      shouldShowTypeahead = this.props.data.getOrganisation.settings.beneficiaryTypeAhead;
-    }
-    if (shouldShowTypeahead) {
-      return (
-        <div className="beneficiary-input">
-          <Search
-            loading={this.props.bens.loading}
-            onResultSelect={this.onSearchResultSelect}
-            onSearchChange={this.handleSearchChange}
-            results={this.state.searchResults}
-            onBlur={this.onBlur}
-            onFocus={this.props.onFocus}
-            icon={undefined}
-            fluid={true}
-            showNoResults={true}
-            noResultsMessage="Unknown beneficiary"
-            input={<Input type="text" placeholder="Beneficiary" icon={false}/>}
-            id={this.props.inputID}
-          />
-        </div>
-      );
-    }
+  let shouldShowTypeahead = false;
+  if (!isNullOrUndefined(p.data.getOrganisation)) {
+    shouldShowTypeahead = p.data.getOrganisation.settings.beneficiaryTypeAhead;
+  }
+  if (shouldShowTypeahead) {
     return (
-      <Input type="text" placeholder="Beneficiary" onChange={this.onInputChange} onBlur={this.onBlur} onFocus={this.props.onFocus} />
+      <div className="beneficiary-input">
+        <Search
+          loading={p.bens.loading}
+          onResultSelect={onSearchResultSelect}
+          onSearchChange={handleSearchChange}
+          results={searchResults}
+          onBlur={onBlur}
+          onFocus={p.onFocus}
+          icon={undefined}
+          fluid={true}
+          showNoResults={true}
+          noResultsMessage={t("Unknown beneficiary")}
+          input={<Input type="text" placeholder={t("Beneficiary")} icon={false}/>}
+          id={p.inputID}
+        />
+      </div>
     );
   }
+  return (
+    <Input type="text" placeholder={t("Beneficiary")} onChange={onInputChange} onBlur={onBlur} onFocus={p.onFocus} />
+  );
 }
 
 const BeneficiaryInput = getOrganisation<IProps>(getBeneficiaries<IProps>(BeneficiaryInputInner, 'bens'));

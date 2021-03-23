@@ -35,7 +35,7 @@ const OrganisationDonInner = (p: IProps) => {
     .catch((err) => {
       console.error(err);
       setLoading(false);
-      setError(t('Failed to redrect, please try refreshing'));
+      setError(t('Failed to redirect, please try refreshing'));
     });
   }
 

@@ -16,5 +16,6 @@ const OrganisationInner = () => {
   );
 }
 
+// t("Organisation")
 const Organisation = PageWrapperHoC("Organisation", "organisation", OrganisationInner);
 export { Organisation };
