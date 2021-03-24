@@ -8,7 +8,7 @@ By participating in this project, you agree to abide by the [code of conduct](ht
 
 ## Communication
 
-Most communication should occur via github issues, this allows people from different timezones to contribute. For short, live discussions, there is a [gitter chat room](https://gitter.im/impactasaurus) available.
+Most communication should occur via github issues, this allows people from different timezones to contribute. For short, live discussions, please use github's discussion feature.
 
 ## Reporting Bugs
 
