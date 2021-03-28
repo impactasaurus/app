@@ -88,7 +88,9 @@ class ServiceReportInner extends React.Component<IProp, null> {
   }
 }
 
+// t("report")
 const ServiceInnerWithSpinner = ApolloLoaderHoC<IProp>('report', (p: IProp) => p.JOCServiceReport, ServiceReportInner);
+// t("questionnaire")
 const ServiceInnerWithSpinners = ApolloLoaderHoC('questionnaire', (p: IProp) => p.data, ServiceInnerWithSpinner);
 
 const ServiceInnerWithReport = getJOCServiceReport<IProp>(

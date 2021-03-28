@@ -68,6 +68,7 @@ class BeneficiaryConfigInner extends React.Component<IProps, IState> {
   }
 }
 
+// t("beneficiary")
 const BeneficiaryConfigWithLoader = ApolloLoaderHoC<IProps>('beneficiary',
   (p: IProps) => p.data,
   BeneficiaryConfigInner,

@@ -1,23 +1,21 @@
-import * as React from 'react';
-import { Helmet } from 'react-helmet';
-import {Button, Loader, Grid, ButtonProps, Input, InputOnChangeData} from 'semantic-ui-react';
-import {IURLConnector, setURL} from 'redux/modules/url';
+import React from 'react';
+import {Button, ButtonProps, Input, InputOnChangeData} from 'semantic-ui-react';
+import {IURLConnector, UrlHOC} from 'redux/modules/url';
 import {
   editMeetingDate, editMeetingTags, editMeetingBeneficiary, getMeeting, IEditMeetingDate, IEditMeetingTags,
   IMeetingResult, IEditMeetingBeneficiary,
 } from 'apollo/modules/meetings';
 import {TagInputWithBenSuggestions} from 'components/TagInput';
 import {DateTimePicker} from 'components/DateTimePicker';
-import {Error} from 'components/Error';
 import {Hint} from 'components/Hint';
 import moment from 'moment';
-import {bindActionCreators} from 'redux';
-import './style.less';
 import {Tags} from 'components/Tag';
-const strings = require('./../../../strings.json');
-const { connect } = require('react-redux');
+import { PageWrapperHoC } from 'components/PageWrapperHoC';
+import { ApolloLoaderHoC } from 'components/ApolloLoaderHoC';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import './style.less';
 
-interface IProps extends IURLConnector, IEditMeetingDate, IEditMeetingTags, IEditMeetingBeneficiary {
+interface IProps extends IURLConnector, IEditMeetingDate, IEditMeetingTags, IEditMeetingBeneficiary, WithTranslation {
   match: {
     params: {
       id: string,
@@ -39,6 +37,7 @@ interface IState {
   tagEditing?: boolean;
   dateEditing?: boolean;
   benEditing?: boolean;
+  loaded?: boolean;
 }
 
 function getNextPageURL(p: IProps): string|undefined {
@@ -49,13 +48,11 @@ function getNextPageURL(p: IProps): string|undefined {
   return urlParams.get('next');
 }
 
-@connect(undefined, (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-}))
 class RecordEditInner extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
+    this.state = {};
     this.saveRecord = this.saveRecord.bind(this);
     this.setTags = this.setTags.bind(this);
     this.setBen = this.setBen.bind(this);
@@ -68,15 +65,15 @@ class RecordEditInner extends React.Component<IProps, IState> {
     this.editAnswers = this.editAnswers.bind(this);
   }
 
-  public componentWillMount() {
+  public componentDidMount() {
     if (this.props.data.getMeeting !== undefined) {
       this.loadState(this.props);
     }
   }
 
-  public componentWillReceiveProps(nextProps: IProps) {
-    if (nextProps.data.getMeeting !== undefined && this.props.data.getMeeting === undefined) {
-      this.loadState(nextProps);
+  public componentDidReceiveProps(prevProps: IProps) {
+    if (this.props.data.getMeeting !== undefined && prevProps.data.getMeeting === undefined) {
+      this.loadState(this.props);
     }
   }
 
@@ -85,6 +82,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
       conducted: moment(p.data.getMeeting.conducted),
       recordTags: p.data.getMeeting.meetingTags,
       beneficiary: p.data.getMeeting.beneficiary,
+      loaded: true,
     });
   }
 
@@ -160,7 +158,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
   }
 
   private renderEditButton(onClick: ()=>void): JSX.Element {
-    return (<Button className="field-edit" onClick={onClick} compact={true} size="tiny" primary={true}>Edit</Button>);
+    return (<Button className="field-edit" onClick={onClick} compact={true} size="tiny" primary={true}>{this.props.t("Edit")}</Button>);
   }
 
   private renderBeneficiaryID(benEditing: boolean): JSX.Element {
@@ -179,7 +177,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
     }
     return (
       <div>
-        <h4 className="label inline">Beneficiary</h4>
+        <h4 className="label inline">{this.props.t("Beneficiary")}</h4>
         {control}
       </div>
     );
@@ -197,7 +195,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
     }
     return (
       <div>
-        <h4 className="label inline">Date Conducted</h4>
+        <h4 className="label inline">{this.props.t("Date Conducted")}</h4>
         <span className="conductedDate">{this.state.conducted.format('llll')}</span>
         {control}
       </div>
@@ -205,6 +203,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
   }
 
   private renderTagSection(beneficiary: string, tagEditing: boolean): JSX.Element {
+    const t = this.props.t;
     let tags = (<div />);
     if (tagEditing) {
       tags = (
@@ -232,48 +231,26 @@ class RecordEditInner extends React.Component<IProps, IState> {
       } else {
         tags = (
           <span>
-            <span>No tags</span>
+            <span>{t("No tags")}</span>
             {editButton}
           </span>
         );
       }
     }
+    const tagExplanation = t("Tags are words which can be saved against records. They can be used to filter your records when reporting. Common uses of tags include demographic or intervention information.");
     return (
       <div>
-        <h4 className="label inline optional"><Hint text={strings.tagExplanation} />Tags</h4>
+        <h4 className="label inline"><Hint text={tagExplanation} />{t("Tags")}</h4>
         {tags}
       </div>
     );
   }
 
   public render() {
-    const wrapper = (inner: JSX.Element): JSX.Element => {
-      return (
-        <Grid container={true} columns={1} id="record-edit">
-          <Grid.Column>
-            <Helmet>
-              <title>Edit Record</title>
-            </Helmet>
-            <div id="record-edit">
-              <h1>Edit Record</h1>
-              {inner}
-            </div>
-          </Grid.Column>
-        </Grid>
-      );
-    };
-
-    if(this.props.match.params.id === undefined) {
-      return wrapper(<div />);
-    }
-
-    if (this.props.data.error) {
-      return wrapper(<Error text="Failed to load record"/>);
-    }
 
     const record = this.props.data.getMeeting;
-    if(record === undefined) {
-      return wrapper(<Loader active={true} inline="centered" />);
+    if(this.props.match.params.id === undefined || !this.state.loaded || !record) {
+      return <div />;
     }
 
     const startProps: ButtonProps = {};
@@ -282,31 +259,38 @@ class RecordEditInner extends React.Component<IProps, IState> {
       startProps.disabled = true;
     }
 
-    return wrapper((
+    const t = this.props.t;
+    return (
       <div className="impactform">
         {this.renderBeneficiaryID(this.state.benEditing)}
         <div>
-          <h4 className="label inline">Questionnaire</h4>
+          <h4 className="label inline">{t("Questionnaire")}</h4>
           <span>{record.outcomeSet.name}</span>
         </div>
         <div>
-          <h4 className="label inline">Facilitator</h4>
+          <h4 className="label inline">{t("Facilitator")}</h4>
           <span>{record.user}</span>
         </div>
         {this.renderTagSection(record.beneficiary, this.state.tagEditing)}
         {this.renderDateSection(this.state.dateEditing)}
-        <Button primary={true} onClick={this.editAnswers} style={{marginTop:'1em'}}>Edit Answers...</Button>
+        <Button primary={true} onClick={this.editAnswers} style={{marginTop:'1em'}}>{t("Edit Answers...")}</Button>
         <div>
           <div className="button-group">
-            <Button className="cancel" onClick={this.nextPage}>Cancel</Button>
-            <Button {...startProps} className="submit" onClick={this.saveRecord}>Save</Button>
+            <Button className="cancel" onClick={this.nextPage}>{t("Cancel")}</Button>
+            <Button {...startProps} className="submit" onClick={this.saveRecord}>{t("Save")}</Button>
           </div>
           <p>{this.state.saveError}</p>
         </div>
       </div>
-    ));
+    );
   }
 }
 
-const RecordEdit = editMeetingTags<IProps>(editMeetingDate<IProps>(editMeetingBeneficiary(getMeeting<IProps>((props) => props.match.params.id)(RecordEditInner))));
+// t("record")
+const RecordEditLoader = ApolloLoaderHoC<IProps>("record", (p: IProps) => p.data, RecordEditInner);
+const RecordEditData = editMeetingTags<IProps>(editMeetingDate<IProps>(editMeetingBeneficiary(getMeeting<IProps>((props) => props.match.params.id)(RecordEditLoader))));
+const RecordEditI18n = withTranslation()(RecordEditData);
+// t("Edit Record")
+const RecordEditPage = PageWrapperHoC("Edit Record", "record-edit", RecordEditI18n);
+const RecordEdit = UrlHOC(RecordEditPage);
 export { RecordEdit };

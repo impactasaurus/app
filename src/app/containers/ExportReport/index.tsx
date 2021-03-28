@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { Helmet } from 'react-helmet';
-import { Grid, Loader } from 'semantic-ui-react';
-import {isNullOrUndefined} from 'util';
+import React, {useEffect} from 'react';
+import { Loader } from 'semantic-ui-react';
 import {exportReport, IExportReportResult} from 'apollo/modules/reports';
 import {Error} from 'components/Error';
-const appConfig = require('../../../../config/main');
+import { MinimalPageWrapperHoC } from 'components/PageWrapperHoC';
+import { useTranslation } from 'react-i18next';
+import * as config from '../../../../config/main';
 
 interface IProp  {
   data: IExportReportResult;
@@ -21,35 +21,21 @@ interface IProp  {
   };
 }
 
-class ExportReportInner extends React.Component<IProp, any> {
+const ExportReportInner = (p: IProp) => {
+  useEffect(() => {
+    if(p.data.exportReport) {
+      window.location.href = config.app.api + p.data.exportReport;
+    }
+  }, [p.data.exportReport]);
 
-  public componentDidUpdate(prevProps: IProp) {
-    if (this.props.data.exportReport !== prevProps.data.exportReport && !isNullOrUndefined(this.props.data.exportReport)) {
-      window.location.href = appConfig.app.api + this.props.data.exportReport;
-    }
+  const {t} = useTranslation();
+  if (p.data.error) {
+    return <Error text={t("Export failed")} />;
   }
-
-  public render() {
-    const wrapper = (inner: JSX.Element) => {
-      return (
-        <Grid container={true} columns={1} id="data">
-          <Grid.Column>
-            <Helmet>
-              <title>Questionnaire Export</title>
-            </Helmet>
-            {inner}
-          </Grid.Column>
-        </Grid>
-      );
-    };
-    if (this.props.data.error) {
-      return wrapper(<Error text="Exporting failed"/>);
-    }
-    if (this.props.data.loading) {
-      return wrapper(<Loader active={true} inline="centered" />);
-    }
-    return wrapper(<span>Download started</span>);
+  if (p.data.loading) {
+    return <Loader active={true} inline="centered" />;
   }
+  return <span>{t("Download started")}</span>;
 }
 
 function getQuestionSetIDFromProps(p: IProp): string {
@@ -91,5 +77,7 @@ function getOrFromProps(p: IProp): boolean {
   return JSON.parse(urlParams.get('or'));
 }
 
-const ExportReport = exportReport(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenFromProps, getOrFromProps)(ExportReportInner);
+const ExportReportData = exportReport(getQuestionSetIDFromProps, getStartDateFromProps, getEndDateFromProps, getTagsFromProps, getOpenFromProps, getOrFromProps)(ExportReportInner);
+// t("Report Export")
+const ExportReport = MinimalPageWrapperHoC("Report Export", "data", ExportReportData);
 export { ExportReport };
