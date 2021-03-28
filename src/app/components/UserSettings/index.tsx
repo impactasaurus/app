@@ -69,6 +69,7 @@ export const UserSettingsInner = withFormik<IProps, IFormOutput>({
   validateOnMount: true,
 })(InnerForm);
 
+// t("user")
 const UserSettingsWithLoader = ApolloLoaderHoC('user', (p: IProps) => p.self, UserSettingsInner);
 const UserSettingsWithTrans = withTranslation()(UserSettingsWithLoader);
 const UserSettings = updateSelf<IProps>(getSelf(UserSettingsWithTrans, 'self'));

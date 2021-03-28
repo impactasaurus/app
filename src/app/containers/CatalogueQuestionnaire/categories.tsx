@@ -14,6 +14,7 @@ interface IProps {
 
 const CategoriesInner = (p: IProps) => <CategoryList outcomeSetID={p.match.params.id} questionnaire={p.data.getCatalogueQuestionnaire.outcomeset} readOnly={true}/>;
 
+// t("questionnaire")
 const InnerWithSpinner = ApolloLoaderHoC('questionnaire', (p: IProps) => p.data, CategoriesInner);
 const InnerWithData = getCatalogueQuestionnaire<IProps>((props) => props.match.params.id)(InnerWithSpinner);
 export const Categories = InnerWithData;

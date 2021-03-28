@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { Helmet } from 'react-helmet';
-import { Grid, Loader } from 'semantic-ui-react';
-import {isNullOrUndefined} from 'util';
+import React, {useEffect} from 'react';
+import {Loader} from 'semantic-ui-react';
 import {exportBenMeetings, IExportBenMeetingsResult} from 'apollo/modules/meetings';
 import {Error} from 'components/Error';
-const appConfig = require('../../../../config/main');
+import {MinimalPageWrapperHoC} from 'components/PageWrapperHoC';
+import {useTranslation} from 'react-i18next';
+import * as config from '../../../../config/main';
 
 interface IProps  {
   data: IExportBenMeetingsResult;
@@ -16,34 +16,24 @@ interface IProps  {
   };
 }
 
-class ExportBenRecordsInner extends React.Component<IProps, any> {
+const ExportBenRecordsInner = (p: IProps) => {
+  useEffect(() => {
+    if(p.data.exportBenMeetings) {
+      window.location.href = config.app.api + p.data.exportBenMeetings;
+    }
+  }, [p.data.exportBenMeetings]);
 
-  public componentDidUpdate(prevProps: IProps) {
-    if (this.props.data.exportBenMeetings !== prevProps.data.exportBenMeetings && !isNullOrUndefined(this.props.data.exportBenMeetings)) {
-      window.location.href = appConfig.app.api + this.props.data.exportBenMeetings;
-    }
+  const {t} = useTranslation();
+  if (p.data.error) {
+    return <Error text={t("Export failed")} />;
   }
-
-  public render() {
-    const wrapper = (inner: JSX.Element) => (
-      <Grid container={true} columns={1} id="data">
-        <Grid.Column>
-          <Helmet>
-            <title>Beneficiary Record Export</title>
-          </Helmet>
-          {inner}
-        </Grid.Column>
-      </Grid>
-    );
-    if (this.props.data.error) {
-      return wrapper(<Error text="Export failed" />);
-    }
-    if (this.props.data.loading) {
-      return wrapper(<Loader active={true} inline="centered" />);
-    }
-    return wrapper(<span>Download started</span>);
+  if (p.data.loading) {
+    return <Loader active={true} inline="centered" />;
   }
+  return <span>{t("Download started")}</span>;
 }
 
-const ExportBenRecords = exportBenMeetings((p: IProps) => p.match.params.qid, (p: IProps) => p.match.params.id)(ExportBenRecordsInner);
+const ExportBenRecordsData = exportBenMeetings((p: IProps) => p.match.params.qid, (p: IProps) => p.match.params.id)(ExportBenRecordsInner);
+// t("Beneficiary Record Export")
+const ExportBenRecords = MinimalPageWrapperHoC("Beneficiary Record Export", "data", ExportBenRecordsData);
 export { ExportBenRecords };

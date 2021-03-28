@@ -20,6 +20,7 @@ const CategoriesInner = (p: IProps) => {
   );
 };
 
+// t("questionnaire")
 const InnerWithSpinner = ApolloLoaderHoC('questionnaire', (p: IProps) => p.data, CategoriesInner);
 const InnerWithData = getOutcomeSet<IProps>((props) => props.match.params.id)(InnerWithSpinner);
 export const Categories = InnerWithData;

@@ -1,5 +1,4 @@
-import * as React from 'react';
-import {Loader} from 'semantic-ui-react';
+import React from 'react';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
 import {VizControlPanel} from 'components/VizControlPanel';
 import {bindActionCreators} from 'redux';
@@ -19,15 +18,14 @@ import {MeetingRadar} from 'components/MeetingRadar';
 import {MeetingTable} from 'components/MeetingTable';
 import {isBeneficiaryUser} from 'redux/modules/user';
 import {MeetingGraph} from 'components/MeetingGraph';
-import {Error} from 'components/Error';
-
 import {setPref, SetPrefFunc} from 'redux/modules/pref';
-
-const { connect } = require('react-redux');
+import {connect} from 'react-redux';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import { ApolloLoaderHoC } from 'components/ApolloLoaderHoC';
 
 const allowedVisualisations = [Visualisation.RADAR, Visualisation.GRAPH, Visualisation.TABLE];
 
-interface IProps extends IURLConnector {
+interface IProps extends IURLConnector, WithTranslation {
   match: {
     params: {
       id: string,
@@ -87,25 +85,9 @@ function filterMeetings(m: IMeeting[], questionSetID: string): IMeeting[] {
   return m.filter((m) => m.outcomeSetID === questionSetID);
 }
 
-@connect((state: IStore, ownProps: IProps) => {
-  const selectedQuestionSetID = getSelectedQuestionSetID(state.pref);
-  const canCatAg = isCategoryAggregationAvailable(ownProps.data.getMeetings, selectedQuestionSetID);
-  const viz = getVisualisation(state.pref, allowedVisualisations);
-  return {
-    vis: viz,
-    agg: getAggregation(state.pref, canCatAg),
-    isCategoryAgPossible: canCatAg,
-    selectedQuestionSetID,
-    isBeneficiary: isBeneficiaryUser(state.user),
-    isCanvasSnapshotPossible: isCanvasSnapshotPossible(viz),
-  };
-}, (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-  setPref: bindActionCreators(setPref, dispatch),
-}))
-class JourneyInner extends React.Component<IProps, any> {
+class JourneyInner extends React.Component<IProps, null> {
 
-  constructor(props) {
+  constructor(props: IProps) {
     super(props);
     this.renderVis = this.renderVis.bind(this);
     this.renderJourney = this.renderJourney.bind(this);
@@ -164,14 +146,16 @@ class JourneyInner extends React.Component<IProps, any> {
   }
 
   private renderJourney(): JSX.Element {
-    if (this.props.data.error) {
-      return (<Error text="Failed to load records" />);
+    if(!this.props.data) {
+      return <div />;
     }
-    if (this.props.data.loading) {
-      return (<Loader active={true} inline="centered" />);
-    }
+    const t = this.props.t;
     if (!Array.isArray(this.props.data.getMeetings) || this.props.data.getMeetings.length === 0) {
-      return (<p>No complete meetings found for beneficiary {this.props.match.params.id}</p>);
+      return (
+        <p>
+          {t("No complete meetings found for beneficiary {name}", {name: this.props.match.params.id})}
+        </p>
+      );
     }
     return (
       <div>
@@ -203,5 +187,29 @@ class JourneyInner extends React.Component<IProps, any> {
   }
 }
 
-const Journey = getMeetings<IProps>((p) => p.match.params.id)(JourneyInner);
+const storeToProps = (state: IStore, ownProps: IProps) => {
+  const selectedQuestionSetID = getSelectedQuestionSetID(state.pref);
+  const canCatAg = isCategoryAggregationAvailable(ownProps.data.getMeetings, selectedQuestionSetID);
+  const viz = getVisualisation(state.pref, allowedVisualisations);
+  return {
+    vis: viz,
+    agg: getAggregation(state.pref, canCatAg),
+    isCategoryAgPossible: canCatAg,
+    selectedQuestionSetID,
+    isBeneficiary: isBeneficiaryUser(state.user),
+    isCanvasSnapshotPossible: isCanvasSnapshotPossible(viz),
+  };
+};
+
+const dispatchToProps = (dispatch) => ({
+  setURL: bindActionCreators(setURL, dispatch),
+  setPref: bindActionCreators(setPref, dispatch),
+});
+
+
+const JourneyI18n = withTranslation()(JourneyInner);
+const JourneyConnected = connect(storeToProps, dispatchToProps)(JourneyI18n);
+// t("records")
+const JourneyLoader = ApolloLoaderHoC("records", (p: IProps) => p.data, JourneyConnected);
+const Journey = getMeetings<IProps>((p) => p.match.params.id)(JourneyLoader);
 export { Journey };

@@ -53,6 +53,7 @@ const CatalogueInner = (p: IProps) => {
 }
 
 const CatalogueInnerConnected = UrlHOC(CatalogueInner);
+// t("catalogue")
 const CatalogueInnerWithSpinner = ApolloLoaderHoC('catalogue', (p: IProps) => p.data, CatalogueInnerConnected);
 // t('Catalogue')
 const CatalogueInnerWithWrapper = PageWrapperHoC('Catalogue', 'catalogue', CatalogueInnerWithSpinner);

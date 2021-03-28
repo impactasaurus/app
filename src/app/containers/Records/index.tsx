@@ -1,9 +1,10 @@
-import * as React from 'react';
-import { Loader } from 'semantic-ui-react';
+import React from 'react';
+import {Loader} from 'semantic-ui-react';
 import {IURLConnector} from 'redux/modules/url';
 import {getAllMeetings, IGetAllMeetingsResult} from 'apollo/modules/meetings';
 import {RecordList} from 'components/RecordList';
 import {Error} from 'components/Error';
+import {useTranslation} from 'react-i18next';
 
 interface IProps extends IURLConnector {
   match: {
@@ -14,45 +15,39 @@ interface IProps extends IURLConnector {
   data?: IGetAllMeetingsResult;
 }
 
-class RecordsInner extends React.Component<IProps, any> {
+const RecordsInner = (p: IProps) => {
+  const {t} = useTranslation();
 
-  constructor(props) {
-    super(props);
-    this.renderRecords = this.renderRecords.bind(this);
-  }
-
-  private renderRecords(): JSX.Element {
-    if (this.props.data.error) {
-      return (<Error text="Failed to load records"/>);
+  const renderRecords = (): JSX.Element => {
+    if (p.data.error) {
+      return (<Error text={t("Failed to load records")} />);
     }
-    if (this.props.data.loading) {
+    if (p.data.loading) {
       return (
         <Loader active={true} inline="centered" />
       );
     }
-    const noCompleteMeetings = !Array.isArray(this.props.data.getMeetings) || this.props.data.getMeetings.length === 0;
-    const noIncompleteMeetings = !Array.isArray(this.props.data.getIncompleteMeetings) || this.props.data.getIncompleteMeetings.length === 0;
+    const noCompleteMeetings = !Array.isArray(p.data.getMeetings) || p.data.getMeetings.length === 0;
+    const noIncompleteMeetings = !Array.isArray(p.data.getIncompleteMeetings) || p.data.getIncompleteMeetings.length === 0;
     if (noCompleteMeetings && noIncompleteMeetings) {
       return (
-        <p>No meetings found for beneficiary {this.props.match.params.id}</p>
+        <p>{t("No meetings found for beneficiary {name}", {name: p.match.params.id})}</p>
       );
     }
     return (
-      <RecordList meetings={[].concat(...this.props.data.getMeetings, ...this.props.data.getIncompleteMeetings)} />
+      <RecordList meetings={[].concat(...p.data.getMeetings, ...p.data.getIncompleteMeetings)} />
     );
   }
 
-  public render() {
-    if(this.props.match.params.id === undefined) {
-      return (<div />);
-    }
-
-    return (
-      <div id="records">
-        {this.renderRecords()}
-      </div>
-    );
+  if(p.match.params.id === undefined) {
+    return (<div />);
   }
+
+  return (
+    <div id="records">
+      {renderRecords()}
+    </div>
+  );
 }
 
 const Records = getAllMeetings<IProps>((p) => p.match.params.id)(RecordsInner);

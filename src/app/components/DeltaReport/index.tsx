@@ -88,7 +88,9 @@ class DeltaReportInner extends React.Component<IProp, any> {
   }
 }
 
+// t("report")
 const DeltaInnerWithSpinner = ApolloLoaderHoC<IProp>('report', (p: IProp) => p.DeltaReport, DeltaReportInner);
+// t("questionnaire")
 const DeltaInnerWithSpinners = ApolloLoaderHoC('questionnaire', (p: IProp) => p.data, DeltaInnerWithSpinner);
 
 const DeltaInnerWithReport = getDeltaReport<IProp>(

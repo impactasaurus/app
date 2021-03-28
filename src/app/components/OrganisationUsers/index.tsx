@@ -99,6 +99,7 @@ const OrganisationUsersInner = (p: IProps) => {
   );
 }
 
+// t("users")
 const OrgUsersWithSpinner = ApolloLoaderHoC<IProps>('users', (p: IProps) => p.getOrgUsers, OrganisationUsersInner);
 const OrganisationUsers = updateUser(getOrgUsers(OrgUsersWithSpinner, 'getOrgUsers'));
 export { OrganisationUsers };
