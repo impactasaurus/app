@@ -76,6 +76,9 @@ class Likert extends React.Component<IProps, IState> {
     const marks = {};
     (p.labels || []).forEach((l: ILabel) => {
       const value = this.invertValue(l.value);
+      if (value < this.minValue() || value > this.maxValue()) {
+        return;
+      }
       marks[value] = l.label;
     });
     return marks;
