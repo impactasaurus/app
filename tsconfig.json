@@ -35,7 +35,8 @@
     "moduleResolution": "node",
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true
   },
   "includes": [
     "./src/externals.d.ts"

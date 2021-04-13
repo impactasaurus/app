@@ -2,13 +2,15 @@ import {gql, graphql, QueryProps} from 'react-apollo';
 import {mutationResultExtractor} from 'helpers/apollo';
 import {ISelf, selfFragment} from 'models/user';
 
+const getSelfGQL = gql`
+query {
+  getSelf: self {
+    ...defaultSelf
+  }
+} ${selfFragment}`;
+
 export const getSelf = <T>(component, name: string = undefined)  => {
-  return graphql<any, T>(gql`
-    query {
-      getSelf: self {
-        ...defaultSelf
-      }
-    } ${selfFragment}`, {
+  return graphql<any, T>(getSelfGQL, {
     options: () => {
       return {
         notifyOnNetworkStatusChange: true,
@@ -24,16 +26,22 @@ export interface IGetSelf extends QueryProps {
 
 export function updateSelf<T>(component) {
   return graphql<any, T>(gql`
-  mutation ($unsubscribed: Boolean, $name: String) {
-    updateSelf: UpdateSelf(unsubscribed:$unsubscribed, name: $name) {
+  mutation ($unsubscribed: Boolean, $name: String, $language: String) {
+    updateSelf: UpdateSelf(unsubscribed:$unsubscribed, name: $name, language: $language) {
         ...defaultSelf
     }
   } ${selfFragment}`, {
+    options: {
+      refetchQueries: [{
+        query: getSelfGQL,
+      }],
+    },
     props: ({ mutate }) => ({
-      updateSelf: (name: string, unsubscribed: boolean): Promise<ISelf> => mutate({
+      updateSelf: (name: string, unsubscribed: boolean, language: string): Promise<ISelf> => mutate({
         variables: {
           unsubscribed,
           name,
+          language
         },
       }).then(mutationResultExtractor<ISelf>('updateSelf')),
     }),
@@ -41,7 +49,7 @@ export function updateSelf<T>(component) {
 }
 
 export interface IUpdateSelf {
-  updateSelf?(name: string, unsubscribed: boolean): Promise<ISelf>;
+  updateSelf?(name: string, unsubscribed: boolean, language: string): Promise<ISelf>;
 }
 
 export function unsubscribe<T>(component) {
