@@ -94,7 +94,7 @@ export const UserSettingsInner = withFormik<IProps, IFormOutput>({
     return {
       name: p.self.getSelf.profile.name,
       subscribed: !p.self.getSelf.settings.unsubscribed,
-      language: p.self.getSelf.settings.language,
+      language: p.self.getSelf.settings.language || 'und',
     };
   },
   validateOnMount: true,
