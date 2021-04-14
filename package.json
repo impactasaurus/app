@@ -14,7 +14,8 @@
     "postinstall": "chmod +x ./src/app/theme/fixBranding.sh && ./src/app/theme/fixBranding.sh",
     "i18n-extract": "i18next 'src/**/*.tsx' -c 'src/i18n/parser.config.js'",
     "i18n-push": "crowdin push --config src/i18n/crowdin.yml",
-    "i18n-pull": "crowdin pull --config src/i18n/crowdin.yml"
+    "i18n-pull": "crowdin pull --config src/i18n/crowdin.yml",
+    "posti18n-pull": "node ./src/i18n/generate.js"
   },
   "author": "Impactasaurus <admin@impactasaurus.org>",
   "homepage": "https://impactasaurus.org",
@@ -140,6 +141,7 @@
     "i18next-pseudo": "2.2.1",
     "input-moment": "0.4.0",
     "isomorphic-fetch": "3.0.0",
+    "language-name-map": "^0.3.0",
     "moment": "2.29.0",
     "raven-js": "3.27.2",
     "rc-slider": "8.6.1",

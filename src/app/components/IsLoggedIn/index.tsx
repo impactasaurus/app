@@ -179,7 +179,9 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
 
   public render() {
     return (
-      <div />
+      <div>
+        {this.props.isLoggedIn && this.props.children}
+      </div>
     );
   }
 }

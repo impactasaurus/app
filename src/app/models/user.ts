@@ -6,6 +6,7 @@ export interface IUserProfile {
 
 export interface ISettings {
   unsubscribed: boolean;
+  language: string;
 }
 
 export interface ISelf {
@@ -31,5 +32,6 @@ export const selfFragment = gql`
     }
     settings {
       unsubscribed
+      language
     }
   } ${profileFragment}`;

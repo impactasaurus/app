@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { Header, IsLoggedIn } from 'components';
+import { Header, IsLoggedIn, Localiser } from 'components';
 import './style.less';
 import './../../theme/typo.less';
 import 'semantic-ui-less/semantic.less';
@@ -40,7 +40,9 @@ class App extends React.Component<IProps, any> {
 
     return wrapper((
       <div key="content" id="main-app-content">
-        <IsLoggedIn/>
+        <IsLoggedIn>
+          <Localiser />
+        </IsLoggedIn>
         <Switch>
           <Route exact={true} path="/" component={containers.Home} />
           <Route path="/record/:type" component={containers.AssessmentConfig} />
