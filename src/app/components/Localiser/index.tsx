@@ -10,7 +10,8 @@ const Inner = (p: IProps) => {
   const {i18n} = useTranslation();
 
   useEffect(() => {
-    if(!p.self.loading && !p.self.error) {
+    if(!p.self.loading && !p.self.error &&
+      p.self.getSelf && p.self.getSelf.settings) {
       const lng = p.self.getSelf.settings.language;
       if (lng && lng !== "und") {
         i18n.changeLanguage(lng);
