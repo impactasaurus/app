@@ -6,7 +6,7 @@ The web app is written using typescript, react, apollo and semantic UI.
 
 ## Getting Started
 
-Currently impactasaurus is an invite only application. To get access please email admin@impactasaurus.org or visit our [gitter chat room](https://gitter.im/impactasaurus) and ask for an invite.
+To get an account, you can sign up for Impactasaurus at https://impactasaurus.org. To get an idea of the typical workflow, check out our [recent webinar](https://www.youtube.com/watch?v=sw-_m3fNVmE).
 
 To run the application against the live backend, simply:
 ```
