@@ -1,13 +1,9 @@
-import * as React from 'react';
+import React from 'react';
 import {getDeltaReport, IDeltaReportResult} from 'apollo/modules/reports';
 import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
 import {IStore} from 'redux/IStore';
 import {Aggregation, getAggregation, getVisualisation, Visualisation} from 'models/pref';
-import './style.less';
-import {
-  exportReportData, IReportOptions,
-  EmptyReport,
-} from 'containers/Report/helpers';
+import {exportReportData, IReportOptions, EmptyReportMessage} from 'containers/Report/helpers';
 import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
 import {VizControlPanel} from 'components/VizControlPanel';
 import {DeltaReportStackedBarGraph} from './bar';
@@ -71,7 +67,7 @@ class DeltaReportInner extends React.Component<IProp, any> {
 
   public render() {
     if (this.props.DeltaReport.getDeltaReport && this.props.DeltaReport.getDeltaReport.beneficiaries.length === 0) {
-      return <EmptyReport ie={this.props.DeltaReport.getDeltaReport.excluded} />
+      return <EmptyReportMessage ie={this.props.DeltaReport.getDeltaReport.excluded} />
     }
     return (
       <div>
