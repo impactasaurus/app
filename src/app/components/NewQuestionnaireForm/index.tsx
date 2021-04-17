@@ -32,7 +32,7 @@ const InnerForm = (props: IProps & FormikProps<INewQuestionnaire>) => {
         <Input id="nqf-description" name="description" type="text" placeholder={t("Description")} onChange={handleChange} onBlur={handleBlur} />
       </FormField>
       <Form.Group>
-        <Form.Button onClick={onCancel}>{t("Cancel")}</Form.Button>
+        <Form.Button type="reset" onClick={onCancel}>{t("Cancel")}</Form.Button>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} {...submitProps}>{t("Create")}</Form.Button>
       </Form.Group>
       {status && <span className="submit-error"><Icon name="exclamation" />{t("Creating the questionnaire failed.")} {t("Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org")}</span>}

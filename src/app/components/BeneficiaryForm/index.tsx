@@ -38,7 +38,7 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
         <TagInputWithBenSuggestions inputID="bf-tags" id={beneficiaryID} onChange={setTags} tags={values.tags} allowNewTags={true} />
       </FormField>
       <Form.Group>
-        <Form.Button disabled={!dirty} onClick={onCancel}>{t("Cancel")}</Form.Button>
+        <Form.Button type="reset" disabled={!dirty} onClick={onCancel}>{t("Cancel")}</Form.Button>
         <Form.Button type="submit" primary={true} disabled={!dirty || !isValid || isSubmitting} loading={isSubmitting}>{t("Save")}</Form.Button>
       </Form.Group>
       {status && <span className="submit-error"><Icon name="exclamation" />{t("Saving the beneficiary failed.")} {t("Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org")}</span>}

@@ -57,7 +57,7 @@ const InnerForm = (props: IProps & FormikProps<IQuestionCategory>) => {
       </FormField>
 
       <Form.Group>
-        <Form.Button onClick={OnCancel}>{t("Cancel")}</Form.Button>
+        <Form.Button type="reset" onClick={OnCancel}>{t("Cancel")}</Form.Button>
         <Form.Button type="submit" primary={true} disabled={!dirty || !isValid || isSubmitting} loading={isSubmitting}>{submitButtonText}</Form.Button>
       </Form.Group>
       {status && <span className="submit-error"><Icon name="exclamation" />

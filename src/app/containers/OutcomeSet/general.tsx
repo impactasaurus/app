@@ -43,7 +43,7 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
         <TextArea id="qg-instructions" name="instructions" type="text" placeholder={t("Instructions")} value={values.instructions} autoHeight={true} {...standardProps}/>
       </FormField>
       <Form.Group>
-        <Form.Button disabled={!dirty} onClick={handleReset}>{t("Cancel")}</Form.Button>
+        <Form.Button type="reset" disabled={!dirty} onClick={handleReset}>{t("Cancel")}</Form.Button>
         <Form.Button type="submit" primary={true} disabled={!dirty || !isValid || isSubmitting} loading={isSubmitting}>{t("Save")}</Form.Button>
       </Form.Group>
       {status && <span className="submit-error"><Icon name="exclamation" />

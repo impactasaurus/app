@@ -60,7 +60,7 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
       </FormField>
       {props.additionalFields}
       <Form.Group>
-        <Form.Button disabled={!dirty} onClick={handleReset}>{t("Cancel")}</Form.Button>
+        <Form.Button type="reset" disabled={!dirty} onClick={handleReset}>{t("Cancel")}</Form.Button>
         <Form.Button type="submit" primary={true} disabled={!dirty || !isValid || isSubmitting} loading={isSubmitting}>{t("Save")}</Form.Button>
       </Form.Group>
       {status && <span className="submit-error"><Icon name="exclamation" />{t("Editing your user account failed.")} {t("Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org")}</span>}
