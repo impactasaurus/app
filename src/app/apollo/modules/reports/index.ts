@@ -1,6 +1,7 @@
 import {gql, graphql, QueryProps, QueryOpts} from 'react-apollo';
 import {
   answerAggregationFragment, beneficiaryDeltaFragment, IAnswerAggregationReport, IBeneficiaryDeltaReport,
+  latestAggregationFragment, ILatestAggregationReport,
 } from 'models/report';
 import {Extractor, IDExtractor} from 'helpers/apollo';
 import {isNullOrUndefined} from 'util';
@@ -114,4 +115,34 @@ export const exportReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end:
 
 export interface IExportReportResult extends QueryProps {
   exportReport?: string;
+}
+
+export const getStatusReport = <T>(qid: IDExtractor<T>, start: IDExtractor<T>, end: IDExtractor<T>, tags: Extractor<T, string[]>, orTags?: Extractor<T, boolean>, name?: string) => {
+  return graphql<any, T>(gql`
+    query statusReport($start: String!, $end: String!, $questionSetID: String!, $tags:[String], $orTags: Boolean) {
+      getStatusReport: report(minRequiredRecords: 1, start:$start, end: $end, questionnaire: $questionSetID, tags: $tags, orTags: $orTags) {
+        ...latestAggregationFragment
+      }
+    }
+    ${latestAggregationFragment}`,
+  {
+    name,
+    options: (props: T): QueryOpts => {
+      return {
+        variables: {
+          questionSetID: qid(props),
+          start: start(props),
+          end: end(props),
+          tags: tags(props),
+          orTags: orTags ? orTags(props) : false,
+        },
+        notifyOnNetworkStatusChange: true,
+        fetchPolicy: 'network-only',
+      };
+    },
+  });
+};
+
+export interface IStatusReport extends QueryProps {
+  getStatusReport?: ILatestAggregationReport;
 }

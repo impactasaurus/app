@@ -21,25 +21,8 @@ export const exportReportData = (urlConn: IURLConnector, p: IReportOptions): voi
   urlConn.setURL(url, qp);
 };
 
-export const EmptyReport = (p: {ie: IExclusion[]}): JSX.Element => {
+export const NoRecordsMessage = (): JSX.Element => {
   const {t} = useTranslation();
-  const unqiueExcludedBens = p.ie
-    .filter((e) => e.beneficiary !== undefined)
-    .filter((e, i, a) => a.indexOf(e) === i);
-  if (unqiueExcludedBens.length > 0) {
-    return (
-      <Message warning={true}>
-        <Message.Header>{t("We Need More Records")}</Message.Header>
-        <Trans
-          defaults={"<p>When generating your report, we only found beneficiaries with one record</p><p>We need <b>at least two records</b> to understand the impact your intervention is having on a beneficiary</p><p>Please collect more records and ensure that the time range you provided includes them</p>"}
-          components={{
-            p: <p />,
-            b: <b />
-          }}
-        />
-      </Message>
-    );
-  }
   return (
     <Message warning={true}>
       <Message.Header>{t("No Records")}</Message.Header>
@@ -52,4 +35,30 @@ export const EmptyReport = (p: {ie: IExclusion[]}): JSX.Element => {
       />
     </Message>
   );
+};
+
+export const NeedMoreRecordsMessage = (): JSX.Element => {
+  const {t} = useTranslation();
+  return (
+    <Message warning={true}>
+      <Message.Header>{t("We Need More Records")}</Message.Header>
+      <Trans
+        defaults={"<p>When generating your report, we only found beneficiaries with one record</p><p>We need <b>at least two records</b> to understand the impact your intervention is having on a beneficiary</p><p>Please collect more records and ensure that the time range you provided includes them</p>"}
+        components={{
+          p: <p />,
+          b: <b />
+        }}
+      />
+    </Message>
+  );
+};
+
+export const EmptyReportMessage = (p: {ie: IExclusion[]}): JSX.Element => {
+  const unqiueExcludedBens = p.ie
+    .filter((e) => e.beneficiary !== undefined)
+    .filter((e, i, a) => a.indexOf(e) === i);
+  if (unqiueExcludedBens.length > 0) {
+    return <NeedMoreRecordsMessage />;
+  }
+  return <NoRecordsMessage />;
 };

@@ -106,3 +106,35 @@ export interface IExcluded {
   questionIDs: string[];
   beneficiaryIDs: string[];
 }
+
+export const latestAggregationFragment = gql`
+  fragment latestAggregationFragment on Report {
+    beneficiaries {
+      id
+    },
+    questions {
+      id,
+      latest
+    },
+    categories {
+      id,
+      latest
+    },
+    excluded {
+      beneficiary,
+      question,
+      category,
+      reason
+    }
+  }`;
+
+  export interface ILatestAggregation extends IID {
+    latest: number;
+  }
+
+  export interface ILatestAggregationReport {
+    beneficiaries: IID[];
+    questions: ILatestAggregation[];
+    categories: ILatestAggregation[];
+    excluded: IExclusion[];
+  }

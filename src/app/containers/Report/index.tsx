@@ -8,12 +8,14 @@ import {SecondaryMenu} from 'components/SecondaryMenu';
 import {IReportOptions} from 'containers/Report/helpers';
 import {DeltaReport} from 'components/DeltaReport';
 import {ServiceReport} from 'components/ServiceReport';
+import {StatusReport} from 'components/StatusReport';
 import { WithTranslation, withTranslation } from 'react-i18next';
 const { connect } = require('react-redux');
 
 export enum SubPage {
   DIST,
   CHANGE,
+  STATUS,
 }
 
 interface IProps extends IURLConnector, WithTranslation {
@@ -96,6 +98,9 @@ class ReportInner extends React.Component<IProps, null> {
     let inner: JSX.Element = <ServiceReport {...options}/>;
     if (child === SubPage.CHANGE) {
       inner = <DeltaReport {...options}/>;
+    }
+    if (child === SubPage.STATUS) {
+      inner = <StatusReport {...options}/>;
     }
     return (
       <div>

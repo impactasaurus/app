@@ -7,11 +7,10 @@ import {ServiceReportTable} from './table';
 import {VizControlPanel} from 'components/VizControlPanel';
 import {IStore} from 'redux/IStore';
 import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'models/pref';
-import './style.less';
 import {bindActionCreators} from 'redux';
 import {IURLConnector, setURL} from 'redux/modules/url';
 import {
-  exportReportData, IReportOptions, EmptyReport,
+  exportReportData, IReportOptions, EmptyReportMessage,
 } from 'containers/Report/helpers';
 import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
 const { connect } = require('react-redux');
@@ -71,7 +70,7 @@ class ServiceReportInner extends React.Component<IProp, null> {
 
   public render() {
     if (this.props.JOCServiceReport.getJOCServiceReport && this.props.JOCServiceReport.getJOCServiceReport.beneficiaries.length === 0) {
-      return <EmptyReport ie={this.props.JOCServiceReport.getJOCServiceReport.excluded} />;
+      return <EmptyReportMessage ie={this.props.JOCServiceReport.getJOCServiceReport.excluded} />;
     }
     return (
       <div>
