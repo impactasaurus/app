@@ -1,10 +1,11 @@
-import * as React from 'react';
+import React from 'react';
 import {getConfig} from './outcomeGraph';
 import {RadarData, IRadarSeries, IRadarPoint} from 'models/radar';
 import {Aggregation} from 'models/pref';
 import {Message} from 'semantic-ui-react';
-import './style.less';
 import { Chart } from 'components/Chart';
+import { useTranslation } from 'react-i18next';
+import './style.less';
 
 interface IProp {
   data?: RadarData;
@@ -33,9 +34,11 @@ function getAxisTitle(original: string): string {
 
 export type OutcomeGraphData = IOutcomeGraphSeries[];
 
-class RadarChart extends React.Component<IProp, any> {
+const RadarChart = (p: IProp): JSX.Element => {
 
-  private convertData(data: IRadarSeries[]): OutcomeGraphData {
+  const {t} = useTranslation();
+
+  const convertData = (data: IRadarSeries[]): OutcomeGraphData => {
     return data.map((s: IRadarSeries): IOutcomeGraphSeries => {
       return {
         notes: s.note,
@@ -54,7 +57,7 @@ class RadarChart extends React.Component<IProp, any> {
     });
   }
 
-  private getNumberOfAxis(data: IRadarSeries[]): number {
+  const getNumberOfAxis = (data: IRadarSeries[]): number => {
     return data.reduce((maxAxis, series) => {
       if (series.datapoints.length > maxAxis) {
         return series.datapoints.length;
@@ -63,48 +66,45 @@ class RadarChart extends React.Component<IProp, any> {
     }, 0);
   }
 
-  private renderError(): JSX.Element {
-    let dims = 'dimensions';
-    if (this.props.aggregation === Aggregation.QUESTION) {
-      dims = 'questions';
+  const renderError = (): JSX.Element => {
+    let dims = t('dimensions');
+    if (p.aggregation === Aggregation.QUESTION) {
+      dims = t('questions');
     }
-    if (this.props.aggregation === Aggregation.CATEGORY) {
-      dims = 'categories';
+    if (p.aggregation === Aggregation.CATEGORY) {
+      dims = t('categories');
     }
     return (
       <Message info={true} >
-        <Message.Header>Incompatible Visualisation</Message.Header>
-        <Message.Content>The questionnaire contains less than three {dims}, and as such, cannot be visualised as a radar chart. Please select a different visualisation or aggregation.</Message.Content>
+        <Message.Header>{t("Incompatible Visualisation")}</Message.Header>
+        <Message.Content>{t("The questionnaire contains less than three {dimensionName}, and as such, cannot be visualised as a radar chart. Please select a different visualisation or aggregation.", {dimensionName: dims})}</Message.Content>
       </Message>
     );
   }
 
-  public render() {
-
-    if (Array.isArray(this.props.data.series) === false) {
-      return <div />;
-    }
-
-    const wrapper = (inner: JSX.Element): JSX.Element => {
-      return (
-        <div className="radar">
-          {inner}
-        </div>
-      );
-    };
-
-    const noAxis = this.getNumberOfAxis(this.props.data.series);
-    if (noAxis < 3) {
-      return wrapper(this.renderError());
-    }
-
-    return wrapper((
-      <Chart
-        config={getConfig(this.convertData(this.props.data.series), this.props.data.scaleMin, this.props.data.scaleMax)}
-        style={{fillAlpha: 0.2}}
-      />
-    ));
+  if (Array.isArray(p.data.series) === false) {
+    return <div />;
   }
+
+  const wrapper = (inner: JSX.Element): JSX.Element => {
+    return (
+      <div className="radar">
+        {inner}
+      </div>
+    );
+  };
+
+  const noAxis = getNumberOfAxis(p.data.series);
+  if (noAxis < 3) {
+    return wrapper(renderError());
+  }
+
+  return wrapper((
+    <Chart
+      config={getConfig(convertData(p.data.series), p.data.scaleMin, p.data.scaleMax)}
+      style={{fillAlpha: 0.2}}
+    />
+  ));
 }
 
 export { RadarChart };

@@ -1,12 +1,13 @@
-import * as React from 'react';
+import React, {useEffect} from 'react';
 import {IOutcomeResult, allOutcomeSets} from 'apollo/modules/outcomeSets';
 import {IOutcomeSet} from 'models/outcomeSet';
 import { Select, DropdownItemProps } from 'semantic-ui-react';
 import {setPref, SetPrefFunc} from 'redux/modules/pref';
 import {IStore} from 'redux/IStore';
-const { connect } = require('react-redux');
+import {connect} from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {QuestionnaireKey, getSelectedQuestionSetID} from 'models/pref';
+import { useTranslation } from 'react-i18next';
 
 interface IExternalProps {
   allowedQuestionSetIDs?: string[];
@@ -53,23 +54,28 @@ const getAllowedQuestionSets = (ownProps: IProp): IOutcomeSet[]|undefined => {
   });
 };
 
-@connect((state: IStore, ownProps: IProp) => {
-  return {
-    selectedQuestionSetID: getSelectedAndAllowedQuestionSetID(state, ownProps),
-    allowedQuestionSets: getAllowedQuestionSets(ownProps),
-  };
-}, (dispatch) => ({
-  setPref: bindActionCreators(setPref, dispatch),
-}))
-class QuestionSetSelectInner extends React.Component<IProp, any> {
+const QuestionSetSelectInner = (p: IProp) => {
 
-  constructor(props) {
-    super(props);
-    this.setQuestionSetID = this.setQuestionSetID.bind(this);
-    this.getOptions = this.getOptions.bind(this);
+  const {t} = useTranslation();
+
+  const setQuestionSetID = (_, data) => {
+    p.setPref(QuestionnaireKey, data.value);
   }
 
-  private getOptions(oss: IOutcomeSet[]): DropdownItemProps[] {
+  useEffect(() => {
+    const {selectedQuestionSetID, allowedQuestionSets, autoSelectFirst} = p;
+    if (selectedQuestionSetID === undefined && autoSelectFirst === true &&
+      Array.isArray(allowedQuestionSets) && allowedQuestionSets.length > 0) {
+        setQuestionSetID({}, {
+          value: allowedQuestionSets[0].id,
+        });
+    }
+    if (p.onQuestionSetSelected !== undefined) {
+      p.onQuestionSetSelected(selectedQuestionSetID);
+    }
+  }, [p.selectedQuestionSetID, p.allowedQuestionSets, p.autoSelectFirst]);
+
+  const getOptions = (oss: IOutcomeSet[]): DropdownItemProps[] => {
     if (!Array.isArray(oss)) {
       return [];
     }
@@ -82,43 +88,37 @@ class QuestionSetSelectInner extends React.Component<IProp, any> {
     });
   }
 
-  public componentDidUpdate() {
-    const {selectedQuestionSetID, allowedQuestionSets, autoSelectFirst} = this.props;
-    if (selectedQuestionSetID === undefined && autoSelectFirst === true &&
-      Array.isArray(allowedQuestionSets) && allowedQuestionSets.length > 0) {
-        this.setQuestionSetID({}, {
-          value: allowedQuestionSets[0].id,
-        });
-    }
-    if (this.props.onQuestionSetSelected !== undefined) {
-      this.props.onQuestionSetSelected(selectedQuestionSetID);
-    }
+  const selectProps: any = {};
+  if (p.data.loading) {
+    selectProps.loading = true;
+    selectProps.disabled = true;
   }
 
-  private setQuestionSetID(_, data) {
-    this.props.setPref(QuestionnaireKey, data.value);
-  }
-
-  public render() {
-    const selectProps: any = {};
-    if (this.props.data.loading) {
-      selectProps.loading = true;
-      selectProps.disabled = true;
-    }
-    return (
-      <Select
-        id={this.props.inputID}
-        className="qs-selector"
-        {...selectProps}
-        value={this.props.selectedQuestionSetID}
-        placeholder="Questionnaire"
-        onChange={this.setQuestionSetID}
-        onBlur={this.props.onBlur}
-        options={this.getOptions(this.props.allowedQuestionSets)}
-      />
-    );
-  }
+  return (
+    <Select
+      id={p.inputID}
+      className="qs-selector"
+      {...selectProps}
+      value={p.selectedQuestionSetID}
+      placeholder={t("Questionnaire")}
+      onChange={setQuestionSetID}
+      onBlur={p.onBlur}
+      options={getOptions(p.allowedQuestionSets)}
+    />
+  );
 }
 
-const QuestionSetSelect = allOutcomeSets<IProp>(QuestionSetSelectInner);
+const storeToProps = (state: IStore, ownProps: IProp) => {
+  return {
+    selectedQuestionSetID: getSelectedAndAllowedQuestionSetID(state, ownProps),
+    allowedQuestionSets: getAllowedQuestionSets(ownProps),
+  };
+};
+
+const dispatchToProps = (dispatch) => ({
+  setPref: bindActionCreators(setPref, dispatch),
+});
+
+const QuestionSetSelectConnected = connect(storeToProps, dispatchToProps)(QuestionSetSelectInner);
+const QuestionSetSelect = allOutcomeSets<IProp>(QuestionSetSelectConnected);
 export {QuestionSetSelect};

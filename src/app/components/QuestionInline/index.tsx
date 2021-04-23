@@ -6,11 +6,12 @@ import {IIntAnswer, Answer} from 'models/answer';
 import {IMeeting} from 'models/meeting';
 import { Loader } from 'semantic-ui-react';
 import {LikertDebounced} from '../LikertDebounced';
-import './style.less';
 import {isNullOrUndefined} from 'util';
-const ReactGA = require('react-ga');
+import { withTranslation, WithTranslation } from 'react-i18next';
+import ReactGA from 'react-ga';
+import './style.less';
 
-interface IProps extends IMeetingMutation {
+interface IProps extends IMeetingMutation, Partial<WithTranslation> {
   record: IMeeting;
   questionID: string;
   onSaving: () => void;
@@ -147,29 +148,30 @@ class QuestionInlineInner extends React.Component<IProps, IState> {
   }
 
   public render() {
-    const record = this.props.record;
+    const {record, t, index, disabled} = this.props;
     if (record === undefined) {
       return (<div />);
     }
     const question = this.getQuestion();
     if (question === undefined) {
-      return (<div>Unknown question</div>);
+      return (<div>{t("Unknown question")}</div>);
     }
     const q = question as QuestionType;
     let spinner = (<span />);
     if (this.state.saving) {
       spinner = (<Loader active={true} inline={true} size="mini" />);
     }
-    const numbering = this.props.index ? `${this.props.index}. ` : '';
+    const numbering = index ? `${index}. ` : '';
     return (
       <div className="question-inline">
         <h3>{numbering}{q.question} {spinner}</h3>
-        <LikertDebounced key={'l-' + q.id} leftValue={q.leftValue} rightValue={q.rightValue} labels={q.labels} onChange={this.setAnswer} value={this.state.value} disabled={this.props.disabled} />
-        <Notepad key={'np-' + q.id} onChange={this.setNotes} notes={this.state.notes} onBlur={this.saveNotes} disabled={this.props.disabled} />
+        <LikertDebounced key={'l-' + q.id} leftValue={q.leftValue} rightValue={q.rightValue} labels={q.labels} onChange={this.setAnswer} value={this.state.value} disabled={disabled} />
+        <Notepad key={'np-' + q.id} onChange={this.setNotes} notes={this.state.notes} onBlur={this.saveNotes} disabled={disabled} />
         <p>{this.state.saveError}</p>
       </div>
     );
   }
 }
-const QuestionInline = addLikertAnswer<IProps>(QuestionInlineInner);
+const QuestionInlineTranslated = withTranslation()(QuestionInlineInner);
+const QuestionInline = addLikertAnswer<IProps>(QuestionInlineTranslated);
 export { QuestionInline };

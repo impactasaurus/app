@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useState, useEffect} from 'react';
 import {Aggregation} from 'models/pref';
 import {IMeeting} from 'models/meeting';
 import {Answer} from 'models/answer';
@@ -6,6 +6,7 @@ import {ICategoryAggregate} from 'models/aggregates';
 import {ImpactTable, IRow} from 'components/ImpactTable';
 import {getHumanisedDate} from 'helpers/moment';
 import {Select, DropdownItemProps, Message} from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 import './style.less';
 
 interface IProp {
@@ -13,76 +14,43 @@ interface IProp {
   aggregation: Aggregation;
 }
 
-interface IState {
-  firstMeeting: IMeeting;
-  secondMeeting: IMeeting;
-}
-
-class MeetingTable extends React.Component<IProp, IState> {
-
-  constructor(props) {
-    super(props);
-
-    this.onFirstMeetingSelectChange = this.onFirstMeetingSelectChange.bind(this);
-    this.onSecondMeetingSelectChange = this.onSecondMeetingSelectChange.bind(this);
-    this.getQuestionRows = this.getQuestionRows.bind(this);
-    this.getCategoryRows = this.getCategoryRows.bind(this);
-    this.getMeetingOptions = this.getMeetingOptions.bind(this);
-    this.renderMeetingSelectionForm = this.renderMeetingSelectionForm.bind(this);
-    this.renderTable = this.renderTable.bind(this);
-
-    this.state = {
-      firstMeeting: this.initialMeeting(props.meetings),
-      secondMeeting: this.lastMeeting(props.meetings),
-    };
-  }
-
-  public componentWillUpdate(nextProps) {
-    const sortedIDs = (m: IMeeting[]): string[] => {
-      return Array.from(m).map((m) => m.id).sort();
-    };
-    const oMeetings = sortedIDs(this.props.meetings);
-    const nMeetings = sortedIDs(nextProps.meetings);
-    if (oMeetings.length === nMeetings.length) {
-      const same = oMeetings.reduce<boolean>((pv: boolean, cv: string, idx: number): boolean => {
-        return cv === nMeetings[idx] && pv;
-      }, true);
-      if (same) {
-        return;
-      }
+const findMeeting = (meetings: IMeeting[], comp: (fm: IMeeting, fc: number, sm: IMeeting, sc: number) => IMeeting): IMeeting|undefined => {
+  return meetings.reduce((last: IMeeting|undefined, m: IMeeting): IMeeting => {
+    if (last === undefined) {
+      return m;
     }
-    this.setState({
-      firstMeeting: this.initialMeeting(nextProps.meetings),
-      secondMeeting: this.lastMeeting(nextProps.meetings),
-    });
-  }
+    const mConducted = Date.parse(m.conducted);
+    const lConducted = Date.parse(last.conducted);
+    return comp(m, mConducted, last, lConducted);
+  }, undefined);
+};
 
-  private findMeeting(meetings: IMeeting[], comp: (fm: IMeeting, fc: number, sm: IMeeting, sc: number) => IMeeting): IMeeting|undefined {
-    return meetings.reduce((last: IMeeting|undefined, m: IMeeting): IMeeting => {
-      if (last === undefined) {
-        return m;
-      }
-      const mConducted = Date.parse(m.conducted);
-      const lConducted = Date.parse(last.conducted);
-      return comp(m, mConducted, last, lConducted);
-    }, undefined);
-  }
+const initialMeeting = (meetings: IMeeting[]): IMeeting|undefined => {
+  return findMeeting(meetings, (fm, fc, sm, sc) => {
+    return (sc < fc) ? sm : fm;
+  });
+};
 
-  private initialMeeting(meetings: IMeeting[]): IMeeting|undefined {
-    return this.findMeeting(meetings, (fm, fc, sm, sc) => {
-      return (sc < fc) ? sm : fm;
-    });
-  }
+const lastMeeting = (meetings: IMeeting[]): IMeeting|undefined => {
+  return findMeeting(meetings, (fm, fc, sm, sc) => {
+    return (sc > fc) ? sm : fm;
+  });
+};
 
-  private lastMeeting(meetings: IMeeting[]): IMeeting|undefined {
-    return this.findMeeting(meetings, (fm, fc, sm, sc) => {
-      return (sc > fc) ? sm : fm;
-    });
-  }
+const MeetingTable = (p: IProp): JSX.Element => {
 
-  private getCategoryRows(): IRow[] {
-    const f = this.state.firstMeeting;
-    const l = this.state.secondMeeting;
+  const [firstMeeting, setFirstMeeting] = useState(initialMeeting(p.meetings));
+  const [secondMeeting, setSecondMeeting] = useState(lastMeeting(p.meetings));
+  const {t} = useTranslation();
+
+  useEffect(() => {
+    setFirstMeeting(initialMeeting(p.meetings));
+    setSecondMeeting(lastMeeting(p.meetings))
+  }, [p.meetings]);
+
+  const getCategoryRows = (): IRow[] => {
+    const f = firstMeeting;
+    const l = secondMeeting;
     let rows = f.aggregates.category.reduce((rows: any, c: ICategoryAggregate) => {
       const category = f.outcomeSet.categories.find((x) => x.id === c.categoryID);
       rows[category.name] = {
@@ -104,9 +72,9 @@ class MeetingTable extends React.Component<IProp, IState> {
     return Object.keys(rows).map((k) => rows[k]);
   }
 
-  private getQuestionRows(): IRow[] {
-    const f = this.state.firstMeeting;
-    const l = this.state.secondMeeting;
+  const getQuestionRows = (): IRow[] => {
+    const f = firstMeeting;
+    const l = secondMeeting;
     let rows = f.answers.reduce((rows: any, a: Answer) => {
       const q = f.outcomeSet.questions.find((x) => x.id === a.questionID);
       if (q === undefined || q.archived) {
@@ -134,28 +102,22 @@ class MeetingTable extends React.Component<IProp, IState> {
     return Object.keys(rows).map((k) => rows[k]);
   }
 
-  private getColumnTitle(prefix: string, meeting: IMeeting): string {
+  const getColumnTitle = (prefix: string, meeting: IMeeting): string => {
     return `${prefix} (${getHumanisedDate(new Date(meeting.conducted))})`;
   }
 
-  private onFirstMeetingSelectChange(_, { value }): void {
-    const { meetings } = this.props;
-
-    this.setState((prevState) => ({
-      ...prevState, firstMeeting: meetings.find((meeting) => meeting.id === value),
-    }));
+  const onFirstMeetingSelectChange = (_, { value }): void => {
+    const fm = p.meetings.find((meeting) => meeting.id === value);
+    setFirstMeeting(fm);
   }
 
-  private onSecondMeetingSelectChange(_, { value }): void {
-    const { meetings } = this.props;
-
-    this.setState((prevState) => ({
-      ...prevState, secondMeeting: meetings.find((meeting) => meeting.id === value),
-    }));
+  const onSecondMeetingSelectChange = (_, { value }): void => {
+    const sm = p.meetings.find((meeting) => meeting.id === value);
+    setSecondMeeting(sm);
   }
 
-  private getMeetingOptions(): DropdownItemProps[] {
-    const { meetings } = this.props;
+  const getMeetingOptions = (): DropdownItemProps[] => {
+    const { meetings } = p;
 
     return Array.from(meetings).sort((a,b) => {
       return Date.parse(a.conducted) - Date.parse(b.conducted);
@@ -168,63 +130,61 @@ class MeetingTable extends React.Component<IProp, IState> {
     });
   }
 
-  private renderMeetingSelectionForm(): JSX.Element {
+  const renderMeetingSelectionForm = (): JSX.Element => {
     return (
       <div id="selectMeetingsContainer">
-        <span>First meeting</span>
+        <span>{t("First meeting")}</span>
         <Select
-          value={this.state.firstMeeting.id}
-          onChange={this.onFirstMeetingSelectChange}
-          options={this.getMeetingOptions()}
+          value={firstMeeting.id}
+          onChange={onFirstMeetingSelectChange}
+          options={getMeetingOptions()}
         />
-        <span>Second meeting</span>
+        <span>{t("Second meeting")}</span>
         <Select
-          value={this.state.secondMeeting.id}
-          onChange={this.onSecondMeetingSelectChange}
-          options={this.getMeetingOptions()}
+          value={secondMeeting.id}
+          onChange={onSecondMeetingSelectChange}
+          options={getMeetingOptions()}
         />
       </div>
     );
   }
 
-  private renderTable(): JSX.Element {
-    const { aggregation } = this.props;
+  const renderTable = (): JSX.Element => {
+    const { aggregation } = p;
 
     const isCat = aggregation === Aggregation.CATEGORY;
-    const rows = isCat ? this.getCategoryRows() : this.getQuestionRows();
+    const rows = isCat ? getCategoryRows() : getQuestionRows();
     rows.sort((a, b) => a.name.localeCompare(b.name));
 
-    const areMeetingsSame = this.state.firstMeeting.id === this.state.secondMeeting.id;
+    const areMeetingsSame = firstMeeting.id === secondMeeting.id;
 
     return (
       <div>
-        {areMeetingsSame && <Message info={true}>You are currently comparing the same record.</Message>}
+        {areMeetingsSame && <Message info={true}>{t("You are currently comparing the same record.")}</Message>}
         <ImpactTable
           data={rows}
-          nameColName={isCat ? 'Category' : 'Question'}
-          firstColName={this.getColumnTitle('First meeting', this.state.firstMeeting)}
-          lastColName={this.getColumnTitle('Second meeting', this.state.secondMeeting)}
+          nameColName={isCat ? t('Category') : t('Question')}
+          firstColName={getColumnTitle(t('First meeting'), firstMeeting)}
+          lastColName={getColumnTitle(t('Second meeting'), secondMeeting)}
         />
       </div>
     );
   }
 
-  public render() {
-    if (!Array.isArray(this.props.meetings) || this.props.meetings.length === 0) {
-      return (<div />);
-    }
-
-    if (this.state.firstMeeting === undefined || this.state.secondMeeting === undefined) {
-      return (<div />);
-    }
-
-    return (
-      <div className="meeting-table">
-        {this.renderMeetingSelectionForm()}
-        {this.renderTable()}
-      </div>
-    );
+  if (!Array.isArray(p.meetings) || p.meetings.length === 0) {
+    return (<div />);
   }
+
+  if (firstMeeting === undefined || secondMeeting === undefined) {
+    return (<div />);
+  }
+
+  return (
+    <div className="meeting-table">
+      {renderMeetingSelectionForm()}
+      {renderTable()}
+    </div>
+  );
 }
 
 export {MeetingTable};
