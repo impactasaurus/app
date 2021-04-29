@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {Loader, Icon} from 'semantic-ui-react';
 import {IQuestion, Question} from 'models/question';
 import {getMeeting, IMeetingResult} from 'apollo/modules/meetings';
@@ -7,9 +7,9 @@ import {getQuestions} from 'helpers/questionnaire';
 import {renderArray} from 'helpers/react';
 import {Likert} from 'components/Likert';
 import {IMeeting} from 'models/meeting';
-import {isNullOrUndefined} from 'util';
+import {connect} from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import './style.less';
-const { connect } = require('react-redux');
 
 interface IProps {
   recordID: string;
@@ -21,7 +21,7 @@ interface IProps {
   answers?: IAnswer[];
 }
 
-function renderQuestionNote(q: IQuestion, r: IMeeting): JSX.Element {
+const renderQuestionNote = (q: IQuestion, r: IMeeting): JSX.Element => {
   const answer = r.answers.find((a) => a.questionID === q.id);
   if (answer === undefined || answer.notes === undefined || answer.notes === null) {
     return (<div className="notes"/>);
@@ -29,38 +29,34 @@ function renderQuestionNote(q: IQuestion, r: IMeeting): JSX.Element {
   return (<div className="notes"><Icon name="comments outline" />{answer.notes}</div>);
 }
 
-function renderQuestionnaireNote(r: IMeeting): JSX.Element {
-  if (isNullOrUndefined(r.notes)) {
+const renderQuestionnaireNote = (r: IMeeting): JSX.Element => {
+  if (!r.notes) {
     return (<span />);
   }
   return (<div className="notes main"><Icon name="comments outline" />{r.notes}</div>);
 }
 
-@connect((_, ownProps: IProps) => {
-  const out: any = {};
-  if (ownProps.data.getMeeting !== undefined) {
-    out.questions = getQuestions(ownProps.data.getMeeting.outcomeSet);
-    out.answers = ownProps.data.getMeeting.answers;
-  }
-  return out;
-})
-class RecordQuestionSummaryInner extends React.Component<IProps, any> {
+const wrapper = (inner: JSX.Element): JSX.Element => {
+  return (
+    <div className="record-question-summary">
+      {inner}
+    </div>
+  );
+};
 
-  constructor(props) {
-    super(props);
-    this.renderQuestion = this.renderQuestion.bind(this);
-    this.likertOnClick = this.likertOnClick.bind(this);
-  }
+const RecordQuestionSummaryInner = (p: IProps) => {
 
-  private likertOnClick(q: Question) {
+  const {t} = useTranslation();
+
+  const likertOnClick = (q: Question) => {
     return (v: number): void => {
-      this.props.onQuestionClick(q, v);
+      p.onQuestionClick(q, v);
     };
   }
 
-  private renderQuestion(q: Question): JSX.Element {
-    const answer = this.props.answers.find((a) => a.questionID === q.id);
-    let inner = (<div>Unknown Answer</div>);
+  const renderQuestion = (q: Question): JSX.Element => {
+    const answer = p.answers.find((a) => a.questionID === q.id);
+    let inner = (<div>{t("Unknown Answer")}</div>);
     if (answer !== undefined) {
       const likert = (
         <Likert
@@ -68,7 +64,7 @@ class RecordQuestionSummaryInner extends React.Component<IProps, any> {
           rightValue={q.rightValue}
           labels={q.labels}
           value={(answer as Answer).answer}
-          onChange={this.likertOnClick(q)}
+          onChange={likertOnClick(q)}
         />
       );
       inner = (
@@ -82,30 +78,31 @@ class RecordQuestionSummaryInner extends React.Component<IProps, any> {
       <div key={q.id} className="question">
         <h3>{q.question}</h3>
         {inner}
-        {renderQuestionNote(q, this.props.data.getMeeting)}
+        {renderQuestionNote(q, p.data.getMeeting)}
       </div>
     );
   }
 
-  public render() {
-    const wrapper = (inner: JSX.Element): JSX.Element => {
-      return (
-        <div className="record-question-summary">
-          {inner}
-        </div>
-      );
-    };
-    if (this.props.data.getMeeting === undefined) {
-      return wrapper(<Loader active={true} inline="centered"/>);
-    }
-    return wrapper((
-      <div>
-        {renderQuestionnaireNote(this.props.data.getMeeting)}
-        {renderArray<Question>(this.renderQuestion, this.props.questions as Question[])}
-      </div>
-    ));
+  if (p.data.getMeeting === undefined) {
+    return wrapper(<Loader active={true} inline="centered"/>);
   }
+  return wrapper((
+    <div>
+      {renderQuestionnaireNote(p.data.getMeeting)}
+      {renderArray<Question>(renderQuestion, p.questions as Question[])}
+    </div>
+  ));
 }
 
-const RecordQuestionSummary = getMeeting<IProps>((props) => props.recordID)(RecordQuestionSummaryInner);
+const propsPreprocessing = (_, ownProps: IProps) => {
+  const out: any = {};
+  if (ownProps.data.getMeeting !== undefined) {
+    out.questions = getQuestions(ownProps.data.getMeeting.outcomeSet);
+    out.answers = ownProps.data.getMeeting.answers;
+  }
+  return out;
+};
+
+const RecordQuestionSummaryConnected = connect(propsPreprocessing)(RecordQuestionSummaryInner);
+const RecordQuestionSummary = getMeeting<IProps>((props) => props.recordID)(RecordQuestionSummaryConnected);
 export {RecordQuestionSummary};

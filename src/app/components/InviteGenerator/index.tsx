@@ -75,7 +75,7 @@ const InviteGeneratorInner = (p: IProps) => {
       <Modal
         header={t("Your invite link")}
         content={modalContent}
-        actions={['Close']}
+        actions={[t('Close')]}
         open={true}
         onClose={onClose}
       />
