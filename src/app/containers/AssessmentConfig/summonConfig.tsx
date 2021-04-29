@@ -1,18 +1,18 @@
-import * as React from 'react';
+import React from 'react';
 import { Icon, Form } from 'semantic-ui-react';
 import {FormField} from 'components/FormField';
 import {IAssessmentConfig} from 'models/assessment';
 import {QuestionSetSelect} from 'components/QuestionSetSelect';
-import {FormikBag, FormikErrors, FormikValues, InjectedFormikProps, withFormik} from 'formik';
-const strings = require('./../../../strings.json');
+import {FormikBag, FormikErrors, FormikProps, FormikValues, withFormik} from 'formik';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-interface IProps  {
+interface IProps extends WithTranslation {
   onSubmit: (qsID: string) => Promise<void>;
   buttonText: string;
 }
 
-const InnerForm = (props: InjectedFormikProps<IProps, IAssessmentConfig>) => {
-  const { touched, status, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values } = props;
+const InnerForm = (props: FormikProps<IAssessmentConfig> & IProps) => {
+  const { touched, status, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values, t } = props;
 
   const qsOnBlur = () => setFieldTouched('outcomeSetID');
   const qsOnChange = (qsID: string) => {
@@ -23,22 +23,22 @@ const InnerForm = (props: InjectedFormikProps<IProps, IAssessmentConfig>) => {
 
   return (
     <Form className="screen assessment-config" onSubmit={submitForm}>
-      <FormField error={errors.outcomeSetID as string} touched={touched.outcomeSetID} inputID="as-qid" required={true} label="Questionnaire">
+      <FormField error={errors.outcomeSetID as string} touched={touched.outcomeSetID} inputID="as-qid" required={true} label={t("Questionnaire")}>
         <QuestionSetSelect inputID="as-qid" onQuestionSetSelected={qsOnChange} onBlur={qsOnBlur} />
       </FormField>
       <Form.Group>
         <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>{props.buttonText}</Form.Button>
       </Form.Group>
-      {status && <span className="submit-error"><Icon name="exclamation" />Starting the assessment failed. {strings.formFailureGeneric}</span>}
+      {status && <span className="submit-error"><Icon name="exclamation" />{t("Starting the assessment failed.")} {t("Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org")}</span>}
     </Form>
   );
 };
 
-export const SummonConfig = withFormik<IProps, IAssessmentConfig>({
-  validate: (values: IAssessmentConfig) => {
+const SummonConfigInner = withFormik<IProps, IAssessmentConfig>({
+  validate: (values: IAssessmentConfig, p: IProps) => {
     const errors: FormikErrors<IAssessmentConfig> = {};
     if (!values.outcomeSetID || values.outcomeSetID === '') {
-      errors.outcomeSetID = 'Please select a questionnaire';
+      errors.outcomeSetID = p.t('Please select a questionnaire');
     }
     return errors;
   },
@@ -56,3 +56,5 @@ export const SummonConfig = withFormik<IProps, IAssessmentConfig>({
   },
   validateOnMount: true,
 })(InnerForm);
+
+export const SummonConfig = withTranslation()(SummonConfigInner);
