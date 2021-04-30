@@ -30,9 +30,9 @@ module.exports = {
       allowEmptyCatch: true
     }],
     "react/display-name": "warn",
-    "i18next/no-literal-string": ["warn", {
+    "i18next/no-literal-string": ["error", {
       markupOnly: true,
-      ignoreAttribute: ["icon", "inline", "name", "inputID", "to", "path", "size", "as", "floated", "verticalAlign", "textAlign", "position", "href", "target", "axis", "lockAxis"]
+      ignoreAttribute: ["icon", "inline", "name", "inputID", "to", "path", "size", "as", "floated", "verticalAlign", "textAlign", "position", "href", "target", "axis", "lockAxis", "link"]
     }]
   }
 };

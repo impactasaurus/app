@@ -2,7 +2,8 @@ import * as React from 'react';
 import { Segment, Button } from 'semantic-ui-react';
 import {getRecentMeetings, IGetRecentMeetings} from '../../apollo/modules/meetings';
 import {allOutcomeSets,IOutcomeResult} from 'apollo/modules/outcomeSets';
-const RocketIcon = require('./../../theme/rocket.inline.svg');
+import RocketIcon from './../../theme/rocket.inline.svg';
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
   meetings?: IGetRecentMeetings;
@@ -27,19 +28,20 @@ const inner = (p: IProps) => {
   if (!shouldShow) {
     return (<div />);
   }
+  const {t} = useTranslation();
   return (
     <Segment key="quickStart" id="quick-start" raised={true} compact={true} style={{marginLeft:'auto',marginRight:'auto'}}>
       <h3 style={{fontWeight:'normal'}}>
         <RocketIcon style={{width:'1rem', marginRight:'.3rem'}}/>
-        What next?
+        {t("What next?")}
       </h3>
       <p>
-        Nice one, the questionnaire has been added to your organisation
+        {t("Nice one, the questionnaire has been added to your organisation")}
       </p>
       <p>
-        Let's imitate a beneficiary and answer the questions, creating your first record
+        {t("Let's imitate a beneficiary and answer the questions, creating your first record")}
       </p>
-      <Button primary={true} onClick={navigateToNewRecord}>New Record</Button>
+      <Button primary={true} onClick={navigateToNewRecord}>{t("New Record")}</Button>
     </Segment>
   );
 };

@@ -1,10 +1,11 @@
-import * as React from 'react';
+import React, {useState, useEffect} from 'react';
 import {RecordChecklistItem} from './record-item';
 import {QuestionnaireChecklistItem} from './questionnaire-item';
 import {Segment, Divider, Icon} from 'semantic-ui-react';
 import './style.less';
 import {ReportChecklistItem} from 'components/OnboardingChecklist/report-item';
-const RocketIcon = require('./../../theme/rocket.inline.svg');
+import RocketIcon from './../../theme/rocket.inline.svg';
+import { useTranslation, Trans } from 'react-i18next';
 
 const localStorageKey = 'onboarded';
 const localStorageValue = 'v1';
@@ -16,66 +17,57 @@ interface IProps {
   minimal?: boolean; /// defaults to false
 }
 
-interface IState {
-  dismissed: boolean;
-}
-
 const isDismissed = () => localStorage.getItem(localStorageKey) !== null;
 const setDismissed = () => localStorage.setItem(localStorageKey, localStorageValue);
 
 const canBeDismissed = (p: IProps) => p.dismissible !== false;
 
-export class OnboardingChecklist extends React.Component<IProps, IState> {
+export const OnboardingChecklist = (p: IProps): JSX.Element => {
 
-  constructor(props) {
-    super(props);
-    this.onClose = this.onClose.bind(this);
-    this.state = {
-      dismissed: canBeDismissed(props) && isDismissed(),
-    };
-  }
+  const [dismissed, setDismissedState] = useState<boolean>(canBeDismissed(p) && isDismissed());
+  const {t} = useTranslation();
 
-  public componentWillUpdate(nextProps: IProps) {
-    if(nextProps.forceDismiss === true && isDismissed() === false) {
+  useEffect(() => {
+    if(p.forceDismiss === true && isDismissed() === false) {
       setDismissed();
     }
-    const nextDismissed = canBeDismissed(nextProps) && isDismissed();
-    if (this.state.dismissed !== nextDismissed) {
-      this.setState({
-        dismissed: nextDismissed,
-      });
+    const nextDismissed = canBeDismissed(p) && isDismissed();
+    if (dismissed !== nextDismissed) {
+      setDismissedState(nextDismissed);
     }
-  }
+  }, [p.dismissible, p.forceDismiss, dismissed]);
 
-  private onClose() {
+  const onClose = () => {
     setDismissed();
-    this.setState({
-      dismissed: canBeDismissed(this.props) && true,
-    });
+    setDismissedState(canBeDismissed(p));
   }
 
-  public render() {
-    if (this.state.dismissed) {
-      return (<div />);
-    }
-    let header = (
-      <>
-      <h1>Welcome!</h1>
-      <p>We have prepared <b>three simple steps to get you started</b> <RocketIcon style={{marginLeft:'.3rem'}}/></p>
-      </>
-    );
-    if(this.props.customHeader !== undefined) {
-      header = this.props.customHeader;
-    }
-    return (
-      <Segment id="onboarding-checklist" raised={true}>
-        {canBeDismissed(this.props) && <Icon name="close" onClick={this.onClose} />}
-        {header}
-        <Divider fitted={true} />
-        <QuestionnaireChecklistItem index={1} minimal={this.props.minimal} />
-        <RecordChecklistItem index={2} minimal={this.props.minimal} />
-        <ReportChecklistItem index={3} minimal={this.props.minimal} />
-      </Segment>
-    );
+  if (dismissed) {
+    return (<div />);
   }
+  let header = (
+    <>
+    <h1>{t("Welcome!")}</h1>
+    <p>
+      <Trans
+        defaults="We have prepared <b>three simple steps to get you started</b>"
+        components={{
+          b: <b />
+        }}
+      /> <RocketIcon style={{marginLeft:'.3rem'}}/></p>
+    </>
+  );
+  if(p.customHeader !== undefined) {
+    header = p.customHeader;
+  }
+  return (
+    <Segment id="onboarding-checklist" raised={true}>
+      {canBeDismissed(p) && <Icon name="close" onClick={onClose} />}
+      {header}
+      <Divider fitted={true} />
+      <QuestionnaireChecklistItem index={1} minimal={p.minimal} />
+      <RecordChecklistItem index={2} minimal={p.minimal} />
+      <ReportChecklistItem index={3} minimal={p.minimal} />
+    </Segment>
+  );
 }
