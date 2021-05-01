@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-export function isBeforeDay(a: moment.Moment, b: moment.Moment) {
+export function isBeforeDay(a: moment.Moment, b: moment.Moment): boolean {
   const aYear = a.year();
   const aMonth = a.month();
 
@@ -19,21 +19,21 @@ export function isBeforeDay(a: moment.Moment, b: moment.Moment) {
   return aYear < bYear;
 }
 
-export function isSameDay(a: moment.Moment, b: moment.Moment) {
+export function isSameDay(a: moment.Moment, b: moment.Moment): boolean {
   return a.date() === b.date() &&
     a.month() === b.month() &&
     a.year() === b.year();
 }
 
-export function isAfterDay(a: moment.Moment, b: moment.Moment) {
+export function isAfterDay(a: moment.Moment, b: moment.Moment): boolean {
   return !isBeforeDay(a, b) && !isSameDay(a, b);
 }
 
-export function isInclusivelyBeforeDay(a: moment.Moment, b: moment.Moment) {
+export function isInclusivelyBeforeDay(a: moment.Moment, b: moment.Moment): boolean {
   return !isAfterDay(a, b);
 }
 
-export function isInclusivelyAfterDay(a: moment.Moment, b: moment.Moment) {
+export function isInclusivelyAfterDay(a: moment.Moment, b: moment.Moment): boolean {
   return !isBeforeDay(a, b);
 }
 
