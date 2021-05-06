@@ -113,6 +113,10 @@ class ReportInner extends React.Component<IProps, null> {
             <Icon name="exchange" />
             {t('Beneficiary Change')}
           </Menu.Item>
+          <Menu.Item name="S" active={child === SubPage.STATUS} onClick={this.innerPageSetter(SubPage.STATUS)}>
+            <Icon name="heartbeat" />
+            {t('Status')}
+          </Menu.Item>
         </SecondaryMenu>
         <Grid container={true} columns={1} id="report-picker">
           <Grid.Column>
