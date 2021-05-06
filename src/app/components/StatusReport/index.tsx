@@ -8,7 +8,7 @@ import {VizControlPanel} from 'components/VizControlPanel';
 import {IStore} from 'redux/IStore';
 import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'models/pref';
 import {IURLConnector, UrlConnector} from 'redux/modules/url';
-import {exportReportData, IReportOptions, NoRecordsMessage} from 'containers/Report/helpers';
+import {IReportOptions, NoRecordsMessage} from 'containers/Report/helpers';
 import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
 import {connect} from 'react-redux';
 
@@ -43,10 +43,6 @@ const StatusReportInner = (p: IProp) => {
     );
   };
 
-  const exp = () => {
-    exportReportData(p, p);
-  };
-
   if (p.statusReport.getStatusReport && p.statusReport.getStatusReport.beneficiaries.length === 0) {
     return <NoRecordsMessage />;
   }
@@ -56,7 +52,6 @@ const StatusReportInner = (p: IProp) => {
       <VizControlPanel
         canCategoryAg={p.isCategoryAgPossible}
         visualisations={allowedVisualisations}
-        export={exp}
         allowCanvasSnapshot={p.isCanvasSnapshotPossible}
       />
       {renderVis()}

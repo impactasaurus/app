@@ -43,7 +43,7 @@ export const NeedMoreRecordsMessage = (): JSX.Element => {
     <Message warning={true}>
       <Message.Header>{t("We Need More Records")}</Message.Header>
       <Trans
-        defaults={"<p>When generating your report, we only found beneficiaries with one record</p><p>We need <b>at least two records</b> to understand the impact your intervention is having on a beneficiary</p><p>Please collect more records and ensure that the time range you provided includes them</p>"}
+        defaults={"<p>When generating your report, we only found beneficiaries with one record for the time range specified</p><p>This report requires <b>at least two records</b> to determine your impact</p><p>The Status report can be used to visualise the data you have collected so far</p>"}
         components={{
           p: <p />,
           b: <b />
@@ -55,7 +55,7 @@ export const NeedMoreRecordsMessage = (): JSX.Element => {
 
 export const EmptyReportMessage = (p: {ie: IExclusion[]}): JSX.Element => {
   const unqiueExcludedBens = p.ie
-    .filter((e) => e.beneficiary !== undefined)
+    .filter((e) => e.beneficiary)
     .filter((e, i, a) => a.indexOf(e) === i);
   if (unqiueExcludedBens.length > 0) {
     return <NeedMoreRecordsMessage />;
