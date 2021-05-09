@@ -10,6 +10,7 @@ import { Route, Switch } from 'react-router-dom';
 import * as containers from 'containers';
 import {Loader} from 'semantic-ui-react';
 import {Footer} from 'components/Footer';
+import { Tracker } from 'components/Tracker';
 const { connect } = require('react-redux');
 const appConfig = require('../../../../config/main');
 
@@ -42,6 +43,7 @@ class App extends React.Component<IProps, any> {
       <div key="content" id="main-app-content">
         <IsLoggedIn>
           <Localiser />
+          <Tracker />
         </IsLoggedIn>
         <Switch>
           <Route exact={true} path="/" component={containers.Home} />

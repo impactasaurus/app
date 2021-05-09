@@ -95,3 +95,18 @@ export function updateUser<T>(component) {
 export interface IUpdateUser {
   updateUser(id: string, active?: boolean): Promise<any>;
 }
+
+export function recordUsage<T>(component) {
+  return graphql<any, T>(gql`
+  mutation {
+    recordUsage: RecordUsage
+  }`, {
+    props: ({ mutate }) => ({
+      recordUsage: (): Promise<boolean> => mutate({}).then(mutationResultExtractor<boolean>('recordUsage')),
+    }),
+  })(component);
+}
+
+export interface IRecordUsage {
+  recordUsage(): Promise<boolean>;
+}
