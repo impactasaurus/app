@@ -99,7 +99,7 @@
     "mocha": "5.2.0",
     "node-sass": "4.13.1",
     "phantomjs-prebuilt": "2.1.16",
-    "postcss": "8.2.4",
+    "postcss": "8.2.10",
     "postcss-loader": "4.2.0",
     "postcss-preset-env": "6.7.0",
     "react-addons-test-utils": "15.6.2",
