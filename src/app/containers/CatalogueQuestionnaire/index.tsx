@@ -71,8 +71,12 @@ const CatalogueQuestionnaireInner = (p: IProps) => {
     return (
       <div>
         <SecondaryMenu signpost={signpost}>
-          <Menu.Item name={t("General")} active={page === Page.GENERAL} onClick={innerPageSetter(Page.GENERAL)} />
-          <Menu.Item name={t("Questions")} active={page === Page.QUESTIONS} onClick={innerPageSetter(Page.QUESTIONS)} />
+          <Menu.Item active={page === Page.GENERAL} onClick={innerPageSetter(Page.GENERAL)}>
+            {t("General")}
+          </Menu.Item>
+          <Menu.Item active={page === Page.QUESTIONS} onClick={innerPageSetter(Page.QUESTIONS)}>
+            {t("Questions")}
+          </Menu.Item>
           <Menu.Item active={page === Page.CATEGORIES} onClick={innerPageSetter(Page.CATEGORIES)}>
             <Hint text={t("Group related questions into categories. This allows aggregation of multiple questions into a single value.")} />
             {t("Categories")}

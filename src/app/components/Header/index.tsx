@@ -72,7 +72,9 @@ const HeaderInner = (p: IProps) => {
           <Logo />
         </Menu.Item>
         <Menu.Menu position="right">
-          <Menu.Item name="log out" onClick={logOut} />
+          <Menu.Item onClick={logOut}>
+            {t("Log Out")}
+          </Menu.Item>
         </Menu.Menu>
       </Menu>
     );
