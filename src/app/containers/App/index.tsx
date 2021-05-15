@@ -74,6 +74,7 @@ class App extends React.Component<IProps, any> {
           <Route path="/signup" component={containers.Signup} />
           <Route path="/invite/:id" component={containers.Invite} />
           <Route path="/unsubscribe/:uid" component={containers.Unsubscribe} />
+          <Route path="/plugin/sve" component={containers.SVE} />
         </Switch>
       </div>
     ));
