@@ -12,6 +12,9 @@ export const getOrganisation = <T>(component, name: string = undefined)  => {
         don,
         settings{
           beneficiaryTypeAhead
+        },
+        plugins {
+          id
         }
       }
     }`, {

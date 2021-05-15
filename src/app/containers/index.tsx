@@ -36,3 +36,4 @@ export {SummonAcceptance} from './Summon';
 export {Unsubscribe} from './Unsubscribe';
 export {BeneficiaryConfig} from './BeneficiaryConfig';
 export {Users} from './Users';
+export {SVE} from './SVEPlugin';

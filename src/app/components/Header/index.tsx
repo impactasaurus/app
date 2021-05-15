@@ -9,6 +9,7 @@ import {Link} from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {ProfileMenu} from "./profile";
 import { connect } from 'react-redux';
+import { HeaderPlugins } from './plugins';
 
 interface IProps {
   currentURL?: string;
@@ -50,6 +51,7 @@ const HeaderInner = (p: IProps) => {
           <Icon name="question" className="replacement" />
           <span className="title">{t('Questionnaires')}</span>
         </Menu.Item>
+        <HeaderPlugins isActive={isActive} />
         <Menu.Item as={Link} to="/record" active={isActive('/record') || isActive('/meeting') || isActive('/dataentry')} id="add-menu-link">
           <Icon name="plus" className="required" />
         </Menu.Item>
