@@ -1,0 +1,7 @@
+node_modules
+build
+.eslintrc.js
+.github
+.vscode
+config
+src/i18n/locales
