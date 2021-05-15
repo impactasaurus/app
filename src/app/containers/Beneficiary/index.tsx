@@ -76,19 +76,19 @@ const BeneficiaryInner = (p: IProps) => {
   return (
     <div>
       <SecondaryMenu signpost={ben}>
-        <Menu.Item name="Journey" active={p.child === ReviewPage.JOURNEY} onClick={innerPageSetter(ReviewPage.JOURNEY)}>
+        <Menu.Item active={p.child === ReviewPage.JOURNEY} onClick={innerPageSetter(ReviewPage.JOURNEY)}>
           <Icon name="chart line" />
           {t("Journey")}
         </Menu.Item>
-        <Menu.Item name="Records" active={p.child === ReviewPage.RECORDS} onClick={innerPageSetter(ReviewPage.RECORDS)}>
+        <Menu.Item active={p.child === ReviewPage.RECORDS} onClick={innerPageSetter(ReviewPage.RECORDS)}>
           <Icon name="file outline" />
           {t("Records")}
         </Menu.Item>
-        <Menu.Item name="New Record" active={p.child === ReviewPage.NEW_RECORD} onClick={innerPageSetter(ReviewPage.NEW_RECORD, `?ben=${ben}`)}>
+        <Menu.Item active={p.child === ReviewPage.NEW_RECORD} onClick={innerPageSetter(ReviewPage.NEW_RECORD, `?ben=${ben}`)}>
           <Icon name="plus" />
           {t("New Record")}
         </Menu.Item>
-        <Menu.Item name="Admin" active={p.child === ReviewPage.CONFIG} onClick={innerPageSetter(ReviewPage.CONFIG)}>
+        <Menu.Item active={p.child === ReviewPage.CONFIG} onClick={innerPageSetter(ReviewPage.CONFIG)}>
           <Icon name="cog" />
           {t("Admin")}
         </Menu.Item>

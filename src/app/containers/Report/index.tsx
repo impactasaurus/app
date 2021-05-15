@@ -105,15 +105,15 @@ class ReportInner extends React.Component<IProps, null> {
     return (
       <div>
         <SecondaryMenu signpost={t('Impact Report')}>
-          <Menu.Item name="DT" active={child === SubPage.DIST} onClick={this.innerPageSetter(SubPage.DIST)}>
+          <Menu.Item active={child === SubPage.DIST} onClick={this.innerPageSetter(SubPage.DIST)}>
             <Icon name="road" />
             {t('Distance Travelled')}
           </Menu.Item>
-          <Menu.Item name="BC" active={child === SubPage.CHANGE} onClick={this.innerPageSetter(SubPage.CHANGE)}>
+          <Menu.Item active={child === SubPage.CHANGE} onClick={this.innerPageSetter(SubPage.CHANGE)}>
             <Icon name="exchange" />
             {t('Beneficiary Change')}
           </Menu.Item>
-          <Menu.Item name="S" active={child === SubPage.STATUS} onClick={this.innerPageSetter(SubPage.STATUS)}>
+          <Menu.Item active={child === SubPage.STATUS} onClick={this.innerPageSetter(SubPage.STATUS)}>
             <Icon name="heartbeat" />
             {t('Status')}
           </Menu.Item>

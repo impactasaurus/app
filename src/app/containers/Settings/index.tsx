@@ -42,9 +42,15 @@ const SettingsInner = (p: IProps) => {
         <title>{t("Settings")}</title>
       </Helmet>
       <SecondaryMenu>
-        <Menu.Item name={t("Data")} active={isSelected('/settings/data') || isExact(`${match}/`) || isExact(`${match}`)} onClick={handleClick('/settings/data')} />
-        <Menu.Item name={t("Organisation")} active={isSelected('/settings/organisation')} onClick={handleClick('/settings/organisation')} />
-        <Menu.Item name={t("Users")} active={isSelected('/settings/users')} onClick={handleClick('/settings/users')} />
+        <Menu.Item active={isSelected('/settings/data') || isExact(`${match}/`) || isExact(`${match}`)} onClick={handleClick('/settings/data')}>
+          {t("Data")}
+        </Menu.Item>
+        <Menu.Item active={isSelected('/settings/organisation')} onClick={handleClick('/settings/organisation')}>
+          {t("Organisation")}
+        </Menu.Item>
+        <Menu.Item active={isSelected('/settings/users')} onClick={handleClick('/settings/users')}>
+          {t("Users")}
+        </Menu.Item>
       </SecondaryMenu>
 
       <Switch>
