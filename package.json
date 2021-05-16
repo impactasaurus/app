@@ -99,6 +99,7 @@
     "karma-webpack": "3.0.0",
     "less": "2.7.3",
     "less-loader": "4.1.0",
+    "lint-staged": "^11.0.0",
     "mocha": "5.2.0",
     "node-sass": "4.13.1",
     "phantomjs-prebuilt": "2.1.16",
@@ -172,5 +173,9 @@
     "redux-thunk": "2.3.0",
     "semantic-ui-react": "0.82.1",
     "url-search-params-polyfill": "4.0.1"
+  },
+  "lint-staged": {
+    "src/*.{js,jsx,ts,tsx}": "eslint --cache --fix",
+    "*": "prettier --write"
   }
 }

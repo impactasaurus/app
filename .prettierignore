@@ -5,3 +5,5 @@ build
 .vscode
 config
 src/i18n/locales
+.husky
+.prettierignore
