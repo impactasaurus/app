@@ -1,17 +1,19 @@
-import * as React from 'react';
-import {BeneficiaryForm, IFormOutput} from 'components/BeneficiaryForm';
+import * as React from "react";
+import { BeneficiaryForm, IFormOutput } from "components/BeneficiaryForm";
 import {
-  IBeneficiaryResult, getBeneficiary, editBeneficiaryTags,
+  IBeneficiaryResult,
+  getBeneficiary,
+  editBeneficiaryTags,
   IEditBeneficiaryTags,
-} from 'apollo/modules/beneficiaries';
-import {ApolloLoaderHoC} from '../../components/ApolloLoaderHoC';
-import { ApolloError } from 'react-apollo';
+} from "apollo/modules/beneficiaries";
+import { ApolloLoaderHoC } from "../../components/ApolloLoaderHoC";
+import { ApolloError } from "react-apollo";
 
 interface IProps extends IEditBeneficiaryTags {
   match: {
     params: {
-      id: string,
-    },
+      id: string;
+    };
   };
   data?: IBeneficiaryResult;
 }
@@ -23,7 +25,6 @@ interface IState {
 const getBen = (p: IProps): string => p.match.params.id;
 
 class BeneficiaryConfigInner extends React.Component<IProps, IState> {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -34,10 +35,11 @@ class BeneficiaryConfigInner extends React.Component<IProps, IState> {
   }
 
   private onSave(v: IFormOutput): Promise<void> {
-    return this.props.editBeneficiaryTags(getBen(this.props), v.tags)
+    return this.props
+      .editBeneficiaryTags(getBen(this.props), v.tags)
       .then(() => {
         // if the beneficiary was missing, refresh the page to show the new tags
-        if(this.props.data.error) {
+        if (this.props.data.error) {
           this.props.data.refetch().catch((e) => console.error(e));
         }
       });
@@ -51,7 +53,7 @@ class BeneficiaryConfigInner extends React.Component<IProps, IState> {
 
   public render() {
     let tags: string[] = [];
-    if(!this.props.data.error && this.props.data.getBeneficiary) {
+    if (!this.props.data.error && this.props.data.getBeneficiary) {
       tags = this.props.data.getBeneficiary.tags;
     }
     return (
@@ -69,15 +71,19 @@ class BeneficiaryConfigInner extends React.Component<IProps, IState> {
 }
 
 // t("beneficiary")
-const BeneficiaryConfigWithLoader = ApolloLoaderHoC<IProps>('beneficiary',
+const BeneficiaryConfigWithLoader = ApolloLoaderHoC<IProps>(
+  "beneficiary",
   (p: IProps) => p.data,
   BeneficiaryConfigInner,
   (e: ApolloError) => {
     // tags can be set on beneficiaries not currently in the system
-    const notFound = e.graphQLErrors.length === 1 &&
-      e.graphQLErrors[0].message.includes('not found');
+    const notFound =
+      e.graphQLErrors.length === 1 &&
+      e.graphQLErrors[0].message.includes("not found");
     return !notFound;
-  },
+  }
 );
-const BeneficiaryConfig = getBeneficiary<IProps>(getBen)(editBeneficiaryTags<IProps>(BeneficiaryConfigWithLoader));
+const BeneficiaryConfig = getBeneficiary<IProps>(getBen)(
+  editBeneficiaryTags<IProps>(BeneficiaryConfigWithLoader)
+);
 export { BeneficiaryConfig };

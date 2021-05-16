@@ -1,6 +1,6 @@
-import * as React from 'react';
-import {ILabel} from 'models/question';
-import {Likert} from 'components/Likert';
+import * as React from "react";
+import { ILabel } from "models/question";
+import { Likert } from "components/Likert";
 
 interface IProps {
   labels?: ILabel[];
@@ -13,7 +13,6 @@ interface IProps {
 }
 
 class LikertDebounced extends React.Component<IProps, any> {
-
   private timer;
 
   constructor(props) {
@@ -32,12 +31,7 @@ class LikertDebounced extends React.Component<IProps, any> {
   }
 
   public render() {
-    return (
-      <Likert
-        {...this.props}
-        onChange={this.onChange}
-      />
-    );
+    return <Likert {...this.props} onChange={this.onChange} />;
   }
 }
 

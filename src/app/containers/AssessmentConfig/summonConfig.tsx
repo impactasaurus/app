@@ -1,10 +1,16 @@
-import React from 'react';
-import { Icon, Form } from 'semantic-ui-react';
-import {FormField} from 'components/FormField';
-import {IAssessmentConfig} from 'models/assessment';
-import {QuestionSetSelect} from 'components/QuestionSetSelect';
-import {FormikBag, FormikErrors, FormikProps, FormikValues, withFormik} from 'formik';
-import { WithTranslation, withTranslation } from 'react-i18next';
+import React from "react";
+import { Icon, Form } from "semantic-ui-react";
+import { FormField } from "components/FormField";
+import { IAssessmentConfig } from "models/assessment";
+import { QuestionSetSelect } from "components/QuestionSetSelect";
+import {
+  FormikBag,
+  FormikErrors,
+  FormikProps,
+  FormikValues,
+  withFormik,
+} from "formik";
+import { WithTranslation, withTranslation } from "react-i18next";
 
 interface IProps extends WithTranslation {
   onSubmit: (qsID: string) => Promise<void>;
@@ -12,24 +18,60 @@ interface IProps extends WithTranslation {
 }
 
 const InnerForm = (props: FormikProps<IAssessmentConfig> & IProps) => {
-  const { touched, status, errors, isSubmitting, setFieldValue, submitForm, setFieldTouched, isValid, values, t } = props;
+  const {
+    touched,
+    status,
+    errors,
+    isSubmitting,
+    setFieldValue,
+    submitForm,
+    setFieldTouched,
+    isValid,
+    values,
+    t,
+  } = props;
 
-  const qsOnBlur = () => setFieldTouched('outcomeSetID');
+  const qsOnBlur = () => setFieldTouched("outcomeSetID");
   const qsOnChange = (qsID: string) => {
     if (qsID !== values.outcomeSetID) {
-      setFieldValue('outcomeSetID', qsID);
+      setFieldValue("outcomeSetID", qsID);
     }
   };
 
   return (
     <Form className="screen assessment-config" onSubmit={submitForm}>
-      <FormField error={errors.outcomeSetID as string} touched={touched.outcomeSetID} inputID="as-qid" required={true} label={t("Questionnaire")}>
-        <QuestionSetSelect inputID="as-qid" onQuestionSetSelected={qsOnChange} onBlur={qsOnBlur} />
+      <FormField
+        error={errors.outcomeSetID as string}
+        touched={touched.outcomeSetID}
+        inputID="as-qid"
+        required={true}
+        label={t("Questionnaire")}
+      >
+        <QuestionSetSelect
+          inputID="as-qid"
+          onQuestionSetSelected={qsOnChange}
+          onBlur={qsOnBlur}
+        />
       </FormField>
       <Form.Group>
-        <Form.Button type="submit" primary={true} disabled={!isValid || isSubmitting} loading={isSubmitting}>{props.buttonText}</Form.Button>
+        <Form.Button
+          type="submit"
+          primary={true}
+          disabled={!isValid || isSubmitting}
+          loading={isSubmitting}
+        >
+          {props.buttonText}
+        </Form.Button>
       </Form.Group>
-      {status && <span className="submit-error"><Icon name="exclamation" />{t("Starting the assessment failed.")} {t("Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org")}</span>}
+      {status && (
+        <span className="submit-error">
+          <Icon name="exclamation" />
+          {t("Starting the assessment failed.")}{" "}
+          {t(
+            "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org"
+          )}
+        </span>
+      )}
     </Form>
   );
 };
@@ -37,15 +79,19 @@ const InnerForm = (props: FormikProps<IAssessmentConfig> & IProps) => {
 const SummonConfigInner = withFormik<IProps, IAssessmentConfig>({
   validate: (values: IAssessmentConfig, p: IProps) => {
     const errors: FormikErrors<IAssessmentConfig> = {};
-    if (!values.outcomeSetID || values.outcomeSetID === '') {
-      errors.outcomeSetID = p.t('Please select a questionnaire');
+    if (!values.outcomeSetID || values.outcomeSetID === "") {
+      errors.outcomeSetID = p.t("Please select a questionnaire");
     }
     return errors;
   },
-  handleSubmit: (v: FormikValues, formikBag: FormikBag<IProps, IAssessmentConfig>): void => {
+  handleSubmit: (
+    v: FormikValues,
+    formikBag: FormikBag<IProps, IAssessmentConfig>
+  ): void => {
     formikBag.setStatus(undefined);
     formikBag.setSubmitting(true);
-    formikBag.props.onSubmit(v.outcomeSetID)
+    formikBag.props
+      .onSubmit(v.outcomeSetID)
       .then(() => {
         // will move on from this component so no need to do anything
       })

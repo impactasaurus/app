@@ -1,4 +1,4 @@
-import {gql} from 'react-apollo';
+import { gql } from "react-apollo";
 
 export interface IDelta {
   delta: number;
@@ -32,30 +32,31 @@ export const answerAggregationFragment = gql`
   fragment answerAggregationFragment on Report {
     beneficiaries {
       id
-    },
+    }
     questions {
-      id,
+      id
       stats {
         delta
-      },
-      initial,
+      }
+      initial
       latest
-    },
+    }
     categories {
-      id,
+      id
       stats {
         delta
-      },
-      initial,
+      }
+      initial
       latest
-    },
+    }
     excluded {
-      beneficiary,
-      question,
-      category,
+      beneficiary
+      question
+      category
       reason
     }
-  }`;
+  }
+`;
 
 export interface IAnswerDelta {
   aID: string;
@@ -76,30 +77,31 @@ export interface IBeneficiaryDeltaReport {
 export const beneficiaryDeltaFragment = gql`
   fragment beneficiaryDeltaFragment on Report {
     beneficiaries {
-      id,
+      id
       categories {
-        aID: id,
+        aID: id
         stats {
           delta
         }
       }
       questions {
-        aID: id,
+        aID: id
         stats {
           delta
         }
       }
-    },
+    }
     categories {
       id
-    },
+    }
     excluded {
-      beneficiary,
-      question,
-      category,
+      beneficiary
+      question
+      category
       reason
     }
-  }`;
+  }
+`;
 
 export interface IExcluded {
   categoryIDs: string[];
@@ -111,30 +113,31 @@ export const latestAggregationFragment = gql`
   fragment latestAggregationFragment on Report {
     beneficiaries {
       id
-    },
+    }
     questions {
-      id,
+      id
       latest
-    },
+    }
     categories {
-      id,
+      id
       latest
-    },
+    }
     excluded {
-      beneficiary,
-      question,
-      category,
+      beneficiary
+      question
+      category
       reason
     }
-  }`;
-
-  export interface ILatestAggregation extends IID {
-    latest: number;
   }
+`;
 
-  export interface ILatestAggregationReport {
-    beneficiaries: IID[];
-    questions: ILatestAggregation[];
-    categories: ILatestAggregation[];
-    excluded: IExclusion[];
-  }
+export interface ILatestAggregation extends IID {
+  latest: number;
+}
+
+export interface ILatestAggregationReport {
+  beneficiaries: IID[];
+  questions: ILatestAggregation[];
+  categories: ILatestAggregation[];
+  excluded: IExclusion[];
+}

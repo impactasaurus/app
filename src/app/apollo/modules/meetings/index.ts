@@ -1,8 +1,17 @@
-import {gql, graphql, QueryProps} from 'react-apollo';
-import {IMeeting, fragment, fragmentWithOutcomeSetAndAggregates, fragmentWithOutcomeSet} from 'models/meeting';
-import {Extractor, IDExtractor, mutationResultExtractor} from 'helpers/apollo';
-import { invalidateFields, ROOT } from 'apollo-cache-invalidation';
-import {IAssessmentConfig} from 'models/assessment';
+import { gql, graphql, QueryProps } from "react-apollo";
+import {
+  IMeeting,
+  fragment,
+  fragmentWithOutcomeSetAndAggregates,
+  fragmentWithOutcomeSet,
+} from "models/meeting";
+import {
+  Extractor,
+  IDExtractor,
+  mutationResultExtractor,
+} from "helpers/apollo";
+import { invalidateFields, ROOT } from "apollo-cache-invalidation";
+import { IAssessmentConfig } from "models/assessment";
 
 // see impactasaurus/app#55, not an ideal fix
 // forces refetch of meeting related queries by deleting root query pointers for `meeting` and `meetings` queries
@@ -14,21 +23,25 @@ export function clearCacheOfAllMeetings() {
 }
 
 export const getMeeting = <T>(idExtractor: IDExtractor<T>) => {
-  return graphql<any, T>(gql`
-    query ($id: String!){
-      getMeeting: meeting(id:$id) {
-        ...meetingWithOutcomeSetAndAggregates
+  return graphql<any, T>(
+    gql`
+      query ($id: String!) {
+        getMeeting: meeting(id: $id) {
+          ...meetingWithOutcomeSetAndAggregates
+        }
       }
+      ${fragmentWithOutcomeSetAndAggregates}
+    `,
+    {
+      options: (props: T) => {
+        return {
+          variables: {
+            id: idExtractor(props),
+          },
+        };
+      },
     }
-    ${fragmentWithOutcomeSetAndAggregates}`, {
-    options: (props: T) => {
-      return {
-        variables: {
-          id: idExtractor(props),
-        },
-      };
-    },
-  });
+  );
 };
 
 const getMeetingsGQL = gql`
@@ -37,7 +50,8 @@ const getMeetingsGQL = gql`
       ...meetingWithOutcomeSetAndAggregates
     }
   }
-  ${fragmentWithOutcomeSetAndAggregates}`;
+  ${fragmentWithOutcomeSetAndAggregates}
+`;
 
 export const getMeetings = <T>(idExtractor: IDExtractor<T>, name?: string) => {
   return graphql<any, T>(getMeetingsGQL, {
@@ -48,11 +62,13 @@ export const getMeetings = <T>(idExtractor: IDExtractor<T>, name?: string) => {
         },
       };
     },
-    name: name ? name : 'data',
+    name: name ? name : "data",
   });
 };
 
-export interface IGetRecentMeetings extends QueryProps, IGetRecentMeetingsData {}
+export interface IGetRecentMeetings
+  extends QueryProps,
+    IGetRecentMeetingsData {}
 
 interface IGetRecentMeetingsData {
   getRecentMeetings: {
@@ -65,16 +81,20 @@ interface IGetRecentMeetingsData {
 const getRecentMeetingsGQL = gql`
   query ($page: Int!, $limit: Int!) {
     getRecentMeetings: recentMeetings(page: $page, limit: $limit) {
-      isMore,
-      page,
+      isMore
+      page
       meetings {
         ...meetingWithOutcomeSet
       }
     }
   }
-  ${fragmentWithOutcomeSet}`;
+  ${fragmentWithOutcomeSet}
+`;
 
-export const getRecentMeetings = <T>(pageExtractor: Extractor<T, number>, name?: string) => {
+export const getRecentMeetings = <T>(
+  pageExtractor: Extractor<T, number>,
+  name?: string
+) => {
   return graphql<any, T>(getRecentMeetingsGQL, {
     options: (props: T) => {
       return {
@@ -85,7 +105,7 @@ export const getRecentMeetings = <T>(pageExtractor: Extractor<T, number>, name?:
         notifyOnNetworkStatusChange: true,
       };
     },
-    name: name ? name : 'data',
+    name: name ? name : "data",
   });
 };
 
@@ -93,8 +113,13 @@ export const getMoreRecentMeetings = (page: number): any => ({
   variables: {
     page,
   },
-  updateQuery: (prev: IGetRecentMeetingsData, { fetchMoreResult }: {fetchMoreResult: IGetRecentMeetingsData}): IGetRecentMeetingsData => {
-    if (!fetchMoreResult) {return prev;}
+  updateQuery: (
+    prev: IGetRecentMeetingsData,
+    { fetchMoreResult }: { fetchMoreResult: IGetRecentMeetingsData }
+  ): IGetRecentMeetingsData => {
+    if (!fetchMoreResult) {
+      return prev;
+    }
     const meetings = [].concat(prev.getRecentMeetings.meetings);
     fetchMoreResult.getRecentMeetings.meetings.forEach((nm) => {
       // having issues where updateQuery is called twice, put in dup logic to guard against it
@@ -105,7 +130,7 @@ export const getMoreRecentMeetings = (page: number): any => ({
     });
     return {
       getRecentMeetings: {
-        ... fetchMoreResult.getRecentMeetings,
+        ...fetchMoreResult.getRecentMeetings,
         meetings,
       },
     };
@@ -113,7 +138,7 @@ export const getMoreRecentMeetings = (page: number): any => ({
 });
 
 const getAllMeetingsGQL = gql`
-  query getAllMeetings ($beneficiaryID: String!) {
+  query getAllMeetings($beneficiaryID: String!) {
     getIncompleteMeetings: incompleteMeetings(beneficiary: $beneficiaryID) {
       ...meetingWithOutcomeSetAndAggregates
     }
@@ -121,9 +146,13 @@ const getAllMeetingsGQL = gql`
       ...meetingWithOutcomeSetAndAggregates
     }
   }
-  ${fragmentWithOutcomeSetAndAggregates}`;
+  ${fragmentWithOutcomeSetAndAggregates}
+`;
 
-export const getAllMeetings = <T>(idExtractor: IDExtractor<T>, name?: string) => {
+export const getAllMeetings = <T>(
+  idExtractor: IDExtractor<T>,
+  name?: string
+) => {
   return graphql<any, T>(getAllMeetingsGQL, {
     options: (props: T) => {
       return {
@@ -132,277 +161,408 @@ export const getAllMeetings = <T>(idExtractor: IDExtractor<T>, name?: string) =>
         },
       };
     },
-    name: name ? name : 'data',
+    name: name ? name : "data",
   });
 };
 
 export const exportMeetings = <T>(idExtractor: IDExtractor<T>) => {
-  return graphql<any, T>(gql`
-    query ($qid: String!){
-      exportMeetings: exportMeetings(qID:$qid)
-    }`, {
-    options: (props: T) => {
-      return {
-        variables: {
-          qid: idExtractor(props),
-        },
-        fetchPolicy: 'network-only',
-        notifyOnNetworkStatusChange: true,
-      };
-    },
-  });
+  return graphql<any, T>(
+    gql`
+      query ($qid: String!) {
+        exportMeetings: exportMeetings(qID: $qid)
+      }
+    `,
+    {
+      options: (props: T) => {
+        return {
+          variables: {
+            qid: idExtractor(props),
+          },
+          fetchPolicy: "network-only",
+          notifyOnNetworkStatusChange: true,
+        };
+      },
+    }
+  );
 };
 
-export const exportBenMeetings = <T>(idExtractor: IDExtractor<T>, benExtractor: IDExtractor<T>) => {
-  return graphql<any, T>(gql`
-    query ($qid: String!, $ben:String!){
-      exportBenMeetings: exportBenMeetings(qID:$qid, beneficiary: $ben)
-    }`, {
-    options: (props: T) => {
-      return {
-        variables: {
-          qid: idExtractor(props),
-          ben: benExtractor(props),
-        },
-        fetchPolicy: 'network-only',
-        notifyOnNetworkStatusChange: true,
-      };
-    },
-  });
+export const exportBenMeetings = <T>(
+  idExtractor: IDExtractor<T>,
+  benExtractor: IDExtractor<T>
+) => {
+  return graphql<any, T>(
+    gql`
+      query ($qid: String!, $ben: String!) {
+        exportBenMeetings: exportBenMeetings(qID: $qid, beneficiary: $ben)
+      }
+    `,
+    {
+      options: (props: T) => {
+        return {
+          variables: {
+            qid: idExtractor(props),
+            ben: benExtractor(props),
+          },
+          fetchPolicy: "network-only",
+          notifyOnNetworkStatusChange: true,
+        };
+      },
+    }
+  );
 };
 
 export interface IExportBenMeetingsResult extends QueryProps {
   exportBenMeetings?: string;
 }
 
-export function newMeeting <T>(component) {
-  return graphql<any, T>(gql`
-  mutation ($beneficiaryID: String!, $outcomeSetID: String!, $conducted: String!, $tags: [String]) {
-    newMeeting: AddMeeting(beneficiaryID:$beneficiaryID, outcomeSetID:$outcomeSetID, conducted:$conducted, tags:$tags) {
-      ...defaultMeeting
+export function newMeeting<T>(component) {
+  return graphql<any, T>(
+    gql`
+      mutation (
+        $beneficiaryID: String!
+        $outcomeSetID: String!
+        $conducted: String!
+        $tags: [String]
+      ) {
+        newMeeting: AddMeeting(
+          beneficiaryID: $beneficiaryID
+          outcomeSetID: $outcomeSetID
+          conducted: $conducted
+          tags: $tags
+        ) {
+          ...defaultMeeting
+        }
+      }
+      ${fragment}
+    `,
+    {
+      props: ({ mutate }) => ({
+        newMeeting: (config: IAssessmentConfig): Promise<IMeeting> =>
+          mutate({
+            variables: {
+              beneficiaryID: config.beneficiaryID,
+              outcomeSetID: config.outcomeSetID,
+              conducted: config.date
+                ? config.date.toISOString()
+                : new Date().toISOString(),
+              tags: config.tags || [],
+            },
+            refetchQueries: [
+              {
+                query: getMeetingsGQL,
+                variables: {
+                  beneficiaryID: config.beneficiaryID,
+                },
+              },
+              {
+                query: getAllMeetingsGQL,
+                variables: {
+                  beneficiaryID: config.beneficiaryID,
+                },
+              },
+            ],
+          }).then(mutationResultExtractor<IMeeting>("newMeeting")),
+      }),
     }
-  }
-  ${fragment}`, {
-    props: ({ mutate }) => ({
-      newMeeting: (config: IAssessmentConfig): Promise<IMeeting> => mutate({
-        variables: {
-          beneficiaryID: config.beneficiaryID,
-          outcomeSetID: config.outcomeSetID,
-          conducted: config.date ? config.date.toISOString() : new Date().toISOString(),
-          tags: config.tags || [],
-        },
-        refetchQueries: [{
-          query: getMeetingsGQL,
-          variables: {
-            beneficiaryID: config.beneficiaryID,
-          },
-        }, {
-          query: getAllMeetingsGQL,
-          variables: {
-            beneficiaryID: config.beneficiaryID,
-          },
-        }],
-      }).then(mutationResultExtractor<IMeeting>('newMeeting')),
-    }),
-  })(component);
+  )(component);
 }
 
-export function newRemoteMeeting <T>(component) {
-  return graphql<any, T>(gql`
-  mutation($beneficiaryID: String!, $outcomeSetID: String!, $daysToComplete: Int!, $tags: [String]) {
-    newRemoteMeeting: AddRemoteMeeting(beneficiaryID:$beneficiaryID, outcomeSetID:$outcomeSetID, daysToComplete:$daysToComplete, tags:$tags){
-      JTI
+export function newRemoteMeeting<T>(component) {
+  return graphql<any, T>(
+    gql`
+      mutation (
+        $beneficiaryID: String!
+        $outcomeSetID: String!
+        $daysToComplete: Int!
+        $tags: [String]
+      ) {
+        newRemoteMeeting: AddRemoteMeeting(
+          beneficiaryID: $beneficiaryID
+          outcomeSetID: $outcomeSetID
+          daysToComplete: $daysToComplete
+          tags: $tags
+        ) {
+          JTI
+        }
+      }
+    `,
+    {
+      props: ({ mutate }) => ({
+        newRemoteMeeting: (
+          config: IAssessmentConfig,
+          daysToComplete: number
+        ): Promise<string> =>
+          mutate({
+            variables: {
+              beneficiaryID: config.beneficiaryID,
+              outcomeSetID: config.outcomeSetID,
+              daysToComplete: Math.ceil(daysToComplete),
+              tags: config.tags || [],
+            },
+            refetchQueries: [
+              {
+                query: getMeetingsGQL,
+                variables: {
+                  beneficiaryID: config.beneficiaryID,
+                },
+              },
+              {
+                query: getAllMeetingsGQL,
+                variables: {
+                  beneficiaryID: config.beneficiaryID,
+                },
+              },
+            ],
+          })
+            .then(
+              mutationResultExtractor<{
+                JTI: string;
+              }>("newRemoteMeeting")
+            )
+            .then((x) => x.JTI),
+      }),
     }
-  }
-`, {
-    props: ({ mutate }) => ({
-      newRemoteMeeting: (config: IAssessmentConfig, daysToComplete: number): Promise<string> => mutate({
-        variables: {
-          beneficiaryID: config.beneficiaryID,
-          outcomeSetID: config.outcomeSetID,
-          daysToComplete: Math.ceil(daysToComplete),
-          tags: config.tags || [],
-        },
-        refetchQueries: [{
-          query: getMeetingsGQL,
-          variables: {
-            beneficiaryID: config.beneficiaryID,
-          },
-        }, {
-          query: getAllMeetingsGQL,
-          variables: {
-            beneficiaryID: config.beneficiaryID,
-          },
-        }],
-      }).then(mutationResultExtractor<{
-        JTI: string,
-      }>('newRemoteMeeting'))
-        .then((x) => x.JTI),
-    }),
-  })(component);
+  )(component);
 }
 
 export function addLikertAnswer<T>(component) {
-  return graphql<any, T>(gql`
-  mutation ($meetingID: String!, $questionID: String!, $value: Int!, $notes: String) {
-    addLikertAnswer: AddLikertAnswer(meetingID: $meetingID, questionID: $questionID, value: $value, allowOverwrite:true, notes: $notes) {
-      ...meetingWithOutcomeSetAndAggregates
+  return graphql<any, T>(
+    gql`
+      mutation (
+        $meetingID: String!
+        $questionID: String!
+        $value: Int!
+        $notes: String
+      ) {
+        addLikertAnswer: AddLikertAnswer(
+          meetingID: $meetingID
+          questionID: $questionID
+          value: $value
+          allowOverwrite: true
+          notes: $notes
+        ) {
+          ...meetingWithOutcomeSetAndAggregates
+        }
+      }
+      ${fragmentWithOutcomeSetAndAggregates}
+    `,
+    {
+      props: ({ mutate }) => ({
+        addLikertAnswer: (
+          meetingID: string,
+          questionID: string,
+          value: number,
+          notes?: string
+        ): Promise<IMeeting> =>
+          mutate({
+            variables: {
+              meetingID,
+              questionID,
+              value,
+              notes,
+            },
+          }).then(mutationResultExtractor<IMeeting>("addLikertAnswer")),
+      }),
     }
-  }
-  ${fragmentWithOutcomeSetAndAggregates}`, {
-    props: ({ mutate }) => ({
-      addLikertAnswer: (meetingID: string, questionID: string, value: number, notes?: string): Promise<IMeeting> => mutate({
-        variables: {
-          meetingID,
-          questionID,
-          value,
-          notes,
-        },
-      }).then(mutationResultExtractor<IMeeting>('addLikertAnswer')),
-    }),
-  })(component);
+  )(component);
 }
 
 export function completeMeeting<T>(component) {
-  return graphql<any, T>(gql`
-  mutation ($meetingID: String!) {
-    completeMeeting: CompleteMeeting(meetingID: $meetingID) {
-      ...meetingWithOutcomeSetAndAggregates
+  return graphql<any, T>(
+    gql`
+      mutation ($meetingID: String!) {
+        completeMeeting: CompleteMeeting(meetingID: $meetingID) {
+          ...meetingWithOutcomeSetAndAggregates
+        }
+      }
+      ${fragmentWithOutcomeSetAndAggregates}
+    `,
+    {
+      props: ({ mutate }) => ({
+        completeMeeting: (
+          meetingID: string,
+          beneficiaryID: string
+        ): Promise<IMeeting> =>
+          mutate({
+            variables: {
+              meetingID,
+            },
+            refetchQueries: [
+              {
+                query: getMeetingsGQL,
+                variables: { beneficiaryID },
+              },
+              {
+                query: getAllMeetingsGQL,
+                variables: { beneficiaryID },
+              },
+              {
+                query: getRecentMeetingsGQL,
+                variables: { page: 0, limit: 12 },
+              },
+            ],
+          }).then(mutationResultExtractor<IMeeting>("completeMeeting")),
+      }),
     }
-  }
-  ${fragmentWithOutcomeSetAndAggregates}`, {
-    props: ({ mutate }) => ({
-      completeMeeting: (meetingID: string, beneficiaryID: string): Promise<IMeeting> => mutate({
-        variables: {
-          meetingID,
-        },
-        refetchQueries: [{
-          query: getMeetingsGQL,
-          variables: { beneficiaryID },
-        }, {
-          query: getAllMeetingsGQL,
-          variables: { beneficiaryID },
-        }, {
-          query: getRecentMeetingsGQL,
-          variables: {page: 0, limit: 12},
-        }],
-      }).then(mutationResultExtractor<IMeeting>('completeMeeting')),
-    }),
-  })(component);
+  )(component);
 }
 
 export interface ISetMeetingNotes {
   setMeetingNotes?: (meetingID: string, notes?: string) => Promise<IMeeting>;
 }
 export function setMeetingNotes<T>(component) {
-  return graphql<any, T>(gql`
-  mutation ($meetingID: String!, $notes: String) {
-    setNotes: SetMeetingNotes(meetingID: $meetingID, notes: $notes) {
-      ...meetingWithOutcomeSetAndAggregates
+  return graphql<any, T>(
+    gql`
+      mutation ($meetingID: String!, $notes: String) {
+        setNotes: SetMeetingNotes(meetingID: $meetingID, notes: $notes) {
+          ...meetingWithOutcomeSetAndAggregates
+        }
+      }
+      ${fragmentWithOutcomeSetAndAggregates}
+    `,
+    {
+      props: ({ mutate }) => ({
+        setMeetingNotes: (
+          meetingID: string,
+          notes?: string
+        ): Promise<IMeeting> =>
+          mutate({
+            variables: {
+              meetingID,
+              notes,
+            },
+          }).then(mutationResultExtractor<IMeeting>("setNotes")),
+      }),
     }
-  }
-  ${fragmentWithOutcomeSetAndAggregates}`, {
-    props: ({ mutate }) => ({
-      setMeetingNotes: (meetingID: string, notes?: string): Promise<IMeeting> => mutate({
-        variables: {
-          meetingID,
-          notes,
-        },
-      }).then(mutationResultExtractor<IMeeting>('setNotes')),
-    }),
-  })(component);
+  )(component);
 }
 
 export function deleteMeeting<T>(component) {
-  return graphql<any, T>(gql`
-  mutation DeleteMeeting ($meetingID: String!) {
-    DeleteMeeting(meetingID: $meetingID)
-  }`, {
-    props: ({ mutate }) => ({
-      deleteMeeting: (meetingID: string, beneficiaryID: string) => mutate({
-        variables: {
-          meetingID,
-        },
-        refetchQueries: [{
-          query: getMeetingsGQL,
-          variables: { beneficiaryID },
-        }, {
-          query: getAllMeetingsGQL,
-          variables: { beneficiaryID },
-        }, {
-          query: getRecentMeetingsGQL,
-          variables: {page: 0, limit: 12},
-        }],
+  return graphql<any, T>(
+    gql`
+      mutation DeleteMeeting($meetingID: String!) {
+        DeleteMeeting(meetingID: $meetingID)
+      }
+    `,
+    {
+      props: ({ mutate }) => ({
+        deleteMeeting: (meetingID: string, beneficiaryID: string) =>
+          mutate({
+            variables: {
+              meetingID,
+            },
+            refetchQueries: [
+              {
+                query: getMeetingsGQL,
+                variables: { beneficiaryID },
+              },
+              {
+                query: getAllMeetingsGQL,
+                variables: { beneficiaryID },
+              },
+              {
+                query: getRecentMeetingsGQL,
+                variables: { page: 0, limit: 12 },
+              },
+            ],
+          }),
       }),
-    }),
-  })(component);
+    }
+  )(component);
 }
 
 export interface IEditMeetingTags {
   editMeetingTags(meetingID: string, tags: string[]): Promise<IMeeting>;
 }
 export function editMeetingTags<T>(component) {
-  return graphql<any, T>(gql`
-  mutation EditMeetingTags ($meetingID: String!, $tags: [String]) {
-    editMeetingTags: EditMeetingTags(meetingID: $meetingID, tags: $tags) {
-      ...meetingWithOutcomeSetAndAggregates
+  return graphql<any, T>(
+    gql`
+      mutation EditMeetingTags($meetingID: String!, $tags: [String]) {
+        editMeetingTags: EditMeetingTags(meetingID: $meetingID, tags: $tags) {
+          ...meetingWithOutcomeSetAndAggregates
+        }
+      }
+      ${fragmentWithOutcomeSetAndAggregates}
+    `,
+    {
+      props: ({ mutate }) => ({
+        editMeetingTags: (meetingID: string, tags: string[]) =>
+          mutate({
+            variables: {
+              meetingID,
+              tags: tags || [],
+            },
+          }).then(mutationResultExtractor<IMeeting>("editMeetingTags")),
+      }),
     }
-  }
-  ${fragmentWithOutcomeSetAndAggregates}`, {
-    props: ({ mutate }) => ({
-      editMeetingTags: (meetingID: string, tags: string[]) => mutate({
-        variables: {
-          meetingID,
-          tags: tags || [],
-        },
-      }).then(mutationResultExtractor<IMeeting>('editMeetingTags')),
-    }),
-  })(component);
+  )(component);
 }
 
 export interface IEditMeetingDate {
   editMeetingDate(meetingID: string, conducted: Date): Promise<IMeeting>;
 }
 export function editMeetingDate<T>(component) {
-  return graphql<any, T>(gql`
-  mutation EditMeetingDate ($meetingID: String!, $conducted: String!) {
-    editMeetingDate: EditMeetingDate(meetingID: $meetingID, conducted: $conducted) {
-      ...meetingWithOutcomeSetAndAggregates
+  return graphql<any, T>(
+    gql`
+      mutation EditMeetingDate($meetingID: String!, $conducted: String!) {
+        editMeetingDate: EditMeetingDate(
+          meetingID: $meetingID
+          conducted: $conducted
+        ) {
+          ...meetingWithOutcomeSetAndAggregates
+        }
+      }
+      ${fragmentWithOutcomeSetAndAggregates}
+    `,
+    {
+      props: ({ mutate }) => ({
+        editMeetingDate: (meetingID: string, conducted: Date) =>
+          mutate({
+            variables: {
+              meetingID,
+              conducted: conducted.toISOString(),
+            },
+          }).then(mutationResultExtractor<IMeeting>("editMeetingDate")),
+      }),
     }
-  }
-  ${fragmentWithOutcomeSetAndAggregates}`, {
-    props: ({ mutate }) => ({
-      editMeetingDate: (meetingID: string, conducted: Date) => mutate({
-        variables: {
-          meetingID,
-          conducted: conducted.toISOString(),
-        },
-      }).then(mutationResultExtractor<IMeeting>('editMeetingDate')),
-    }),
-  })(component);
+  )(component);
 }
 
 export interface IEditMeetingBeneficiary {
-  editMeetingBeneficiary(meetingID: string, newBeneficiaryID: string): Promise<IMeeting>;
+  editMeetingBeneficiary(
+    meetingID: string,
+    newBeneficiaryID: string
+  ): Promise<IMeeting>;
 }
 export function editMeetingBeneficiary<T>(component) {
-  return graphql<any, T>(gql`
-  mutation EditMeetingBeneficiary ($meetingID: String!, $newBeneficiaryID: String!) {
-    editMeetingBeneficiary: EditMeetingBeneficiary(meetingID: $meetingID, newBeneficiaryID: $newBeneficiaryID) {
-      ...meetingWithOutcomeSetAndAggregates
+  return graphql<any, T>(
+    gql`
+      mutation EditMeetingBeneficiary(
+        $meetingID: String!
+        $newBeneficiaryID: String!
+      ) {
+        editMeetingBeneficiary: EditMeetingBeneficiary(
+          meetingID: $meetingID
+          newBeneficiaryID: $newBeneficiaryID
+        ) {
+          ...meetingWithOutcomeSetAndAggregates
+        }
+      }
+      ${fragmentWithOutcomeSetAndAggregates}
+    `,
+    {
+      props: ({ mutate }) => ({
+        editMeetingBeneficiary: (meetingID: string, newBeneficiaryID: string) =>
+          mutate({
+            variables: {
+              meetingID,
+              newBeneficiaryID,
+            },
+            update: clearCacheOfAllMeetings(),
+          }).then(mutationResultExtractor<IMeeting>("editMeetingBeneficiary")),
+      }),
     }
-  }
-  ${fragmentWithOutcomeSetAndAggregates}`, {
-    props: ({ mutate }) => ({
-      editMeetingBeneficiary: (meetingID: string, newBeneficiaryID: string) => mutate({
-        variables: {
-          meetingID,
-          newBeneficiaryID,
-        },
-        update: clearCacheOfAllMeetings(),
-      }).then(mutationResultExtractor<IMeeting>('editMeetingBeneficiary')),
-    }),
-  })(component);
+  )(component);
 }
 
 export interface IMeetingResult extends QueryProps {
@@ -425,7 +585,15 @@ export interface IExportMeetingsResult extends QueryProps {
 
 export interface IMeetingMutation {
   newMeeting?(config: IAssessmentConfig): Promise<IMeeting>;
-  newRemoteMeeting?(config: IAssessmentConfig, daysToComplete: number): Promise<string>;
-  addLikertAnswer?(meetingID: string, questionID: string, value: number, notes?: string): Promise<IMeeting>;
+  newRemoteMeeting?(
+    config: IAssessmentConfig,
+    daysToComplete: number
+  ): Promise<string>;
+  addLikertAnswer?(
+    meetingID: string,
+    questionID: string,
+    value: number,
+    notes?: string
+  ): Promise<IMeeting>;
   completeMeeting?(meetingID: string, beneficiaryID: string): Promise<IMeeting>;
 }

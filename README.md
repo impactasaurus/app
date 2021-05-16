@@ -9,9 +9,11 @@ The web app is written using typescript, react, apollo and semantic UI.
 To get an account, you can sign up for Impactasaurus at https://impactasaurus.org. To get an idea of the typical workflow, check out our [recent webinar](https://www.youtube.com/watch?v=sw-_m3fNVmE).
 
 To run the application against the live backend, simply:
+
 ```
 npm install && npm start
 ```
+
 Then navigate to http://localhost:8080. You should be able to log in and use the application exactly as it appears on the live site.
 
 ## Running a Local Backend
@@ -29,8 +31,7 @@ Please read the [contribution guidelines](https://github.com/impactasaurus/app/b
 Thanks goes to these wonderful people:
 
 <!-- githubcontrib --owner impactasaurus --repo app --cols 6 --sortOrder desc -->
+
 [<img alt="drimpact" src="https://avatars3.githubusercontent.com/u/26777915?v=4&s=117" width="117">](https://github.com/drimpact)[<img alt="tomdohnal" src="https://avatars2.githubusercontent.com/u/22922179?v=4&s=117" width="117">](https://github.com/tomdohnal)[<img alt="nikw92" src="https://avatars2.githubusercontent.com/u/16404046?v=4&s=117" width="117">](https://github.com/nikw92)[<img alt="abhishek71994" src="https://avatars1.githubusercontent.com/u/8072400?v=4&s=117" width="117">](https://github.com/abhishek71994)[<img alt="Remorax" src="https://avatars1.githubusercontent.com/u/26062692?v=4&s=117" width="117">](https://github.com/Remorax)[<img alt="themakshter" src="https://avatars3.githubusercontent.com/u/2033876?v=4&s=117" width="117">](https://github.com/themakshter)
-
-
 
 Contributions of any kind are welcome!

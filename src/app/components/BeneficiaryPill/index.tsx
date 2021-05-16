@@ -1,6 +1,6 @@
-import * as React from 'react';
-import {Label} from 'semantic-ui-react';
-import {journeyURI} from 'helpers/url';
+import * as React from "react";
+import { Label } from "semantic-ui-react";
+import { journeyURI } from "helpers/url";
 
 interface IProps {
   beneficiaryID: string;
@@ -10,11 +10,16 @@ interface IProps {
 
 class BeneficiaryPill extends React.Component<IProps, any> {
   public render() {
-    const link = journeyURI(this.props.beneficiaryID, this.props.questionnaireID);
+    const link = journeyURI(
+      this.props.beneficiaryID,
+      this.props.questionnaireID
+    );
     return (
-      <Label as="a" target="_blank" href={link} key={this.props.beneficiaryID}>{this.props.beneficiaryID}</Label>
+      <Label as="a" target="_blank" href={link} key={this.props.beneficiaryID}>
+        {this.props.beneficiaryID}
+      </Label>
     );
   }
 }
 
-export {BeneficiaryPill};
+export { BeneficiaryPill };

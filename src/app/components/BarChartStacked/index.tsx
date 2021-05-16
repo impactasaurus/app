@@ -1,8 +1,8 @@
-import * as React from 'react';
-import {BarChartData} from 'models/bar';
-import {precisionRound} from 'helpers/numbers';
-import { Chart } from 'components/Chart';
-import { SeriesType } from 'theme/chartStyle';
+import * as React from "react";
+import { BarChartData } from "models/bar";
+import { precisionRound } from "helpers/numbers";
+import { Chart } from "components/Chart";
+import { SeriesType } from "theme/chartStyle";
 
 interface IProps {
   data: BarChartData;
@@ -26,7 +26,7 @@ const maxXValue = (d: BarChartData): number => {
 
 function getAxisTitle(original: string): string {
   if (original.length > 60) {
-    return original.substring(0,60) + '...';
+    return original.substring(0, 60) + "...";
   }
   return original;
 }
@@ -37,7 +37,7 @@ const prepareDataset = (data: BarChartData): any => {
       label: x.label,
       data: x.data,
       borderWidth: 1,
-      borderSkipped: 'left',
+      borderSkipped: "left",
       fill: true,
     };
   };
@@ -50,11 +50,11 @@ const prepareDataset = (data: BarChartData): any => {
 const chartConfig = (p: IProps) => {
   const maxX = maxXValue(p.data);
   return {
-    type: 'horizontalBar',
+    type: "horizontalBar",
     data: prepareDataset(p.data),
     options: {
       tooltips: {
-        mode: 'index',
+        mode: "index",
         intersect: false,
       },
       legend: {
@@ -64,35 +64,38 @@ const chartConfig = (p: IProps) => {
         display: false,
       },
       scales: {
-        xAxes: [{
-          stacked: true,
-          scaleLabel: {
-            display: true,
-            labelString: p.xAxisLabel,
-          },
-          ticks: {
-            beginAtZero: true,
-            max: maxX,
-            stepSize: p.showPercentage ? maxX/5 : undefined,
-            callback: (value) => {
-              if (!p.showPercentage) {
-                return value;
-              } else {
-                return `${precisionRound((value / maxX)*100, 0)}%`;
-              }
+        xAxes: [
+          {
+            stacked: true,
+            scaleLabel: {
+              display: true,
+              labelString: p.xAxisLabel,
+            },
+            ticks: {
+              beginAtZero: true,
+              max: maxX,
+              stepSize: p.showPercentage ? maxX / 5 : undefined,
+              callback: (value) => {
+                if (!p.showPercentage) {
+                  return value;
+                } else {
+                  return `${precisionRound((value / maxX) * 100, 0)}%`;
+                }
+              },
             },
           },
-        }],
-        yAxes: [{
-          stacked: true,
-        }],
+        ],
+        yAxes: [
+          {
+            stacked: true,
+          },
+        ],
       },
     },
   };
 };
 
 class StackedBarChart extends React.Component<IProps, any> {
-
   public render() {
     if (this.props.data === undefined || this.props.data.series.length === 0) {
       return <div />;
@@ -100,10 +103,13 @@ class StackedBarChart extends React.Component<IProps, any> {
 
     return (
       <div className="stacked-bar">
-        <Chart config={chartConfig(this.props)} style={{fillAlpha: 0.8, seriesType: SeriesType.SCALE}}/>
+        <Chart
+          config={chartConfig(this.props)}
+          style={{ fillAlpha: 0.8, seriesType: SeriesType.SCALE }}
+        />
       </div>
     );
   }
 }
 
-export {StackedBarChart};
+export { StackedBarChart };

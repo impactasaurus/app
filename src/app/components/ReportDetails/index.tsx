@@ -1,11 +1,17 @@
-import * as React from 'react';
-import {IExcluded} from 'models/report';
-import {IOutcomeSet} from 'models/outcomeSet';
-import {Message, Accordion, Label, SemanticShorthandCollection, AccordionPanelProps} from 'semantic-ui-react';
-import {renderArray} from 'helpers/react';
-import './style.less';
-import {BeneficiaryPill} from 'components/BeneficiaryPill';
-import {WithTranslation, withTranslation} from 'react-i18next';
+import * as React from "react";
+import { IExcluded } from "models/report";
+import { IOutcomeSet } from "models/outcomeSet";
+import {
+  Message,
+  Accordion,
+  Label,
+  SemanticShorthandCollection,
+  AccordionPanelProps,
+} from "semantic-ui-react";
+import { renderArray } from "helpers/react";
+import "./style.less";
+import { BeneficiaryPill } from "components/BeneficiaryPill";
+import { WithTranslation, withTranslation } from "react-i18next";
 
 interface IProp extends WithTranslation {
   introduction?: string;
@@ -16,7 +22,6 @@ interface IProp extends WithTranslation {
 }
 
 class ReportDetailsInner extends React.Component<IProp, null> {
-
   constructor(props) {
     super(props);
     this.renderWarnings = this.renderWarnings.bind(this);
@@ -50,20 +55,26 @@ class ReportDetailsInner extends React.Component<IProp, null> {
     } = this.props;
     const noBens = includedBens.length;
     const info = noBens > 0;
-    const title = info ? t('Overview') : t('Report failed');
+    const title = info ? t("Overview") : t("Report failed");
     const panels: SemanticShorthandCollection<AccordionPanelProps> = [];
 
     if (noBens > 0) {
       panels.push({
-        key: 'bens-included',
+        key: "bens-included",
         title: t(
-          'This report aggregates data covering {noBens, plural, one {# beneficiary} other {# beneficiaries}}.',
-          {noBens},
+          "This report aggregates data covering {noBens, plural, one {# beneficiary} other {# beneficiaries}}.",
+          { noBens }
         ),
         content: {
           content: (
             <div>
-              {includedBens.sort().map((bID) => (<BeneficiaryPill key={bID} beneficiaryID={bID} questionnaireID={qs.id}/>))}
+              {includedBens.sort().map((bID) => (
+                <BeneficiaryPill
+                  key={bID}
+                  beneficiaryID={bID}
+                  questionnaireID={qs.id}
+                />
+              ))}
             </div>
           ),
         },
@@ -71,17 +82,23 @@ class ReportDetailsInner extends React.Component<IProp, null> {
     }
     if (excluded.beneficiaryIDs.length > 0) {
       panels.push({
-        key: 'bens-excluded',
+        key: "bens-excluded",
         title: t(
-          '{excludedBens, plural, one {# beneficiary has} other {# beneficiaries have}} been excluded because they only have a single record.',
+          "{excludedBens, plural, one {# beneficiary has} other {# beneficiaries have}} been excluded because they only have a single record.",
           {
-            excludedBens: excluded.beneficiaryIDs.length
-          },
+            excludedBens: excluded.beneficiaryIDs.length,
+          }
         ),
         content: {
           content: (
             <div>
-              {excluded.beneficiaryIDs.sort().map((bID) => (<BeneficiaryPill key={bID} beneficiaryID={bID} questionnaireID={qs.id}/>))}
+              {excluded.beneficiaryIDs.sort().map((bID) => (
+                <BeneficiaryPill
+                  key={bID}
+                  beneficiaryID={bID}
+                  questionnaireID={qs.id}
+                />
+              ))}
             </div>
           ),
         },
@@ -89,19 +106,23 @@ class ReportDetailsInner extends React.Component<IProp, null> {
     }
     if (excluded.categoryIDs.length > 0 || excluded.questionIDs.length > 0) {
       panels.push({
-        key: 'qs+cats',
+        key: "qs+cats",
         title: t(
-          '{noCategories, plural, one {# category} other {# categories}} and {noQuestions, plural, one {# question} other {# questions}} have been excluded because they are not present within the records.',
+          "{noCategories, plural, one {# category} other {# categories}} and {noQuestions, plural, one {# question} other {# questions}} have been excluded because they are not present within the records.",
           {
             noCategories: excluded.categoryIDs.length,
             noQuestions: excluded.questionIDs.length,
-          },
+          }
         ),
         content: {
           content: (
             <div>
-              {excluded.categoryIDs.map((cID) => (<Label key={cID}>{this.getCategoryString(cID, qs)}</Label>))}
-              {excluded.questionIDs.map((qID) => (<Label key={qID}>{this.getQuestionString(qID, qs)}</Label>))}
+              {excluded.categoryIDs.map((cID) => (
+                <Label key={cID}>{this.getCategoryString(cID, qs)}</Label>
+              ))}
+              {excluded.questionIDs.map((qID) => (
+                <Label key={qID}>{this.getQuestionString(qID, qs)}</Label>
+              ))}
             </div>
           ),
         },
@@ -110,20 +131,22 @@ class ReportDetailsInner extends React.Component<IProp, null> {
     return (
       <Message info={info} error={!info} className="report-overview">
         <Message.Header>{title}</Message.Header>
-        {this.props.introduction && <div className="intro">{this.props.introduction}</div>}
+        {this.props.introduction && (
+          <div className="intro">{this.props.introduction}</div>
+        )}
         <Accordion exclusive={false} panels={panels} />
       </Message>
     );
   }
 
   private renderWarning(str: string): JSX.Element {
-    return (<div key={str}>{str}</div>);
+    return <div key={str}>{str}</div>;
   }
 
   private renderWarnings(): JSX.Element {
-    const {t, warnings} = this.props;
+    const { t, warnings } = this.props;
     if (!Array.isArray(warnings) || warnings.length === 0) {
-      return (<div />);
+      return <div />;
     }
     return (
       <Message warning={true}>
@@ -145,4 +168,4 @@ class ReportDetailsInner extends React.Component<IProp, null> {
 
 const TranslatedReportDetails = withTranslation()(ReportDetailsInner);
 const ReportDetails = TranslatedReportDetails;
-export {ReportDetails};
+export { ReportDetails };

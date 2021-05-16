@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, Input, ButtonProps } from 'semantic-ui-react';
-import { generateInvite, IGenerateInvite } from 'apollo/modules/organisation';
-import { Error } from 'components/Error';
-import {useTranslation} from 'react-i18next';
-import * as config from '../../../../config/main';
+import React, { useEffect, useState } from "react";
+import { Modal, Input, ButtonProps } from "semantic-ui-react";
+import { generateInvite, IGenerateInvite } from "apollo/modules/organisation";
+import { Error } from "components/Error";
+import { useTranslation } from "react-i18next";
+import * as config from "../../../../config/main";
 
 interface IProps extends IGenerateInvite {
   onClosed?: () => void;
 }
 
 const InviteGeneratorInner = (p: IProps) => {
-
   const linkInput: React.RefObject<Input> = React.createRef();
 
   const [inviteID, setInviteID] = useState<string>(undefined);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setError(false);
@@ -37,29 +36,33 @@ const InviteGeneratorInner = (p: IProps) => {
   const copyLink = () => {
     const node: any = linkInput.current;
     node.select();
-    document.execCommand('copy');
-  }
+    document.execCommand("copy");
+  };
 
   const onClose = () => {
     setInviteID(undefined);
     if (p.onClosed !== undefined) {
       p.onClosed();
     }
-  }
+  };
 
   if (inviteID) {
     const url = `${config.app.root}/invite/${inviteID}`;
     const action: ButtonProps = {
       primary: true,
-      labelPosition: 'right',
-      icon: 'copy',
-      content: t('Copy'),
+      labelPosition: "right",
+      icon: "copy",
+      content: t("Copy"),
       onClick: copyLink,
     };
     const modalContent = (
-      <div style={{ margin: '1em' }}>
+      <div style={{ margin: "1em" }}>
         <p>
-          <span>{t("This link allows others to join your Impactasaurus. Simply send it to your colleagues")}</span>
+          <span>
+            {t(
+              "This link allows others to join your Impactasaurus. Simply send it to your colleagues"
+            )}
+          </span>
         </p>
         <p>
           <Input
@@ -75,7 +78,7 @@ const InviteGeneratorInner = (p: IProps) => {
       <Modal
         header={t("Your invite link")}
         content={modalContent}
-        actions={[t('Close')]}
+        actions={[t("Close")]}
         open={true}
         onClose={onClose}
       />
@@ -85,8 +88,7 @@ const InviteGeneratorInner = (p: IProps) => {
     return <Error text={t("Failed to generate invite")} />;
   }
   return <div />;
-
-}
+};
 
 const InviteGenerator = generateInvite<IProps>(InviteGeneratorInner);
 export { InviteGenerator };

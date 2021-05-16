@@ -1,14 +1,22 @@
-import React, {useState} from 'react';
-import {isNullOrUndefined} from 'util';
-import {Search, Input, InputOnChangeData, SearchResultData} from 'semantic-ui-react';
-import {getBeneficiaries, IBeneficiariesResult} from 'apollo/modules/beneficiaries';
-import {getOrganisation, IGetOrgResult} from 'apollo/modules/organisation';
-import { useTranslation } from 'react-i18next';
-const escapeStringRegexp = require('escape-string-regexp');
-import './style.less';
+import React, { useState } from "react";
+import { isNullOrUndefined } from "util";
+import {
+  Search,
+  Input,
+  InputOnChangeData,
+  SearchResultData,
+} from "semantic-ui-react";
+import {
+  getBeneficiaries,
+  IBeneficiariesResult,
+} from "apollo/modules/beneficiaries";
+import { getOrganisation, IGetOrgResult } from "apollo/modules/organisation";
+import { useTranslation } from "react-i18next";
+const escapeStringRegexp = require("escape-string-regexp");
+import "./style.less";
 
 interface IProps {
-  onChange?: (ben: string, existing: boolean|undefined) => void;
+  onChange?: (ben: string, existing: boolean | undefined) => void;
   onBlur?: (ben: string) => void;
   onFocus?: () => void;
   allowUnknown?: boolean; // defaults to false
@@ -20,43 +28,44 @@ interface IProps {
 
 const BeneficiaryInputInner = (p: IProps) => {
   const [benID, setBenID] = useState<string>(undefined);
-  const [searchResults, setSearchResults] = useState<{title: string, description?: string}[]>(undefined);
-  const {t} = useTranslation();
-
+  const [searchResults, setSearchResults] =
+    useState<{ title: string; description?: string }[]>(undefined);
+  const { t } = useTranslation();
 
   const onChange = (benID) => {
     setBenID(benID);
     if (p.onChange) {
       let existingBen = false;
       try {
-        existingBen = p.bens.getBeneficiaries.find((b) => b === benID) !== undefined;
+        existingBen =
+          p.bens.getBeneficiaries.find((b) => b === benID) !== undefined;
       } catch {}
       p.onChange(benID, existingBen);
     }
-  }
+  };
 
   const onInputChange = (_, data: InputOnChangeData) => {
     onChange(data.value);
-  }
+  };
 
   const onSearchResultSelect = (_, data: SearchResultData) => {
     onChange(data.result.title);
     if (p.onBlur) {
       p.onBlur(data.result.title);
     }
-  }
+  };
 
   const onBlur = () => {
     if (p.onBlur) {
       p.onBlur(benID);
     }
-  }
+  };
 
   const handleSearchChange = (_, { value }) => {
     onChange(value);
     const newBeneficiaryResult = {
       title: value,
-      description: t(`Create {name}'s first record`, {name: value}),
+      description: t(`Create {name}'s first record`, { name: value }),
     };
 
     if (isNullOrUndefined(p.bens.getBeneficiaries) || value.length < 1) {
@@ -68,7 +77,7 @@ const BeneficiaryInputInner = (p: IProps) => {
       return;
     }
 
-    const re = new RegExp(escapeStringRegexp(value), 'i');
+    const re = new RegExp(escapeStringRegexp(value), "i");
     const isMatch = (x: string) => re.test(x);
     const matchingBens = p.bens.getBeneficiaries.filter(isMatch);
 
@@ -82,7 +91,7 @@ const BeneficiaryInputInner = (p: IProps) => {
     }
 
     setSearchResults(searchResults);
-  }
+  };
 
   let shouldShowTypeahead = false;
   if (!isNullOrUndefined(p.data.getOrganisation)) {
@@ -102,16 +111,26 @@ const BeneficiaryInputInner = (p: IProps) => {
           fluid={true}
           showNoResults={true}
           noResultsMessage={t("Unknown beneficiary")}
-          input={<Input type="text" placeholder={t("Beneficiary")} icon={false}/>}
+          input={
+            <Input type="text" placeholder={t("Beneficiary")} icon={false} />
+          }
           id={p.inputID}
         />
       </div>
     );
   }
   return (
-    <Input type="text" placeholder={t("Beneficiary")} onChange={onInputChange} onBlur={onBlur} onFocus={p.onFocus} />
+    <Input
+      type="text"
+      placeholder={t("Beneficiary")}
+      onChange={onInputChange}
+      onBlur={onBlur}
+      onFocus={p.onFocus}
+    />
   );
-}
+};
 
-const BeneficiaryInput = getOrganisation<IProps>(getBeneficiaries<IProps>(BeneficiaryInputInner, 'bens'));
-export {BeneficiaryInput};
+const BeneficiaryInput = getOrganisation<IProps>(
+  getBeneficiaries<IProps>(BeneficiaryInputInner, "bens")
+);
+export { BeneficiaryInput };

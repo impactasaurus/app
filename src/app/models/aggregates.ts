@@ -1,4 +1,4 @@
-import {gql} from 'react-apollo';
+import { gql } from "react-apollo";
 
 export interface ICategoryAggregate {
   categoryID: string;
@@ -12,7 +12,8 @@ export interface IAggregates {
 export const fragment = gql`
   fragment defaultAggregates on Aggregates {
     category {
-      value,
+      value
       categoryID
     }
-  }`;
+  }
+`;

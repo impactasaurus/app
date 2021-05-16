@@ -1,7 +1,7 @@
-import * as React from 'react';
-import {Label, Icon, SemanticICONS, Popup} from 'semantic-ui-react';
-import {renderArray} from '../../helpers/react';
-import {useTranslation} from 'react-i18next';
+import * as React from "react";
+import { Label, Icon, SemanticICONS, Popup } from "semantic-ui-react";
+import { renderArray } from "../../helpers/react";
+import { useTranslation } from "react-i18next";
 
 interface IProps {
   tag: string;
@@ -11,16 +11,18 @@ interface IProps {
 }
 
 export const Tag = (p: IProps): JSX.Element => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   return (
     <Label
-      as={p.onClick ? 'a' : undefined}
+      as={p.onClick ? "a" : undefined}
       key={p.tag}
-      className={p.beneficiary ? 'ben' : 'record'}
+      className={p.beneficiary ? "ben" : "record"}
       onClick={p.onClick}
-      style={{marginTop: '0.2em', marginBottom: '0.2em'}}
+      style={{ marginTop: "0.2em", marginBottom: "0.2em" }}
     >
-      {p.beneficiary && <Popup trigger={<Icon name="user"/>} content={t("Beneficiary Tag")} />}
+      {p.beneficiary && (
+        <Popup trigger={<Icon name="user" />} content={t("Beneficiary Tag")} />
+      )}
       <span>{p.tag}</span>
       {p.icon !== undefined && <Icon name={p.icon} />}
     </Label>
@@ -33,12 +35,13 @@ interface ISProps {
 }
 
 const tag = (ben: boolean) => {
-  const inner = (t: string) => <Tag key={t} beneficiary={ben} tag={t}/>;
+  const inner = (t: string) => <Tag key={t} beneficiary={ben} tag={t} />;
   return inner;
 };
 
 export const Tags = (p: ISProps): JSX.Element => (
   <>
-    {renderArray(tag(true), p.benTags)}{renderArray(tag(false), p.recordTags)}
+    {renderArray(tag(true), p.benTags)}
+    {renderArray(tag(false), p.recordTags)}
   </>
 );

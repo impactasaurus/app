@@ -1,4 +1,4 @@
-import {NewQuestionnaireForm} from './form';
-import {NewQuestionnaireTypeSelector} from './type';
+import { NewQuestionnaireForm } from "./form";
+import { NewQuestionnaireTypeSelector } from "./type";
 
-export {NewQuestionnaireForm, NewQuestionnaireTypeSelector};
+export { NewQuestionnaireForm, NewQuestionnaireTypeSelector };

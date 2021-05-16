@@ -1,11 +1,15 @@
 import {
-  Aggregation, AggregationKey, getAggregation, getVisualisation, Visualisation,
+  Aggregation,
+  AggregationKey,
+  getAggregation,
+  getVisualisation,
+  Visualisation,
   VisualisationKey,
-} from 'models/pref';
-import {IParams} from 'redux/querySync';
-import {IStore} from 'redux/IStore';
-import {setPref} from 'redux/modules/pref';
-import {pageRegex} from './index';
+} from "models/pref";
+import { IParams } from "redux/querySync";
+import { IStore } from "redux/IStore";
+import { setPref } from "redux/modules/pref";
+import { pageRegex } from "./index";
 
 export const sync: IParams = {
   [VisualisationKey]: {

@@ -1,18 +1,22 @@
-import React, {useEffect} from 'react';
-import {IGetSelf, getSelf} from 'apollo/modules/user';
-import { useTranslation } from 'react-i18next';
-import moment from 'moment';
+import React, { useEffect } from "react";
+import { IGetSelf, getSelf } from "apollo/modules/user";
+import { useTranslation } from "react-i18next";
+import moment from "moment";
 
 interface IProps {
   self?: IGetSelf;
 }
 
 const Inner = (p: IProps) => {
-  const {i18n} = useTranslation();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
-    if(!p.self.loading && !p.self.error &&
-      p.self.getSelf && p.self.getSelf.settings) {
+    if (
+      !p.self.loading &&
+      !p.self.error &&
+      p.self.getSelf &&
+      p.self.getSelf.settings
+    ) {
       const lng = p.self.getSelf.settings.language;
       let prom;
       if (lng && lng !== "und") {
@@ -31,4 +35,4 @@ const Inner = (p: IProps) => {
   return <div />;
 };
 
-export const Localiser = getSelf(Inner, 'self');
+export const Localiser = getSelf(Inner, "self");

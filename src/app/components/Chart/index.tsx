@@ -1,7 +1,7 @@
-import * as React from 'react';
-import {Chart as ChartJS} from 'chart.js';
-import { getColorScheme, SeriesType } from 'theme/chartStyle';
-import { loadBrandChartColorScheme, shouldLoadBranding } from 'theme/branding';
+import * as React from "react";
+import { Chart as ChartJS } from "chart.js";
+import { getColorScheme, SeriesType } from "theme/chartStyle";
+import { loadBrandChartColorScheme, shouldLoadBranding } from "theme/branding";
 
 let count = 0;
 
@@ -16,11 +16,10 @@ interface IProps {
 }
 
 interface IState {
-  style: (noSeries: number, seriesType: SeriesType) => string|string[];
+  style: (noSeries: number, seriesType: SeriesType) => string | string[];
 }
 
 class Chart extends React.Component<IProps, IState> {
-
   private canvasID: string;
   private chart;
 
@@ -29,14 +28,14 @@ class Chart extends React.Component<IProps, IState> {
     this.state = {
       style: getColorScheme,
     };
-    if(shouldLoadBranding()) {
+    if (shouldLoadBranding()) {
       loadBrandChartColorScheme()
-      .then((fn) => {
-        this.setState({style: fn});
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+        .then((fn) => {
+          this.setState({ style: fn });
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     }
     this.canvasID = `chart-${count++}`;
     this.renderDOM = this.renderDOM.bind(this);
@@ -52,29 +51,38 @@ class Chart extends React.Component<IProps, IState> {
   }
 
   private renderDOM() {
-    if(this.chart !== undefined) {
+    if (this.chart !== undefined) {
       this.chart.destroy();
       this.chart = undefined;
     }
-    this.chart = this.drawChart(this.canvasID, this.props.config, this.props.style || {});
+    this.chart = this.drawChart(
+      this.canvasID,
+      this.props.config,
+      this.props.style || {}
+    );
   }
 
   private applyStyling(config, style?: IStyleOptions) {
-    const out = { ...config};
-    if(!out.options.plugins) {
+    const out = { ...config };
+    if (!out.options.plugins) {
       out.options.plugins = {};
     }
     out.options.plugins.colorschemes = {
-      scheme: this.state.style(config.data.datasets.length, style.seriesType || SeriesType.INDEPENDENT),
+      scheme: this.state.style(
+        config.data.datasets.length,
+        style.seriesType || SeriesType.INDEPENDENT
+      ),
       fillAlpha: style.fillAlpha || 1,
     };
     return out;
   }
 
   private drawChart(canvasID: string, config, style) {
-    const canvasElement = (document.getElementById(canvasID) as HTMLCanvasElement).getContext('2d');
+    const canvasElement = (
+      document.getElementById(canvasID) as HTMLCanvasElement
+    ).getContext("2d");
     if (canvasElement === null) {
-      throw new Error('The canvas element specified does not exist!');
+      throw new Error("The canvas element specified does not exist!");
     }
     return new ChartJS(canvasElement, this.applyStyling(config, style));
   }
@@ -88,4 +96,4 @@ class Chart extends React.Component<IProps, IState> {
   }
 }
 
-export {Chart};
+export { Chart };

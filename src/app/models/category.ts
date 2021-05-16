@@ -1,4 +1,4 @@
-import {gql} from 'react-apollo';
+import { gql } from "react-apollo";
 
 export interface ICategory {
   id: string;
@@ -9,9 +9,9 @@ export interface ICategory {
 
 export const fragment = gql`
   fragment defaultCategory on Category {
-    id,
-    name,
-    description,
+    id
+    name
+    description
     aggregation
   }
 `;

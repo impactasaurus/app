@@ -3,6 +3,6 @@ export enum Direction {
   DESC,
 }
 
-export const directionSpec = (d: Direction): 'ascending'|'descending' => {
-  return d === Direction.ASC ? 'ascending' : 'descending';
+export const directionSpec = (d: Direction): "ascending" | "descending" => {
+  return d === Direction.ASC ? "ascending" : "descending";
 };

@@ -1,24 +1,36 @@
-import * as React from 'react';
-import {QuestionCategoryForm} from '../QuestionCategoryForm';
-import {ICategoryMutation, editQuestionCategory} from 'apollo/modules/categories';
-import {ICategory} from 'models/category';
-import {IOutcomeSet} from 'models/outcomeSet';
-import {useTranslation} from 'react-i18next';
+import * as React from "react";
+import { QuestionCategoryForm } from "../QuestionCategoryForm";
+import {
+  ICategoryMutation,
+  editQuestionCategory,
+} from "apollo/modules/categories";
+import { ICategory } from "models/category";
+import { IOutcomeSet } from "models/outcomeSet";
+import { useTranslation } from "react-i18next";
 
 interface IProps extends ICategoryMutation {
   QuestionSetID: string;
   category: ICategory;
-  OnSuccess: ()=>void;
-  OnCancel: ()=>void;
+  OnSuccess: () => void;
+  OnCancel: () => void;
 }
 
 const EditQuestionCategoryInner = (p: IProps) => {
+  const onSubmitButtonPress = (
+    name: string,
+    aggregation: string,
+    description: string
+  ): Promise<IOutcomeSet> => {
+    return p.editCategory(
+      p.QuestionSetID,
+      p.category.id,
+      name,
+      aggregation,
+      description
+    );
+  };
 
-  const onSubmitButtonPress = (name: string, aggregation: string, description: string): Promise<IOutcomeSet> => {
-    return p.editCategory(p.QuestionSetID, p.category.id, name, aggregation, description);
-  }
-
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   return (
     <QuestionCategoryForm
       OnSuccess={p.OnSuccess}
@@ -32,7 +44,9 @@ const EditQuestionCategoryInner = (p: IProps) => {
       }}
     />
   );
-}
+};
 
-const EditQuestionCategory = editQuestionCategory<IProps>(EditQuestionCategoryInner);
+const EditQuestionCategory = editQuestionCategory<IProps>(
+  EditQuestionCategoryInner
+);
 export { EditQuestionCategory };

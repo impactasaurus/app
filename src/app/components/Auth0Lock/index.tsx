@@ -1,19 +1,22 @@
-import React, {useState, useEffect} from 'react';
-import {Auth0Error, WebAuth} from 'auth0-js';
-import {saveAuth, getWebAuth} from 'helpers/auth';
-import {Message} from 'semantic-ui-react';
-import ReactGA from 'react-ga';
-import { useTranslation } from 'react-i18next';
-import './style.less';
+import React, { useState, useEffect } from "react";
+import { Auth0Error, WebAuth } from "auth0-js";
+import { saveAuth, getWebAuth } from "helpers/auth";
+import { Message } from "semantic-ui-react";
+import ReactGA from "react-ga";
+import { useTranslation } from "react-i18next";
+import "./style.less";
 
 interface IProps {
-  onAuthenticated?: ()=>void;
+  onAuthenticated?: () => void;
 }
 
 const Auth0Lock = (p: IProps): JSX.Element => {
   const [error, setError] = useState<Auth0Error>(undefined);
 
-  const parseRedirect = (webAuth: WebAuth, onFailure: (error: Auth0Error) => void): void => {
+  const parseRedirect = (
+    webAuth: WebAuth,
+    onFailure: (error: Auth0Error) => void
+  ): void => {
     webAuth.parseHash((err, authResult) => {
       if (err || authResult === null || authResult === undefined) {
         onFailure(err);
@@ -31,8 +34,8 @@ const Auth0Lock = (p: IProps): JSX.Element => {
     parseRedirect(webAuth, (err: Auth0Error) => {
       if (err) {
         ReactGA.event({
-          category : 'login',
-          action : 'failed',
+          category: "login",
+          action: "failed",
           label: err.errorDescription,
         });
         setError(err);
@@ -42,7 +45,7 @@ const Auth0Lock = (p: IProps): JSX.Element => {
     });
   }, []);
 
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   if (error !== undefined) {
     return (
       <Message error={true}>
@@ -52,6 +55,6 @@ const Auth0Lock = (p: IProps): JSX.Element => {
     );
   }
   return <div>{t("Redirecting to login...")}</div>;
-}
+};
 
 export { Auth0Lock };

@@ -1,37 +1,36 @@
-import React from 'react';
-import {Button} from 'semantic-ui-react';
-import {IURLConnector, UrlHOC} from 'redux/modules/url';
-import {getMeeting, IMeetingResult} from 'apollo/modules/meetings';
-import {RecordQuestionSummary} from 'components/RecordQuestionSummary';
-import {getHumanisedDateFromISO} from 'helpers/moment';
-import { PageWrapperHoC } from 'components/PageWrapperHoC';
-import { ApolloLoaderHoC } from 'components/ApolloLoaderHoC';
-import { useTranslation } from 'react-i18next';
-import './style.less';
+import React from "react";
+import { Button } from "semantic-ui-react";
+import { IURLConnector, UrlHOC } from "redux/modules/url";
+import { getMeeting, IMeetingResult } from "apollo/modules/meetings";
+import { RecordQuestionSummary } from "components/RecordQuestionSummary";
+import { getHumanisedDateFromISO } from "helpers/moment";
+import { PageWrapperHoC } from "components/PageWrapperHoC";
+import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
+import { useTranslation } from "react-i18next";
+import "./style.less";
 
 interface IProps extends IURLConnector {
   match: {
     params: {
-      id: string,
-    },
+      id: string;
+    };
   };
   location: {
     // can provide a ?next=relativeURL which the user will be taken to on cancel or successful save
-    search: string,
+    search: string;
   };
   data: IMeetingResult;
 }
 
-function getNextPageURL(p: IProps): string|undefined {
+function getNextPageURL(p: IProps): string | undefined {
   const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has('next') === false) {
+  if (urlParams.has("next") === false) {
     return undefined;
   }
-  return urlParams.get('next');
+  return urlParams.get("next");
 }
 
 const RecordViewInner = (p: IProps) => {
-
   const nextPage = () => {
     const nextPage = getNextPageURL(p);
     if (nextPage !== undefined) {
@@ -43,18 +42,18 @@ const RecordViewInner = (p: IProps) => {
       p.setURL(`/beneficiary/${record.beneficiary}`);
       return;
     }
-    p.setURL('/');
-  }
+    p.setURL("/");
+  };
 
   const noop = (): Promise<void> => {
     return Promise.resolve();
-  }
+  };
 
-  if(p.match.params.id === undefined) {
+  if (p.match.params.id === undefined) {
     return <div />;
   }
 
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const record = p.data.getMeeting;
   return (
     <div>
@@ -69,7 +68,9 @@ const RecordViewInner = (p: IProps) => {
         </div>
         <div>
           <h4 className="label inline">{t("Date Conducted")}</h4>
-          <span className="conductedDate">{getHumanisedDateFromISO(record.conducted)}</span>
+          <span className="conductedDate">
+            {getHumanisedDateFromISO(record.conducted)}
+          </span>
         </div>
       </div>
       <RecordQuestionSummary
@@ -77,16 +78,28 @@ const RecordViewInner = (p: IProps) => {
         onQuestionClick={noop}
       />
       <div>
-        <Button className="back" onClick={nextPage}>{t("Back")}</Button>
+        <Button className="back" onClick={nextPage}>
+          {t("Back")}
+        </Button>
       </div>
     </div>
   );
-}
+};
 
 // t("record")
-const RecordViewLoader = ApolloLoaderHoC("record", (p: IProps) => p.data, RecordViewInner);
-const RecordViewData = getMeeting<IProps>((props) => props.match.params.id)(RecordViewLoader);
+const RecordViewLoader = ApolloLoaderHoC(
+  "record",
+  (p: IProps) => p.data,
+  RecordViewInner
+);
+const RecordViewData = getMeeting<IProps>((props) => props.match.params.id)(
+  RecordViewLoader
+);
 // t("View Record")
-const RecordViewPage = PageWrapperHoC("View Record", "record-view", RecordViewData);
+const RecordViewPage = PageWrapperHoC(
+  "View Record",
+  "record-view",
+  RecordViewData
+);
 const RecordView = UrlHOC(RecordViewPage);
 export { RecordView };

@@ -1,6 +1,6 @@
-import {Action} from 'redux';
+import { Action } from "redux";
 
-export const SET_PREF = 'SET_PREF';
+export const SET_PREF = "SET_PREF";
 
 export interface IAction extends Action {
   type: string;

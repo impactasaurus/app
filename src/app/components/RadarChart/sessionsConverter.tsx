@@ -1,8 +1,8 @@
 // originated from github.com/ALDLife/outcome-graph
 
-import moment from 'moment';
-import {getHumanisedDateFromISO} from 'helpers/moment';
-import {OutcomeGraphData, IOutcomeGraphSeries} from './index';
+import moment from "moment";
+import { getHumanisedDateFromISO } from "helpers/moment";
+import { OutcomeGraphData, IOutcomeGraphSeries } from "./index";
 
 // module pattern
 export function SessionsConverter() {
@@ -25,20 +25,21 @@ export function SessionsConverter() {
   }
 
   function getConvertedSession(session: IOutcomeGraphSeries) {
-
     const outcomes = session.outcomes;
     // data set item for session
     const convertedSession: any = {};
 
-    convertedSession.label =  moment(session.timestamp).isValid() ?
-      getHumanisedDateFromISO(session.timestamp) :
-      session.timestamp;
+    convertedSession.label = moment(session.timestamp).isValid()
+      ? getHumanisedDateFromISO(session.timestamp)
+      : session.timestamp;
 
     // adding the values map to converted session for developer to view for possible debugging
     convertedSession.valuesMap = getValuesMapsFromOutcomes(outcomes);
 
     // extract data and notes arrays
-    const extractedDataAndNotes = getExtractedDataAndTooltipNotes(convertedSession.valuesMap);
+    const extractedDataAndNotes = getExtractedDataAndTooltipNotes(
+      convertedSession.valuesMap
+    );
     convertedSession.data = extractedDataAndNotes.data;
     convertedSession.notes = extractedDataAndNotes.notes;
 
@@ -94,11 +95,11 @@ export function SessionsConverter() {
   }
 
   function getExtractedDataValue(dataValue) {
-    return typeof dataValue === 'undefined' ? null : dataValue;
+    return typeof dataValue === "undefined" ? null : dataValue;
   }
 
   function getExtractedNoteValue(noteValue) {
-    return typeof noteValue === 'undefined' ? 'none' : noteValue;
+    return typeof noteValue === "undefined" ? "none" : noteValue;
   }
 
   function getLabels() {
@@ -106,7 +107,9 @@ export function SessionsConverter() {
   }
 
   return {
-    getChartJSConvertedData: function getChartJSConvertedData(sessions: OutcomeGraphData) {
+    getChartJSConvertedData: function getChartJSConvertedData(
+      sessions: OutcomeGraphData
+    ) {
       init();
       return {
         datasets: getConvertedSessions(sessions),

@@ -1,15 +1,15 @@
-import * as React from 'react';
-import {addLikertAnswer, IMeetingMutation} from 'apollo/modules/meetings';
-import {IQuestion, Question as QuestionType} from 'models/question';
-import {Notepad} from 'components/Notepad';
-import {IIntAnswer, Answer} from 'models/answer';
-import {IMeeting} from 'models/meeting';
-import { Loader } from 'semantic-ui-react';
-import {LikertDebounced} from '../LikertDebounced';
-import {isNullOrUndefined} from 'util';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import ReactGA from 'react-ga';
-import './style.less';
+import * as React from "react";
+import { addLikertAnswer, IMeetingMutation } from "apollo/modules/meetings";
+import { IQuestion, Question as QuestionType } from "models/question";
+import { Notepad } from "components/Notepad";
+import { IIntAnswer, Answer } from "models/answer";
+import { IMeeting } from "models/meeting";
+import { Loader } from "semantic-ui-react";
+import { LikertDebounced } from "../LikertDebounced";
+import { isNullOrUndefined } from "util";
+import { withTranslation, WithTranslation } from "react-i18next";
+import ReactGA from "react-ga";
+import "./style.less";
 
 interface IProps extends IMeetingMutation, Partial<WithTranslation> {
   record: IMeeting;
@@ -29,19 +29,20 @@ interface IState {
 }
 
 function hasAnswerChanged(prev: Answer, s: IState): boolean {
-  return prev === undefined || s.value !== prev.answer || s.notes !== prev.notes;
+  return (
+    prev === undefined || s.value !== prev.answer || s.notes !== prev.notes
+  );
 }
 
 function logGAEvent(action: string) {
   ReactGA.event({
-    category : 'assessment',
-    label : 'likert',
+    category: "assessment",
+    label: "likert",
     action,
   });
 }
 
 class QuestionInlineInner extends React.Component<IProps, IState> {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -61,12 +62,17 @@ class QuestionInlineInner extends React.Component<IProps, IState> {
   }
 
   public componentWillUpdate(nextProps: IProps) {
-    const justLoaded = this.props.record === undefined && nextProps.record !== undefined;
+    const justLoaded =
+      this.props.record === undefined && nextProps.record !== undefined;
     const diffQuestion = this.props.questionID !== nextProps.questionID;
     const newAnswer = this.getAnswer(nextProps);
     const currentAnswer = this.getAnswer();
     const answered = currentAnswer === undefined && newAnswer !== undefined;
-    const diffAnswer = newAnswer !== undefined && currentAnswer !== undefined && (newAnswer.notes !== currentAnswer.notes || newAnswer.answer !== currentAnswer.answer);
+    const diffAnswer =
+      newAnswer !== undefined &&
+      currentAnswer !== undefined &&
+      (newAnswer.notes !== currentAnswer.notes ||
+        newAnswer.answer !== currentAnswer.answer);
     if (justLoaded || diffQuestion || answered || diffAnswer) {
       this.loadQuestionIntoState(nextProps);
     }
@@ -74,12 +80,16 @@ class QuestionInlineInner extends React.Component<IProps, IState> {
 
   private getQuestion(p?: IProps): IQuestion {
     const props = p || this.props;
-    return props.record.outcomeSet.questions.find((q) => q.id === props.questionID);
+    return props.record.outcomeSet.questions.find(
+      (q) => q.id === props.questionID
+    );
   }
 
   private getAnswer(p?: IProps): Answer {
     const props = p || this.props;
-    return props.record.answers.find((answer) => answer.questionID === props.questionID) as Answer;
+    return props.record.answers.find(
+      (answer) => answer.questionID === props.questionID
+    ) as Answer;
   }
 
   private loadQuestionIntoState(p: IProps) {
@@ -129,13 +139,19 @@ class QuestionInlineInner extends React.Component<IProps, IState> {
       saving: true,
     });
     this.props.onSaving();
-    this.props.addLikertAnswer(this.props.record.id, this.props.questionID, s.value, s.notes)
+    this.props
+      .addLikertAnswer(
+        this.props.record.id,
+        this.props.questionID,
+        s.value,
+        s.notes
+      )
       .then(() => {
         this.setState({
           saving: false,
           saveError: undefined,
         });
-        logGAEvent('answered');
+        logGAEvent("answered");
         this.props.onSaved(undefined);
       })
       .catch((e: Error) => {
@@ -148,25 +164,42 @@ class QuestionInlineInner extends React.Component<IProps, IState> {
   }
 
   public render() {
-    const {record, t, index, disabled} = this.props;
+    const { record, t, index, disabled } = this.props;
     if (record === undefined) {
-      return (<div />);
+      return <div />;
     }
     const question = this.getQuestion();
     if (question === undefined) {
-      return (<div>{t("Unknown question")}</div>);
+      return <div>{t("Unknown question")}</div>;
     }
     const q = question as QuestionType;
-    let spinner = (<span />);
+    let spinner = <span />;
     if (this.state.saving) {
-      spinner = (<Loader active={true} inline={true} size="mini" />);
+      spinner = <Loader active={true} inline={true} size="mini" />;
     }
-    const numbering = index ? `${index}. ` : '';
+    const numbering = index ? `${index}. ` : "";
     return (
       <div className="question-inline">
-        <h3>{numbering}{q.question} {spinner}</h3>
-        <LikertDebounced key={'l-' + q.id} leftValue={q.leftValue} rightValue={q.rightValue} labels={q.labels} onChange={this.setAnswer} value={this.state.value} disabled={disabled} />
-        <Notepad key={'np-' + q.id} onChange={this.setNotes} notes={this.state.notes} onBlur={this.saveNotes} disabled={disabled} />
+        <h3>
+          {numbering}
+          {q.question} {spinner}
+        </h3>
+        <LikertDebounced
+          key={"l-" + q.id}
+          leftValue={q.leftValue}
+          rightValue={q.rightValue}
+          labels={q.labels}
+          onChange={this.setAnswer}
+          value={this.state.value}
+          disabled={disabled}
+        />
+        <Notepad
+          key={"np-" + q.id}
+          onChange={this.setNotes}
+          notes={this.state.notes}
+          onBlur={this.saveNotes}
+          disabled={disabled}
+        />
         <p>{this.state.saveError}</p>
       </div>
     );

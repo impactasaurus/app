@@ -1,6 +1,6 @@
-import * as React from 'react';
-import {Icon} from 'semantic-ui-react';
-import './tick.less';
+import * as React from "react";
+import { Icon } from "semantic-ui-react";
+import "./tick.less";
 
 interface IProps {
   complete: boolean;
@@ -9,16 +9,16 @@ interface IProps {
 }
 
 export const Tick = (p: IProps) => {
-  const wrapper = (inner: JSX.Element): JSX.Element => <div className="tick-wrapper">{inner} </div>;
+  const wrapper = (inner: JSX.Element): JSX.Element => (
+    <div className="tick-wrapper">{inner} </div>
+  );
   if (!p.complete) {
-    return wrapper((
+    return wrapper(
       <Icon.Group>
         <Icon name="circle" />
         <strong className="icon text">{`${p.index}`}</strong>
       </Icon.Group>
-    ));
+    );
   }
-  return wrapper((
-    <Icon name="check circle" className="complete" />
-  ));
+  return wrapper(<Icon name="check circle" className="complete" />);
 };

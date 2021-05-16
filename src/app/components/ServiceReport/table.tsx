@@ -1,9 +1,12 @@
-import * as React from 'react';
-import {IAnswerAggregation, IAnswerAggregationReport} from 'models/report';
-import {IOutcomeSet} from 'models/outcomeSet';
-import {ImpactTable, IRow} from 'components/ImpactTable';
-import {useTranslation} from 'react-i18next';
-import {getCategoryFriendlyName, getQuestionFriendlyName} from 'helpers/questionnaire';
+import * as React from "react";
+import { IAnswerAggregation, IAnswerAggregationReport } from "models/report";
+import { IOutcomeSet } from "models/outcomeSet";
+import { ImpactTable, IRow } from "components/ImpactTable";
+import { useTranslation } from "react-i18next";
+import {
+  getCategoryFriendlyName,
+  getQuestionFriendlyName,
+} from "helpers/questionnaire";
 
 interface IProp {
   serviceReport: IAnswerAggregationReport;
@@ -11,7 +14,10 @@ interface IProp {
   category?: boolean;
 }
 
-function getRowData(aa: IAnswerAggregation[], labeller: (IAnswerAggregation) => string): IRow[] {
+function getRowData(
+  aa: IAnswerAggregation[],
+  labeller: (IAnswerAggregation) => string
+): IRow[] {
   return aa.map((a): IRow => {
     return {
       name: labeller(a),
@@ -38,22 +44,18 @@ function getQuestionRows(p: IProp): IRow[] {
 function renderTable(t: (text: string) => string, p: IProp): JSX.Element {
   const rows = p.category ? getCategoryRows(p) : getQuestionRows(p);
   if (rows.length === 0) {
-    return (<div/>);
+    return <div />;
   }
   rows.sort((a, b) => a.name.localeCompare(b.name));
   return (
     <ImpactTable
       data={rows}
-      nameColName={p.category ? t('Category') : t('Question')}
+      nameColName={p.category ? t("Category") : t("Question")}
     />
   );
 }
 
 export const ServiceReportTable = (p: IProp): JSX.Element => {
-  const {t} = useTranslation();
-  return (
-    <div className="service-report-table">
-      {renderTable(t, p)}
-    </div>
-  );
-}
+  const { t } = useTranslation();
+  return <div className="service-report-table">{renderTable(t, p)}</div>;
+};

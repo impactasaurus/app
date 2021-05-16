@@ -1,27 +1,39 @@
-import * as React from 'react';
-import { Helmet } from 'react-helmet';
-import {IMeetingMutation, newMeeting, newRemoteMeeting} from 'apollo/modules/meetings';
-import {IURLConnector, UrlHOC} from 'redux/modules/url';
-import { AssessmentType, IAssessmentConfig, defaultRemoteMeetingLimit } from 'models/assessment';
-import { Grid, Message, Button } from 'semantic-ui-react';
-import {AssessmentConfig as AssessmentConfigComponent} from 'components/AssessmentConfig';
-import {QuestionnaireRequired} from 'components/QuestionnaireRequired';
-import {SummonConfig} from './summonConfig';
-import {generateSummon, IGenerateSummon} from '../../apollo/modules/summon';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import ReactGA from 'react-ga';
-import * as config from '../../../../config/main';
+import * as React from "react";
+import { Helmet } from "react-helmet";
+import {
+  IMeetingMutation,
+  newMeeting,
+  newRemoteMeeting,
+} from "apollo/modules/meetings";
+import { IURLConnector, UrlHOC } from "redux/modules/url";
+import {
+  AssessmentType,
+  IAssessmentConfig,
+  defaultRemoteMeetingLimit,
+} from "models/assessment";
+import { Grid, Message, Button } from "semantic-ui-react";
+import { AssessmentConfig as AssessmentConfigComponent } from "components/AssessmentConfig";
+import { QuestionnaireRequired } from "components/QuestionnaireRequired";
+import { SummonConfig } from "./summonConfig";
+import { generateSummon, IGenerateSummon } from "../../apollo/modules/summon";
+import { WithTranslation, withTranslation } from "react-i18next";
+import ReactGA from "react-ga";
+import * as config from "../../../../config/main";
 
 const ConfigComponent = QuestionnaireRequired(AssessmentConfigComponent);
 
-interface IProp extends IMeetingMutation, IURLConnector, IGenerateSummon, WithTranslation {
+interface IProp
+  extends IMeetingMutation,
+    IURLConnector,
+    IGenerateSummon,
+    WithTranslation {
   match: {
     params: {
-      type: string,
-    },
+      type: string;
+    };
   };
   location: {
-    search: string,
+    search: string;
   };
 }
 
@@ -30,13 +42,12 @@ interface IState {
   typ: AssessmentType;
 }
 
-function getBen(p: IProp): string|undefined {
+function getBen(p: IProp): string | undefined {
   const urlParams = new URLSearchParams(p.location.search);
-  return urlParams.has('ben') ? urlParams.get('ben') : undefined;
+  return urlParams.has("ben") ? urlParams.get("ben") : undefined;
 }
 
 class AssessmentConfigInner extends React.Component<IProp, IState> {
-
   constructor(props: IProp) {
     super(props);
     this.state = {
@@ -62,27 +73,27 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
 
   private recordMeetingStarted() {
     ReactGA.event({
-      category: 'assessment',
-      action: 'started',
+      category: "assessment",
+      action: "started",
       label: AssessmentType[this.getType()],
     });
   }
 
   private startMeeting(config: IAssessmentConfig): Promise<void> {
     if (this.getType() === AssessmentType.remote) {
-      return this.props.newRemoteMeeting(config, defaultRemoteMeetingLimit)
-      .then((jti) => {
-        this.recordMeetingStarted();
-        this.setState({
-          link: `jti/${jti}`,
+      return this.props
+        .newRemoteMeeting(config, defaultRemoteMeetingLimit)
+        .then((jti) => {
+          this.recordMeetingStarted();
+          this.setState({
+            link: `jti/${jti}`,
+          });
         });
-      });
     } else {
       if (this.shouldGetDate() === false) {
         config.date = new Date();
       }
-      return this.props.newMeeting(config)
-      .then((meeting) => {
+      return this.props.newMeeting(config).then((meeting) => {
         this.recordMeetingStarted();
         if (this.getType() === AssessmentType.historic) {
           this.props.setURL(`/dataentry/${meeting.id}`);
@@ -94,13 +105,12 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
   }
 
   private generateSummon(qsID: string): Promise<void> {
-    return this.props.generateSummon(qsID)
-      .then((smn) => {
-        this.recordMeetingStarted();
-        this.setState({
-          link: `smn/${smn}`,
-        });
+    return this.props.generateSummon(qsID).then((smn) => {
+      this.recordMeetingStarted();
+      this.setState({
+        link: `smn/${smn}`,
       });
+    });
   }
 
   private shouldGetDate() {
@@ -112,18 +122,21 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
   }
 
   private renderLink(): JSX.Element {
-    const {t} = this.props;
+    const { t } = this.props;
     const url = `${config.app.root}/${this.state.link}`;
     return (
       <Message success={true}>
         <Message.Header>{t("Success")}</Message.Header>
-        <div>{t(
-          "Please provide the following link to your {noBeneficiaries, plural, one {beneficiary} other {beneficiaries}}. They have {noDays, plural, one {# day} other {# days}} to complete the questionnaire",
-          {
-            noBeneficiaries: this.getType() === AssessmentType.summon ? 100 : 1,
-            noDays: defaultRemoteMeetingLimit,
-          }
-        )}</div>
+        <div>
+          {t(
+            "Please provide the following link to your {noBeneficiaries, plural, one {beneficiary} other {beneficiaries}}. They have {noDays, plural, one {# day} other {# days}} to complete the questionnaire",
+            {
+              noBeneficiaries:
+                this.getType() === AssessmentType.summon ? 100 : 1,
+              noDays: defaultRemoteMeetingLimit,
+            }
+          )}
+        </div>
         <a href={url}>{url}</a>
       </Message>
     );
@@ -138,7 +151,7 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
   }
 
   private renderInner(): JSX.Element {
-    const {t} = this.props;
+    const { t } = this.props;
     if (this.isUnknownType()) {
       return (
         <Message error={true}>
@@ -150,25 +163,49 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
     if (this.state.link !== undefined) {
       return this.renderLink();
     }
-    const showRemoteTypeSelector = (this.getType() === AssessmentType.remote || this.getType() === AssessmentType.summon) && getBen(this.props) === undefined;
+    const showRemoteTypeSelector =
+      (this.getType() === AssessmentType.remote ||
+        this.getType() === AssessmentType.summon) &&
+      getBen(this.props) === undefined;
     const showAssessmentConfig = this.getType() !== AssessmentType.summon;
     const showSummonConfig = this.getType() === AssessmentType.summon;
     const getButtonText = (): string => {
-      return this.getType() === AssessmentType.remote || this.getType() === AssessmentType.summon ? t('Generate Link') : t('Start');
+      return this.getType() === AssessmentType.remote ||
+        this.getType() === AssessmentType.summon
+        ? t("Generate Link")
+        : t("Start");
     };
     return (
       <div>
-        <div key="remote-type-select" style={{
-          display: showRemoteTypeSelector ? 'block' : 'none',
-          marginBottom: '2em',
-        }}>
+        <div
+          key="remote-type-select"
+          style={{
+            display: showRemoteTypeSelector ? "block" : "none",
+            marginBottom: "2em",
+          }}
+        >
           <Button.Group>
-            <Button key="remote" active={this.getType() === AssessmentType.remote} onClick={this.setType(AssessmentType.remote)}>{t("Single Beneficiary")}</Button>
+            <Button
+              key="remote"
+              active={this.getType() === AssessmentType.remote}
+              onClick={this.setType(AssessmentType.remote)}
+            >
+              {t("Single Beneficiary")}
+            </Button>
             <Button.Or key="or" text={t<string>("or")} />
-            <Button key="summon" active={this.getType() === AssessmentType.summon} onClick={this.setType(AssessmentType.summon)}>{t("Multiple Beneficiaries")}</Button>
+            <Button
+              key="summon"
+              active={this.getType() === AssessmentType.summon}
+              onClick={this.setType(AssessmentType.summon)}
+            >
+              {t("Multiple Beneficiaries")}
+            </Button>
           </Button.Group>
         </div>
-        <div key="assessment-config" style={{display: showAssessmentConfig ? 'block' : 'none'}}>
+        <div
+          key="assessment-config"
+          style={{ display: showAssessmentConfig ? "block" : "none" }}
+        >
           <ConfigComponent
             defaultBen={getBen(this.props)}
             showDatePicker={this.shouldGetDate()}
@@ -176,32 +213,43 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
             buttonText={getButtonText()}
           />
         </div>
-        <div key="summon-config" style={{display: showSummonConfig ? 'block' : 'none'}}>
+        <div
+          key="summon-config"
+          style={{ display: showSummonConfig ? "block" : "none" }}
+        >
           <Message info={true}>
             <p>
-              {t("Beneficiaries will be asked for their beneficiary ID before they answer the questionnaire. When sending the link, ensure that your beneficiaries know what ID they should be using.")}
+              {t(
+                "Beneficiaries will be asked for their beneficiary ID before they answer the questionnaire. When sending the link, ensure that your beneficiaries know what ID they should be using."
+              )}
             </p>
             <p>
-              {t("As beneficiary IDs are provided by the recipient of the link, there is potential for abuse. If your beneficiaries know each others IDs, they could answer the questionnaire pretending to be another beneficiary. In this case, you should use single beneficiary links instead.")}
+              {t(
+                "As beneficiary IDs are provided by the recipient of the link, there is potential for abuse. If your beneficiaries know each others IDs, they could answer the questionnaire pretending to be another beneficiary. In this case, you should use single beneficiary links instead."
+              )}
             </p>
           </Message>
-          <SummonConfig buttonText={getButtonText()} onSubmit={this.generateSummon} />
+          <SummonConfig
+            buttonText={getButtonText()}
+            onSubmit={this.generateSummon}
+          />
         </div>
       </div>
     );
   }
 
   public render() {
-    const {t} = this.props;
+    const { t } = this.props;
     const getTitle = (): string => {
-      return this.getType() === AssessmentType.summon || this.getType() === AssessmentType.remote ?
-        t('New Link') :
-        t('New Record');
-    }
+      return this.getType() === AssessmentType.summon ||
+        this.getType() === AssessmentType.remote
+        ? t("New Link")
+        : t("New Record");
+    };
     return (
       <Grid container={true} columns={1} id="assessment-config">
         <Grid.Column>
-          <Helmet title={getTitle()}/>
+          <Helmet title={getTitle()} />
           <h1>{getTitle()}</h1>
           {this.renderInner()}
         </Grid.Column>
@@ -212,5 +260,7 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
 
 const AssessmentConfigConnected = UrlHOC(AssessmentConfigInner);
 const AssessmentConfigTranslated = withTranslation()(AssessmentConfigConnected);
-const AssessmentConfig = newRemoteMeeting<IProp>(newMeeting<IProp>(generateSummon<IProp>(AssessmentConfigTranslated)));
+const AssessmentConfig = newRemoteMeeting<IProp>(
+  newMeeting<IProp>(generateSummon<IProp>(AssessmentConfigTranslated))
+);
 export { AssessmentConfig };

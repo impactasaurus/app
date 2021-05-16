@@ -1,11 +1,16 @@
-import React, {useState, useEffect} from 'react';
-import {saveAuth, isBeneficiaryUser, getBeneficiaryScope, getExpiryDateOfToken} from 'helpers/auth';
-import {IURLConnector, UrlHOC} from 'redux/modules/url';
-import {getJWT, IJWTResult} from 'apollo/modules/jwt';
-import { Message, Loader } from 'semantic-ui-react';
-import {Error} from 'components/Error';
-import ReactGA from 'react-ga';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect } from "react";
+import {
+  saveAuth,
+  isBeneficiaryUser,
+  getBeneficiaryScope,
+  getExpiryDateOfToken,
+} from "helpers/auth";
+import { IURLConnector, UrlHOC } from "redux/modules/url";
+import { getJWT, IJWTResult } from "apollo/modules/jwt";
+import { Message, Loader } from "semantic-ui-react";
+import { Error } from "components/Error";
+import ReactGA from "react-ga";
+import { useTranslation } from "react-i18next";
 
 interface IProps extends IURLConnector {
   jti: string;
@@ -14,17 +19,16 @@ interface IProps extends IURLConnector {
 
 const logSuccessfulBenLogin = () => {
   ReactGA.event({
-    category: 'beneficiary',
-    action: 'login',
-    label: 'jti',
+    category: "beneficiary",
+    action: "login",
+    label: "jti",
   });
 };
 
 const JTILoaderInner = (p: IProps) => {
-
   const [error, setError] = useState(false);
   const [expired, setExpired] = useState(false);
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   const performLoginProcess = () => {
     if (p.data.getJWT === undefined || p.data.getJWT === null) {
@@ -51,7 +55,7 @@ const JTILoaderInner = (p: IProps) => {
     }
     logSuccessfulBenLogin();
     p.setURL(`/meeting/${scope}`);
-  }
+  };
 
   useEffect(performLoginProcess, [p.data.getJWT]);
 
@@ -66,8 +70,10 @@ const JTILoaderInner = (p: IProps) => {
       </Message>
     );
   }
-  return <Error text={t("This link does not seem to be valid")}/>;
-}
+  return <Error text={t("This link does not seem to be valid")} />;
+};
 
 const JTILoaderConnected = UrlHOC(JTILoaderInner);
-export const JTILoader = getJWT<IProps>((props) => props.jti)(JTILoaderConnected);
+export const JTILoader = getJWT<IProps>((props) => props.jti)(
+  JTILoaderConnected
+);

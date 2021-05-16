@@ -1,14 +1,14 @@
-import * as React from 'react';
-import {addLikertAnswer, IMeetingMutation} from 'apollo/modules/meetings';
-import {IQuestion, Question as QuestionType} from 'models/question';
-import {Likert} from 'components/Likert';
-import {Notepad} from 'components/Notepad';
-import 'rc-slider/assets/index.css';
-import { Button, ButtonProps } from 'semantic-ui-react';
-import {IIntAnswer, Answer, IAnswer} from 'models/answer';
-import {IMeeting} from 'models/meeting';
-import ReactGA from 'react-ga';
-import { WithTranslation, withTranslation } from 'react-i18next';
+import * as React from "react";
+import { addLikertAnswer, IMeetingMutation } from "apollo/modules/meetings";
+import { IQuestion, Question as QuestionType } from "models/question";
+import { Likert } from "components/Likert";
+import { Notepad } from "components/Notepad";
+import "rc-slider/assets/index.css";
+import { Button, ButtonProps } from "semantic-ui-react";
+import { IIntAnswer, Answer, IAnswer } from "models/answer";
+import { IMeeting } from "models/meeting";
+import ReactGA from "react-ga";
+import { WithTranslation, withTranslation } from "react-i18next";
 
 interface IProps extends IMeetingMutation, Partial<WithTranslation> {
   record: IMeeting;
@@ -27,19 +27,20 @@ interface IState {
 }
 
 function hasAnswerChanged(prev: Answer, s: IState): boolean {
-  return prev === undefined || s.value !== prev.answer || s.notes !== prev.notes;
+  return (
+    prev === undefined || s.value !== prev.answer || s.notes !== prev.notes
+  );
 }
 
 function logGAEvent(action: string) {
   ReactGA.event({
-    category : 'assessment',
-    label : 'likert',
+    category: "assessment",
+    label: "likert",
     action,
   });
 }
 
 class QuestionInner extends React.Component<IProps, IState> {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -60,19 +61,26 @@ class QuestionInner extends React.Component<IProps, IState> {
   }
 
   public componentDidUpdate(prevProps: IProps) {
-    if (prevProps.questionID !== this.props.questionID || prevProps.record === undefined && this.props.record !== undefined) {
+    if (
+      prevProps.questionID !== this.props.questionID ||
+      (prevProps.record === undefined && this.props.record !== undefined)
+    ) {
       this.loadQuestionIntoState(this.props);
     }
   }
 
   private getQuestion(p?: IProps): IQuestion {
     const props = p || this.props;
-    return props.record.outcomeSet.questions.find((q) => q.id === props.questionID);
+    return props.record.outcomeSet.questions.find(
+      (q) => q.id === props.questionID
+    );
   }
 
   private getAnswer(p?: IProps): IAnswer {
     const props = p || this.props;
-    return props.record.answers.find((answer) => answer.questionID === props.questionID);
+    return props.record.answers.find(
+      (answer) => answer.questionID === props.questionID
+    );
   }
 
   private loadQuestionIntoState(p: IProps) {
@@ -118,31 +126,37 @@ class QuestionInner extends React.Component<IProps, IState> {
     this.setState({
       saving: true,
     });
-    this.props.addLikertAnswer(this.props.record.id, this.props.questionID, this.state.value, this.state.notes)
+    this.props
+      .addLikertAnswer(
+        this.props.record.id,
+        this.props.questionID,
+        this.state.value,
+        this.state.notes
+      )
       .then(() => {
         this.setState({
           saving: false,
           saveError: undefined,
         });
-        logGAEvent('answered');
+        logGAEvent("answered");
         this.props.onNext();
       })
       .catch(() => {
         this.setState({
           saving: false,
-          saveError: 'Failed to save your answer',
+          saveError: "Failed to save your answer",
         });
       });
   }
 
   public render(): JSX.Element {
-    const {record, t} = this.props;
+    const { record, t } = this.props;
     if (record === undefined) {
-      return (<div />);
+      return <div />;
     }
     const question = this.getQuestion();
     if (question === undefined) {
-      return (<div>{t("Unknown question")}</div>);
+      return <div>{t("Unknown question")}</div>;
     }
     const q = question as QuestionType;
     const nextProps: ButtonProps = {};
@@ -157,10 +171,25 @@ class QuestionInner extends React.Component<IProps, IState> {
       <div>
         <h1 className="close">{q.question}</h1>
         <h3>{q.description}</h3>
-        <Likert key={'l-' + q.id} leftValue={q.leftValue} rightValue={q.rightValue} labels={q.labels} onChange={this.setAnswer} value={this.state.value} />
-        <Notepad key={'np-' + q.id} onChange={this.setNotes} notes={this.state.notes} />
-        {(this.props.showPrevious !== false) && <Button onClick={this.goToPreviousQuestion}>{t("Back")}</Button>}
-        <Button {...nextProps} onClick={this.next}>{t("Next")}</Button>
+        <Likert
+          key={"l-" + q.id}
+          leftValue={q.leftValue}
+          rightValue={q.rightValue}
+          labels={q.labels}
+          onChange={this.setAnswer}
+          value={this.state.value}
+        />
+        <Notepad
+          key={"np-" + q.id}
+          onChange={this.setNotes}
+          notes={this.state.notes}
+        />
+        {this.props.showPrevious !== false && (
+          <Button onClick={this.goToPreviousQuestion}>{t("Back")}</Button>
+        )}
+        <Button {...nextProps} onClick={this.next}>
+          {t("Next")}
+        </Button>
         <p>{this.state.saveError}</p>
       </div>
     );

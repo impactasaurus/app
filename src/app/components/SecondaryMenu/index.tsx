@@ -1,6 +1,6 @@
-import * as React from 'react';
-import {Menu} from 'semantic-ui-react';
-import './style.less';
+import * as React from "react";
+import { Menu } from "semantic-ui-react";
+import "./style.less";
 
 interface IProps {
   signpost?: string;
@@ -8,7 +8,6 @@ interface IProps {
 
 // Secondary Menu is a wrapper around Semantic UI's menu
 export class SecondaryMenu extends React.Component<IProps, any> {
-
   constructor(props) {
     super(props);
   }
@@ -18,11 +17,7 @@ export class SecondaryMenu extends React.Component<IProps, any> {
       pointing: true,
       secondary: true,
     };
-    return (
-      <Menu {...p}>
-        {this.props.children}
-      </Menu>
-    );
+    return <Menu {...p}>{this.props.children}</Menu>;
   }
 
   private renderSignpostSecondary() {
@@ -33,9 +28,7 @@ export class SecondaryMenu extends React.Component<IProps, any> {
     return (
       <div className="signpost">
         <h1 className="close">{this.props.signpost}</h1>
-        <Menu {...p}>
-          {this.props.children}
-        </Menu>
+        <Menu {...p}>{this.props.children}</Menu>
       </div>
     );
   }

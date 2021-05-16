@@ -1,14 +1,14 @@
-import React, {useState, useEffect} from 'react';
-import {RecordChecklistItem} from './record-item';
-import {QuestionnaireChecklistItem} from './questionnaire-item';
-import {Segment, Divider, Icon} from 'semantic-ui-react';
-import './style.less';
-import {ReportChecklistItem} from 'components/OnboardingChecklist/report-item';
-import RocketIcon from './../../theme/rocket.inline.svg';
-import { useTranslation, Trans } from 'react-i18next';
+import React, { useState, useEffect } from "react";
+import { RecordChecklistItem } from "./record-item";
+import { QuestionnaireChecklistItem } from "./questionnaire-item";
+import { Segment, Divider, Icon } from "semantic-ui-react";
+import "./style.less";
+import { ReportChecklistItem } from "components/OnboardingChecklist/report-item";
+import RocketIcon from "./../../theme/rocket.inline.svg";
+import { useTranslation, Trans } from "react-i18next";
 
-const localStorageKey = 'onboarded';
-const localStorageValue = 'v1';
+const localStorageKey = "onboarded";
+const localStorageValue = "v1";
 
 interface IProps {
   dismissible?: boolean; // defaults to true
@@ -18,17 +18,19 @@ interface IProps {
 }
 
 const isDismissed = () => localStorage.getItem(localStorageKey) !== null;
-const setDismissed = () => localStorage.setItem(localStorageKey, localStorageValue);
+const setDismissed = () =>
+  localStorage.setItem(localStorageKey, localStorageValue);
 
 const canBeDismissed = (p: IProps) => p.dismissible !== false;
 
 export const OnboardingChecklist = (p: IProps): JSX.Element => {
-
-  const [dismissed, setDismissedState] = useState<boolean>(canBeDismissed(p) && isDismissed());
-  const {t} = useTranslation();
+  const [dismissed, setDismissedState] = useState<boolean>(
+    canBeDismissed(p) && isDismissed()
+  );
+  const { t } = useTranslation();
 
   useEffect(() => {
-    if(p.forceDismiss === true && isDismissed() === false) {
+    if (p.forceDismiss === true && isDismissed() === false) {
       setDismissed();
     }
     const nextDismissed = canBeDismissed(p) && isDismissed();
@@ -40,24 +42,26 @@ export const OnboardingChecklist = (p: IProps): JSX.Element => {
   const onClose = () => {
     setDismissed();
     setDismissedState(canBeDismissed(p));
-  }
+  };
 
   if (dismissed) {
-    return (<div />);
+    return <div />;
   }
   let header = (
     <>
-    <h1>{t("Welcome!")}</h1>
-    <p>
-      <Trans
-        defaults="We have prepared <b>three simple steps to get you started</b>"
-        components={{
-          b: <b />
-        }}
-      /> <RocketIcon style={{marginLeft:'.3rem'}}/></p>
+      <h1>{t("Welcome!")}</h1>
+      <p>
+        <Trans
+          defaults="We have prepared <b>three simple steps to get you started</b>"
+          components={{
+            b: <b />,
+          }}
+        />{" "}
+        <RocketIcon style={{ marginLeft: ".3rem" }} />
+      </p>
     </>
   );
-  if(p.customHeader !== undefined) {
+  if (p.customHeader !== undefined) {
     header = p.customHeader;
   }
   return (
@@ -70,4 +74,4 @@ export const OnboardingChecklist = (p: IProps): JSX.Element => {
       <ReportChecklistItem index={3} minimal={p.minimal} />
     </Segment>
   );
-}
+};

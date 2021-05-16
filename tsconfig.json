@@ -2,10 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "*": [
-        "src/app/*",
-        "src/app/redux/*"
-      ]
+      "*": ["src/app/*", "src/app/redux/*"]
     },
     "lib": [
       "es5",
@@ -38,15 +35,8 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true
   },
-  "includes": [
-    "./src/externals.d.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "build",
-    "typings/main",
-    "typings/main.d.ts"
-  ],
+  "includes": ["./src/externals.d.ts"],
+  "exclude": ["node_modules", "build", "typings/main", "typings/main.d.ts"],
   "awesomeTypescriptLoaderOptions": {
     "useCache": true,
     "useBabel": true

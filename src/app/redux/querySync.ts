@@ -1,6 +1,6 @@
-import {IStore} from './IStore';
-import {Action, Store} from 'redux';
-import {replaceSearchAction} from 'redux/modules/url';
+import { IStore } from "./IStore";
+import { Action, Store } from "redux";
+import { replaceSearchAction } from "redux/modules/url";
 
 export interface IParam {
   selector: (store: IStore) => any;
@@ -15,7 +15,6 @@ export interface IParams {
 }
 
 export function ReduxQuerySync(store: Store<IStore>, params: IParams) {
-
   function getQueryValues(location) {
     const locationParams = new URLSearchParams(location.search);
     const queryValues = {};
@@ -60,7 +59,11 @@ export function ReduxQuerySync(store: Store<IStore>, params: IParams) {
     const locationParams = new URLSearchParams(location.search);
 
     Object.keys(params).forEach((param) => {
-      const { selector, valueToString = (v) => `${v}`, setSearchParam = () => true } = params[param];
+      const {
+        selector,
+        valueToString = (v) => `${v}`,
+        setSearchParam = () => true,
+      } = params[param];
       if (setSearchParam(state) === false) {
         return;
       }
@@ -69,7 +72,7 @@ export function ReduxQuerySync(store: Store<IStore>, params: IParams) {
     });
 
     const newLocationSearchString = `?${locationParams}`;
-    const oldLocationSearchString = location.search || '?';
+    const oldLocationSearchString = location.search || "?";
 
     if (newLocationSearchString !== oldLocationSearchString) {
       store.dispatch(replaceSearchAction(newLocationSearchString));
