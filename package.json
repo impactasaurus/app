@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "The impactasaurus web app",
   "scripts": {
+    "prepare": "husky install",
     "clean": "rimraf build",
     "prebuild": "npm run clean",
     "build": "webpack --config config/webpack/index.js",
@@ -15,7 +16,8 @@
     "i18n-extract": "i18next 'src/**/*.tsx' -c 'src/i18n/parser.config.js'",
     "i18n-push": "crowdin push --config src/i18n/crowdin.yml",
     "i18n-pull": "crowdin pull --config src/i18n/crowdin.yml",
-    "posti18n-pull": "node ./src/i18n/generate.js"
+    "posti18n-pull": "node ./src/i18n/generate.js",
+    "format": "npx prettier --write ."
   },
   "author": "Impactasaurus <admin@impactasaurus.org>",
   "homepage": "https://impactasaurus.org",
@@ -82,6 +84,7 @@
     "fetch-mock": "6.5.2",
     "file-loader": "1.1.11",
     "html-webpack-plugin": "3.2.0",
+    "husky": "^6.0.0",
     "i18next-parser": "^3.6.0",
     "isomorphic-style-loader": "4.0.0",
     "istanbul-instrumenter-loader": "3.0.1",
@@ -96,12 +99,14 @@
     "karma-webpack": "3.0.0",
     "less": "2.7.3",
     "less-loader": "4.1.0",
+    "lint-staged": "^11.0.0",
     "mocha": "5.2.0",
     "node-sass": "4.13.1",
     "phantomjs-prebuilt": "2.1.16",
     "postcss": "8.2.10",
     "postcss-loader": "4.2.0",
     "postcss-preset-env": "6.7.0",
+    "prettier": "2.3.0",
     "react-addons-test-utils": "15.6.2",
     "redux-mock-store": "1.5.3",
     "rimraf": "2.6.2",
@@ -168,5 +173,9 @@
     "redux-thunk": "2.3.0",
     "semantic-ui-react": "0.82.1",
     "url-search-params-polyfill": "4.0.1"
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": "eslint --cache --fix",
+    "*": "prettier --write"
   }
 }

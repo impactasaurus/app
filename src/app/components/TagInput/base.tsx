@@ -1,10 +1,10 @@
-import React from 'react';
-import {Search, Icon} from 'semantic-ui-react';
-import {ITagResult, getTags} from 'apollo/modules/tags';
-import TagsInput from 'react-tagsinput';
-import {Tag} from '../Tag';
-import { useTranslation } from 'react-i18next';
-import './base.less';
+import React from "react";
+import { Search, Icon } from "semantic-ui-react";
+import { ITagResult, getTags } from "apollo/modules/tags";
+import TagsInput from "react-tagsinput";
+import { Tag } from "../Tag";
+import { useTranslation } from "react-i18next";
+import "./base.less";
 
 interface IProps {
   onChange: (tags: string[]) => void;
@@ -14,14 +14,18 @@ interface IProps {
   id?: string;
 }
 
-function getMatchingTags(systemTags: string[], selectedTags: string[], q: string) {
+function getMatchingTags(
+  systemTags: string[],
+  selectedTags: string[],
+  q: string
+) {
   return systemTags
     .filter((t) => selectedTags.indexOf(t) === -1) // don't show tags that have already been selected
     .filter((t) => t.toLowerCase().includes(q.toLowerCase()));
 }
 
 const renderTag = (props) => {
-  const {tag, key, disabled, onRemove, getTagDisplayValue} = props;
+  const { tag, key, disabled, onRemove, getTagDisplayValue } = props;
   const onRemoveLocal = () => {
     if (disabled) {
       return;
@@ -42,24 +46,19 @@ const renderTag = (props) => {
 const renderLayout = (tagComponents, inputComponent) => {
   return (
     <div className="tag-input-container">
-      <div className="tag-container">
-        {tagComponents}
-      </div>
-      <div className="input-container">
-        {inputComponent}
-      </div>
+      <div className="tag-container">{tagComponents}</div>
+      <div className="input-container">{inputComponent}</div>
     </div>
   );
 };
 
 const TagInputInner = (p: IProps) => {
-
-  const {t} = useTranslation();
-  const newTagTitle = t('Create a new tag');
-  const newTagDesc = t('Click here or the plus icon');
+  const { t } = useTranslation();
+  const newTagTitle = t("Create a new tag");
+  const newTagDesc = t("Click here or the plus icon");
 
   const renderInput = (inputProps) => {
-    const {onChange, value, addTag, ...other} = inputProps;
+    const { onChange, value, addTag, ...other } = inputProps;
     const addTagWithVal = () => addTag(value);
     const handleResultSelect = (_, { result }) => {
       if (result.title === newTagTitle) {
@@ -67,15 +66,18 @@ const TagInputInner = (p: IProps) => {
       }
       addTag(result.title);
     };
-    const results: {title: string, description?: string}[] = getMatchingTags(p.data.getTags || [], p.tags, value)
-      .map((t) => ({title: t}));
+    const results: { title: string; description?: string }[] = getMatchingTags(
+      p.data.getTags || [],
+      p.tags,
+      value
+    ).map((t) => ({ title: t }));
     let icon: JSX.Element;
     if (p.allowNewTags !== false) {
       results.push({
         title: newTagTitle,
         description: newTagDesc,
       });
-      icon = (<Icon name="add" link={true} onClick={addTagWithVal} />);
+      icon = <Icon name="add" link={true} onClick={addTagWithVal} />;
     }
 
     return (
@@ -88,11 +90,11 @@ const TagInputInner = (p: IProps) => {
         fluid={true}
         value={value}
         icon={icon}
-        noResultsMessage={t('No matching tags found')}
+        noResultsMessage={t("No matching tags found")}
         {...other}
       />
     );
-  }
+  };
 
   const addOnBlur = false;
   const addKeys = [];

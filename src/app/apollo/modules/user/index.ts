@@ -1,15 +1,17 @@
-import {gql, graphql, QueryProps} from 'react-apollo';
-import {mutationResultExtractor} from 'helpers/apollo';
-import {ISelf, selfFragment} from 'models/user';
+import { gql, graphql, QueryProps } from "react-apollo";
+import { mutationResultExtractor } from "helpers/apollo";
+import { ISelf, selfFragment } from "models/user";
 
 const getSelfGQL = gql`
-query {
-  getSelf: self {
-    ...defaultSelf
+  query {
+    getSelf: self {
+      ...defaultSelf
+    }
   }
-} ${selfFragment}`;
+  ${selfFragment}
+`;
 
-export const getSelf = <T>(component, name: string = undefined)  => {
+export const getSelf = <T>(component, name: string = undefined) => {
   return graphql<any, T>(getSelfGQL, {
     options: () => {
       return {
@@ -25,46 +27,71 @@ export interface IGetSelf extends QueryProps {
 }
 
 export function updateSelf<T>(component) {
-  return graphql<any, T>(gql`
-  mutation ($unsubscribed: Boolean, $name: String, $language: String) {
-    updateSelf: UpdateSelf(unsubscribed:$unsubscribed, name: $name, language: $language) {
-        ...defaultSelf
+  return graphql<any, T>(
+    gql`
+      mutation ($unsubscribed: Boolean, $name: String, $language: String) {
+        updateSelf: UpdateSelf(
+          unsubscribed: $unsubscribed
+          name: $name
+          language: $language
+        ) {
+          ...defaultSelf
+        }
+      }
+      ${selfFragment}
+    `,
+    {
+      options: {
+        refetchQueries: [
+          {
+            query: getSelfGQL,
+          },
+        ],
+      },
+      props: ({ mutate }) => ({
+        updateSelf: (
+          name: string,
+          unsubscribed: boolean,
+          language: string
+        ): Promise<ISelf> =>
+          mutate({
+            variables: {
+              unsubscribed,
+              name,
+              language,
+            },
+          }).then(mutationResultExtractor<ISelf>("updateSelf")),
+      }),
     }
-  } ${selfFragment}`, {
-    options: {
-      refetchQueries: [{
-        query: getSelfGQL,
-      }],
-    },
-    props: ({ mutate }) => ({
-      updateSelf: (name: string, unsubscribed: boolean, language: string): Promise<ISelf> => mutate({
-        variables: {
-          unsubscribed,
-          name,
-          language
-        },
-      }).then(mutationResultExtractor<ISelf>('updateSelf')),
-    }),
-  })(component);
+  )(component);
 }
 
 export interface IUpdateSelf {
-  updateSelf?(name: string, unsubscribed: boolean, language: string): Promise<ISelf>;
+  updateSelf?(
+    name: string,
+    unsubscribed: boolean,
+    language: string
+  ): Promise<ISelf>;
 }
 
 export function unsubscribe<T>(component) {
-  return graphql<any, T>(gql`
-  mutation ($userID: String!) {
-    unsubscribe: Unsubscribe(userID:$userID)
-  }`, {
-    props: ({ mutate }) => ({
-      unsubscribe: (userID: string): Promise<any> => mutate({
-        variables: {
-          userID,
-        },
+  return graphql<any, T>(
+    gql`
+      mutation ($userID: String!) {
+        unsubscribe: Unsubscribe(userID: $userID)
+      }
+    `,
+    {
+      props: ({ mutate }) => ({
+        unsubscribe: (userID: string): Promise<any> =>
+          mutate({
+            variables: {
+              userID,
+            },
+          }),
       }),
-    }),
-  })(component);
+    }
+  )(component);
 }
 
 export interface IUnsubscribe {
@@ -72,24 +99,29 @@ export interface IUnsubscribe {
 }
 
 export function updateUser<T>(component) {
-  return graphql<any, T>(gql`
-  mutation ($id: String!, $active: Boolean) {
-    updateUser: UpdateUser(id: $id, active:$active) {
-      id
-      name
-      joined
-      active
-    }
-  }`, {
-    props: ({ mutate }) => ({
-      updateUser: (id: string, active?: boolean): Promise<any> => mutate({
-        variables: {
-          id,
-          active,
-        },
+  return graphql<any, T>(
+    gql`
+      mutation ($id: String!, $active: Boolean) {
+        updateUser: UpdateUser(id: $id, active: $active) {
+          id
+          name
+          joined
+          active
+        }
+      }
+    `,
+    {
+      props: ({ mutate }) => ({
+        updateUser: (id: string, active?: boolean): Promise<any> =>
+          mutate({
+            variables: {
+              id,
+              active,
+            },
+          }),
       }),
-    }),
-  })(component);
+    }
+  )(component);
 }
 
 export interface IUpdateUser {
@@ -97,14 +129,19 @@ export interface IUpdateUser {
 }
 
 export function recordUsage<T>(component) {
-  return graphql<any, T>(gql`
-  mutation {
-    recordUsage: RecordUsage
-  }`, {
-    props: ({ mutate }) => ({
-      recordUsage: (): Promise<boolean> => mutate({}).then(mutationResultExtractor<boolean>('recordUsage')),
-    }),
-  })(component);
+  return graphql<any, T>(
+    gql`
+      mutation {
+        recordUsage: RecordUsage
+      }
+    `,
+    {
+      props: ({ mutate }) => ({
+        recordUsage: (): Promise<boolean> =>
+          mutate({}).then(mutationResultExtractor<boolean>("recordUsage")),
+      }),
+    }
+  )(component);
 }
 
 export interface IRecordUsage {

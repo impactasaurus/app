@@ -1,8 +1,8 @@
-import {Action} from 'redux';
+import { Action } from "redux";
 
-export const SET_USER_DETAILS = 'SET_USER_DETAILS';
-export const SET_LOGIN_STATUS = 'SET_LOGIN_STATUS';
-export const REQUEST_LOGOUT = 'REQUEST_LOGOUT';
+export const SET_USER_DETAILS = "SET_USER_DETAILS";
+export const SET_LOGIN_STATUS = "SET_LOGIN_STATUS";
+export const REQUEST_LOGOUT = "REQUEST_LOGOUT";
 
 export interface IAction extends Action {
   type: string;
@@ -51,8 +51,14 @@ export function reducer(state: IState = initialState, action: IAction) {
   }
 }
 
-export type SetUserDetailsFunc = (userID: string, beneficiaryUser: boolean) => void;
-export function setUserDetails(userID: string, beneficiaryUser: boolean): IAction {
+export type SetUserDetailsFunc = (
+  userID: string,
+  beneficiaryUser: boolean
+) => void;
+export function setUserDetails(
+  userID: string,
+  beneficiaryUser: boolean
+): IAction {
   return {
     type: SET_USER_DETAILS,
     payload: {
@@ -82,7 +88,7 @@ export function requestLogOut(redirect: string): IAction {
   };
 }
 
-export function getUserID(state: IState): string|undefined {
+export function getUserID(state: IState): string | undefined {
   return state.userID;
 }
 
@@ -90,10 +96,10 @@ export function isUserLoggedIn(state: IState): boolean {
   return state.loggedIn;
 }
 
-export function isBeneficiaryUser(state: IState): boolean|undefined {
+export function isBeneficiaryUser(state: IState): boolean | undefined {
   return state.beneficiaryUser;
 }
 
-export function isLogoutRequested(state: IState): string|undefined {
+export function isLogoutRequested(state: IState): string | undefined {
   return state.logOutRequest;
 }

@@ -1,16 +1,21 @@
-import React from 'react';
-import {getStatusReport, IStatusReport} from 'apollo/modules/reports';
-import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
-import {StatusReportRadar} from './radar';
-import {StatusReportTable} from './table';
-import {StatusReportDetails} from './details';
-import {VizControlPanel} from 'components/VizControlPanel';
-import {IStore} from 'redux/IStore';
-import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'models/pref';
-import {IURLConnector, UrlConnector} from 'redux/modules/url';
-import {IReportOptions, NoRecordsMessage} from 'containers/Report/helpers';
-import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
-import {connect} from 'react-redux';
+import React from "react";
+import { getStatusReport, IStatusReport } from "apollo/modules/reports";
+import { getOutcomeSet, IOutcomeResult } from "apollo/modules/outcomeSets";
+import { StatusReportRadar } from "./radar";
+import { StatusReportTable } from "./table";
+import { StatusReportDetails } from "./details";
+import { VizControlPanel } from "components/VizControlPanel";
+import { IStore } from "redux/IStore";
+import {
+  Aggregation,
+  Visualisation,
+  getAggregation,
+  getVisualisation,
+} from "models/pref";
+import { IURLConnector, UrlConnector } from "redux/modules/url";
+import { IReportOptions, NoRecordsMessage } from "containers/Report/helpers";
+import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
+import { connect } from "react-redux";
 
 const allowedVisualisations = [Visualisation.RADAR, Visualisation.TABLE];
 
@@ -31,24 +36,37 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
 };
 
 const StatusReportInner = (p: IProp) => {
-
   const renderVis = (): JSX.Element => {
     if (p.vis === Visualisation.RADAR) {
       return (
-        <StatusReportRadar statusReport={p.statusReport.getStatusReport} questionSet={p.data.getOutcomeSet} category={p.agg === Aggregation.CATEGORY} />
+        <StatusReportRadar
+          statusReport={p.statusReport.getStatusReport}
+          questionSet={p.data.getOutcomeSet}
+          category={p.agg === Aggregation.CATEGORY}
+        />
       );
     }
     return (
-      <StatusReportTable report={p.statusReport.getStatusReport} questionSet={p.data.getOutcomeSet} category={p.agg === Aggregation.CATEGORY} />
+      <StatusReportTable
+        report={p.statusReport.getStatusReport}
+        questionSet={p.data.getOutcomeSet}
+        category={p.agg === Aggregation.CATEGORY}
+      />
     );
   };
 
-  if (p.statusReport.getStatusReport && p.statusReport.getStatusReport.beneficiaries.length === 0) {
+  if (
+    p.statusReport.getStatusReport &&
+    p.statusReport.getStatusReport.beneficiaries.length === 0
+  ) {
     return <NoRecordsMessage />;
   }
   return (
     <div>
-      <StatusReportDetails statusReport={p.statusReport.getStatusReport} questionSet={p.data.getOutcomeSet} />
+      <StatusReportDetails
+        statusReport={p.statusReport.getStatusReport}
+        questionSet={p.data.getOutcomeSet}
+      />
       <VizControlPanel
         canCategoryAg={p.isCategoryAgPossible}
         visualisations={allowedVisualisations}
@@ -57,7 +75,7 @@ const StatusReportInner = (p: IProp) => {
       {renderVis()}
     </div>
   );
-}
+};
 
 const storeToProps = (state: IStore, ownProps: IProp) => {
   const canCatAg = isCategoryAggregationAvailable(ownProps);
@@ -71,11 +89,22 @@ const storeToProps = (state: IStore, ownProps: IProp) => {
 };
 
 // t("report")
-const StatusInnerWithSpinner = ApolloLoaderHoC<IProp>('report', (p: IProp) => p.statusReport, StatusReportInner);
+const StatusInnerWithSpinner = ApolloLoaderHoC<IProp>(
+  "report",
+  (p: IProp) => p.statusReport,
+  StatusReportInner
+);
 // t("questionnaire")
-const StatusInnerWithSpinners = ApolloLoaderHoC('questionnaire', (p: IProp) => p.data, StatusInnerWithSpinner);
+const StatusInnerWithSpinners = ApolloLoaderHoC(
+  "questionnaire",
+  (p: IProp) => p.data,
+  StatusInnerWithSpinner
+);
 
-const StatusInnerConnected = connect(storeToProps, UrlConnector)(StatusInnerWithSpinners);
+const StatusInnerConnected = connect(
+  storeToProps,
+  UrlConnector
+)(StatusInnerWithSpinners);
 
 const StatusInnerWithReport = getStatusReport<IProp>(
   (p) => p.questionnaire,
@@ -83,8 +112,11 @@ const StatusInnerWithReport = getStatusReport<IProp>(
   (p) => p.end.toISOString(),
   (p) => p.tags,
   (p) => p.orTags,
-  "statusReport")(StatusInnerConnected);
+  "statusReport"
+)(StatusInnerConnected);
 
-const StatusReport = getOutcomeSet<IProp>((p) => p.questionnaire)(StatusInnerWithReport);
+const StatusReport = getOutcomeSet<IProp>((p) => p.questionnaire)(
+  StatusInnerWithReport
+);
 
-export {StatusReport};
+export { StatusReport };

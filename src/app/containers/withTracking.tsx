@@ -1,7 +1,7 @@
-import * as React from 'react';
-import {RouterState} from 'connected-react-router';
-const appConfig = require('../../../config/main');
-const ReactGA = require('react-ga');
+import * as React from "react";
+import { RouterState } from "connected-react-router";
+const appConfig = require("../../../config/main");
+const ReactGA = require("react-ga");
 
 ReactGA.initialize(appConfig.app.analytics.trackingID, {
   debug: appConfig.app.analytics.debug,
@@ -9,7 +9,7 @@ ReactGA.initialize(appConfig.app.analytics.trackingID, {
 
 const withTracker = (WrappedComponent) => {
   const trackPage = (page) => {
-    ReactGA.set({page});
+    ReactGA.set({ page });
     ReactGA.pageview(page);
   };
 

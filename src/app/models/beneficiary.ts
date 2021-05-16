@@ -1,4 +1,4 @@
-import {gql} from 'react-apollo';
+import { gql } from "react-apollo";
 
 export interface IBeneficiary {
   ID: string;
@@ -9,4 +9,5 @@ export const fragment = gql`
   fragment defaultBeneficiary on Beneficiary {
     id
     tags
-  }`;
+  }
+`;

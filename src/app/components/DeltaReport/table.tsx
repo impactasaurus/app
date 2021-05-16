@@ -1,11 +1,11 @@
-import * as React from 'react';
-import {IBeneficiaryDeltaReport} from 'models/report';
-import {Table} from 'semantic-ui-react';
-import {renderArray} from 'helpers/react';
-import {Direction, directionSpec} from 'helpers/table';
-import {extractDeltas} from 'components/DeltaReport/data';
-import {IOutcomeSet} from 'models/outcomeSet';
-import {withTranslation, WithTranslation} from 'react-i18next';
+import * as React from "react";
+import { IBeneficiaryDeltaReport } from "models/report";
+import { Table } from "semantic-ui-react";
+import { renderArray } from "helpers/react";
+import { Direction, directionSpec } from "helpers/table";
+import { extractDeltas } from "components/DeltaReport/data";
+import { IOutcomeSet } from "models/outcomeSet";
+import { withTranslation, WithTranslation } from "react-i18next";
 
 interface IProp extends WithTranslation {
   report: IBeneficiaryDeltaReport;
@@ -45,12 +45,14 @@ const renderRow = (r: IRow): JSX.Element => (
 function sortData(data: IRow[], column: Column, direction: Direction): IRow[] {
   return data.concat().sort((a, b) => {
     const adjustResponseOnDirection = (resp: number): number => {
-      return (direction === Direction.ASC) ? resp: -resp;
+      return direction === Direction.ASC ? resp : -resp;
     };
     if (column === Column.NAME) {
-      return adjustResponseOnDirection(a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+      return adjustResponseOnDirection(
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+      );
     }
-    let aVal: number|undefined, bVal: number|undefined;
+    let aVal: number | undefined, bVal: number | undefined;
     if (column === Column.DEC) {
       aVal = a.decreased;
       bVal = b.decreased;
@@ -83,7 +85,6 @@ const getRows = (p: IProp): IRow[] => {
 };
 
 class DeltaTableInner extends React.Component<IProp, IState> {
-
   constructor(props: IProp) {
     super(props);
     this.state = {
@@ -112,7 +113,8 @@ class DeltaTableInner extends React.Component<IProp, IState> {
           direction: Direction.ASC,
         });
       }
-      const newDir = (this.state.direction === Direction.ASC) ? Direction.DESC : Direction.ASC;
+      const newDir =
+        this.state.direction === Direction.ASC ? Direction.DESC : Direction.ASC;
       this.setState({
         column: this.state.column,
         data: sortData(this.state.data, this.state.column, newDir),
@@ -122,27 +124,57 @@ class DeltaTableInner extends React.Component<IProp, IState> {
   }
 
   public render() {
-    const {t, category} = this.props;
+    const { t, category } = this.props;
     const rows = this.state.data;
-    const nameCol = category ? t('Category') : t('Question');
+    const nameCol = category ? t("Category") : t("Question");
     return (
       <Table striped={true} celled={true} sortable={true}>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell sorted={this.state.column === Column.NAME ? directionSpec(this.state.direction) : null}
-                              onClick={this.handleSort(Column.NAME)}>{nameCol}</Table.HeaderCell>
-            <Table.HeaderCell sorted={this.state.column === Column.DEC ? directionSpec(this.state.direction) : null}
-                              onClick={this.handleSort(Column.DEC)}>{t('Decreased')}</Table.HeaderCell>
-            <Table.HeaderCell sorted={this.state.column === Column.SAME ? directionSpec(this.state.direction) : null}
-                              onClick={this.handleSort(Column.SAME)}>{t('Same')}</Table.HeaderCell>
-            <Table.HeaderCell sorted={this.state.column === Column.INC ? directionSpec(this.state.direction) : null}
-                              onClick={this.handleSort(Column.INC)}>{t('Increased')}</Table.HeaderCell>
+            <Table.HeaderCell
+              sorted={
+                this.state.column === Column.NAME
+                  ? directionSpec(this.state.direction)
+                  : null
+              }
+              onClick={this.handleSort(Column.NAME)}
+            >
+              {nameCol}
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              sorted={
+                this.state.column === Column.DEC
+                  ? directionSpec(this.state.direction)
+                  : null
+              }
+              onClick={this.handleSort(Column.DEC)}
+            >
+              {t("Decreased")}
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              sorted={
+                this.state.column === Column.SAME
+                  ? directionSpec(this.state.direction)
+                  : null
+              }
+              onClick={this.handleSort(Column.SAME)}
+            >
+              {t("Same")}
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              sorted={
+                this.state.column === Column.INC
+                  ? directionSpec(this.state.direction)
+                  : null
+              }
+              onClick={this.handleSort(Column.INC)}
+            >
+              {t("Increased")}
+            </Table.HeaderCell>
           </Table.Row>
         </Table.Header>
 
-        <Table.Body>
-          {renderArray(renderRow, rows)}
-        </Table.Body>
+        <Table.Body>{renderArray(renderRow, rows)}</Table.Body>
       </Table>
     );
   }

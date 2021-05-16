@@ -1,10 +1,10 @@
-import {AuthOptions, LogoutOptions, WebAuth} from 'auth0-js';
-const appConfig = require('../../../config/main');
+import { AuthOptions, LogoutOptions, WebAuth } from "auth0-js";
+const appConfig = require("../../../config/main");
 
-const localStorageKey = 'token';
+const localStorageKey = "token";
 
-export function getToken(): string|null {
-  return localStorage.getItem('token');
+export function getToken(): string | null {
+  return localStorage.getItem("token");
 }
 
 export function saveAuth(token: string): void {
@@ -19,28 +19,36 @@ function getDecodedToken(inputToken?: string) {
   const token = inputToken || getToken();
 
   const urlBase64Decode = (str) => {
-    let output = str.replace(/-/g, '+').replace(/_/g, '/');
+    let output = str.replace(/-/g, "+").replace(/_/g, "/");
     switch (output.length % 4) {
-      case 0: { break; }
-      case 2: { output += '=='; break; }
-      case 3: { output += '='; break; }
+      case 0: {
+        break;
+      }
+      case 2: {
+        output += "==";
+        break;
+      }
+      case 3: {
+        output += "=";
+        break;
+      }
       default: {
-        throw new Error('Illegal base64url string!');
+        throw new Error("Illegal base64url string!");
       }
     }
     return decodeURIComponent(encodeURIComponent(atob(output)));
   };
 
   const decodeToken = (jwt) => {
-    const parts = jwt.split('.');
+    const parts = jwt.split(".");
 
     if (parts.length !== 3) {
-      throw new Error('JWT must have 3 parts');
+      throw new Error("JWT must have 3 parts");
     }
 
     const decoded = urlBase64Decode(parts[1]);
     if (!decoded) {
-      throw new Error('Cannot decode the token');
+      throw new Error("Cannot decode the token");
     }
 
     return JSON.parse(decoded);
@@ -57,7 +65,7 @@ function getDecodedToken(inputToken?: string) {
   }
 }
 
-export function getExpiryDateOfToken(token: string): Date|null {
+export function getExpiryDateOfToken(token: string): Date | null {
   const decoded = getDecodedToken(token);
   if (decoded === null || decoded.exp === undefined) {
     return null;
@@ -65,11 +73,11 @@ export function getExpiryDateOfToken(token: string): Date|null {
   return new Date(decoded.exp * 1000);
 }
 
-export function getExpiryDate(): Date|null {
+export function getExpiryDate(): Date | null {
   return getExpiryDateOfToken(getToken());
 }
 
-function getKeyOrNull(k: string): string|null {
+function getKeyOrNull(k: string): string | null {
   const decoded = getDecodedToken();
   if (decoded === null || decoded[k] === undefined) {
     return null;
@@ -77,43 +85,57 @@ function getKeyOrNull(k: string): string|null {
   return decoded[k];
 }
 
-export function getUserID(): string|null {
-  return getKeyOrNull('sub');
+export function getUserID(): string | null {
+  return getKeyOrNull("sub");
 }
 
-export function getUserEmail(): string|null {
-  return getKeyOrNull('email');
+export function getUserEmail(): string | null {
+  return getKeyOrNull("email");
 }
 
-export function getUserName(): string|null {
-  return getKeyOrNull('name');
+export function getUserName(): string | null {
+  return getKeyOrNull("name");
 }
 
-export function getOrganisation(): string|null {
-  return getKeyOrNull('https://app.impactasaurus.org/organisation');
+export function getOrganisation(): string | null {
+  return getKeyOrNull("https://app.impactasaurus.org/organisation");
 }
 
-export function getCreatedDate(): string|null {
-  return getKeyOrNull('https://app.impactasaurus.org/created_at');
+export function getCreatedDate(): string | null {
+  return getKeyOrNull("https://app.impactasaurus.org/created_at");
 }
 
 export function isBeneficiaryUser(): boolean {
   const decoded = getDecodedToken();
-  if (decoded !== null && decoded['https://app.impactasaurus.org/beneficiary'] !== undefined) {
-    return decoded['https://app.impactasaurus.org/beneficiary'];
+  if (
+    decoded !== null &&
+    decoded["https://app.impactasaurus.org/beneficiary"] !== undefined
+  ) {
+    return decoded["https://app.impactasaurus.org/beneficiary"];
   }
-  if (decoded === null || decoded.app_metadata === undefined || decoded.app_metadata.beneficiary === undefined) {
+  if (
+    decoded === null ||
+    decoded.app_metadata === undefined ||
+    decoded.app_metadata.beneficiary === undefined
+  ) {
     return false;
   }
   return decoded.app_metadata.beneficiary;
 }
 
-export function getBeneficiaryScope(): string|null {
+export function getBeneficiaryScope(): string | null {
   const decoded = getDecodedToken();
-  if (decoded !== null && decoded['https://app.impactasaurus.org/scope'] !== undefined) {
-    return decoded['https://app.impactasaurus.org/scope'];
+  if (
+    decoded !== null &&
+    decoded["https://app.impactasaurus.org/scope"] !== undefined
+  ) {
+    return decoded["https://app.impactasaurus.org/scope"];
   }
-  if (decoded === null || decoded.app_metadata === undefined || decoded.app_metadata.scope === undefined) {
+  if (
+    decoded === null ||
+    decoded.app_metadata === undefined ||
+    decoded.app_metadata.scope === undefined
+  ) {
     return null;
   }
   return decoded.app_metadata.scope;
@@ -124,7 +146,7 @@ export function getWebAuth(): WebAuth {
     domain: appConfig.app.auth.domain,
     clientID: appConfig.app.auth.clientID,
     scope: appConfig.app.auth.scope,
-    responseType: 'token id_token',
+    responseType: "token id_token",
     redirectUri: `${appConfig.app.root}/login`,
   };
 
@@ -134,7 +156,7 @@ export function getWebAuth(): WebAuth {
 export const refreshToken = (): Promise<null> => {
   return new Promise<null>((resolve, reject) => {
     getWebAuth().checkSession({}, (err, authResult) => {
-      if(err) {
+      if (err) {
         reject(err);
         return;
       }

@@ -16,7 +16,7 @@ Please raise an issue in github with the bug label. Please provide as much detai
 
 ## Suggestions Improvements
 
-Please raise an issue in github with an enchancement or new feature label. This will normally result in a discussion of the proposed feature and, if suitable, discussion about how it could be achieved. 
+Please raise an issue in github with an enchancement or new feature label. This will normally result in a discussion of the proposed feature and, if suitable, discussion about how it could be achieved.
 
 ## Code Contributions
 

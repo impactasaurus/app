@@ -1,19 +1,36 @@
-import * as React from 'react';
-import { getToken, getExpiryDate, getUserEmail, getUserID, saveAuth, isBeneficiaryUser,
-  getUserName, getOrganisation, getCreatedDate, clearAuth, getLogoutOptions, getWebAuth } from 'helpers/auth';
-import {setURL, IURLConnector} from 'redux/modules/url';
-import { bindActionCreators } from 'redux';
-import { RouterState } from 'connected-react-router';
-import { IStore } from 'redux/IStore';
+import * as React from "react";
 import {
-  setUserDetails, setLoggedInStatus, SetUserDetailsFunc, SetLoggedInStatusFunc, getUserID as getUserIDFromStore,
-  isUserLoggedIn, isLogoutRequested,
-} from 'redux/modules/user';
-import {WebAuth} from 'auth0-js';
+  getToken,
+  getExpiryDate,
+  getUserEmail,
+  getUserID,
+  saveAuth,
+  isBeneficiaryUser,
+  getUserName,
+  getOrganisation,
+  getCreatedDate,
+  clearAuth,
+  getLogoutOptions,
+  getWebAuth,
+} from "helpers/auth";
+import { setURL, IURLConnector } from "redux/modules/url";
+import { bindActionCreators } from "redux";
+import { RouterState } from "connected-react-router";
+import { IStore } from "redux/IStore";
+import {
+  setUserDetails,
+  setLoggedInStatus,
+  SetUserDetailsFunc,
+  SetLoggedInStatusFunc,
+  getUserID as getUserIDFromStore,
+  isUserLoggedIn,
+  isLogoutRequested,
+} from "redux/modules/user";
+import { WebAuth } from "auth0-js";
 
-const { connect } = require('react-redux');
-const config = require('../../../../config/main').app.auth;
-const ReactGA = require('react-ga');
+const { connect } = require("react-redux");
+const config = require("../../../../config/main").app.auth;
+const ReactGA = require("react-ga");
 
 interface IProps extends IURLConnector {
   routeState?: RouterState;
@@ -28,18 +45,20 @@ interface IState {
   webAuth: WebAuth;
 }
 
-@connect((state: IStore) => ({
-  routeState: state.router,
-  lastUserID: getUserIDFromStore(state.user),
-  isLoggedIn: isUserLoggedIn(state.user),
-  logoutRequest: isLogoutRequested(state.user),
-}), (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-  setUserDetails: bindActionCreators(setUserDetails, dispatch),
-  setLoggedInStatus: bindActionCreators(setLoggedInStatus, dispatch),
-}))
+@connect(
+  (state: IStore) => ({
+    routeState: state.router,
+    lastUserID: getUserIDFromStore(state.user),
+    isLoggedIn: isUserLoggedIn(state.user),
+    logoutRequest: isLogoutRequested(state.user),
+  }),
+  (dispatch) => ({
+    setURL: bindActionCreators(setURL, dispatch),
+    setUserDetails: bindActionCreators(setUserDetails, dispatch),
+    setLoggedInStatus: bindActionCreators(setLoggedInStatus, dispatch),
+  })
+)
 export class IsLoggedIn extends React.Component<IProps, IState> {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -72,8 +91,10 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
   }
 
   private sendToLogin() {
-    const redirectURL = this.props.routeState.location.pathname + this.props.routeState.location.search;
-    this.props.setURL('/login', '?redirect=' + encodeURIComponent(redirectURL));
+    const redirectURL =
+      this.props.routeState.location.pathname +
+      this.props.routeState.location.search;
+    this.props.setURL("/login", "?redirect=" + encodeURIComponent(redirectURL));
   }
 
   private getTimeToExpiry(): number {
@@ -100,15 +121,15 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
       if (err !== undefined && err !== null) {
         console.error(err.description);
         ReactGA.event({
-          category : 'silent_auth',
-          action : 'failed',
+          category: "silent_auth",
+          action: "failed",
           label: err.description,
         });
         return;
       }
       ReactGA.event({
-        category : 'silent_auth',
-        action : 'success',
+        category: "silent_auth",
+        action: "success",
       });
       saveAuth(authResult.idToken);
       this.setup();
@@ -126,10 +147,10 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
         onTrigger();
         return;
       }
-      const waitFor = delta-msBefore;
+      const waitFor = delta - msBefore;
       this[timerName] = setTimeout(onTrigger, waitFor);
     };
-    setTimer('refreshTimer', this.refreshToken);
+    setTimer("refreshTimer", this.refreshToken);
   }
 
   private trackUser() {
@@ -140,7 +161,7 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
       ReactGA.set({
         userId: userID,
         dimension1: org,
-        dimension2: ben ? 'true' : 'false',
+        dimension2: ben ? "true" : "false",
       });
       this.props.setUserDetails(userID, ben);
 
@@ -178,10 +199,6 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
   }
 
   public render() {
-    return (
-      <div>
-        {this.props.isLoggedIn && this.props.children}
-      </div>
-    );
+    return <div>{this.props.isLoggedIn && this.props.children}</div>;
   }
 }

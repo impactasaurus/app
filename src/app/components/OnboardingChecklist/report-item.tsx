@@ -1,7 +1,10 @@
-import * as React from 'react';
-import {OnboardingChecklistItem} from './item';
-import {hasOrgGeneratedReport, IHasOrgGeneratedReport} from 'apollo/modules/organisation';
-import { useTranslation } from 'react-i18next';
+import * as React from "react";
+import { OnboardingChecklistItem } from "./item";
+import {
+  hasOrgGeneratedReport,
+  IHasOrgGeneratedReport,
+} from "apollo/modules/organisation";
+import { useTranslation } from "react-i18next";
 
 interface IProps {
   data?: IHasOrgGeneratedReport;
@@ -12,11 +15,13 @@ interface IProps {
 const Inner = (p: IProps) => {
   const loading = p.data.loading;
   const completed = !loading && p.data.reportGenerated;
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   return (
     <OnboardingChecklistItem
       title={t("Generate a report")}
-      description={t("Reports are used to demonstrate your impact. A beneficiary must have at least two records to be included in a report. Create another record for the same beneficiary and then try generating a report.")}
+      description={t(
+        "Reports are used to demonstrate your impact. A beneficiary must have at least two records to be included in a report. Create another record for the same beneficiary and then try generating a report."
+      )}
       completed={completed}
       loading={loading}
       link="/report"

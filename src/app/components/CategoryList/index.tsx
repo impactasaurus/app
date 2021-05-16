@@ -1,13 +1,13 @@
-import React, {useState} from 'react';
-import {ICategoryMutation, deleteCategory} from 'apollo/modules/categories';
-import {renderArray} from 'helpers/react';
-import {ICategory} from 'models/category';
-import {IOutcomeSet} from 'models/outcomeSet';
-import { List, Loader, Button, Popup, Message } from 'semantic-ui-react';
-import {NewQuestionCategory} from 'components/NewQuestionCategory';
-import {EditQuestionCategory} from 'components/EditQuestionCategory';
-import {ConfirmButton} from 'components/ConfirmButton';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import { ICategoryMutation, deleteCategory } from "apollo/modules/categories";
+import { renderArray } from "helpers/react";
+import { ICategory } from "models/category";
+import { IOutcomeSet } from "models/outcomeSet";
+import { List, Loader, Button, Popup, Message } from "semantic-ui-react";
+import { NewQuestionCategory } from "components/NewQuestionCategory";
+import { EditQuestionCategory } from "components/EditQuestionCategory";
+import { ConfirmButton } from "components/ConfirmButton";
+import { useTranslation } from "react-i18next";
 
 interface IProps extends ICategoryMutation {
   outcomeSetID: string;
@@ -17,61 +17,58 @@ interface IProps extends ICategoryMutation {
 
 const editable = (p: IProps) => p.readOnly !== true;
 
-const wrapCategoryForm = (title: string, inner: JSX.Element): JSX.Element => ((
+const wrapCategoryForm = (title: string, inner: JSX.Element): JSX.Element => (
   <Message className="form-container">
     <Message.Header>{title}</Message.Header>
-    <Message.Content>
-      {inner}
-    </Message.Content>
+    <Message.Content>{inner}</Message.Content>
   </Message>
-));
+);
 
 const CategoryListInner = (p: IProps) => {
-
   const deleteCategory = (categoryID: string) => {
     return (): Promise<IOutcomeSet> => {
-      return p.deleteCategory(p.outcomeSetID, categoryID)
-      .catch((e: Error) => {
-        if (e.message.indexOf('being used') !== -1) {
-          throw Error('Cannot delete a category which is in use');
+      return p.deleteCategory(p.outcomeSetID, categoryID).catch((e: Error) => {
+        if (e.message.indexOf("being used") !== -1) {
+          throw Error("Cannot delete a category which is in use");
         }
         throw e;
       });
     };
-  }
+  };
 
   const [editedCategoryId, setEditedCategoryIdInner] = useState(undefined);
   const [newCategoryClicked, setNewCategoryClickedInner] = useState(false);
 
-  const setNewCategoryClicked = (newValue: boolean): ()=>void => {
+  const setNewCategoryClicked = (newValue: boolean): (() => void) => {
     return () => {
       setEditedCategoryIdInner(undefined);
       setNewCategoryClickedInner(newValue);
     };
-  }
+  };
 
-  const setEditedCategoryId = (categoryId: string): ()=>void => {
+  const setEditedCategoryId = (categoryId: string): (() => void) => {
     return () => {
       setEditedCategoryIdInner(categoryId);
       setNewCategoryClickedInner(false);
     };
-  }
+  };
 
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   const renderCategory = (c: ICategory): JSX.Element => {
     if (editedCategoryId && editedCategoryId === c.id) {
       return (
         <List.Item className="edit-control" key={c.id}>
           <List.Content>
-            {wrapCategoryForm(t('Edit Category'), (
+            {wrapCategoryForm(
+              t("Edit Category"),
               <EditQuestionCategory
                 category={c}
                 QuestionSetID={p.outcomeSetID}
                 OnSuccess={setEditedCategoryId(null)}
                 OnCancel={setEditedCategoryId(null)}
               />
-            ))}
+            )}
           </List.Content>
         </List.Item>
       );
@@ -79,7 +76,13 @@ const CategoryListInner = (p: IProps) => {
 
     const editButton = (
       <span>
-        <Button onClick={setEditedCategoryId(c.id)} icon="edit" tooltip={t("Edit")} compact={true} size="tiny" />
+        <Button
+          onClick={setEditedCategoryId(c.id)}
+          icon="edit"
+          tooltip={t("Edit")}
+          compact={true}
+          size="tiny"
+        />
       </span>
     );
 
@@ -91,7 +94,7 @@ const CategoryListInner = (p: IProps) => {
             <ConfirmButton
               onConfirm={deleteCategory(c.id)}
               promptText={t("Are you sure you want to delete this category?")}
-              buttonProps={{icon: 'delete', compact:true, size:'tiny'}}
+              buttonProps={{ icon: "delete", compact: true, size: "tiny" }}
               tooltip={t("Delete")}
               confirmText={t("Delete")}
               cancelText={t("Cancel")}
@@ -104,20 +107,21 @@ const CategoryListInner = (p: IProps) => {
         </List.Content>
       </List.Item>
     );
-  }
+  };
 
   const renderNewCategoryControl = (): JSX.Element => {
     if (newCategoryClicked === true) {
       return (
         <List.Item className="new-control">
           <List.Content>
-            {wrapCategoryForm(t('New Category'), (
+            {wrapCategoryForm(
+              t("New Category"),
               <NewQuestionCategory
                 QuestionSetID={p.outcomeSetID}
                 OnSuccess={setNewCategoryClicked(false)}
                 OnCancel={setNewCategoryClicked(false)}
               />
-            ))}
+            )}
           </List.Content>
         </List.Item>
       );
@@ -130,12 +134,10 @@ const CategoryListInner = (p: IProps) => {
         </List.Item>
       );
     }
-  }
+  };
 
   if (!p.questionnaire) {
-    return (
-      <Loader active={true} inline="centered" />
-    );
+    return <Loader active={true} inline="centered" />;
   }
   return (
     <List divided={true} relaxed={true} verticalAlign="middle" className="list">
@@ -143,6 +145,6 @@ const CategoryListInner = (p: IProps) => {
       {editable(p) && renderNewCategoryControl()}
     </List>
   );
-}
+};
 const CategoryList = deleteCategory<IProps>(CategoryListInner);
 export { CategoryList };

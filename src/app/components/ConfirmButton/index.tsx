@@ -1,13 +1,13 @@
-import * as React from 'react';
-import {Button, Confirm, ButtonProps, Popup} from 'semantic-ui-react';
+import * as React from "react";
+import { Button, Confirm, ButtonProps, Popup } from "semantic-ui-react";
 
 interface IProps {
   promptText: string;
   confirmText?: string;
   cancelText?: string;
   buttonProps?: ButtonProps;
-  onConfirm: ()=>Promise<any>;
-  onCancel?: ()=>void;
+  onConfirm: () => Promise<any>;
+  onCancel?: () => void;
   tooltip?: string;
   // By default the loading spinner continues to be shown even after the onConfirm promise is fulfilled.
   // This is good for delete buttons, where the ConfirmButton will be removed from the DOM on success anyways.
@@ -22,7 +22,6 @@ interface IState {
 }
 
 class ConfirmButton extends React.Component<IProps, IState> {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -60,28 +59,29 @@ class ConfirmButton extends React.Component<IProps, IState> {
       doing: true,
       error: null,
     });
-    this.props.onConfirm()
-    .then(() => {
-      if (this.props.stopSpinnerOnCompletion !== true) {
-        return;
-      }
-      this.setState({
-        show: this.state.show,
-        doing: false,
-        error: null,
+    this.props
+      .onConfirm()
+      .then(() => {
+        if (this.props.stopSpinnerOnCompletion !== true) {
+          return;
+        }
+        this.setState({
+          show: this.state.show,
+          doing: false,
+          error: null,
+        });
+      })
+      .catch((e: Error) => {
+        this.setState({
+          show: this.state.show,
+          doing: false,
+          error: e.message,
+        });
       });
-    })
-    .catch((e: Error) => {
-      this.setState({
-        show: this.state.show,
-        doing: false,
-        error: e.message,
-      });
-    });
   }
 
   public render() {
-    let tooltip: string|null = null;
+    let tooltip: string | null = null;
     let buttonProps = this.props.buttonProps || {};
     if (this.props.tooltip) {
       tooltip = this.props.tooltip;
@@ -117,16 +117,11 @@ class ConfirmButton extends React.Component<IProps, IState> {
     );
 
     if (tooltip !== null) {
-      return (
-        <Popup
-          trigger={inner}
-          content={tooltip}
-        />
-      );
+      return <Popup trigger={inner} content={tooltip} />;
     } else {
       return inner;
     }
   }
 }
 
-export {ConfirmButton};
+export { ConfirmButton };

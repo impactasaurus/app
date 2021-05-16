@@ -1,10 +1,15 @@
-import * as React from 'react';
-import {IMeeting} from 'models/meeting';
-import {GraphData, IGraphSeries, IGraphDataPoint} from 'models/graph';
-import {Answer} from 'models/answer';
-import {Graph} from 'components/Graph';
-import {Aggregation} from 'models/pref';
-import {getMinQuestionValue, getMaxQuestionValue, getMinCategoryValue, getMaxCategoryValue} from 'helpers/questionnaire';
+import * as React from "react";
+import { IMeeting } from "models/meeting";
+import { GraphData, IGraphSeries, IGraphDataPoint } from "models/graph";
+import { Answer } from "models/answer";
+import { Graph } from "components/Graph";
+import { Aggregation } from "models/pref";
+import {
+  getMinQuestionValue,
+  getMaxQuestionValue,
+  getMinCategoryValue,
+  getMaxCategoryValue,
+} from "helpers/questionnaire";
 
 interface IProp {
   meetings: IMeeting[];
@@ -16,15 +21,17 @@ interface ISeriesToDataMap {
 }
 
 class MeetingGraph extends React.Component<IProp, any> {
-
   private combineGraphSeries(series: IGraphSeries[]): IGraphSeries[] {
-    const seriesMap = series.reduce((m: ISeriesToDataMap, d: IGraphSeries): ISeriesToDataMap => {
-      if (m[d.label] === undefined) {
-        m[d.label] = [];
-      }
-      m[d.label].push(...d.data);
-      return m;
-    }, {});
+    const seriesMap = series.reduce(
+      (m: ISeriesToDataMap, d: IGraphSeries): ISeriesToDataMap => {
+        if (m[d.label] === undefined) {
+          m[d.label] = [];
+        }
+        m[d.label].push(...d.data);
+        return m;
+      },
+      {}
+    );
     const result: IGraphSeries[] = [];
     for (const series in seriesMap) {
       if (Object.prototype.hasOwnProperty.call(seriesMap, series)) {
@@ -38,22 +45,32 @@ class MeetingGraph extends React.Component<IProp, any> {
   }
 
   private getQuestionLevelData(meetings: IMeeting[]): GraphData {
-    const seriesPerDP =  meetings.reduce((prevData: IGraphSeries[], meeting): IGraphSeries[] => {
-      const series = meeting.answers.reduce<IGraphSeries[]>((series: IGraphSeries[], answer: Answer): IGraphSeries[] => {
-        const q = meeting.outcomeSet.questions.find((q) => q.id === answer.questionID);
-        if (q === undefined || q.archived) {
-          return series;
-        }
-        return series.concat({
-          label: (q.short || q.question),
-          data: [{
-            x: new Date(meeting.conducted),
-            y: answer.answer,
-          }],
-        });
-      }, []);
-      return prevData.concat(series);
-    }, []);
+    const seriesPerDP = meetings.reduce(
+      (prevData: IGraphSeries[], meeting): IGraphSeries[] => {
+        const series = meeting.answers.reduce<IGraphSeries[]>(
+          (series: IGraphSeries[], answer: Answer): IGraphSeries[] => {
+            const q = meeting.outcomeSet.questions.find(
+              (q) => q.id === answer.questionID
+            );
+            if (q === undefined || q.archived) {
+              return series;
+            }
+            return series.concat({
+              label: q.short || q.question,
+              data: [
+                {
+                  x: new Date(meeting.conducted),
+                  y: answer.answer,
+                },
+              ],
+            });
+          },
+          []
+        );
+        return prevData.concat(series);
+      },
+      []
+    );
     return {
       series: this.combineGraphSeries(seriesPerDP),
       scaleMax: getMaxQuestionValue(meetings[0].outcomeSet),
@@ -62,22 +79,31 @@ class MeetingGraph extends React.Component<IProp, any> {
   }
 
   private getCategoryLevelData(meetings: IMeeting[]): GraphData {
-    const seriesPerDP = meetings.reduce((prevData: IGraphSeries[] , meeting): IGraphSeries[]  => {
-      return prevData.concat(meeting.aggregates.category.map((categoryAg): IGraphSeries => {
-        let category = 'Unknown Category';
-        const cat = meeting.outcomeSet.categories.find((c) => c.id === categoryAg.categoryID);
-        if (cat !== undefined) {
-          category = cat.name;
-        }
-        return {
-          label: category,
-          data: [{
-            x: new Date(meeting.conducted),
-            y: categoryAg.value,
-          }],
-        };
-      }));
-    }, []);
+    const seriesPerDP = meetings.reduce(
+      (prevData: IGraphSeries[], meeting): IGraphSeries[] => {
+        return prevData.concat(
+          meeting.aggregates.category.map((categoryAg): IGraphSeries => {
+            let category = "Unknown Category";
+            const cat = meeting.outcomeSet.categories.find(
+              (c) => c.id === categoryAg.categoryID
+            );
+            if (cat !== undefined) {
+              category = cat.name;
+            }
+            return {
+              label: category,
+              data: [
+                {
+                  x: new Date(meeting.conducted),
+                  y: categoryAg.value,
+                },
+              ],
+            };
+          })
+        );
+      },
+      []
+    );
     return {
       series: this.combineGraphSeries(seriesPerDP),
       scaleMax: getMaxCategoryValue(meetings[0].outcomeSet),
@@ -86,13 +112,17 @@ class MeetingGraph extends React.Component<IProp, any> {
   }
 
   public render() {
-    if (!Array.isArray(this.props.meetings) || this.props.meetings.length === 0) {
-      return (<div />);
+    if (
+      !Array.isArray(this.props.meetings) ||
+      this.props.meetings.length === 0
+    ) {
+      return <div />;
     }
 
-    const data = this.props.aggregation === Aggregation.CATEGORY ?
-      this.getCategoryLevelData(this.props.meetings) :
-      this.getQuestionLevelData(this.props.meetings);
+    const data =
+      this.props.aggregation === Aggregation.CATEGORY
+        ? this.getCategoryLevelData(this.props.meetings)
+        : this.getQuestionLevelData(this.props.meetings);
 
     return (
       <div className="meeting-graph">

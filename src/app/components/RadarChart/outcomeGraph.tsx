@@ -1,15 +1,15 @@
-import {SessionsConverter} from './sessionsConverter';
-import {OutcomeGraphData} from './index';
-import {getChartJSTypographyStyle} from 'theme/chartStyle';
+import { SessionsConverter } from "./sessionsConverter";
+import { OutcomeGraphData } from "./index";
+import { getChartJSTypographyStyle } from "theme/chartStyle";
 const sessionsConverter = SessionsConverter();
 
 export function getConfig(data: OutcomeGraphData, min, max) {
   return {
-    type: 'radar',
+    type: "radar",
     data: sessionsConverter.getChartJSConvertedData(data),
     options: {
       legend: {
-        position: 'top',
+        position: "top",
       },
       scale: {
         ticks: {
@@ -19,7 +19,7 @@ export function getConfig(data: OutcomeGraphData, min, max) {
         pointLabels: getChartJSTypographyStyle(),
       },
       tooltips: {
-        mode: 'point',
+        mode: "point",
         enabled: true,
       },
       aspectRatio: 1,

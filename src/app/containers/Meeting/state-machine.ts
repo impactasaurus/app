@@ -12,7 +12,10 @@ export interface IMeetingState {
   qIdx: number;
 }
 
-export function initialState(hasInstructions: boolean, numQuestions: number): IMeetingState {
+export function initialState(
+  hasInstructions: boolean,
+  numQuestions: number
+): IMeetingState {
   if (numQuestions === 0) {
     return {
       screen: Screen.EMPTY,
@@ -31,7 +34,11 @@ export function initialState(hasInstructions: boolean, numQuestions: number): IM
   };
 }
 
-export function getPreviousState(current: Screen, qIdx: number, hasInstructions: boolean): IMeetingState {
+export function getPreviousState(
+  current: Screen,
+  qIdx: number,
+  hasInstructions: boolean
+): IMeetingState {
   const noChange = {
     screen: current,
     qIdx,
@@ -67,13 +74,21 @@ export function getPreviousState(current: Screen, qIdx: number, hasInstructions:
   };
 }
 
-export function canGoBack(current: Screen, qIdx: number, hasInstructions: boolean): boolean {
+export function canGoBack(
+  current: Screen,
+  qIdx: number,
+  hasInstructions: boolean
+): boolean {
   const prev = getPreviousState(current, qIdx, hasInstructions);
   const identical = prev.screen === current && prev.qIdx === qIdx;
   return !identical;
 }
 
-export function getNextState(current: Screen, qIdx: number, noQuestions: number): IMeetingState {
+export function getNextState(
+  current: Screen,
+  qIdx: number,
+  noQuestions: number
+): IMeetingState {
   if (current === Screen.INSTRUCTIONS) {
     return {
       screen: Screen.QUESTION,

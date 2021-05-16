@@ -1,6 +1,6 @@
-import * as React from 'react';
-import SVG from './logo.inline.svg';
-import './style.less';
+import * as React from "react";
+import SVG from "./logo.inline.svg";
+import "./style.less";
 
 const Logo = (): JSX.Element => {
   return (

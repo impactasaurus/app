@@ -1,16 +1,21 @@
-import * as React from 'react';
-import {IQuestionMutation, deleteQuestion, IQuestionMover, moveQuestion} from 'apollo/modules/questions';
-import {ILikertForm, Question} from 'models/question';
-import {IOutcomeSet} from 'models/outcomeSet';
-import { Loader, Message, List } from 'semantic-ui-react';
-import {NewLikertQuestion} from 'components/NewLikertQuestion';
-import {EditLikertQuestion} from 'components/EditLikertQuestion';
-import {List as QList} from './List';
-import {isNullOrUndefined} from 'util';
-import {getQuestions} from 'helpers/questionnaire';
-import ReactGA from 'react-ga';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import './style.less';
+import * as React from "react";
+import {
+  IQuestionMutation,
+  deleteQuestion,
+  IQuestionMover,
+  moveQuestion,
+} from "apollo/modules/questions";
+import { ILikertForm, Question } from "models/question";
+import { IOutcomeSet } from "models/outcomeSet";
+import { Loader, Message, List } from "semantic-ui-react";
+import { NewLikertQuestion } from "components/NewLikertQuestion";
+import { EditLikertQuestion } from "components/EditLikertQuestion";
+import { List as QList } from "./List";
+import { isNullOrUndefined } from "util";
+import { getQuestions } from "helpers/questionnaire";
+import ReactGA from "react-ga";
+import { WithTranslation, withTranslation } from "react-i18next";
+import "./style.less";
 
 interface IProps extends IQuestionMutation, IQuestionMover, WithTranslation {
   questionnaire: IOutcomeSet;
@@ -21,13 +26,19 @@ interface IProps extends IQuestionMutation, IQuestionMover, WithTranslation {
 interface IState {
   newQuestionClicked?: boolean;
   editedQuestionId?: string;
-  categoryClasses?: {[catID: string]: string};
+  categoryClasses?: { [catID: string]: string };
   sorting?: boolean;
 }
 
-function assignCategoriesClasses(current: {[catID: string]: string}, questionnaire: IOutcomeSet): {[catID: string]: string} {
-  const assignments = {...current};
-  if (isNullOrUndefined(questionnaire) || !Array.isArray(questionnaire.questions)) {
+function assignCategoriesClasses(
+  current: { [catID: string]: string },
+  questionnaire: IOutcomeSet
+): { [catID: string]: string } {
+  const assignments = { ...current };
+  if (
+    isNullOrUndefined(questionnaire) ||
+    !Array.isArray(questionnaire.questions)
+  ) {
     return assignments;
   }
   questionnaire.questions.forEach((q: Question) => {
@@ -44,17 +55,14 @@ function assignCategoriesClasses(current: {[catID: string]: string}, questionnai
   return assignments;
 }
 
-const wrapQuestionForm = (title: string, inner: JSX.Element): JSX.Element => ((
+const wrapQuestionForm = (title: string, inner: JSX.Element): JSX.Element => (
   <Message className="form-container likert-form-container" key="question-form">
     <Message.Header>{title}</Message.Header>
-    <Message.Content>
-      {inner}
-    </Message.Content>
+    <Message.Content>{inner}</Message.Content>
   </Message>
-));
+);
 
 class QuestionListInner extends React.Component<IProps, IState> {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -73,8 +81,14 @@ class QuestionListInner extends React.Component<IProps, IState> {
 
   public componentWillUpdate(nextProps: IProps) {
     const currentAssignment = this.state.categoryClasses;
-    const newAssignments = assignCategoriesClasses(currentAssignment, nextProps.questionnaire);
-    if (Object.keys(newAssignments).length !== Object.keys(currentAssignment).length) {
+    const newAssignments = assignCategoriesClasses(
+      currentAssignment,
+      nextProps.questionnaire
+    );
+    if (
+      Object.keys(newAssignments).length !==
+      Object.keys(currentAssignment).length
+    ) {
       this.setState({
         ...this.state,
         categoryClasses: newAssignments,
@@ -84,9 +98,9 @@ class QuestionListInner extends React.Component<IProps, IState> {
 
   private logQuestionDeletedGAEvent() {
     ReactGA.event({
-        category: 'question',
-        action: 'deleted',
-        label: 'likert',
+      category: "question",
+      action: "deleted",
+      label: "likert",
     });
   }
 
@@ -97,7 +111,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
     };
   }
 
-  private setNewQuestionClicked(newValue: boolean): ()=>void {
+  private setNewQuestionClicked(newValue: boolean): () => void {
     return () => {
       this.setState({
         newQuestionClicked: newValue,
@@ -106,7 +120,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
     };
   }
 
-  private setEditedQuestionId(questionId: string): ()=>void {
+  private setEditedQuestionId(questionId: string): () => void {
     return () => {
       this.setState({
         newQuestionClicked: false,
@@ -116,29 +130,32 @@ class QuestionListInner extends React.Component<IProps, IState> {
   }
 
   private renderEditQuestionForm(q: Question): JSX.Element {
-    const {t} = this.props;
-    return wrapQuestionForm(t('Edit Likert Question'), (
+    const { t } = this.props;
+    return wrapQuestionForm(
+      t("Edit Likert Question"),
       <EditLikertQuestion
-        key={'edit-' + q.id}
+        key={"edit-" + q.id}
         question={q}
         QuestionSetID={this.props.outcomeSetID}
         OnSuccess={this.setEditedQuestionId(null)}
         OnCancel={this.setEditedQuestionId(null)}
       />
-    ));
+    );
   }
 
-  private getCategoryPillClass(catID?: string): string|undefined {
-    return (isNullOrUndefined(catID)) ? undefined : this.state.categoryClasses[catID];
+  private getCategoryPillClass(catID?: string): string | undefined {
+    return isNullOrUndefined(catID)
+      ? undefined
+      : this.state.categoryClasses[catID];
   }
 
   private renderNewQuestionControl(): JSX.Element {
-    const {t} = this.props;
+    const { t } = this.props;
     if (this.state.newQuestionClicked === true) {
       let defaults: ILikertForm;
       const qs = getQuestions(this.props.questionnaire) || [];
       if (qs.length > 0) {
-        const last = qs[qs.length-1] as Question;
+        const last = qs[qs.length - 1] as Question;
         defaults = {
           labels: last.labels,
           rightValue: last.rightValue,
@@ -148,14 +165,15 @@ class QuestionListInner extends React.Component<IProps, IState> {
       return (
         <List.Item className="new-control">
           <List.Content>
-            {wrapQuestionForm(t('New Likert Question'), (
+            {wrapQuestionForm(
+              t("New Likert Question"),
               <NewLikertQuestion
                 QuestionSetID={this.props.outcomeSetID}
                 OnSuccess={this.setNewQuestionClicked(false)}
                 OnCancel={this.setNewQuestionClicked(false)}
                 Defaults={defaults}
               />
-            ))}
+            )}
           </List.Content>
         </List.Item>
       );
@@ -176,7 +194,7 @@ class QuestionListInner extends React.Component<IProps, IState> {
     });
   }
 
-  private onSortEnd({oldIndex, newIndex}) {
+  private onSortEnd({ oldIndex, newIndex }) {
     this.setState({
       sorting: false,
     });
@@ -185,22 +203,23 @@ class QuestionListInner extends React.Component<IProps, IState> {
     }
     const questions = getQuestions(this.props.questionnaire);
     if (oldIndex >= questions.length) {
-      throw new Error('Old index does not exist in array');
+      throw new Error("Old index does not exist in array");
     }
     const q = questions[oldIndex];
-    this.props.moveQuestion(this.props.questionnaire, q.id, newIndex)
+    this.props
+      .moveQuestion(this.props.questionnaire, q.id, newIndex)
       .then(() => {
         ReactGA.event({
-          category: 'question',
-          action: 'moved',
-          label: 'likert',
+          category: "question",
+          action: "moved",
+          label: "likert",
         });
       })
       .catch((e) => {
         ReactGA.event({
-          category: 'question',
-          action: 'move-fail',
-          label: 'likert',
+          category: "question",
+          action: "move-fail",
+          label: "likert",
         });
         console.error(e);
       });
@@ -208,14 +227,12 @@ class QuestionListInner extends React.Component<IProps, IState> {
 
   public render() {
     if (!this.props.questionnaire) {
-      return (
-        <Loader active={true} inline="centered" />
-      );
+      return <Loader active={true} inline="centered" />;
     }
 
     return (
       <QList
-        className={this.state.sorting ? 'sorting' : ''}
+        className={this.state.sorting ? "sorting" : ""}
         key={`qlist-${this.state.editedQuestionId}-${this.state.newQuestionClicked}`}
         outcomeSetID={this.props.outcomeSetID}
         questionnaire={this.props.questionnaire}
@@ -235,6 +252,8 @@ class QuestionListInner extends React.Component<IProps, IState> {
     );
   }
 }
-const QuestionListConnected = moveQuestion<IProps>(deleteQuestion<IProps>(QuestionListInner));
+const QuestionListConnected = moveQuestion<IProps>(
+  deleteQuestion<IProps>(QuestionListInner)
+);
 const QuestionList = withTranslation()(QuestionListConnected);
 export { QuestionList };

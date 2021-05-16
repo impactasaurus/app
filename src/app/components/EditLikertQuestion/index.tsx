@@ -1,38 +1,50 @@
-import * as React from 'react';
-import {IQuestionMutation, editLikertQuestion} from 'apollo/modules/questions';
-import {IOutcomeSet} from 'models/outcomeSet';
-import {LikertQuestionForm} from '../LikertQuestionForm/index';
-import {ILikertQuestionForm, Question} from 'models/question';
-import {ICategoryMutation, setCategory} from '../../apollo/modules/categories';
-import { useTranslation } from 'react-i18next';
+import * as React from "react";
+import {
+  IQuestionMutation,
+  editLikertQuestion,
+} from "apollo/modules/questions";
+import { IOutcomeSet } from "models/outcomeSet";
+import { LikertQuestionForm } from "../LikertQuestionForm/index";
+import { ILikertQuestionForm, Question } from "models/question";
+import {
+  ICategoryMutation,
+  setCategory,
+} from "../../apollo/modules/categories";
+import { useTranslation } from "react-i18next";
 
 interface IProps extends IQuestionMutation, ICategoryMutation {
   QuestionSetID: string;
-  OnSuccess: ()=>void;
-  OnCancel: ()=>void;
+  OnSuccess: () => void;
+  OnCancel: () => void;
   question: Question;
 }
 
 const EditLikertQuestionInner = (p: IProps) => {
-
   const editQuestion = (q: ILikertQuestionForm): Promise<IOutcomeSet> => {
-    let prom = p.editLikertQuestion(p.QuestionSetID, p.question.id, q.question, q.description, q.short, q.labels);
+    let prom = p.editLikertQuestion(
+      p.QuestionSetID,
+      p.question.id,
+      q.question,
+      q.description,
+      q.short,
+      q.labels
+    );
     if (q.categoryID !== p.question.categoryID) {
       prom = prom.then(() => {
         return p.setCategory(p.QuestionSetID, p.question.id, q.categoryID);
       });
     }
     return prom;
-  }
+  };
 
   const q = p.question;
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <LikertQuestionForm
       edit={true}
       values={{
-        question:q.question,
+        question: q.question,
         categoryID: q.categoryID,
         description: q.description,
         short: q.short,
@@ -46,8 +58,9 @@ const EditLikertQuestionInner = (p: IProps) => {
       {...p}
     />
   );
+};
 
-}
-
-const EditLikertQuestion = setCategory<IProps>(editLikertQuestion<IProps>(EditLikertQuestionInner));
+const EditLikertQuestion = setCategory<IProps>(
+  editLikertQuestion<IProps>(EditLikertQuestionInner)
+);
 export { EditLikertQuestion };

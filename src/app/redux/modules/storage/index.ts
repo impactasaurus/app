@@ -1,4 +1,4 @@
-import { LOAD } from 'redux-storage';
+import { LOAD } from "redux-storage";
 
 export interface IState {
   loaded: boolean;

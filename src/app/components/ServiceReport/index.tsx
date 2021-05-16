@@ -1,19 +1,26 @@
-import * as React from 'react';
-import {getJOCServiceReport, IJOCReportResult} from 'apollo/modules/reports';
-import {getOutcomeSet, IOutcomeResult} from 'apollo/modules/outcomeSets';
-import {ServiceReportDetails} from './details';
-import {ServiceReportRadar} from './radar';
-import {ServiceReportTable} from './table';
-import {VizControlPanel} from 'components/VizControlPanel';
-import {IStore} from 'redux/IStore';
-import {Aggregation, Visualisation, getAggregation, getVisualisation} from 'models/pref';
-import {bindActionCreators} from 'redux';
-import {IURLConnector, setURL} from 'redux/modules/url';
+import * as React from "react";
+import { getJOCServiceReport, IJOCReportResult } from "apollo/modules/reports";
+import { getOutcomeSet, IOutcomeResult } from "apollo/modules/outcomeSets";
+import { ServiceReportDetails } from "./details";
+import { ServiceReportRadar } from "./radar";
+import { ServiceReportTable } from "./table";
+import { VizControlPanel } from "components/VizControlPanel";
+import { IStore } from "redux/IStore";
 import {
-  exportReportData, IReportOptions, EmptyReportMessage,
-} from 'containers/Report/helpers';
-import {ApolloLoaderHoC} from 'components/ApolloLoaderHoC';
-const { connect } = require('react-redux');
+  Aggregation,
+  Visualisation,
+  getAggregation,
+  getVisualisation,
+} from "models/pref";
+import { bindActionCreators } from "redux";
+import { IURLConnector, setURL } from "redux/modules/url";
+import {
+  exportReportData,
+  IReportOptions,
+  EmptyReportMessage,
+} from "containers/Report/helpers";
+import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
+const { connect } = require("react-redux");
 
 const allowedVisualisations = [Visualisation.RADAR, Visualisation.TABLE];
 
@@ -32,20 +39,22 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
   return props.JOCServiceReport.getJOCServiceReport.categories.length > 0;
 };
 
-@connect((state: IStore, ownProps: IProp) => {
-  const canCatAg = isCategoryAggregationAvailable(ownProps);
-  const viz = getVisualisation(state.pref, allowedVisualisations);
-  return {
-    vis: viz,
-    agg: getAggregation(state.pref, canCatAg),
-    isCategoryAgPossible: canCatAg,
-    isCanvasSnapshotPossible: viz === Visualisation.RADAR,
-  };
-}, (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-}))
+@connect(
+  (state: IStore, ownProps: IProp) => {
+    const canCatAg = isCategoryAggregationAvailable(ownProps);
+    const viz = getVisualisation(state.pref, allowedVisualisations);
+    return {
+      vis: viz,
+      agg: getAggregation(state.pref, canCatAg),
+      isCategoryAgPossible: canCatAg,
+      isCanvasSnapshotPossible: viz === Visualisation.RADAR,
+    };
+  },
+  (dispatch) => ({
+    setURL: bindActionCreators(setURL, dispatch),
+  })
+)
 class ServiceReportInner extends React.Component<IProp, null> {
-
   constructor(props) {
     super(props);
     this.renderVis = this.renderVis.bind(this);
@@ -56,11 +65,19 @@ class ServiceReportInner extends React.Component<IProp, null> {
     const p = this.props;
     if (p.vis === Visualisation.RADAR) {
       return (
-        <ServiceReportRadar serviceReport={p.JOCServiceReport.getJOCServiceReport} questionSet={p.data.getOutcomeSet} category={p.agg === Aggregation.CATEGORY} />
+        <ServiceReportRadar
+          serviceReport={p.JOCServiceReport.getJOCServiceReport}
+          questionSet={p.data.getOutcomeSet}
+          category={p.agg === Aggregation.CATEGORY}
+        />
       );
     }
     return (
-      <ServiceReportTable serviceReport={p.JOCServiceReport.getJOCServiceReport} questionSet={p.data.getOutcomeSet} category={p.agg === Aggregation.CATEGORY} />
+      <ServiceReportTable
+        serviceReport={p.JOCServiceReport.getJOCServiceReport}
+        questionSet={p.data.getOutcomeSet}
+        category={p.agg === Aggregation.CATEGORY}
+      />
     );
   }
 
@@ -69,12 +86,22 @@ class ServiceReportInner extends React.Component<IProp, null> {
   }
 
   public render() {
-    if (this.props.JOCServiceReport.getJOCServiceReport && this.props.JOCServiceReport.getJOCServiceReport.beneficiaries.length === 0) {
-      return <EmptyReportMessage ie={this.props.JOCServiceReport.getJOCServiceReport.excluded} />;
+    if (
+      this.props.JOCServiceReport.getJOCServiceReport &&
+      this.props.JOCServiceReport.getJOCServiceReport.beneficiaries.length === 0
+    ) {
+      return (
+        <EmptyReportMessage
+          ie={this.props.JOCServiceReport.getJOCServiceReport.excluded}
+        />
+      );
     }
     return (
       <div>
-        <ServiceReportDetails serviceReport={this.props.JOCServiceReport.getJOCServiceReport} questionSet={this.props.data.getOutcomeSet} />
+        <ServiceReportDetails
+          serviceReport={this.props.JOCServiceReport.getJOCServiceReport}
+          questionSet={this.props.data.getOutcomeSet}
+        />
         <VizControlPanel
           canCategoryAg={this.props.isCategoryAgPossible}
           visualisations={allowedVisualisations}
@@ -88,9 +115,17 @@ class ServiceReportInner extends React.Component<IProp, null> {
 }
 
 // t("report")
-const ServiceInnerWithSpinner = ApolloLoaderHoC<IProp>('report', (p: IProp) => p.JOCServiceReport, ServiceReportInner);
+const ServiceInnerWithSpinner = ApolloLoaderHoC<IProp>(
+  "report",
+  (p: IProp) => p.JOCServiceReport,
+  ServiceReportInner
+);
 // t("questionnaire")
-const ServiceInnerWithSpinners = ApolloLoaderHoC('questionnaire', (p: IProp) => p.data, ServiceInnerWithSpinner);
+const ServiceInnerWithSpinners = ApolloLoaderHoC(
+  "questionnaire",
+  (p: IProp) => p.data,
+  ServiceInnerWithSpinner
+);
 
 const ServiceInnerWithReport = getJOCServiceReport<IProp>(
   (p) => p.questionnaire,
@@ -98,7 +133,10 @@ const ServiceInnerWithReport = getJOCServiceReport<IProp>(
   (p) => p.end.toISOString(),
   (p) => p.tags,
   (p) => p.openStart,
-  (p) => p.orTags)(ServiceInnerWithSpinners);
-const ServiceReport = getOutcomeSet<IProp>((p) => p.questionnaire)(ServiceInnerWithReport);
+  (p) => p.orTags
+)(ServiceInnerWithSpinners);
+const ServiceReport = getOutcomeSet<IProp>((p) => p.questionnaire)(
+  ServiceInnerWithReport
+);
 
-export {ServiceReport};
+export { ServiceReport };

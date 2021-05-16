@@ -1,4 +1,4 @@
-import {gql} from 'react-apollo';
+import { gql } from "react-apollo";
 
 export interface IUserProfile {
   name: string;
@@ -23,7 +23,8 @@ export const profileFragment = gql`
   fragment defaultProfile on User {
     id
     name
-  }`;
+  }
+`;
 
 export const selfFragment = gql`
   fragment defaultSelf on Self {
@@ -34,4 +35,6 @@ export const selfFragment = gql`
       unsubscribed
       language
     }
-  } ${profileFragment}`;
+  }
+  ${profileFragment}
+`;

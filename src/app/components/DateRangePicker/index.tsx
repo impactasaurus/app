@@ -1,19 +1,19 @@
-import React, {useState, useEffect} from 'react';
-import {startOfDay, endOfDay, subYears} from 'date-fns';
-import {DateRangePicker as ReactDateRangePicker} from 'react-date-range';
-import { useTranslation } from 'react-i18next';
-import './styles.less';
+import React, { useState, useEffect } from "react";
+import { startOfDay, endOfDay, subYears } from "date-fns";
+import { DateRangePicker as ReactDateRangePicker } from "react-date-range";
+import { useTranslation } from "react-i18next";
+import "./styles.less";
 
 interface IProp {
   future?: boolean;
   onSelect?: (start: Date, end: Date) => void;
-  onSelectUnfiltered?: (start: Date|null, end: Date|null) => void;
+  onSelectUnfiltered?: (start: Date | null, end: Date | null) => void;
 }
 
 const DateRangePicker = (p: IProp): JSX.Element => {
   const [start, setStart] = useState<Date>(null);
   const [end, setEnd] = useState<Date>(null);
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (start === null && end === null) {
@@ -21,11 +21,11 @@ const DateRangePicker = (p: IProp): JSX.Element => {
     }
   }, []);
 
-
-  const onDateChange = (startDate: Date|null, endDate: Date|null) => {
+  const onDateChange = (startDate: Date | null, endDate: Date | null) => {
     const currentlyNull = start === null && end === null;
     const bothChanging = startDate !== start && endDate !== end;
-    const bothEqual = startDate && endDate && startDate.getTime() === endDate.getTime();
+    const bothEqual =
+      startDate && endDate && startDate.getTime() === endDate.getTime();
     if (bothChanging && bothEqual && !currentlyNull) {
       const newStartBeforeCurrentEnd = startDate.getTime() < end.getTime();
       if (newStartBeforeCurrentEnd) {
@@ -48,16 +48,20 @@ const DateRangePicker = (p: IProp): JSX.Element => {
     if (s !== null && e !== null && p.onSelect !== undefined) {
       p.onSelect(s, e);
     }
-  }
+  };
 
-  const onDateChangeDRP = ({selection: {startDate, endDate}}: {selection: {startDate: Date|null, endDate: Date|null}}) => {
+  const onDateChangeDRP = ({
+    selection: { startDate, endDate },
+  }: {
+    selection: { startDate: Date | null; endDate: Date | null };
+  }) => {
     onDateChange(startDate, endDate);
-  }
+  };
 
   const selectionRange = {
     startDate: start,
     endDate: end,
-    key: 'selection',
+    key: "selection",
   };
   const format = "d MMM yyyy";
   return (
@@ -65,17 +69,17 @@ const DateRangePicker = (p: IProp): JSX.Element => {
       ranges={[selectionRange]}
       onChange={onDateChangeDRP}
       weekStartsOn={1}
-      rangeColors={['var(--brand-color-light)']}
+      rangeColors={["var(--brand-color-light)"]}
       staticRanges={[]}
       inputRanges={[]}
-      startDatePlaceholder={t('Start')}
-      endDatePlaceholder={t('End')}
-      minDate={new Date('2000-01-01T00:00:00Z')}
+      startDatePlaceholder={t("Start")}
+      endDatePlaceholder={t("End")}
+      minDate={new Date("2000-01-01T00:00:00Z")}
       maxDate={p.future ? undefined : new Date()}
       dateDisplayFormat={format}
       editableDateInputs={true}
     />
   );
-}
+};
 
-export {DateRangePicker};
+export { DateRangePicker };

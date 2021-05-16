@@ -1,7 +1,7 @@
-import {push, replace} from 'connected-react-router';
-import { IStore } from 'redux/IStore';
-import {Action, bindActionCreators, Dispatch} from 'redux';
-import { connect } from 'react-redux';
+import { push, replace } from "connected-react-router";
+import { IStore } from "redux/IStore";
+import { Action, bindActionCreators, Dispatch } from "redux";
+import { connect } from "react-redux";
 
 export function setURL(url: string, search?: string) {
   return (dispatch: Dispatch, getState: () => IStore): void => {
@@ -9,10 +9,12 @@ export function setURL(url: string, search?: string) {
     if (routerState.pathname === url) {
       return;
     }
-    dispatch(push({
-      pathname: url,
-      search,
-    }));
+    dispatch(
+      push({
+        pathname: url,
+        search,
+      })
+    );
   };
 }
 
@@ -23,13 +25,15 @@ export function replaceSearchAction(search: string): Action {
 }
 
 export interface IURLConnector {
-    setURL?(url: string, search?: string): void;
+  setURL?(url: string, search?: string): void;
 }
 
 export const UrlConnector = (dispatch: Dispatch): IURLConnector => ({
   setURL: bindActionCreators(setURL, dispatch),
 });
 
-export const UrlHOC = <P extends IURLConnector>(WrappedComponent: React.ComponentType<P>): React.ComponentType<P> => {
+export const UrlHOC = <P extends IURLConnector>(
+  WrappedComponent: React.ComponentType<P>
+): React.ComponentType<P> => {
   return connect<P>(undefined, UrlConnector)(WrappedComponent);
-}
+};

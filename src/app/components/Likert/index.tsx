@@ -1,7 +1,7 @@
-import * as React from 'react';
-import Slider from 'rc-slider';
-import './style.less';
-import {ILabel} from 'models/question';
+import * as React from "react";
+import Slider from "rc-slider";
+import "./style.less";
+import { ILabel } from "models/question";
 
 interface IProps {
   labels?: ILabel[];
@@ -17,7 +17,6 @@ interface IState {
 }
 
 class Likert extends React.Component<IProps, IState> {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -32,7 +31,11 @@ class Likert extends React.Component<IProps, IState> {
   }
 
   public componentWillReceiveProps(nextProps) {
-    if (this.props.value === undefined && nextProps.value !== undefined && this.state.awaitingAnswer) {
+    if (
+      this.props.value === undefined &&
+      nextProps.value !== undefined &&
+      this.state.awaitingAnswer
+    ) {
       this.setState({
         awaitingAnswer: false,
       });
@@ -65,7 +68,7 @@ class Likert extends React.Component<IProps, IState> {
       return value;
     }
     const diff = this.maxValue() - this.minValue();
-    return (diff - (value - this.minValue())) + this.minValue();
+    return diff - (value - this.minValue()) + this.minValue();
   }
 
   private setAnswer(value: number) {
@@ -88,7 +91,7 @@ class Likert extends React.Component<IProps, IState> {
     const leftValue = this.minValue();
     const rightValue = this.maxValue();
 
-    let className = 'likert-scale';
+    let className = "likert-scale";
     if (this.state.awaitingAnswer) {
       className = `${className} awaiting-input`;
     }

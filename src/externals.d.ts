@@ -1,3 +1,3 @@
-declare module '*.branding';
-declare module '*.png';
-declare module '*.svg';
+declare module "*.branding";
+declare module "*.png";
+declare module "*.svg";

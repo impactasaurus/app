@@ -1,4 +1,4 @@
-import {gql} from 'react-apollo';
+import { gql } from "react-apollo";
 
 export interface IQuestion {
   id: string;
@@ -42,20 +42,21 @@ export interface ILikertForm {
 
 export const fragment = gql`
   fragment defaultQuestion on QuestionInterface {
-    id,
-    question,
-    description,
-    short,
-    archived,
-    categoryID,
-    ... on LikertScale{
-      leftValue,
-      rightValue,
-      leftLabel,
-      rightLabel,
+    id
+    question
+    description
+    short
+    archived
+    categoryID
+    ... on LikertScale {
+      leftValue
+      rightValue
+      leftLabel
+      rightLabel
       labels {
-        value,
+        value
         label
       }
     }
-  }`;
+  }
+`;
