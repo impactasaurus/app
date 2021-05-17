@@ -14,61 +14,73 @@ import {
 import * as containers from "./app/containers";
 import withTracker from "./app/containers/withTracking";
 import { Route } from "react-router-dom";
-
 import { createBrowserHistory } from "history";
 import { ConnectedRouter } from "connected-react-router";
 import { setupBrandColors } from "theme/branding";
 import { setupI18n } from "./i18n/setup";
-
+import {
+  UnsupportedBrowser,
+  unsupportedBrowser,
+} from "components/UnsupportedBrowser";
 const appConfig = require("../config/main");
 const introspectionQueryResultData = require("./app/apollo/fragmentTypes.json");
 
-if (appConfig.env === "production") {
-  Raven.config(appConfig.app.errorTracking.url, {
-    release: appConfig.build,
-  }).install();
-}
+const rootElement = document.getElementById("impactasaurus");
 
-const networkInterface = createNetworkInterface({
-  uri: appConfig.app.api + "/v1/graphql",
-});
-networkInterface.use([
-  {
-    applyMiddleware(req: any, next) {
-      if (!req.options.headers) {
-        req.options.headers = {};
-      }
-      req.options.headers.authorization = getToken()
-        ? `Bearer ${getToken()}`
-        : null;
-      next();
+const initApp = () => {
+  if (appConfig.env === "production") {
+    Raven.config(appConfig.app.errorTracking.url, {
+      release: appConfig.build,
+    }).install();
+  }
+
+  const networkInterface = createNetworkInterface({
+    uri: appConfig.app.api + "/v1/graphql",
+  });
+  networkInterface.use([
+    {
+      applyMiddleware(req: any, next) {
+        if (!req.options.headers) {
+          req.options.headers = {};
+        }
+        req.options.headers.authorization = getToken()
+          ? `Bearer ${getToken()}`
+          : null;
+        next();
+      },
     },
-  },
-]);
-const fragmentMatcher = new IntrospectionFragmentMatcher({
-  introspectionQueryResultData,
-});
-const client = new ApolloClient({
-  networkInterface,
-  fragmentMatcher,
-});
+  ]);
+  const fragmentMatcher = new IntrospectionFragmentMatcher({
+    introspectionQueryResultData,
+  });
+  const client = new ApolloClient({
+    networkInterface,
+    fragmentMatcher,
+  });
 
-const history = createBrowserHistory();
-const store = configureStore(
-  history,
-  client.reducer(),
-  [client.middleware()],
-  window.__INITIAL_STATE__
-);
+  const history = createBrowserHistory();
+  const store = configureStore(
+    history,
+    client.reducer(),
+    [client.middleware()],
+    window.__INITIAL_STATE__
+  );
 
-setupI18n();
-setupBrandColors();
+  setupI18n();
+  setupBrandColors();
 
-ReactDOM.render(
-  <ApolloProvider client={client} store={store}>
-    <ConnectedRouter history={history}>
-      <Route path="/" component={withTracker(containers.App)} />
-    </ConnectedRouter>
-  </ApolloProvider>,
-  document.getElementById("impactasaurus")
-);
+  ReactDOM.render(
+    <ApolloProvider client={client} store={store}>
+      <ConnectedRouter history={history}>
+        <Route path="/" component={withTracker(containers.App)} />
+      </ConnectedRouter>
+    </ApolloProvider>,
+    rootElement
+  );
+};
+
+if (unsupportedBrowser()) {
+  ReactDOM.render(<UnsupportedBrowser />, rootElement);
+} else {
+  initApp();
+}

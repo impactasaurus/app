@@ -6,11 +6,7 @@ const copy = `&copy; ${new Date().getFullYear()} Impactasaurus.`;
 
 export const Footer = (): JSX.Element => {
   const { t } = useTranslation();
-  const copyright = (
-    <span className="copyright">
-      {copy}
-    </span>
-  );
+  const copyright = <span className="copyright">{copy}</span>;
   return (
     <div id="footer">
       <span className="left">

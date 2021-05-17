@@ -48,8 +48,12 @@ var config = {
         loader: 'awesome-typescript-loader'
       },
       {
-        test: /\.jsx$/,
-        loader: 'babel-loader'
+        test: /\.jsx?$/,
+        loader: 'babel-loader',
+        exclude: (file) => {
+          // only compile node_modules when required
+          return /node_modules/.test(file) && !file.includes("/node_modules/language-name-map/");
+        }
       },
       {
         test: /\.css$/,
