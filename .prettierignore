@@ -8,3 +8,4 @@ src/i18n/locales
 .husky
 .prettierignore
 *.ejs
+.gitignore

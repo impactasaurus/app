@@ -7,9 +7,15 @@
   </head>
   <body>
     <div id="impactasaurus">
-      <div id="unsupported" style="display: none;">
-        <p style="margin-top: 50px;">
-          <b>Unsupported Browser!</b> To access Impactasaurus, please switch to an updated, modern browser; we recommend Chrome, Firefox, Safari or Edge.
+      <div id="unsupported" style="display: none; margin-top: 50px; background: white; z-index: 2;">
+        <p>
+          <b>Whoops something went wrong!</b>
+        </p>
+        <p>
+          This may be because you don't have a reliable internet connection, or you are using an unsupported browser.
+        </p>
+        <p>
+          If the later, please try switching to a modern browser; we recommend the latest versions of Chrome, Firefox, Safari or Edge.
         </p>
       </div>
     </div>
@@ -19,9 +25,9 @@
         var element = document.getElementById("unsupported");
         if (element) {
           element.style.display = "block";
-          throw new Error("Failed to compile: " + window.navigator.userAgent);
+          throw new Error("Failed to load: " + window.navigator.userAgent);
         }
-      }, 2000);
+      }, 5000);
     </script>
     <!-- inspectlet -->
     <script type="text/javascript">
