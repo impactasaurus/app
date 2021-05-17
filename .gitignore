@@ -5,6 +5,7 @@ build
 logs
 *.log
 npm-debug.log*
+.eslintcache
 
 # Runtime data
 pids
