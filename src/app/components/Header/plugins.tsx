@@ -18,7 +18,12 @@ const HeaderPluginsInner = (p: IProps): JSX.Element[] => {
   const items: JSX.Element[] = [];
   if (pluginActive("sve")) {
     items.push(
-      <Menu.Item as={Link} to="/plugin/sve" active={p.isActive("/plugin/sve")}>
+      <Menu.Item
+        as={Link}
+        key="sve"
+        to="/plugin/sve"
+        active={p.isActive("/plugin/sve")}
+      >
         <Icon name="cogs" className="replacement" />
         <span className="title">{buttonTitle}</span>
       </Menu.Item>

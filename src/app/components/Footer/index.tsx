@@ -2,11 +2,14 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 import "./style.less";
 
-const copy = `&copy; ${new Date().getFullYear()} Impactasaurus.`;
-
 export const Footer = (): JSX.Element => {
   const { t } = useTranslation();
-  const copyright = <span className="copyright">{copy}</span>;
+  // eslint-disable-next-line i18next/no-literal-string
+  const copyright = (
+    <span className="copyright">
+      &copy; {new Date().getFullYear()} Impactasaurus.
+    </span>
+  );
   return (
     <div id="footer">
       <span className="left">
