@@ -20,7 +20,7 @@ const Inner = (p: IProps) => {
     <OnboardingChecklistItem
       title={t("Generate a report")}
       description={t(
-        "Reports are used to demonstrate your impact. A beneficiary must have at least two records to be included in a report. Create another record for the same beneficiary and then try generating a report."
+        "Reports are used to demonstrate your impact. Beneficiaries should ideally complete the same questionnaire before and after your intervention so that your impact can be assessed. Create another record for the same beneficiary and then try generating a report."
       )}
       completed={completed}
       loading={loading}
