@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { IFormOutput as ReportForm } from "components/ReportForm";
 import { Button } from "semantic-ui-react";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { getOutcomeSet, IOutcomeResult } from "apollo/modules/outcomeSets";
 import { getJOCServiceReport, IJOCReportResult } from "apollo/modules/reports";
+import { QuestionSelect } from "components/QuestionSelect";
 
 export interface IDeflators {
   deadweight?: number;
@@ -20,10 +21,32 @@ interface IProps extends IJOCReportResult {
 }
 
 const SVECalculatorInner = (p: IProps): JSX.Element => {
+  const [dropOffQ, setDropOffQ] = useState<string>();
+  const [attributionQ, setAttributionQ] = useState<string>();
+  const [deadWeightQ, setDeadWeightQ] = useState<string>();
   const dummy = () => {
     p.onFormSubmit({ dropOff: 0.3 });
   };
-  return <Button onClick={dummy}>Submit</Button>;
+  return (
+    <>
+      <QuestionSelect
+        questionnaireID={p.data.getOutcomeSet.id}
+        onChange={setDropOffQ}
+        questionID={dropOffQ}
+      />
+      <QuestionSelect
+        questionnaireID={p.data.getOutcomeSet.id}
+        onChange={setAttributionQ}
+        questionID={attributionQ}
+      />
+      <QuestionSelect
+        questionnaireID={p.data.getOutcomeSet.id}
+        onChange={setDeadWeightQ}
+        questionID={deadWeightQ}
+      />
+      <Button onClick={dummy}>Submit</Button>
+    </>
+  );
 };
 
 // t("data")
