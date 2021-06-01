@@ -32,8 +32,8 @@ const SVEInner = () => {
     if (d.attribution) {
       qp.set("a", d.attribution.toString());
     }
-    if (d.deadweight) {
-      qp.set("dw", d.deadweight.toString());
+    if (d.deadWeight) {
+      qp.set("dw", d.deadWeight.toString());
     }
     if (d.dropOff) {
       qp.set("do", d.dropOff.toString());
