@@ -27,6 +27,7 @@ export interface IFormOutput {
 interface IProps {
   onFormSubmit(v: IFormOutput): void;
   t: (text: string) => string;
+  initial?: IFormOutput;
 }
 
 const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
@@ -93,7 +94,7 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
   );
 
   return (
-    <Form className="screen" onSubmit={submitForm}>
+    <Form className="screen" onSubmit={submitForm} id="report-form-component">
       <FormField
         error={errors.questionSetID}
         touched={touched.questionSetID}
@@ -220,7 +221,10 @@ export const ReportForm = withFormik<IProps, IFormOutput>({
     formikBag.setSubmitting(true);
     formikBag.props.onFormSubmit(v as IFormOutput);
   },
-  mapPropsToValues: (): IFormOutput => {
+  mapPropsToValues: (p: IProps): IFormOutput => {
+    if (p.initial) {
+      return p.initial;
+    }
     return {
       questionSetID: "",
       all: true,

@@ -6,7 +6,7 @@ interface IProps {
   error?: string;
   inputID: string;
   label: string | JSX.Element;
-  touched: boolean;
+  touched?: boolean;
   required?: boolean;
   width?: SemanticWIDTHS;
   description?: string;

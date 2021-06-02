@@ -175,7 +175,6 @@
     "url-search-params-polyfill": "4.0.1"
   },
   "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx}": "eslint --cache --fix",
     "*": "prettier --write"
   }
 }
