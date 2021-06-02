@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 import React, { useEffect, useState } from "react";
 import { IFormOutput as ReportForm } from "components/ReportForm";
 import { Form } from "semantic-ui-react";
