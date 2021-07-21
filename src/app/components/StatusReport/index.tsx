@@ -16,8 +16,13 @@ import { IURLConnector, UrlConnector } from "redux/modules/url";
 import { IReportOptions, NoRecordsMessage } from "containers/Report/helpers";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { connect } from "react-redux";
+import { StatusReportDistribution } from "./distribution";
 
-const allowedVisualisations = [Visualisation.RADAR, Visualisation.TABLE];
+const allowedVisualisations = [
+  Visualisation.RADAR,
+  Visualisation.DISTRIBUTION,
+  Visualisation.TABLE,
+];
 
 interface IProp extends IURLConnector, IReportOptions {
   data?: IOutcomeResult;
@@ -42,6 +47,15 @@ const StatusReportInner = (p: IProp) => {
         <StatusReportRadar
           statusReport={p.statusReport.getStatusReport}
           questionSet={p.data.getOutcomeSet}
+          category={p.agg === Aggregation.CATEGORY}
+        />
+      );
+    }
+    if (p.vis === Visualisation.DISTRIBUTION) {
+      return (
+        <StatusReportDistribution
+          statusReport={p.statusReport.getStatusReport}
+          questionnaire={p.data.getOutcomeSet}
           category={p.agg === Aggregation.CATEGORY}
         />
       );

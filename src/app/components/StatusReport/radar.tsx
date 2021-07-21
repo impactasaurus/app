@@ -1,6 +1,6 @@
 import * as React from "react";
 import {
-  IAnswerAggregation,
+  IAnswerDistance,
   ILatestAggregation,
   ILatestAggregationReport,
 } from "models/report";
@@ -57,10 +57,10 @@ function getCategoryRadarData(
   t: (text: string) => string,
   p: IProp
 ): RadarData {
-  const getCatLabel = (aa: IAnswerAggregation): string => {
+  const getCatLabel = (aa: IAnswerDistance): string => {
     return getCategoryFriendlyName(aa.id, p.questionSet);
   };
-  const getCatIdx = (aa: IAnswerAggregation): number => {
+  const getCatIdx = (aa: IAnswerDistance): number => {
     return p.questionSet.categories.findIndex((c) => c.id === aa.id);
   };
   return {
@@ -79,10 +79,10 @@ function getQuestionRadarData(
   t: (text: string) => string,
   p: IProp
 ): RadarData {
-  const getQLabel = (aa: IAnswerAggregation): string => {
+  const getQLabel = (aa: IAnswerDistance): string => {
     return getQuestionFriendlyName(aa.id, p.questionSet);
   };
-  const getQIdx = (aa: IAnswerAggregation): number => {
+  const getQIdx = (aa: IAnswerDistance): number => {
     return p.questionSet.questions.findIndex((q) => q.id === aa.id);
   };
   return {

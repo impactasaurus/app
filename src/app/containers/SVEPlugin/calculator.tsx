@@ -8,7 +8,7 @@ import { getJOCServiceReport, IJOCReportResult } from "apollo/modules/reports";
 import { QuestionSelect } from "components/QuestionSelect";
 import { useTranslation } from "react-i18next";
 import { FormField } from "components/FormField";
-import { IAnswerAggregation, IAnswerAggregationReport } from "models/report";
+import { IAnswerDistance, IAnswerAggregationReport } from "models/report";
 import { convertQuestionValueToPercentage } from "helpers/questionnaire";
 import { IOutcomeSet } from "models/outcomeSet";
 
@@ -28,7 +28,7 @@ interface IProps extends IJOCReportResult {
 
 const extractFraction = (
   qID: string | undefined,
-  extractor: (aa: IAnswerAggregation) => number,
+  extractor: (aa: IAnswerDistance) => number,
   report: IAnswerAggregationReport,
   questionnaire: IOutcomeSet
 ): number | undefined => {

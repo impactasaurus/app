@@ -8,6 +8,25 @@ export interface IID {
   id: string;
 }
 
+export interface value {
+  value: number;
+}
+
+export interface IAnswerTimestampedDistance extends IID {
+  initial: value;
+  latest: value;
+}
+
+export interface IAnswerDistance extends IID {
+  initial: number;
+  latest: number;
+}
+
+export interface IBenDistance extends IID {
+  questions: IAnswerTimestampedDistance[];
+  categories: IAnswerTimestampedDistance[];
+}
+
 export interface IExclusion {
   beneficiary?: string;
   question?: string;
@@ -15,16 +34,10 @@ export interface IExclusion {
   reason: string;
 }
 
-export interface IAnswerAggregation extends IID {
-  initial: number;
-  latest: number;
-  stats: IDelta;
-}
-
 export interface IAnswerAggregationReport {
-  beneficiaries: IID[];
-  questions: IAnswerAggregation[];
-  categories: IAnswerAggregation[];
+  beneficiaries: IBenDistance[];
+  questions: IAnswerDistance[];
+  categories: IAnswerDistance[];
   excluded: IExclusion[];
 }
 
@@ -32,20 +45,32 @@ export const answerAggregationFragment = gql`
   fragment answerAggregationFragment on Report {
     beneficiaries {
       id
+      categories {
+        id
+        initial {
+          value
+        }
+        latest {
+          value
+        }
+      }
+      questions {
+        id
+        initial {
+          value
+        }
+        latest {
+          value
+        }
+      }
     }
     questions {
       id
-      stats {
-        delta
-      }
       initial
       latest
     }
     categories {
       id
-      stats {
-        delta
-      }
       initial
       latest
     }
@@ -113,6 +138,24 @@ export const latestAggregationFragment = gql`
   fragment latestAggregationFragment on Report {
     beneficiaries {
       id
+      categories {
+        id
+        initial {
+          value
+        }
+        latest {
+          value
+        }
+      }
+      questions {
+        id
+        initial {
+          value
+        }
+        latest {
+          value
+        }
+      }
     }
     questions {
       id
@@ -136,7 +179,7 @@ export interface ILatestAggregation extends IID {
 }
 
 export interface ILatestAggregationReport {
-  beneficiaries: IID[];
+  beneficiaries: IBenDistance[];
   questions: ILatestAggregation[];
   categories: ILatestAggregation[];
   excluded: IExclusion[];

@@ -6,6 +6,7 @@ export enum Visualisation {
   TABLE,
   GRAPH,
   BAR,
+  DISTRIBUTION,
 }
 export function getVisualisation(
   prefState: PrefState,
