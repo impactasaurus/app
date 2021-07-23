@@ -90,5 +90,5 @@ jobs:
           bucket-region: ${{ secrets.S3_BUCKET_REGION }}
           dist-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
           invalidation: /
-          delete-removed: true
+          delete-removed: false
           private: true
