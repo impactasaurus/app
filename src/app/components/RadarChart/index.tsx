@@ -108,7 +108,9 @@ const RadarChart = (p: IProp): JSX.Element => {
         p.data.scaleMin,
         p.data.scaleMax
       )}
-      style={{ fillAlpha: 0.2 }}
+      style={{
+        fillAlpha: 0.07,
+      }}
     />
   );
 };

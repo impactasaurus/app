@@ -135,7 +135,7 @@
     "core-js": "3.8.3",
     "css-vars-ponyfill": "2.4.2",
     "date-fns": "2.16.1",
-    "distinct-colors": "1.0.4",
+    "distinct-colors": "3.0.0",
     "email-validator": "2.0.4",
     "escape-string-regexp": "1.0.5",
     "formik": "2.2.3",
