@@ -20,14 +20,9 @@ import {
   EmptyReportMessage,
 } from "containers/Report/helpers";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
-import { ServiceReportDistribution } from "./distribution";
 const { connect } = require("react-redux");
 
-const allowedVisualisations = [
-  Visualisation.RADAR,
-  Visualisation.DISTRIBUTION,
-  Visualisation.TABLE,
-];
+const allowedVisualisations = [Visualisation.RADAR, Visualisation.TABLE];
 
 interface IProp extends IJOCReportResult, IURLConnector, IReportOptions {
   data?: IOutcomeResult;
@@ -73,15 +68,6 @@ class ServiceReportInner extends React.Component<IProp, null> {
         <ServiceReportRadar
           serviceReport={p.JOCServiceReport.getJOCServiceReport}
           questionSet={p.data.getOutcomeSet}
-          category={p.agg === Aggregation.CATEGORY}
-        />
-      );
-    }
-    if (p.vis === Visualisation.DISTRIBUTION) {
-      return (
-        <ServiceReportDistribution
-          serviceReport={p.JOCServiceReport.getJOCServiceReport}
-          questionnaire={p.data.getOutcomeSet}
           category={p.agg === Aggregation.CATEGORY}
         />
       );

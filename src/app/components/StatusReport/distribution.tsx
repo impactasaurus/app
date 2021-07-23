@@ -6,10 +6,10 @@ import {
   ILatestAggregationReport,
 } from "models/report";
 import {
-  AnswerDistribution,
+  AnswerDistributionChart,
   IAnswerDistribution,
   IAnswerDistributionSeries,
-} from "components/AnswerDistribution";
+} from "components/AnswerDistributionChart";
 import { useTranslation } from "react-i18next";
 import {
   getCategoryFriendlyName,
@@ -87,7 +87,7 @@ export const StatusReportDistribution = (p: IProps): JSX.Element => {
   };
 
   return (
-    <AnswerDistribution
+    <AnswerDistributionChart
       selectLabel={p.category ? t("Category") : t("Question")}
       data={getDataSet()}
     />

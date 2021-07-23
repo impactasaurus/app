@@ -127,17 +127,6 @@ const VizControlPanelInner = (p: IProps) => {
             </Button>
           );
           break;
-        case Visualisation.DISTRIBUTION:
-          addButton(
-            <Button
-              key="distribution"
-              active={p.vis === Visualisation.DISTRIBUTION}
-              onClick={setVisPref(Visualisation.DISTRIBUTION)}
-            >
-              {t("Distribution")}
-            </Button>
-          );
-          break;
         default:
           throw new Error("not valid visualisation");
       }

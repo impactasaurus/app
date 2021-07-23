@@ -1,9 +1,5 @@
 import { gql } from "react-apollo";
 
-export interface IDelta {
-  delta: number;
-}
-
 export interface IID {
   id: string;
 }
@@ -12,20 +8,9 @@ export interface value {
   value: number;
 }
 
-export interface IAnswerTimestampedDistance {
-  aID: string;
-  initial: value;
-  latest: value;
-}
-
 export interface IAnswerDistance extends IID {
   initial: number;
   latest: number;
-}
-
-export interface IBenDistance extends IID {
-  questions: IAnswerTimestampedDistance[];
-  categories: IAnswerTimestampedDistance[];
 }
 
 export interface IExclusion {
@@ -36,7 +21,7 @@ export interface IExclusion {
 }
 
 export interface IAnswerAggregationReport {
-  beneficiaries: IBenDistance[];
+  beneficiaries: IID[];
   questions: IAnswerDistance[];
   categories: IAnswerDistance[];
   excluded: IExclusion[];
@@ -46,24 +31,6 @@ export const answerAggregationFragment = gql`
   fragment answerAggregationFragment on Report {
     beneficiaries {
       id
-      categories {
-        aID: id
-        initial {
-          value
-        }
-        latest {
-          value
-        }
-      }
-      questions {
-        aID: id
-        initial {
-          value
-        }
-        latest {
-          value
-        }
-      }
     }
     questions {
       id
@@ -83,6 +50,10 @@ export const answerAggregationFragment = gql`
     }
   }
 `;
+
+export interface IDelta {
+  delta: number;
+}
 
 export interface IAnswerDelta {
   aID: string;
@@ -168,6 +139,17 @@ export const latestAggregationFragment = gql`
     }
   }
 `;
+
+export interface IAnswerTimestampedDistance {
+  aID: string;
+  initial: value;
+  latest: value;
+}
+
+export interface IBenDistance extends IID {
+  questions: IAnswerTimestampedDistance[];
+  categories: IAnswerTimestampedDistance[];
+}
 
 export interface ILatestAggregation extends IID {
   latest: number;

@@ -20,7 +20,7 @@ import { StatusReportDistribution } from "./distribution";
 
 const allowedVisualisations = [
   Visualisation.RADAR,
-  Visualisation.DISTRIBUTION,
+  Visualisation.BAR,
   Visualisation.TABLE,
 ];
 
@@ -51,7 +51,7 @@ const StatusReportInner = (p: IProp) => {
         />
       );
     }
-    if (p.vis === Visualisation.DISTRIBUTION) {
+    if (p.vis === Visualisation.BAR) {
       return (
         <StatusReportDistribution
           statusReport={p.statusReport.getStatusReport}

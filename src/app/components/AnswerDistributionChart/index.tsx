@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { Chart } from "components/Chart";
-import { DropdownItemProps, DropdownProps, Select } from "semantic-ui-react";
 import { SeriesType } from "theme/chartStyle";
+import "./style.less";
 
 export interface IAnswerDistributionSeries {
   name: string;
@@ -42,6 +42,7 @@ const prepareDataset = (data: IAnswerDistribution): any => {
   };
   const labels: string[] = [];
   for (let index = data.min; index <= data.max; index++) {
+    // TODO: use the likert labels if available alongside the values
     labels.push("" + index);
   }
   return {
@@ -60,7 +61,7 @@ const chartConfig = (data: IAnswerDistribution) => {
         intersect: false,
       },
       legend: {
-        display: true,
+        display: false,
       },
       title: {
         display: false,
@@ -74,50 +75,33 @@ const chartConfig = (data: IAnswerDistribution) => {
           },
         ],
       },
+      animation: {
+        duration: 0,
+      },
+      hover: {
+        animationDuration: 0,
+      },
+      responsiveAnimationDuration: 0,
     },
   };
 };
 
-export const AnswerDistribution = (p: IProp): JSX.Element => {
+export const AnswerDistributionChart = (p: IProp): JSX.Element => {
   if (p.data.length === 0) {
     return <div />;
   }
 
-  const [selected, setSelected] = useState(p.data[0].id);
-
-  const setSelectedDistribution = (_, data: DropdownProps) => {
-    setSelected(data.value as string);
-  };
-
-  const getOptions = (): DropdownItemProps[] => {
-    return p.data.map((d) => {
-      return {
-        key: d.id,
-        value: d.id,
-        text: d.name,
-      };
-    });
-  };
-
-  const data = p.data.find((d) => d.id === selected);
-  if (!data) {
-    setSelected(p.data[0].id);
-    return <div />;
-  }
-
+  // TODO: Explain that categories values are rounded
+  // TODO: Style charts and their layout
   return (
-    <div>
-      <span>{p.selectLabel}</span>
-      <Select
-        className="answer-dist-select"
-        value={selected}
-        onChange={setSelectedDistribution}
-        options={getOptions()}
-      />
-      <Chart
-        config={chartConfig(data)}
-        style={{ fillAlpha: 0.8, seriesType: SeriesType.INDEPENDENT }}
-      />
+    <div className="answer-distribution-report">
+      {p.data.map((d) => (
+        <Chart
+          key={d.id}
+          config={chartConfig(d)}
+          style={{ fillAlpha: 0.8, seriesType: SeriesType.INDEPENDENT }}
+        />
+      ))}
     </div>
   );
 };
