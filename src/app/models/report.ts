@@ -12,7 +12,8 @@ export interface value {
   value: number;
 }
 
-export interface IAnswerTimestampedDistance extends IID {
+export interface IAnswerTimestampedDistance {
+  aID: string;
   initial: value;
   latest: value;
 }
@@ -46,7 +47,7 @@ export const answerAggregationFragment = gql`
     beneficiaries {
       id
       categories {
-        id
+        aID: id
         initial {
           value
         }
@@ -55,7 +56,7 @@ export const answerAggregationFragment = gql`
         }
       }
       questions {
-        id
+        aID: id
         initial {
           value
         }
@@ -139,19 +140,13 @@ export const latestAggregationFragment = gql`
     beneficiaries {
       id
       categories {
-        id
-        initial {
-          value
-        }
+        aID: id
         latest {
           value
         }
       }
       questions {
-        id
-        initial {
-          value
-        }
+        aID: id
         latest {
           value
         }
