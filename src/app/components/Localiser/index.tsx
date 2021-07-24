@@ -1,10 +1,16 @@
 import React, { useEffect } from "react";
 import { IGetSelf, getSelf } from "apollo/modules/user";
 import { useTranslation } from "react-i18next";
+import { setPref, SetPrefFunc } from "redux/modules/pref";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
 import moment from "moment";
+
+export const LOCALE_PREF_KEY = "locale";
 
 interface IProps {
   self?: IGetSelf;
+  setPref: SetPrefFunc;
 }
 
 const Inner = (p: IProps) => {
@@ -26,13 +32,19 @@ const Inner = (p: IProps) => {
         prom = i18n.changeLanguage();
       }
       prom.finally(() => {
-        const lan = i18n.language === "tlh" ? "x-pseudo" : i18n.language;
+        const lan = i18n.language;
         moment.locale(lan);
+        p.setPref(LOCALE_PREF_KEY, lan);
       });
     }
   }, [p.self]);
-
   return <div />;
 };
 
-export const Localiser = getSelf(Inner, "self");
+const dispatchToProps = (dispatch) => ({
+  setPref: bindActionCreators(setPref, dispatch),
+});
+
+const ConnectedInner = connect(undefined, dispatchToProps)(Inner);
+
+export const Localiser = getSelf(ConnectedInner, "self");

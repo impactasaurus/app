@@ -5,14 +5,11 @@ import { IMeeting } from "models/meeting";
 import { MeetingRadarWithImpl } from "components/MeetingRadar";
 import { Aggregation } from "models/pref";
 import "./style.less";
-import {
-  getHumanisedDateFromISO,
-  getHumanisedTimeSinceDate,
-} from "helpers/moment";
 import { journeyURI, questionnaireURI, recordURI } from "helpers/url";
 import { Tags } from "../Tag";
 import { Link } from "react-router-dom";
 import { Trans } from "react-i18next";
+import { ISODateString, ISOTimeSince } from "components/Moment";
 
 interface IProp {
   meeting: IMeeting;
@@ -52,10 +49,10 @@ export class TimelineEntry extends React.Component<IProp, null> {
             <Popup
               trigger={
                 <span className="date">
-                  {getHumanisedTimeSinceDate(new Date(m.conducted))}
+                  <ISOTimeSince iso={m.conducted} />
                 </span>
               }
-              content={getHumanisedDateFromISO(m.conducted)}
+              content={<ISODateString iso={m.conducted} />}
             />
           </Card.Meta>
           <Card.Description as={Link} to={recordURI(m.id)}>

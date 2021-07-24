@@ -11,7 +11,6 @@ import { IAnswer } from "models/answer";
 import { IQuestion, Question } from "models/question";
 import { QuestionInline } from "components/QuestionInline";
 import { renderArray } from "helpers/react";
-import { getHumanisedDateFromISO } from "helpers/moment";
 import { QuestionnaireReview } from "components/QuestionnaireReview";
 import { MeetingNotepad } from "components/MeetingNotepad";
 import { connect } from "react-redux";
@@ -19,6 +18,7 @@ import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { useTranslation } from "react-i18next";
 import "rc-slider/assets/index.css";
+import { ISODateString } from "components/Moment";
 
 interface IProps extends IURLConnector, IMeetingMutation {
   data: IMeetingResult;
@@ -97,7 +97,7 @@ const DataEntryInner = (p: IProps) => {
     return (
       <div>
         <h1>
-          {meeting.beneficiary} - {getHumanisedDateFromISO(meeting.conducted)}
+          {meeting.beneficiary} - <ISODateString iso={meeting.conducted} />
         </h1>
         {renderArray(renderQuestion, p.questions)}
         <Button {...props} onClick={setPage(Screen.NOTES)}>

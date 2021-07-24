@@ -3,11 +3,11 @@ import { Button } from "semantic-ui-react";
 import { IURLConnector, UrlHOC } from "redux/modules/url";
 import { getMeeting, IMeetingResult } from "apollo/modules/meetings";
 import { RecordQuestionSummary } from "components/RecordQuestionSummary";
-import { getHumanisedDateFromISO } from "helpers/moment";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { useTranslation } from "react-i18next";
 import "./style.less";
+import { ISODateString } from "components/Moment";
 
 interface IProps extends IURLConnector {
   match: {
@@ -69,7 +69,7 @@ const RecordViewInner = (p: IProps) => {
         <div>
           <h4 className="label inline">{t("Date Conducted")}</h4>
           <span className="conductedDate">
-            {getHumanisedDateFromISO(record.conducted)}
+            <ISODateString iso={record.conducted} />
           </span>
         </div>
       </div>
