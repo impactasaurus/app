@@ -2,13 +2,13 @@ import React from "react";
 import { Table, Icon, Popup, Button } from "semantic-ui-react";
 import { IMeeting, sortMeetingsByConducted } from "../../models/meeting";
 import { renderArrayForArray } from "../../helpers/react";
-import { getHumanisedDate } from "../../helpers/moment";
 import { IURLConnector, UrlHOC } from "redux/modules/url";
 import { deleteMeeting, IDeleteMeetingMutation } from "apollo/modules/meetings";
 import { ConfirmButton } from "components/ConfirmButton";
 import { Link } from "react-router-dom";
 import { Tags } from "../Tag";
 import { useTranslation } from "react-i18next";
+import { ISODateString } from "components/Moment";
 import "./style.less";
 
 interface IProp extends IURLConnector, IDeleteMeetingMutation {
@@ -104,7 +104,7 @@ const RecordListInner = (p: IProp) => {
     return [
       <Table.Row key={r.id}>
         <Table.Cell>
-          {getHumanisedDate(new Date(r.conducted))}
+          <ISODateString iso={r.conducted} />
           {incomplete}
         </Table.Cell>
         <Table.Cell>

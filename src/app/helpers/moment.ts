@@ -61,19 +61,24 @@ export function getEndOfDay(m: moment.Moment): moment.Moment {
   return c;
 }
 
-export function getHumanisedTimeSince(m: moment.Moment): string {
-  return moment.duration(m.diff(moment())).humanize(true);
+export function getHumanisedTimeSinceDate(d: Date, locale?: string): string {
+  const m = moment(d);
+  const diff = m.diff(moment());
+  let duration = moment.duration(diff);
+  if (locale) {
+    duration = duration.locale(locale);
+  }
+  return duration.humanize(true);
 }
 
-export function getHumanisedTimeSinceDate(d: Date): string {
-  return getHumanisedTimeSince(moment(d));
+export function getHumanisedDate(d: Date, locale?: string): string {
+  let m = moment(d);
+  if (locale) {
+    m = m.locale(locale);
+  }
+  return m.format("MMMM Do YYYY");
 }
 
-export function getHumanisedDate(d: Date): string {
-  return moment(d).format("MMMM Do YYYY");
-}
-
-export function getHumanisedDateFromISO(s: string): string {
-  const d = new Date(s);
-  return moment(d).format("MMMM Do YYYY");
+export function getHumanisedDateFromISO(s: string, locale?: string): string {
+  return getHumanisedDate(new Date(s), locale);
 }

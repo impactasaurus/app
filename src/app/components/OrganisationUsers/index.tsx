@@ -7,10 +7,10 @@ import {
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { Table, Label, Popup } from "semantic-ui-react";
 import { renderArrayForArray } from "helpers/react";
-import { getHumanisedDate } from "helpers/moment";
 import { ConfirmButton } from "components/ConfirmButton";
 import { IUpdateUser, updateUser } from "apollo/modules/user";
 import { useTranslation } from "react-i18next";
+import { DateString } from "components/Moment";
 import "./style.less";
 
 interface IProps extends IUpdateUser {
@@ -73,7 +73,9 @@ const OrganisationUsersInner = (p: IProps) => {
     return [
       <Table.Row key={u.id} className={"user " + (u.active ? "" : "inactive")}>
         <Table.Cell>{u.name}</Table.Cell>
-        <Table.Cell>{getHumanisedDate(u.joined)}</Table.Cell>
+        <Table.Cell>
+          <DateString date={u.joined} />
+        </Table.Cell>
         <Table.Cell>
           <Popup
             trigger={<Label>{u.active ? t("Active") : t("Suspended")}</Label>}
