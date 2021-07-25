@@ -1,6 +1,14 @@
 import React from "react";
 import { Chart } from "components/Chart";
 import { SeriesType } from "theme/chartStyle";
+import {
+  Card,
+  Icon,
+  Message,
+  Responsive,
+  SemanticWIDTHS,
+} from "semantic-ui-react";
+import { useTranslation } from "react-i18next";
 import "./style.less";
 
 export interface IAnswerDistributionSeries {
@@ -18,7 +26,6 @@ export interface IAnswerDistribution {
 
 export interface IProp {
   data: IAnswerDistribution[];
-  selectLabel: string;
 }
 
 const prepareDataset = (data: IAnswerDistribution): any => {
@@ -56,6 +63,14 @@ const chartConfig = (data: IAnswerDistribution) => {
     type: "bar",
     data: prepareDataset(data),
     options: {
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        },
+      },
       tooltips: {
         mode: "index",
         intersect: false,
@@ -70,6 +85,7 @@ const chartConfig = (data: IAnswerDistribution) => {
         yAxes: [
           {
             ticks: {
+              stepSize: 1,
               beginAtZero: true,
             },
           },
@@ -86,22 +102,67 @@ const chartConfig = (data: IAnswerDistribution) => {
   };
 };
 
+const roundingWillOccur = (data: IAnswerDistribution[]): boolean => {
+  const willRound = (v: number) => v % 1 !== 0;
+  const roundingReducer = function <T>(
+    arr: T[],
+    roundingChecker: (v: T) => boolean
+  ) {
+    return arr.reduce((rounded, v) => {
+      return rounded || roundingChecker(v);
+    }, false);
+  };
+  return roundingReducer(data, (d) =>
+    roundingReducer(d.series, (s) => roundingReducer(s.values, willRound))
+  );
+};
+
+const graphGrid = (cols: SemanticWIDTHS, p: IProp): JSX.Element => {
+  return (
+    <Card.Group itemsPerRow={cols}>
+      {p.data.map((d) => (
+        <Card key={d.id}>
+          <Card.Content>
+            <Card.Description>
+              <h4 className="title">{d.name}</h4>
+              <Chart
+                config={chartConfig(d)}
+                style={{ fillAlpha: 0.8, seriesType: SeriesType.INDEPENDENT }}
+              />
+            </Card.Description>
+          </Card.Content>
+        </Card>
+      ))}
+    </Card.Group>
+  );
+};
+
 export const AnswerDistributionChart = (p: IProp): JSX.Element => {
   if (p.data.length === 0) {
     return <div />;
   }
-
-  // TODO: Explain that categories values are rounded
-  // TODO: Style charts and their layout
-  return (
+  const { t } = useTranslation();
+  const wrapper = (inner: JSX.Element) => (
     <div className="answer-distribution-report">
-      {p.data.map((d) => (
-        <Chart
-          key={d.id}
-          config={chartConfig(d)}
-          style={{ fillAlpha: 0.8, seriesType: SeriesType.INDEPENDENT }}
-        />
-      ))}
+      {roundingWillOccur(p.data) && (
+        <Message compact={true}>
+          <Icon name="info" />{" "}
+          {t(
+            "Fractional numbers, which are a result of category aggregation, are rounded to the nearest whole number"
+          )}
+        </Message>
+      )}
+      {inner}
     </div>
+  );
+
+  if (p.data.length === 1) {
+    return wrapper(graphGrid(1, p));
+  }
+  return wrapper(
+    <>
+      <Responsive minWidth={990}>{graphGrid(2, p)}</Responsive>
+      <Responsive maxWidth={989}>{graphGrid(1, p)}</Responsive>
+    </>
   );
 };

@@ -86,10 +86,5 @@ export const StatusReportDistribution = (p: IProps): JSX.Element => {
     });
   };
 
-  return (
-    <AnswerDistributionChart
-      selectLabel={p.category ? t("Category") : t("Question")}
-      data={getDataSet()}
-    />
-  );
+  return <AnswerDistributionChart data={getDataSet()} />;
 };
