@@ -14,19 +14,25 @@ function aggregate(values: number[], aggregation: string): number {
   return sum / values.length;
 }
 
+export function getQuestionMinValue(q: Question): number {
+  return Math.min(q.rightValue, q.leftValue);
+}
+
+export function getQuestionMaxValue(q: Question): number {
+  return Math.max(q.leftValue, q.rightValue);
+}
+
 export function getMinQuestionValue(os: IOutcomeSet): number | undefined {
   return getQuestions(os).reduce<number>((prev, q: Question) => {
-    return prev
-      ? Math.min(q.rightValue, q.leftValue, prev)
-      : Math.min(q.rightValue, q.leftValue);
+    const qMin = getQuestionMinValue(q);
+    return prev ? Math.min(qMin, prev) : qMin;
   }, undefined);
 }
 
 export function getMaxQuestionValue(os: IOutcomeSet): number | undefined {
   return getQuestions(os).reduce<number>((prev, q: Question) => {
-    return prev
-      ? Math.max(q.leftValue, q.rightValue, prev)
-      : Math.max(q.leftValue, q.rightValue);
+    const qMax = getQuestionMaxValue(q);
+    return prev ? Math.max(qMax, prev) : qMax;
   }, undefined);
 }
 
@@ -50,13 +56,19 @@ export function getMaxCategoryValue(os: IOutcomeSet): number | undefined {
   }, undefined);
 }
 
-function getCategoryMaxValue(os: IOutcomeSet, cID: string): number | undefined {
+export function getCategoryMaxValue(
+  os: IOutcomeSet,
+  cID: string
+): number | undefined {
   return aggregateAcrossCategoryQuestions(os, cID, (q: Question) =>
     Math.max(q.leftValue, q.rightValue)
   );
 }
 
-function getCategoryMinValue(os: IOutcomeSet, cID: string): number | undefined {
+export function getCategoryMinValue(
+  os: IOutcomeSet,
+  cID: string
+): number | undefined {
   return aggregateAcrossCategoryQuestions(os, cID, (q: Question) =>
     Math.min(q.leftValue, q.rightValue)
   );

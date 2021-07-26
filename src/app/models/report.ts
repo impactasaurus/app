@@ -1,9 +1,5 @@
 import { gql } from "react-apollo";
 
-export interface IDelta {
-  delta: number;
-}
-
 export interface IID {
   id: string;
 }
@@ -15,16 +11,15 @@ export interface IExclusion {
   reason: string;
 }
 
-export interface IAnswerAggregation extends IID {
+export interface IAnswerDistance extends IID {
   initial: number;
   latest: number;
-  stats: IDelta;
 }
 
 export interface IAnswerAggregationReport {
   beneficiaries: IID[];
-  questions: IAnswerAggregation[];
-  categories: IAnswerAggregation[];
+  questions: IAnswerDistance[];
+  categories: IAnswerDistance[];
   excluded: IExclusion[];
 }
 
@@ -35,17 +30,11 @@ export const answerAggregationFragment = gql`
     }
     questions {
       id
-      stats {
-        delta
-      }
       initial
       latest
     }
     categories {
       id
-      stats {
-        delta
-      }
       initial
       latest
     }
@@ -57,6 +46,10 @@ export const answerAggregationFragment = gql`
     }
   }
 `;
+
+export interface IDelta {
+  delta: number;
+}
 
 export interface IAnswerDelta {
   aID: string;
@@ -113,6 +106,18 @@ export const latestAggregationFragment = gql`
   fragment latestAggregationFragment on Report {
     beneficiaries {
       id
+      categories {
+        aID: id
+        latest {
+          value
+        }
+      }
+      questions {
+        aID: id
+        latest {
+          value
+        }
+      }
     }
     questions {
       id
@@ -131,12 +136,27 @@ export const latestAggregationFragment = gql`
   }
 `;
 
+export interface value {
+  value: number;
+}
+
+export interface IAnswerTimestampedDistance {
+  aID: string;
+  initial: value;
+  latest: value;
+}
+
+export interface IBenDistance extends IID {
+  questions: IAnswerTimestampedDistance[];
+  categories: IAnswerTimestampedDistance[];
+}
+
 export interface ILatestAggregation extends IID {
   latest: number;
 }
 
 export interface ILatestAggregationReport {
-  beneficiaries: IID[];
+  beneficiaries: IBenDistance[];
   questions: ILatestAggregation[];
   categories: ILatestAggregation[];
   excluded: IExclusion[];

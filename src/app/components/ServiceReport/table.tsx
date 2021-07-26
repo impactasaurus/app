@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IAnswerAggregation, IAnswerAggregationReport } from "models/report";
+import { IAnswerDistance, IAnswerAggregationReport } from "models/report";
 import { IOutcomeSet } from "models/outcomeSet";
 import { ImpactTable, IRow } from "components/ImpactTable";
 import { useTranslation } from "react-i18next";
@@ -15,7 +15,7 @@ interface IProp {
 }
 
 function getRowData(
-  aa: IAnswerAggregation[],
+  aa: IAnswerDistance[],
   labeller: (IAnswerAggregation) => string
 ): IRow[] {
   return aa.map((a): IRow => {
@@ -28,14 +28,14 @@ function getRowData(
 }
 
 function getCategoryRows(p: IProp): IRow[] {
-  const categoryLabeller = (aa: IAnswerAggregation): string => {
+  const categoryLabeller = (aa: IAnswerDistance): string => {
     return getCategoryFriendlyName(aa.id, p.questionSet);
   };
   return getRowData(p.serviceReport.categories, categoryLabeller);
 }
 
 function getQuestionRows(p: IProp): IRow[] {
-  const qLabeller = (aa: IAnswerAggregation): string => {
+  const qLabeller = (aa: IAnswerDistance): string => {
     return getQuestionFriendlyName(aa.id, p.questionSet);
   };
   return getRowData(p.serviceReport.questions, qLabeller);
