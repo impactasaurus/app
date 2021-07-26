@@ -65,15 +65,17 @@ export const StatusReportDistribution = (p: IProps): JSX.Element => {
 
   const getDataSet = (): IAnswerDistribution[] => {
     if (p.category) {
-      return p.questionnaire.categories.map((c) => {
-        return {
-          id: c.id,
-          name: getCategoryFriendlyName(c.id, p.questionnaire),
-          min: getCategoryMinValue(p.questionnaire, c.id),
-          max: getCategoryMaxValue(p.questionnaire, c.id),
-          series: populateAnswerDistribution(c.id),
-        };
-      });
+      return p.questionnaire.categories
+        .map((c) => {
+          return {
+            id: c.id,
+            name: getCategoryFriendlyName(c.id, p.questionnaire),
+            min: getCategoryMinValue(p.questionnaire, c.id),
+            max: getCategoryMaxValue(p.questionnaire, c.id),
+            series: populateAnswerDistribution(c.id),
+          };
+        })
+        .filter((c) => c.min && c.max);
     }
     return p.questionnaire.questions.map((q) => {
       return {

@@ -29,28 +29,23 @@ export interface IProp {
 }
 
 const prepareDataset = (data: IAnswerDistribution): any => {
-  const seriesStyler = (x: IAnswerDistributionSeries) => {
-    console.log(x.values);
-    return {
-      label: x.name,
-      data: x.values.reduce((arr, v) => {
-        const index = Math.round(v) - data.min;
-        if (!arr[index]) {
-          arr[index] = 1;
-        } else {
-          arr[index]++;
-        }
-        return arr;
-      }, []),
-      borderWidth: 1,
-      borderSkipped: "left",
-      fill: true,
-    };
-  };
+  const seriesStyler = (x: IAnswerDistributionSeries) => ({
+    label: x.name,
+    data: x.values.reduce((arr, v) => {
+      const index = Math.round(v) - data.min;
+      if (!arr[index]) {
+        arr[index] = 1;
+      } else {
+        arr[index]++;
+      }
+      return arr;
+    }, []),
+    borderWidth: 1,
+    fill: true,
+  });
   const labels: string[] = [];
   for (let index = data.min; index <= data.max; index++) {
-    // TODO: use the likert labels if available alongside the values
-    labels.push("" + index);
+    labels.push(index.toString());
   }
   return {
     datasets: data.series.map(seriesStyler),
@@ -63,14 +58,6 @@ const chartConfig = (data: IAnswerDistribution) => {
     type: "bar",
     data: prepareDataset(data),
     options: {
-      layout: {
-        padding: {
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0,
-        },
-      },
       tooltips: {
         mode: "index",
         intersect: false,
@@ -124,7 +111,7 @@ const graphGrid = (cols: SemanticWIDTHS, p: IProp): JSX.Element => {
         <Card key={d.id}>
           <Card.Content>
             <Card.Description>
-              <h4 className="title">{d.name}</h4>
+              <h4>{d.name}</h4>
               <Chart
                 config={chartConfig(d)}
                 style={{ fillAlpha: 0.8, seriesType: SeriesType.INDEPENDENT }}

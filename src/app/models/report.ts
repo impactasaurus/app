@@ -4,20 +4,16 @@ export interface IID {
   id: string;
 }
 
-export interface value {
-  value: number;
-}
-
-export interface IAnswerDistance extends IID {
-  initial: number;
-  latest: number;
-}
-
 export interface IExclusion {
   beneficiary?: string;
   question?: string;
   category?: string;
   reason: string;
+}
+
+export interface IAnswerDistance extends IID {
+  initial: number;
+  latest: number;
 }
 
 export interface IAnswerAggregationReport {
@@ -139,6 +135,10 @@ export const latestAggregationFragment = gql`
     }
   }
 `;
+
+export interface value {
+  value: number;
+}
 
 export interface IAnswerTimestampedDistance {
   aID: string;
