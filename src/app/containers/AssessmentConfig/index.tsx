@@ -164,9 +164,8 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
       return this.renderLink();
     }
     const showRemoteTypeSelector =
-      (this.getType() === AssessmentType.remote ||
-        this.getType() === AssessmentType.summon) &&
-      getBen(this.props) === undefined;
+      this.getType() === AssessmentType.remote ||
+      this.getType() === AssessmentType.summon;
     const showAssessmentConfig = this.getType() !== AssessmentType.summon;
     const showSummonConfig = this.getType() === AssessmentType.summon;
     const getButtonText = (): string => {
