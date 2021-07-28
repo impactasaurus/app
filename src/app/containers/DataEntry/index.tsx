@@ -4,23 +4,24 @@ import {
   getMeeting,
   completeMeeting,
   IMeetingMutation,
+  setMeetingNotes,
+  ISetMeetingNotes,
 } from "apollo/modules/meetings";
-import { ButtonProps, Button } from "semantic-ui-react";
 import { IURLConnector, UrlConnector } from "redux/modules/url";
 import { IAnswer } from "models/answer";
 import { IQuestion, Question } from "models/question";
 import { QuestionInline } from "components/QuestionInline";
 import { renderArray } from "helpers/react";
-import { QuestionnaireReview } from "components/QuestionnaireReview";
-import { MeetingNotepad } from "components/MeetingNotepad";
 import { connect } from "react-redux";
 import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { useTranslation } from "react-i18next";
 import "rc-slider/assets/index.css";
 import { ISODateString } from "components/Moment";
+import { Notepad } from "components/Notepad";
+import { Button, ButtonProps } from "semantic-ui-react";
 
-interface IProps extends IURLConnector, IMeetingMutation {
+interface IProps extends IURLConnector, IMeetingMutation, ISetMeetingNotes {
   data: IMeetingResult;
   match: {
     params: {
@@ -29,12 +30,6 @@ interface IProps extends IURLConnector, IMeetingMutation {
   };
   questions?: IQuestion[];
   answers?: IAnswer[];
-}
-
-enum Screen {
-  QUESTION,
-  NOTES,
-  REVIEW,
 }
 
 function answeredAllQuestions(p: IProps): boolean {
@@ -47,20 +42,29 @@ function answeredAllQuestions(p: IProps): boolean {
 
 const DataEntryInner = (p: IProps) => {
   const [saving, setSavingInner] = useState(false);
-  const [screen, setScreen] = useState<Screen>(Screen.QUESTION);
+  const [savingError, setSavingError] = useState<string>();
+  const [notes, setNotes] = useState<string>(p.data.getMeeting.notes);
   const { t } = useTranslation();
 
-  const setPage = (page: Screen): (() => void) => {
-    return () => {
-      setScreen(page);
-    };
-  };
-
   const completed = () => {
-    p.setURL(
-      `/beneficiary/${p.data.getMeeting.beneficiary}`,
-      `?q=${p.data.getMeeting.outcomeSetID}`
-    );
+    const ben = p.data.getMeeting.beneficiary;
+    const recordID = p.data.getMeeting.id;
+
+    setSavingInner(true);
+    setSavingError(undefined);
+    p.setMeetingNotes(recordID, notes)
+      .then(() => {
+        return p.completeMeeting(recordID, ben);
+      })
+      .then(() => {
+        setSavingInner(false);
+        setSavingError(undefined);
+        p.setURL(`/beneficiary/${ben}`, `?q=${p.data.getMeeting.outcomeSetID}`);
+      })
+      .catch((e: string) => {
+        setSavingInner(false);
+        setSavingError(e);
+      });
   };
 
   const setSaving = (toSet: boolean) => {
@@ -85,59 +89,43 @@ const DataEntryInner = (p: IProps) => {
 
   const renderQuestionPage = (): JSX.Element => {
     const meeting = p.data.getMeeting;
-
-    const props: ButtonProps = {};
+    const placeholder = t("Record any additional comments, goals or actions");
+    const saveProps: ButtonProps = {};
     if (saving) {
-      props.disabled = true;
+      saveProps.loading = true;
+      saveProps.disabled = true;
     }
     if (!answeredAllQuestions(p)) {
-      props.disabled = true;
+      saveProps.disabled = true;
     }
-
     return (
       <div>
         <h1>
           {meeting.beneficiary} - <ISODateString iso={meeting.conducted} />
         </h1>
         {renderArray(renderQuestion, p.questions)}
-        <Button {...props} onClick={setPage(Screen.NOTES)}>
-          {t("Next")}
+        <h3>{t("Additional Comments")}</h3>
+        <Notepad
+          onChange={setNotes}
+          notes={notes}
+          collapsible={false}
+          placeholder={placeholder}
+        />
+        <Button
+          {...saveProps}
+          onClick={completed}
+          style={{ marginTop: "20px" }}
+        >
+          {t("Save")}
         </Button>
+        {savingError && <p>{savingError}</p>}
       </div>
-    );
-  };
-
-  const renderFinished = (): JSX.Element => {
-    return (
-      <QuestionnaireReview
-        record={p.data.getMeeting}
-        onQuestionClick={setPage(Screen.QUESTION)}
-        onBack={setPage(Screen.NOTES)}
-        onComplete={completed}
-      />
-    );
-  };
-
-  const renderNotepad = (): JSX.Element => {
-    return (
-      <MeetingNotepad
-        record={p.data.getMeeting}
-        onComplete={setPage(Screen.REVIEW)}
-        onBack={setPage(Screen.QUESTION)}
-      />
     );
   };
 
   const meeting = p.data.getMeeting;
   if (meeting === undefined) {
     return <div />;
-  }
-
-  if (screen === Screen.REVIEW) {
-    return renderFinished();
-  }
-  if (screen === Screen.NOTES) {
-    return renderNotepad();
   }
   return renderQuestionPage();
 };
@@ -163,8 +151,10 @@ const DataEntryLoader = ApolloLoaderHoC(
   (p: IProps) => p.data,
   DataEntryConnected
 );
-const DataEntryWithData = completeMeeting<IProps>(
-  getMeeting<IProps>((props) => props.match.params.id)(DataEntryLoader)
+const DataEntryWithData = setMeetingNotes<IProps>(
+  completeMeeting<IProps>(
+    getMeeting<IProps>((props) => props.match.params.id)(DataEntryLoader)
+  )
 );
 // t("Data Entry")
 const DataEntry = MinimalPageWrapperHoC(

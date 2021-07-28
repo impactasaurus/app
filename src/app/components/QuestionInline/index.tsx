@@ -128,7 +128,7 @@ class QuestionInlineInner extends React.Component<IProps, IState> {
   }
 
   private save(s: IState) {
-    if (this.state.saving) {
+    if (this.state.saving || s.value === undefined) {
       return;
     }
     const answer = this.getAnswer();

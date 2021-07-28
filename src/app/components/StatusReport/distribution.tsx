@@ -18,6 +18,7 @@ import {
   getQuestionFriendlyName,
   getQuestionMaxValue,
   getQuestionMinValue,
+  getQuestions,
 } from "helpers/questionnaire";
 import { Question } from "models/question";
 
@@ -77,7 +78,7 @@ export const StatusReportDistribution = (p: IProps): JSX.Element => {
         })
         .filter((c) => c.min && c.max);
     }
-    return p.questionnaire.questions.map((q) => {
+    return getQuestions(p.questionnaire).map((q) => {
       return {
         id: q.id,
         name: getQuestionFriendlyName(q.id, p.questionnaire),
