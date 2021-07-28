@@ -51,6 +51,7 @@ const DataEntryInner = (p: IProps) => {
     const recordID = p.data.getMeeting.id;
 
     setSavingInner(true);
+    setSavingError(undefined);
     p.setMeetingNotes(recordID, notes)
       .then(() => {
         return p.completeMeeting(recordID, ben);
@@ -110,7 +111,11 @@ const DataEntryInner = (p: IProps) => {
           collapsible={false}
           placeholder={placeholder}
         />
-        <Button {...saveProps} onClick={completed}>
+        <Button
+          {...saveProps}
+          onClick={completed}
+          style={{ marginTop: "20px" }}
+        >
           {t("Save")}
         </Button>
         {savingError && <p>{savingError}</p>}
