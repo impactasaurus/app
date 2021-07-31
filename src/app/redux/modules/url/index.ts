@@ -3,7 +3,7 @@ import { IStore } from "redux/IStore";
 import { Action, bindActionCreators, Dispatch } from "redux";
 import { connect } from "react-redux";
 
-export function setURL(url: string, search?: string) {
+export function setURL(url: string, search?: string | URLSearchParams) {
   return (dispatch: Dispatch, getState: () => IStore): void => {
     const routerState = getState().router.location;
     if (routerState.pathname === url) {
@@ -12,7 +12,7 @@ export function setURL(url: string, search?: string) {
     dispatch(
       push({
         pathname: url,
-        search,
+        search: typeof search === "object" ? `?${search.toString()}` : search,
       })
     );
   };
@@ -25,7 +25,7 @@ export function replaceSearchAction(search: string): Action {
 }
 
 export interface IURLConnector {
-  setURL?(url: string, search?: string): void;
+  setURL?(url: string, search?: string | URLSearchParams): void;
 }
 
 export const UrlConnector = (dispatch: Dispatch): IURLConnector => ({

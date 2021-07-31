@@ -5,7 +5,6 @@ import {
   getCategoryFriendlyName,
   getQuestionFriendlyName,
 } from "./questionnaire";
-import { stringify } from "querystring";
 
 function getCategoryWarnings(
   exclusions: IExclusion[],
@@ -74,18 +73,18 @@ export function constructReportQueryParams(
   tags: string[],
   open?: boolean,
   orTags?: boolean
-): string {
-  const params: any = {};
+): URLSearchParams {
+  const params = new URLSearchParams();
   if (Array.isArray(tags) && tags.length > 0) {
-    params.tags = JSON.stringify(tags);
+    params.set("tags", JSON.stringify(tags));
   }
   if (!isNullOrUndefined(open)) {
-    params.open = open;
+    params.set("open", JSON.stringify(open));
   }
   if (!isNullOrUndefined(orTags)) {
-    params.or = orTags;
+    params.set("or", JSON.stringify(orTags));
   }
-  return "?" + stringify(params);
+  return params;
 }
 
 export function constructReportURL(

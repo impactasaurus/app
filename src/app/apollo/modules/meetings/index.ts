@@ -165,11 +165,29 @@ export const getAllMeetings = <T>(
   });
 };
 
-export const exportMeetings = <T>(idExtractor: IDExtractor<T>) => {
+export const exportMeetings = <T>(
+  idExtractor: IDExtractor<T>,
+  start?: IDExtractor<T>,
+  end?: IDExtractor<T>,
+  tags?: Extractor<T, string[]>,
+  orTags?: Extractor<T, boolean>
+) => {
   return graphql<any, T>(
     gql`
-      query ($qid: String!) {
-        exportMeetings: exportMeetings(qID: $qid)
+      query (
+        $qid: String!
+        $start: String
+        $end: String
+        $tags: [String]
+        $orTags: Boolean
+      ) {
+        exportMeetings: exportMeetings(
+          qID: $qid
+          start: $start
+          end: $end
+          tags: $tags
+          orTags: $orTags
+        )
       }
     `,
     {
@@ -177,6 +195,10 @@ export const exportMeetings = <T>(idExtractor: IDExtractor<T>) => {
         return {
           variables: {
             qid: idExtractor(props),
+            start: start ? start(props) : undefined,
+            end: end ? end(props) : undefined,
+            tags: tags ? tags(props) : undefined,
+            orTags: orTags ? orTags(props) : false,
           },
           fetchPolicy: "network-only",
           notifyOnNetworkStatusChange: true,
