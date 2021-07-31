@@ -17,6 +17,7 @@ import { IReportOptions, NoRecordsMessage } from "containers/Report/helpers";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { connect } from "react-redux";
 import { StatusReportDistribution } from "./distribution";
+import { constructReportQueryParams } from "helpers/report";
 
 const allowedVisualisations = [
   Visualisation.RADAR,
@@ -38,6 +39,14 @@ const isCategoryAggregationAvailable = (props: IProp): boolean => {
     return false;
   }
   return props.statusReport.getStatusReport.categories.length > 0;
+};
+
+const exportReportData = (urlConn: IURLConnector, p: IReportOptions): void => {
+  const qp = constructReportQueryParams(p.tags, p.openStart, p.orTags);
+  qp.set("start", p.start.toISOString());
+  qp.set("end", p.end.toISOString());
+  const url = `/settings/data/questionnaire/export/${p.questionnaire}`;
+  urlConn.setURL(url, qp);
 };
 
 const StatusReportInner = (p: IProp) => {
@@ -69,6 +78,10 @@ const StatusReportInner = (p: IProp) => {
     );
   };
 
+  const exportReport = () => {
+    exportReportData(p, p);
+  };
+
   if (
     p.statusReport.getStatusReport &&
     p.statusReport.getStatusReport.beneficiaries.length === 0
@@ -85,6 +98,7 @@ const StatusReportInner = (p: IProp) => {
         canCategoryAg={p.isCategoryAgPossible}
         visualisations={allowedVisualisations}
         allowCanvasSnapshot={p.isCanvasSnapshotPossible}
+        export={exportReport}
       />
       {renderVis()}
     </div>

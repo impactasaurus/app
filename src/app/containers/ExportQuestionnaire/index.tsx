@@ -5,8 +5,9 @@ import { Error } from "components/Error";
 import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
 import { useTranslation } from "react-i18next";
 import * as appConfig from "../../../../config/main";
+import { getSearchParam, ISearchParam } from "helpers/url";
 
-interface IProps {
+interface IProps extends ISearchParam {
   data: IExportMeetingsResult;
   match: {
     params: {
@@ -33,7 +34,11 @@ const ExportQuestionnaireInner = (p: IProps) => {
 };
 
 const ExportQuestionnaireData = exportMeetings(
-  (p: IProps) => p.match.params.id
+  (p: IProps) => p.match.params.id,
+  getSearchParam<string>("start"),
+  getSearchParam<string>("end"),
+  getSearchParam<string[]>("tags"),
+  getSearchParam<boolean>("or")
 )(ExportQuestionnaireInner);
 // t("Questionnaire Export")
 const ExportQuestionnaire = MinimalPageWrapperHoC(
