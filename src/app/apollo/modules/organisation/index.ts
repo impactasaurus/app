@@ -312,7 +312,7 @@ export const getOrganisations = <T>(component, name: string = undefined) => {
   return graphql<IUserOrg, T>(
     gql`
       query {
-        getOrganisations: organisations {
+        getOrganisations: organisations(limit: 20) {
           id
           name
         }
