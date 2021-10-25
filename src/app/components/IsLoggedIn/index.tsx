@@ -97,6 +97,10 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
     this.props.setURL("/login", "?redirect=" + encodeURIComponent(redirectURL));
   }
 
+  private sendToNoOrgPage() {
+    this.props.setURL("/no-org");
+  }
+
   private getTimeToExpiry(): number {
     const expiry = getExpiryDate();
     if (expiry === null) {
@@ -184,6 +188,10 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
     const isLoggedIn = this.isStoredJWTValid();
     if (this.props.isLoggedIn !== isLoggedIn) {
       this.props.setLoggedInStatus(isLoggedIn);
+      const org = getOrganisation();
+      if (!org && this.isPublicPage() === false) {
+        this.sendToNoOrgPage();
+      }
     }
     if (isLoggedIn === false) {
       if (this.isPublicPage() === false) {
