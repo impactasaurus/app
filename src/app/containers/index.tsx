@@ -40,3 +40,4 @@ export { Unsubscribe } from "./Unsubscribe";
 export { BeneficiaryConfig } from "./BeneficiaryConfig";
 export { Users } from "./Users";
 export { SVE } from "./SVEPlugin";
+export { NoOrgPage } from "./NoOrg";

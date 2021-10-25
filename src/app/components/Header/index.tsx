@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { ProfileMenu } from "./profile";
 import { connect } from "react-redux";
 import { HeaderPlugins } from "./plugins";
+import { getOrganisation } from "helpers/auth";
 
 interface IProps {
   currentURL?: string;
@@ -37,7 +38,8 @@ const HeaderInner = (p: IProps) => {
 
   const { t } = useTranslation();
   const { isLoggedIn, isBeneficiary } = p;
-  if (isLoggedIn && isBeneficiary !== true) {
+  const org = getOrganisation();
+  if (isLoggedIn && isBeneficiary !== true && org) {
     return (
       <Menu size="massive">
         <Menu.Item
@@ -92,7 +94,7 @@ const HeaderInner = (p: IProps) => {
         </Menu.Menu>
       </Menu>
     );
-  } else if (isLoggedIn && isBeneficiary) {
+  } else if (isLoggedIn) {
     return (
       <Menu size="massive">
         <Menu.Item id="home-link">
