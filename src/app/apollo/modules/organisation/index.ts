@@ -123,9 +123,9 @@ export function acceptInvite<T>(component) {
   return graphql<any, T>(
     gql`
       mutation (
-        $name: String!
-        $email: String!
-        $password: String!
+        $name: String
+        $email: String
+        $password: String
         $invite: String!
       ) {
         acceptInvite: AcceptInvite(
@@ -139,10 +139,10 @@ export function acceptInvite<T>(component) {
     {
       props: ({ mutate }) => ({
         acceptInvite: (
-          name: string,
-          email: string,
-          password: string,
-          invite: string
+          invite: string,
+          name?: string,
+          email?: string,
+          password?: string
         ): Promise<any> =>
           mutate({
             variables: {
@@ -159,10 +159,10 @@ export function acceptInvite<T>(component) {
 
 export interface IAcceptInvite {
   acceptInvite(
-    name: string,
-    email: string,
-    password: string,
-    invite: string
+    invite: string,
+    name?: string,
+    email?: string,
+    password?: string
   ): Promise<void>;
 }
 
