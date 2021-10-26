@@ -10,6 +10,7 @@ import {
 } from "formik";
 import EmailValidator from "email-validator";
 import { withTranslation, WithTranslation, Trans } from "react-i18next";
+import { Link } from "react-router-dom";
 
 export interface IFormOutput {
   name: string;
@@ -19,6 +20,8 @@ export interface IFormOutput {
   organisation: string;
   policyAcceptance: boolean;
 }
+
+const ALREADY_EXISTS = "already-exists";
 
 interface IProps extends WithTranslation {
   onFormSubmit(v: IFormOutput): Promise<void>;
@@ -56,6 +59,25 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
   const signupVsInvite = t(
     "If your organisation already has an account with Impactasaurus, please request an invite from your colleagues"
   );
+  let statusElement = <span>{status}</span>;
+  if (status && status.startsWith(ALREADY_EXISTS)) {
+    statusElement = (
+      <Trans
+        defaults="User with email address {email} already exists, please <lLink>login</lLink> to accept the invitation"
+        components={{
+          lLink: (
+            <Link
+              to={
+                "/login?redirect=" +
+                encodeURIComponent(window.location.pathname)
+              }
+            />
+          ),
+        }}
+        values={{ email: status.split(":")[1] }}
+      />
+    );
+  }
   return (
     <Form className="screen" onSubmit={submitForm}>
       <FormField
@@ -170,7 +192,7 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
       {status && (
         <span className="submit-error">
           <Icon name="exclamation" />
-          {status}
+          {statusElement}
         </span>
       )}
     </Form>
@@ -223,11 +245,7 @@ const SignupFormInner = withFormik<IProps, IFormOutput>({
       formikBag.setSubmitting(false);
       console.error(e);
       if (e.message.includes("already")) {
-        formikBag.setStatus(
-          t("User with email address {email} already exists", {
-            email: v.email,
-          })
-        );
+        formikBag.setStatus(ALREADY_EXISTS + ":" + v.email);
       } else {
         const e1 = t("Signup failed.");
         const e2 = t(

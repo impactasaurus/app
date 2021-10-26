@@ -16,6 +16,7 @@ import { ProfileMenu } from "./profile";
 import { connect } from "react-redux";
 import { HeaderPlugins } from "./plugins";
 import { getOrganisation } from "helpers/auth";
+const config = require("../../../../config/main").app.auth;
 
 interface IProps {
   currentURL?: string;
@@ -34,6 +35,15 @@ const HeaderInner = (p: IProps) => {
 
   const logOut = () => {
     p.logout("/login");
+  };
+
+  const shouldShowLoginPrompt = () => {
+    for (const lp of config.loginPrompt) {
+      if (lp.test(p.currentURL)) {
+        return true;
+      }
+    }
+    return false;
   };
 
   const { t } = useTranslation();
@@ -117,6 +127,13 @@ const HeaderInner = (p: IProps) => {
         >
           <Logo />
         </Menu.Item>
+        {shouldShowLoginPrompt() && (
+          <Menu.Menu position="right">
+            <Menu.Item as={Link} to="/login">
+              {t("Log In")}
+            </Menu.Item>
+          </Menu.Menu>
+        )}
       </Menu>
     );
   }
