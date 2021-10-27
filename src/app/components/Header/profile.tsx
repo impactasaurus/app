@@ -53,7 +53,8 @@ const ProfileMenuInner = (p: IProps): JSX.Element => {
           return refreshToken();
         })
         .then(() => {
-          location.reload();
+          // hard refresh to homepage to clear cache and avoid permission issues
+          window.location.href = "/";
         })
         .catch((e) => {
           console.error(e);

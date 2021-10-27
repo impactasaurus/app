@@ -21,7 +21,8 @@ var config = {
       domain: "auth.impactasaurus.org",
       scope : "openid profile email",
       connection: "Username-Password-Authentication",
-      publicPages: [/login/, /jti\/.*/, /smn\/.*/, /redirect/, /signup/,  /invite\/.*/, /unsubscribe\/.*/]
+      publicPages: [/login/, /jti\/.*/, /smn\/.*/, /redirect/, /signup/,  /invite\/.*/, /unsubscribe\/.*/],
+      loginPrompt: [/invite\/.*/]
     },
     analytics: {
       debug: process.env.NODE_ENV !== "production",

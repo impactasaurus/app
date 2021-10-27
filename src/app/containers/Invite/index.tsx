@@ -14,12 +14,17 @@ import { IFormOutput, SignupForm } from "components/SignupForm";
 import { Error } from "components/Error";
 import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { refreshToken } from "helpers/auth";
+import { AddOrg } from "./AddOrg";
 
 interface IProps extends IURLConnector, IAcceptInvite {
   match: {
     params: {
       id: string;
     };
+  };
+  location: {
+    search: string;
   };
   isLoggedIn?: boolean;
   data?: ICheckInvite;
@@ -28,20 +33,30 @@ interface IProps extends IURLConnector, IAcceptInvite {
 const InviteInner = (p: IProps) => {
   const onFormSubmit = (v: IFormOutput): Promise<void> => {
     return p
-      .acceptInvite(v.name, v.email, v.password, p.match.params.id)
+      .acceptInvite(p.match.params.id, v.name, v.email, v.password)
       .then(() => {
         p.setURL("/login");
       });
   };
+  const onAddOrg = (): Promise<void> => {
+    const reset = () =>
+      (window.location.href = window.location.pathname + "?success=true");
+    return p.acceptInvite(p.match.params.id).then(() => {
+      return (
+        refreshToken()
+          .then(() => {
+            // hard reset to clear cache
+            reset();
+          })
+          // token refresh is best effort
+          .catch(() => {
+            reset();
+          })
+      );
+    });
+  };
 
   const { t } = useTranslation();
-  if (p.isLoggedIn) {
-    return (
-      <Message error={true}>
-        <div>{t("Please logout to use this invite link.")}</div>
-      </Message>
-    );
-  }
   if (p.data.error) {
     if (p.data.error.message.includes("expired")) {
       return (
@@ -67,6 +82,18 @@ const InviteInner = (p: IProps) => {
   }
   if (p.data.loading) {
     return <Loader active={true} inline="centered" />;
+  }
+  if (p.isLoggedIn) {
+    const urlParams = new URLSearchParams(p.location.search);
+    return (
+      <AddOrg
+        onAgree={onAddOrg}
+        orgID={p.data.checkInvite}
+        success={
+          urlParams.has("success") && urlParams.get("success") === "true"
+        }
+      />
+    );
   }
   return <SignupForm onFormSubmit={onFormSubmit} collectOrgName={false} />;
 };
