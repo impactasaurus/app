@@ -50,7 +50,7 @@ export const AddOrg = (p: IProps): JSX.Element => {
         <div>{t("You have successfully accepted the invitation.")}</div>
         <div>
           {t(
-            "Switch accounts from your user dropdown in the top right of the screen."
+            "Switch accounts from your user dropdown in the top right of the screen. You may need to log out and back in again to see your new account."
           )}
         </div>
       </Message>

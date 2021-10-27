@@ -39,13 +39,21 @@ const InviteInner = (p: IProps) => {
       });
   };
   const onAddOrg = (): Promise<void> => {
-    return p
-      .acceptInvite(p.match.params.id)
-      .then(refreshToken)
-      .then(() => {
-        // hard reset to clear cache
-        window.location.href = window.location.pathname + "?success=true";
-      });
+    const reset = () =>
+      (window.location.href = window.location.pathname + "?success=true");
+    return p.acceptInvite(p.match.params.id).then(() => {
+      return (
+        refreshToken()
+          .then(() => {
+            // hard reset to clear cache
+            reset();
+          })
+          // token refresh is best effort
+          .catch(() => {
+            reset();
+          })
+      );
+    });
   };
 
   const { t } = useTranslation();
