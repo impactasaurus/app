@@ -21,6 +21,11 @@ interface IProps extends WithTranslation {
   onCancel: () => void;
 }
 
+enum ErrorStatus {
+  GENERIC_ERROR = 1,
+  NAME_ALREADY_USED = 2,
+}
+
 const InnerForm = (props: IProps & FormikProps<INewQuestionnaire>) => {
   const {
     touched,
@@ -39,6 +44,17 @@ const InnerForm = (props: IProps & FormikProps<INewQuestionnaire>) => {
     submitProps.loading = true;
     submitProps.disabled = true;
   }
+
+  const getStatusText = (): string => {
+    switch (status) {
+      case ErrorStatus.NAME_ALREADY_USED:
+        return t("Questionnaire name already in use, please pick another");
+      default:
+        return `${t("Creating the questionnaire failed.")} ${t(
+          "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org"
+        )}`;
+    }
+  };
 
   return (
     <Form className="new-questionnaire-form" onSubmit={submitForm}>
@@ -89,10 +105,7 @@ const InnerForm = (props: IProps & FormikProps<INewQuestionnaire>) => {
       {status && (
         <span className="submit-error">
           <Icon name="exclamation" />
-          {t("Creating the questionnaire failed.")}{" "}
-          {t(
-            "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org"
-          )}
+          {getStatusText()}
         </span>
       )}
     </Form>
@@ -116,8 +129,12 @@ const NewQuestionnaireFormInner = withFormik<IProps, INewQuestionnaire>({
     formikBag.setSubmitting(true);
     formikBag.setStatus(undefined);
     formikBag.props.submit(v).catch((e: Error) => {
+      let status = ErrorStatus.GENERIC_ERROR;
+      if (e?.message?.includes("name already in use")) {
+        status = ErrorStatus.NAME_ALREADY_USED;
+      }
       formikBag.setSubmitting(false);
-      formikBag.setStatus(e.message);
+      formikBag.setStatus(status);
     });
   },
   validateOnMount: true,
