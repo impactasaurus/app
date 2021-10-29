@@ -47,10 +47,21 @@ const Auth0Lock = (p: IProps): JSX.Element => {
 
   const { t } = useTranslation();
   if (error !== undefined) {
+    let description = `${t("Login failed.")} ${t(
+      "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org"
+    )}`;
+    if (error?.errorDescription) {
+      description = error.errorDescription;
+      if (description?.includes("blocked")) {
+        description = t(
+          "Your account has been blocked. Please contact support if this is unexpected."
+        );
+      }
+    }
     return (
       <Message error={true}>
         <Message.Header>{t("Failed to login")}</Message.Header>
-        <Message.Content>{error.errorDescription}</Message.Content>
+        <Message.Content>{description}</Message.Content>
       </Message>
     );
   }
