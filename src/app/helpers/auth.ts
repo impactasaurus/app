@@ -98,7 +98,8 @@ export function getUserName(): string | null {
 }
 
 export function getOrganisation(): string | null {
-  return getKeyOrNull("https://app.impactasaurus.org/organisation");
+  const val = getKeyOrNull("https://app.impactasaurus.org/organisation");
+  return val === "" ? null : val;
 }
 
 export function getCreatedDate(): string | null {
