@@ -189,7 +189,8 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
     if (this.props.isLoggedIn !== isLoggedIn) {
       this.props.setLoggedInStatus(isLoggedIn);
       const org = getOrganisation();
-      if (!org && this.isPublicPage() === false) {
+      const ben = isBeneficiaryUser();
+      if (!org && !ben && this.isPublicPage() === false) {
         this.sendToNoOrgPage();
       }
     }
