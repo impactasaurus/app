@@ -98,36 +98,6 @@ export interface IUnsubscribe {
   unsubscribe(userID: string): Promise<any>;
 }
 
-export function updateUser<T>(component) {
-  return graphql<any, T>(
-    gql`
-      mutation ($id: String!, $active: Boolean) {
-        updateUser: UpdateUser(id: $id, active: $active) {
-          id
-          name
-          joined
-          active
-        }
-      }
-    `,
-    {
-      props: ({ mutate }) => ({
-        updateUser: (id: string, active?: boolean): Promise<any> =>
-          mutate({
-            variables: {
-              id,
-              active,
-            },
-          }),
-      }),
-    }
-  )(component);
-}
-
-export interface IUpdateUser {
-  updateUser(id: string, active?: boolean): Promise<any>;
-}
-
 export function recordUsage<T>(component) {
   return graphql<any, T>(
     gql`
