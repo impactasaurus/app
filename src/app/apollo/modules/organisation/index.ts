@@ -211,6 +211,40 @@ export interface IGenerateInvite {
   generateInvite?(): Promise<string>;
 }
 
+export function removeOrgUser<T>(component) {
+  return graphql<any, T>(
+    gql`
+      mutation ($userID: String!) {
+        removeOrgUser: RemoveUser(userID: $userID) {
+          id
+        }
+      }
+    `,
+    {
+      options: {
+        notifyOnNetworkStatusChange: true,
+        refetchQueries: [
+          {
+            query: getOrgUserGQL,
+          },
+        ],
+      },
+      props: ({ mutate }) => ({
+        removeOrgUser: (userID: string): Promise<any> =>
+          mutate({
+            variables: {
+              userID,
+            },
+          }),
+      }),
+    }
+  )(component);
+}
+
+export interface IRemoveOrgUser {
+  removeOrgUser?(userID: string): Promise<void>;
+}
+
 export interface IOrgUser {
   name: string;
   id: string;
@@ -218,47 +252,46 @@ export interface IOrgUser {
   active: boolean;
 }
 
-export const getOrgUsers = <T>(component, name: string = undefined) => {
-  return graphql<any, T>(
-    gql`
-      query {
-        getOrgUsers: organisation {
-          id
-          users {
-            id
-            name
-            joined
-            active
-          }
-        }
+const getOrgUserGQL = gql`
+  query {
+    getOrgUsers: organisation {
+      id
+      users {
+        id
+        name
+        joined
+        active
       }
-    `,
-    {
-      options: () => {
-        return {
-          notifyOnNetworkStatusChange: true,
-        };
-      },
-      props: (query) => {
-        let users: IOrgUser[] = [];
-        if (query[name].getOrgUsers) {
-          users = query[name].getOrgUsers.users.map((u) => ({
-            id: u.id,
-            name: u.name,
-            active: u.active,
-            joined: new Date(u.joined),
-          }));
-        }
-        return {
-          [name]: {
-            ...query[name],
-            users,
-          },
-        };
-      },
-      name,
     }
-  )(component);
+  }
+`;
+
+export const getOrgUsers = <T>(component, name: string = undefined) => {
+  return graphql<any, T>(getOrgUserGQL, {
+    options: () => {
+      return {
+        notifyOnNetworkStatusChange: true,
+      };
+    },
+    props: (query) => {
+      let users: IOrgUser[] = [];
+      if (query[name].getOrgUsers) {
+        users = query[name].getOrgUsers.users.map((u) => ({
+          id: u.id,
+          name: u.name,
+          active: u.active,
+          joined: new Date(u.joined),
+        }));
+      }
+      return {
+        [name]: {
+          ...query[name],
+          users,
+        },
+      };
+    },
+    name,
+  })(component);
 };
 
 export interface IGetOrgUsersResult extends QueryProps {
