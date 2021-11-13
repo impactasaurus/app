@@ -1,5 +1,6 @@
 import { renderArray } from "helpers/react";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { Dropdown, Input } from "semantic-ui-react";
 import "./style.less";
 
@@ -23,6 +24,7 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
   const [options, setOptions] = React.useState<IOption[]>([]);
   const [selected, setSelected] = React.useState<IOption[]>([]);
   const [search, setSearch] = React.useState<string>("");
+  const { t } = useTranslation();
 
   const load = () => {
     if (loading || !opened) {
@@ -96,7 +98,7 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
         >
           <Input
             value={search}
-            placeholder={"Search..."}
+            placeholder={t("Search...")}
             icon="search"
             loading={loading}
             onChange={(_, d) => setSearch(d.value)}
