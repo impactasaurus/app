@@ -12,6 +12,8 @@ interface IProps {
   dropdownText: string;
   onLoad(search?: string): Promise<IOption[]>;
   onChange(selected: string[]): void;
+  // change value to clear selected options
+  clearTrigger?: number;
 }
 
 export const DropdownCheckbox = (p: IProps): JSX.Element => {
@@ -27,6 +29,7 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
       return;
     }
     setLoading(true);
+    setError(false);
     p.onLoad(search === "" ? undefined : search)
       .then((ops) => {
         setOptions(ops);
@@ -40,15 +43,9 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
 
   React.useEffect(load, [opened, search]);
 
-  const doNothing = (
-    e:
-      | React.FormEvent<HTMLInputElement>
-      | React.FormEvent<MouseEvent>
-      | React.MouseEvent<HTMLDivElement>
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
+  React.useEffect(() => {
+    setSelected([]);
+  }, [p.clearTrigger]);
 
   const renderCheckbox = (option: IOption): JSX.Element => {
     const checked = selected.find((s) => s.id === option.id) !== undefined;
@@ -90,7 +87,10 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
     >
       <Dropdown.Menu key={`${p.dropdownText}-dropdown-menu`}>
         <Dropdown.Item
-          onClick={doNothing}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
           key={`${p.dropdownText}-search`}
           className="search-container"
         >
@@ -101,6 +101,7 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
             loading={loading}
             onChange={(_, d) => setSearch(d.value)}
             key={`${p.dropdownText}-input`}
+            error={error}
           />
         </Dropdown.Item>
         {renderArray(renderCheckbox, options)}
@@ -108,5 +109,3 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
     </Dropdown>
   );
 };
-//
-//
