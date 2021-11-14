@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ApolloError, QueryProps } from "react-apollo";
 import { Loader } from "semantic-ui-react";
 import { Error } from "components/Error";
@@ -14,6 +14,7 @@ export const ApolloLoaderHoC = <P extends unknown>(
   isErrorTerminal: (err: ApolloError) => boolean = () => true
 ): React.ComponentType<P> => {
   const Inner = (p: P) => {
+    const [prevLoaded, setPrevLoaded] = useState(false);
     const qp = queryProps(p);
     if (!qp) {
       return <span />;
@@ -23,8 +24,11 @@ export const ApolloLoaderHoC = <P extends unknown>(
       const text = t("Failed to load {entity}", { entity: t(entity) });
       return <Error text={text} />;
     }
-    if (qp.loading) {
+    if (qp.loading && !prevLoaded) {
       return <Loader active={true} inline="centered" />;
+    }
+    if (!prevLoaded) {
+      setPrevLoaded(true);
     }
     return <WrappedComponent {...p} />;
   };

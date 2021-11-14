@@ -2,7 +2,7 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 import "./style.less";
 
-const copy = `&copy; ${new Date().getFullYear()} Impactasaurus.`;
+const copy = `© ${new Date().getFullYear()} Impactasaurus.`;
 
 export const Footer = (): JSX.Element => {
   const { t } = useTranslation();
