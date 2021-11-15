@@ -1,143 +1,51 @@
 import * as React from "react";
-import { TimelineEntry } from "components/TimelineEntry";
-import {
-  Card,
-  Loader,
-  Responsive,
-  SemanticWIDTHS,
-  Button,
-} from "semantic-ui-react";
-import {
-  getMoreRecentMeetings,
-  getRecentMeetings,
-  IGetRecentMeetings,
-} from "../../apollo/modules/meetings";
-import { renderArray } from "../../helpers/react";
-import InfiniteScroll from "react-infinite-scroller";
-import { Error } from "components/Error";
-import { IMeeting } from "models/meeting";
-import "./style.less";
+import { Responsive, Button } from "semantic-ui-react";
 import { IURLConnector, UrlHOC } from "../../redux/modules/url";
 import { OnboardingChecklist } from "components/OnboardingChecklist";
 import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
 import { withTranslation, WithTranslation } from "react-i18next";
+import { ActivityFeed } from "components/ActivityFeed";
+import "./style.less";
 
-const timelineEntry = (m: IMeeting): JSX.Element => (
-  <TimelineEntry key={m.id} meeting={m} />
-);
-const hasRecords = (p: IProps, moreThan = 0): boolean | undefined => {
-  if (
-    !p.data ||
-    !p.data.getRecentMeetings ||
-    !p.data.getRecentMeetings.meetings
-  ) {
-    return undefined;
-  }
-  return p.data.getRecentMeetings.meetings.length > moreThan;
+const HomeInner = (p: IURLConnector & WithTranslation) => {
+  const newRecord = () => {
+    p.setURL("/record");
+  };
+  const t = p.t;
+  const [recordCount, setRecordCount] = React.useState<number | undefined>();
+  return (
+    <div>
+      {recordCount !== undefined && (
+        <div>
+          <span className="title-holder">
+            <Responsive
+              as={Button}
+              minWidth={620}
+              icon="plus"
+              content={t("New Record")}
+              primary={true}
+              onClick={newRecord}
+            />
+            <Responsive
+              as={Button}
+              maxWidth={619}
+              icon="plus"
+              primary={true}
+              onClick={newRecord}
+            />
+          </span>
+          <OnboardingChecklist
+            dismissible={recordCount > 0}
+            forceDismiss={recordCount > 8}
+          />
+        </div>
+      )}
+      <ActivityFeed onLoad={setRecordCount} />
+    </div>
+  );
 };
 
-interface IProps extends IURLConnector, WithTranslation {
-  data?: IGetRecentMeetings;
-}
-
-class HomeInner extends React.Component<IProps, null> {
-  constructor(props) {
-    super(props);
-    this.loadMore = this.loadMore.bind(this);
-    this.newRecord = this.newRecord.bind(this);
-  }
-
-  private loadMore() {
-    this.props.data.fetchMore(
-      getMoreRecentMeetings(this.props.data.getRecentMeetings.page + 1)
-    );
-  }
-
-  private newRecord() {
-    this.props.setURL("/record");
-  }
-
-  public render() {
-    const t = this.props.t;
-    const recordsExist = hasRecords(this.props);
-    const wrapper = (inner: JSX.Element): JSX.Element => (
-      <div>
-        <span className="title-holder">
-          <Responsive
-            as={Button}
-            minWidth={620}
-            icon="plus"
-            content={t("New Record")}
-            primary={true}
-            onClick={this.newRecord}
-          />
-          <Responsive
-            as={Button}
-            maxWidth={619}
-            icon="plus"
-            primary={true}
-            onClick={this.newRecord}
-          />
-        </span>
-        <OnboardingChecklist
-          dismissible={recordsExist}
-          forceDismiss={hasRecords(this.props, 8)}
-        />
-        {recordsExist !== false && (
-          <div>
-            <h1>{t("Activity")}</h1>
-            {inner}
-          </div>
-        )}
-      </div>
-    );
-    if (this.props.data.error) {
-      return wrapper(<Error text={t("Failed to load activity feed")} />);
-    }
-    const d = this.props.data.getRecentMeetings;
-    if (this.props.data.loading && !d) {
-      return wrapper(<Loader active={true} inline="centered" />);
-    }
-    if (!d) {
-      return wrapper(<div />);
-    }
-    const cards = (perRow: SemanticWIDTHS): JSX.Element => (
-      <Card.Group itemsPerRow={perRow}>
-        {renderArray(timelineEntry, d.meetings)}
-      </Card.Group>
-    );
-    return wrapper(
-      <InfiniteScroll
-        initialLoad={false}
-        loadMore={this.loadMore}
-        hasMore={d.isMore}
-        loader={
-          <Loader
-            className="end-of-timeline"
-            key="spinner"
-            active={true}
-            inline="centered"
-          />
-        }
-      >
-        <Responsive minWidth={990}>{cards(4)}</Responsive>
-        <Responsive minWidth={700} maxWidth={989}>
-          {cards(3)}
-        </Responsive>
-        <Responsive minWidth={500} maxWidth={699}>
-          {cards(2)}
-        </Responsive>
-        <Responsive maxWidth={499}>{cards(1)}</Responsive>
-      </InfiniteScroll>
-    );
-  }
-}
-
-const homeWithPageWrapper = MinimalPageWrapperHoC<IProps>(
-  "Home",
-  "home",
-  HomeInner
-);
+// t("Home")
+const homeWithPageWrapper = MinimalPageWrapperHoC("Home", "home", HomeInner);
 const homeWithConnection = UrlHOC(homeWithPageWrapper);
-const i18nHome = withTranslation()(homeWithConnection);
-export const Home = getRecentMeetings<any>(() => 0)(i18nHome);
+export const Home = withTranslation()(homeWithConnection);
