@@ -8,7 +8,7 @@ import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import InfiniteScroll from "react-infinite-scroller";
 import { Card, Loader, Responsive, SemanticWIDTHS } from "semantic-ui-react";
 import { IMeeting } from "models/meeting";
-import { TimelineEntry } from "components/TimelineEntry";
+import { ActivityFeedEntry } from "components/ActivityFeedEntry";
 import { renderArray } from "helpers/react";
 import { useTranslation } from "react-i18next";
 
@@ -17,14 +17,12 @@ interface IProps {
   data?: IGetRecentMeetings;
 }
 
-const timelineEntry = (m: IMeeting): JSX.Element => (
-  <TimelineEntry key={m.id} meeting={m} />
+const entry = (m: IMeeting): JSX.Element => (
+  <ActivityFeedEntry key={m.id} meeting={m} />
 );
 
 const cards = (meetings: IMeeting[], perRow: SemanticWIDTHS): JSX.Element => (
-  <Card.Group itemsPerRow={perRow}>
-    {renderArray(timelineEntry, meetings)}
-  </Card.Group>
+  <Card.Group itemsPerRow={perRow}>{renderArray(entry, meetings)}</Card.Group>
 );
 
 const recordCount = (d: IGetRecentMeetings): number | undefined => {

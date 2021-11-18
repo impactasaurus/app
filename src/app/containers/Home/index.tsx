@@ -3,7 +3,7 @@ import { Responsive, Button } from "semantic-ui-react";
 import { IURLConnector, UrlHOC } from "../../redux/modules/url";
 import { OnboardingChecklist } from "components/OnboardingChecklist";
 import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
-import { withTranslation, WithTranslation } from "react-i18next";
+import { useTranslation, WithTranslation } from "react-i18next";
 import { ActivityFeed } from "components/ActivityFeed";
 import "./style.less";
 
@@ -11,7 +11,7 @@ const HomeInner = (p: IURLConnector & WithTranslation) => {
   const newRecord = () => {
     p.setURL("/record");
   };
-  const t = p.t;
+  const { t } = useTranslation();
   const [recordCount, setRecordCount] = React.useState<number | undefined>();
   return (
     <div>
@@ -47,5 +47,4 @@ const HomeInner = (p: IURLConnector & WithTranslation) => {
 
 // t("Home")
 const homeWithPageWrapper = MinimalPageWrapperHoC("Home", "home", HomeInner);
-const homeWithConnection = UrlHOC(homeWithPageWrapper);
-export const Home = withTranslation()(homeWithConnection);
+export const Home = UrlHOC(homeWithPageWrapper);
