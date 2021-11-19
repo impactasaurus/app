@@ -4,46 +4,45 @@ import { useTranslation } from "react-i18next";
 import { Dropdown, Input } from "semantic-ui-react";
 import "./style.less";
 
-interface IOption {
+export interface IOption {
   name: string;
   id: string;
 }
 
 interface IProps {
+  options: IOption[];
+  loading: boolean;
+  error: boolean;
   dropdownText: string;
-  onLoad(search?: string): Promise<IOption[]>;
   onChange(selected: string[]): void;
   // change value to clear selected options
   clearTrigger?: number;
 }
 
+const MAX_RESULTS = 10;
+const limitOptions = (_, i: number) => i <= MAX_RESULTS;
+
 export const DropdownCheckbox = (p: IProps): JSX.Element => {
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<boolean>(false);
-  const [opened, setOpened] = React.useState<boolean>(false);
   const [options, setOptions] = React.useState<IOption[]>([]);
   const [selected, setSelected] = React.useState<IOption[]>([]);
   const [search, setSearch] = React.useState<string>("");
   const { t } = useTranslation();
 
-  const load = () => {
-    if (loading || !opened) {
-      return;
-    }
-    setLoading(true);
-    setError(false);
-    p.onLoad(search === "" ? undefined : search)
-      .then((ops) => {
-        setOptions(ops);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError(true);
-        setLoading(false);
-      });
+  const onClose = () => {
+    p.onChange(selected.map((s) => s.id));
+    setSearch("");
   };
 
-  React.useEffect(load, [opened, search]);
+  const filterOptions = () => {
+    if (search.length === 0) {
+      setOptions([]);
+    } else {
+      setOptions(
+        p.options.filter((o) => o.name.includes(search)).filter(limitOptions)
+      );
+    }
+  };
+  React.useEffect(filterOptions, [search]);
 
   React.useEffect(() => {
     setSelected([]);
@@ -75,10 +74,14 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
     );
   };
 
+  let optionsToShow = options;
+  if (optionsToShow.length === 0) {
+    optionsToShow = selected;
+  }
+
   return (
     <Dropdown
       text={p.dropdownText}
-      onOpen={() => setOpened(true)}
       closeOnChange={false}
       closeOnBlur={true}
       key={`${p.dropdownText}-dropdown-checkbox`}
@@ -86,6 +89,7 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
       className={
         "dropdown-checkbox " + (selected.length > 0 ? "selections" : "empty")
       }
+      onClose={onClose}
     >
       <Dropdown.Menu key={`${p.dropdownText}-dropdown-menu`}>
         <Dropdown.Item
@@ -100,13 +104,13 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
             value={search}
             placeholder={t("Search...")}
             icon="search"
-            loading={loading}
+            loading={p.loading}
             onChange={(_, d) => setSearch(d.value)}
             key={`${p.dropdownText}-input`}
-            error={error}
+            error={p.error}
           />
         </Dropdown.Item>
-        {renderArray(renderCheckbox, options)}
+        {renderArray(renderCheckbox, optionsToShow)}
       </Dropdown.Menu>
     </Dropdown>
   );
