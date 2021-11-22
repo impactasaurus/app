@@ -3,7 +3,8 @@ import {
   IBeneficiariesResult,
 } from "apollo/modules/beneficiaries";
 import { DropdownCheckbox, IOption } from "components/DropdownCheckbox";
-import React, { useEffect, useState } from "react";
+import { useNonInitialEffect } from "helpers/hooks/useNonInitialEffect";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface IProps {
@@ -20,7 +21,7 @@ const RecordFilterInner = (p: IProps) => {
   const { t } = useTranslation();
   const [bens, setBens] = useState<string[]>([]);
 
-  useEffect(() => {
+  useNonInitialEffect(() => {
     p.onChange(bens, [], [], []);
   }, [bens]);
 

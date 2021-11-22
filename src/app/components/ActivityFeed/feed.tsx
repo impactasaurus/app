@@ -21,7 +21,6 @@ export interface IFeedFilters {
 interface IProps {
   filter: IFeedFilters;
   data?: IGetRecentMeetings;
-  onLoad?: (numberOfRecords: number) => void;
 }
 
 const entry = (m: IMeeting): JSX.Element => (
@@ -45,11 +44,6 @@ const ActivityFeedInner = (p: IProps) => {
   };
 
   const rCount = recordCount(p?.data);
-  React.useEffect(() => {
-    if (p.onLoad && rCount !== undefined) {
-      p.onLoad(rCount);
-    }
-  }, [rCount]);
   if (rCount === 0) {
     return <div />;
   }

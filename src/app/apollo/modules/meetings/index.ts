@@ -119,10 +119,10 @@ export const getRecentMeetings = <T>(
         variables: {
           limit: 12,
           page: pageExtractor(props),
-          bens: bens(props) ?? [],
-          questionnaires: questionnaires(props) ?? [],
-          users: users(props) ?? [],
-          tags: tags(props) ?? [],
+          bens: bens ? bens(props) : undefined,
+          questionnaires: questionnaires ? questionnaires(props) : undefined,
+          users: users ? users(props) : undefined,
+          tags: tags ? tags(props) : undefined,
         },
         notifyOnNetworkStatusChange: true,
       };

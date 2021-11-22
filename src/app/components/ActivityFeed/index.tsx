@@ -3,11 +3,7 @@ import { useTranslation } from "react-i18next";
 import { RecordFilter } from "components/RecordFilter";
 import { ActivityFeedEntries, IFeedFilters } from "./feed";
 
-interface IProps {
-  onLoad?: (numberOfRecords: number) => void;
-}
-
-export const ActivityFeed = (p: IProps): JSX.Element => {
+export const ActivityFeed = (): JSX.Element => {
   const { t } = useTranslation();
   const [filters, setFilters] = useState<IFeedFilters>();
   const [it, setIt] = useState<number>(0);
@@ -22,13 +18,11 @@ export const ActivityFeed = (p: IProps): JSX.Element => {
   };
   return (
     <div>
-      <h1>{t("Activity")}</h1>
-      <RecordFilter onChange={onChange} />
-      <ActivityFeedEntries
-        onLoad={p.onLoad}
-        filter={filters}
-        key={`activity-feed-${it}`}
-      />
+      <div>
+        <h1>{t("Activity")}</h1>
+        <RecordFilter onChange={onChange} />
+      </div>
+      <ActivityFeedEntries filter={filters} key={`activity-feed-${it}`} />
     </div>
   );
 };
