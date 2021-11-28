@@ -10,7 +10,7 @@ export interface IOption {
   id: string;
 }
 
-interface IProps {
+export interface IProps {
   options: IOption[];
   loading: boolean;
   error: boolean;
@@ -18,6 +18,7 @@ interface IProps {
   onChange(selected: string[]): void;
   // change value to clear selected options
   clearTrigger?: number;
+  autoOpen?: boolean;
 }
 
 const MAX_RESULTS = 10;
@@ -112,6 +113,7 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
         "dropdown-checkbox " + (selected.length > 0 ? "selections" : "empty")
       }
       onClose={onClose}
+      defaultOpen={p.autoOpen}
     >
       <Dropdown.Menu key={`${p.dropdownText}-dropdown-menu`}>
         <Dropdown.Item

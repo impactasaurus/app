@@ -1,21 +1,16 @@
-import {
-  getBeneficiaries,
-  IBeneficiariesResult,
-} from "apollo/modules/beneficiaries";
-import { getOrgUsers, IGetOrgUsersResult } from "apollo/modules/organisation";
-import { allOutcomeSets, IOutcomeResult } from "apollo/modules/outcomeSets";
-import { getTags, ITagResult } from "apollo/modules/tags";
-import { DropdownCheckbox, IOption } from "components/DropdownCheckbox";
-import { useNonInitialEffect } from "helpers/hooks/useNonInitialEffect";
 import React, { useState } from "react";
+import { useNonInitialEffect } from "helpers/hooks/useNonInitialEffect";
 import { useTranslation } from "react-i18next";
 import { Button } from "semantic-ui-react";
+import {
+  BenFilter,
+  QuestionnaireFilter,
+  TagFilter,
+  UserFilter,
+} from "./filter";
+import { LazyFilter } from "./lazyFilter";
 
 interface IProps {
-  bens?: IBeneficiariesResult;
-  questionnaires?: IOutcomeResult;
-  tags?: ITagResult;
-  users?: IGetOrgUsersResult;
   onChange: (
     bens: string[],
     questionnaires: string[],
@@ -24,7 +19,7 @@ interface IProps {
   ) => void;
 }
 
-const RecordFilterInner = (p: IProps) => {
+export const RecordFilter = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
   const [bens, setBens] = useState<string[]>([]);
   const [questionnaires, setQuestionnaires] = useState<string[]>([]);
@@ -35,25 +30,6 @@ const RecordFilterInner = (p: IProps) => {
   useNonInitialEffect(() => {
     p.onChange(bens, questionnaires, users, tags);
   }, [bens, questionnaires, tags, users]);
-
-  const benOptions: IOption[] = (p?.bens?.getBeneficiaries || []).map((b) => ({
-    name: b,
-    id: b,
-  }));
-  const questionnaireOptions: IOption[] = (
-    p?.questionnaires?.allOutcomeSets || []
-  ).map((q) => ({
-    name: q.name,
-    id: q.id,
-  }));
-  const tagOptions: IOption[] = (p?.tags?.getTags || []).map((t) => ({
-    name: t,
-    id: t,
-  }));
-  const userOptions: IOption[] = (p?.users?.users || []).map((t) => ({
-    name: t.name,
-    id: t.id,
-  }));
 
   const filterActive =
     bens.length > 0 ||
@@ -66,38 +42,38 @@ const RecordFilterInner = (p: IProps) => {
 
   return (
     <div style={{ textAlign: "left", marginTop: "-2em" }}>
-      <DropdownCheckbox
-        dropdownText={t("Beneficiary")}
-        onChange={setBens}
-        error={!!p.bens?.error}
-        loading={!!p.bens?.loading}
-        options={benOptions}
-        clearTrigger={clearIdx}
-      />
-      <DropdownCheckbox
-        dropdownText={t("Questionnaire")}
-        onChange={setQuestionnaires}
-        error={!!p.questionnaires?.error}
-        loading={!!p.questionnaires?.loading}
-        options={questionnaireOptions}
-        clearTrigger={clearIdx}
-      />
-      <DropdownCheckbox
-        dropdownText={t("Tag")}
-        onChange={setTags}
-        error={!!p.tags?.error}
-        loading={!!p.tags?.loading}
-        options={tagOptions}
-        clearTrigger={clearIdx}
-      />
-      <DropdownCheckbox
-        dropdownText={t("Facilitator")}
-        onChange={setUsers}
-        error={!!p.tags?.error}
-        loading={!!p.tags?.loading}
-        options={userOptions}
-        clearTrigger={clearIdx}
-      />
+      <LazyFilter dropDownText={t("Beneficiary")}>
+        <BenFilter
+          clearTrigger={clearIdx}
+          dropdownText={t("Beneficiary")}
+          onChange={setBens}
+          autoOpen={true}
+        />
+      </LazyFilter>
+      <LazyFilter dropDownText={t("Questionnaire")}>
+        <QuestionnaireFilter
+          clearTrigger={clearIdx}
+          dropdownText={t("Questionnaire")}
+          onChange={setQuestionnaires}
+          autoOpen={true}
+        />
+      </LazyFilter>
+      <LazyFilter dropDownText={t("Tag")}>
+        <TagFilter
+          dropdownText={t("Tag")}
+          onChange={setTags}
+          clearTrigger={clearIdx}
+          autoOpen={true}
+        />
+      </LazyFilter>
+      <LazyFilter dropDownText={t("Facilitator")}>
+        <UserFilter
+          clearTrigger={clearIdx}
+          dropdownText={t("Facilitator")}
+          onChange={setUsers}
+          autoOpen={true}
+        />
+      </LazyFilter>
       <span style={{ visibility: filterActive ? "visible" : "hidden" }}>
         <Button basic size="small" onClick={clearFilters}>
           {t("Clear filters")}
@@ -106,18 +82,3 @@ const RecordFilterInner = (p: IProps) => {
     </div>
   );
 };
-
-const RecordFilterWithBens = getBeneficiaries<IProps>(
-  RecordFilterInner,
-  "bens"
-);
-const RecordFilterWithQs = allOutcomeSets<IProps>(
-  RecordFilterWithBens,
-  "questionnaires"
-);
-const RecordFilterWithTags = getTags<IProps>(RecordFilterWithQs, "tags");
-const RecordFiltersWithUsers = getOrgUsers<IProps>(
-  RecordFilterWithTags,
-  "users"
-);
-export const RecordFilter = RecordFiltersWithUsers;
