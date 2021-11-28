@@ -2,7 +2,7 @@ import { gql, graphql, QueryProps } from "react-apollo";
 import { IDExtractor } from "../../../helpers/apollo";
 import { isNullOrUndefined } from "util";
 
-export const getTags = <T>(component) => {
+export const getTags = <T>(component, name?: string) => {
   return graphql<any, T>(
     gql`
       query {
@@ -16,6 +16,7 @@ export const getTags = <T>(component) => {
           notifyOnNetworkStatusChange: true,
         };
       },
+      name,
     }
   )(component);
 };

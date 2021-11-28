@@ -62,6 +62,9 @@ const ActivityFeedInner = (p: IProps) => {
           inline="centered"
         />
       }
+      style={{
+        marginTop: "0.875em", // counter-act negative margin on .ui.four.cards
+      }}
     >
       <Responsive minWidth={990}>{cards(d.meetings, 4)}</Responsive>
       <Responsive minWidth={700} maxWidth={989}>
