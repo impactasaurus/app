@@ -24,13 +24,29 @@ export interface IProps {
 const MAX_RESULTS = 10;
 const limitOptions = (_, i: number) => i <= MAX_RESULTS;
 
+const sortOptions = (a: IOption, b: IOption) => {
+  const idDiff = a.id.localeCompare(b.id);
+  return idDiff !== 0 ? idDiff : a.name.localeCompare(b.name);
+};
+
 export const DropdownCheckbox = (p: IProps): JSX.Element => {
   const [options, setOptions] = React.useState<IOption[]>([]);
   const [selected, setSelectedInner] = React.useState<IOption[]>([]);
   const [search, setSearch] = React.useState<string>("");
+  const lastCommit = React.useRef<IOption[]>([]);
   const { t } = useTranslation();
 
-  const commit = (ss: IOption[] = selected) => p.onChange(ss.map((s) => s.id));
+  const commit = (ss: IOption[] = selected) => {
+    const last = lastCommit.current.sort(sortOptions);
+    const noChange =
+      ss.length === last.length &&
+      ss.sort(sortOptions).every((v, i) => v === last[i]);
+    if (noChange) {
+      return;
+    }
+    lastCommit.current = ss;
+    p.onChange(ss.map((s) => s.id));
+  };
 
   const setSelected = (newSelected: IOption[], toCommit: boolean) => {
     setSelectedInner(newSelected);
@@ -45,6 +61,9 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
   };
 
   const filterOptions = () => {
+    if (!p.options) {
+      return;
+    }
     if (search.length === 0) {
       setOptions([]);
     } else {
@@ -55,7 +74,7 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
       );
     }
   };
-  React.useEffect(filterOptions, [search]);
+  React.useEffect(filterOptions, [search, p.options]);
 
   useNonInitialEffect(() => {
     setSelected([], true);
@@ -132,6 +151,7 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
             onChange={(_, d) => setSearch(d.value)}
             key={`${p.dropdownText}-input`}
             error={p.error}
+            focus={true}
           />
         </Dropdown.Item>
         {renderArray(renderCheckbox, optionsToShow)}

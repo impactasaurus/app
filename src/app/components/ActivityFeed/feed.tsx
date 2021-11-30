@@ -10,6 +10,7 @@ import { Card, Loader, Responsive, SemanticWIDTHS } from "semantic-ui-react";
 import { ActivityFeedEntry } from "components/ActivityFeedEntry";
 import { IMeeting } from "models/meeting";
 import { renderArray } from "helpers/react";
+import { useTranslation } from "react-i18next";
 
 export interface IFeedFilters {
   bens: string[];
@@ -43,9 +44,14 @@ const ActivityFeedInner = (p: IProps) => {
     p.data.fetchMore(getMoreRecentMeetings(p.data.getRecentMeetings.page + 1));
   };
 
+  const { t } = useTranslation();
   const rCount = recordCount(p?.data);
   if (rCount === 0) {
-    return <div />;
+    return (
+      <div style={{ marginTop: "3em" }}>
+        {t("Sorry, we couldn't find anything matching your selected filters")}
+      </div>
+    );
   }
 
   const d = p.data.getRecentMeetings;

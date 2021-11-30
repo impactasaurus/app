@@ -1,3 +1,4 @@
+import React from "react";
 import {
   getBeneficiaries,
   IBeneficiariesResult,
@@ -5,7 +6,6 @@ import {
 import { getOrgUsers, IGetOrgUsersResult } from "apollo/modules/organisation";
 import { allOutcomeSets, IOutcomeResult } from "apollo/modules/outcomeSets";
 import { getTags, ITagResult } from "apollo/modules/tags";
-import React from "react";
 import { QueryProps } from "react-apollo";
 import {
   DropdownCheckbox,
@@ -13,7 +13,7 @@ import {
   IProps as IDropdownCheckboxProps,
 } from "../DropdownCheckbox";
 
-export interface IProps<T>
+interface IProps<T>
   extends Omit<IDropdownCheckboxProps, "options" | "loading" | "error"> {
   data?: T;
 }
