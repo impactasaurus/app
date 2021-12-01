@@ -20,6 +20,7 @@ export const useNonInitialEffect = (
   const initialRender = useRef(true);
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     let effectReturns: void | (() => void | undefined) = () => {};
 
     if (initialRender.current) {

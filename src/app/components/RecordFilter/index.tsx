@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useNonInitialEffect } from "helpers/hooks/useNonInitialEffect";
 import { useTranslation } from "react-i18next";
 import { Button } from "semantic-ui-react";
+import ReactGA from "react-ga";
 import {
   BenFilter,
   QuestionnaireFilter,
@@ -26,9 +27,17 @@ export const RecordFilter = (p: IProps): JSX.Element => {
   const [tags, setTags] = useState<string[]>([]);
   const [users, setUsers] = useState<string[]>([]);
   const [clearIdx, setClearIdx] = useState<number>(0);
+  const firstFilter = useRef<boolean>(false);
 
   useNonInitialEffect(() => {
     p.onChange(bens, questionnaires, users, tags);
+    if (!firstFilter.current) {
+      firstFilter.current = true;
+      ReactGA.event({
+        category: "activity-feed",
+        action: "filter",
+      });
+    }
   }, [bens, questionnaires, tags, users]);
 
   const filterActive =
