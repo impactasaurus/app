@@ -33,11 +33,12 @@ export const allOutcomeSetsGQL = gql`
   ${fragment}
 `;
 
-export function allOutcomeSets<T>(component) {
+export function allOutcomeSets<T>(component, name?: string) {
   return graphql<any, T>(allOutcomeSetsGQL, {
     options: {
       notifyOnNetworkStatusChange: true,
     },
+    name,
   })(component);
 }
 

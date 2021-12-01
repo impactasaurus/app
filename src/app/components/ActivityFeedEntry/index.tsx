@@ -15,7 +15,7 @@ interface IProp {
   meeting: IMeeting;
 }
 
-export class TimelineEntry extends React.Component<IProp, null> {
+export class ActivityFeedEntry extends React.Component<IProp, null> {
   constructor(props: IProp) {
     super(props);
   }

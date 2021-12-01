@@ -3,49 +3,64 @@ import { Responsive, Button } from "semantic-ui-react";
 import { IURLConnector, UrlHOC } from "../../redux/modules/url";
 import { OnboardingChecklist } from "components/OnboardingChecklist";
 import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
-import { withTranslation, WithTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { ActivityFeed } from "components/ActivityFeed";
 import "./style.less";
+import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
+import { getRecentMeetings, IGetRecentMeetings } from "apollo/modules/meetings";
 
-const HomeInner = (p: IURLConnector & WithTranslation) => {
+interface IProps extends IURLConnector {
+  data?: IGetRecentMeetings;
+}
+
+const HomeInner = (p: IProps): JSX.Element => {
   const newRecord = () => {
     p.setURL("/record");
   };
-  const t = p.t;
-  const [recordCount, setRecordCount] = React.useState<number | undefined>();
+  const { t } = useTranslation();
+  const recordCount = p?.data?.getRecentMeetings?.meetings?.length;
   return (
     <div>
-      {recordCount !== undefined && (
-        <div>
-          <span className="title-holder">
-            <Responsive
-              as={Button}
-              minWidth={620}
-              icon="plus"
-              content={t("New Record")}
-              primary={true}
-              onClick={newRecord}
-            />
-            <Responsive
-              as={Button}
-              maxWidth={619}
-              icon="plus"
-              primary={true}
-              onClick={newRecord}
-            />
-          </span>
-          <OnboardingChecklist
-            dismissible={recordCount > 0}
-            forceDismiss={recordCount > 8}
+      <div>
+        <span className="title-holder">
+          <Responsive
+            as={Button}
+            minWidth={620}
+            icon="plus"
+            content={t("New Record")}
+            primary={true}
+            onClick={newRecord}
           />
-        </div>
-      )}
-      <ActivityFeed onLoad={setRecordCount} />
+          <Responsive
+            as={Button}
+            maxWidth={619}
+            icon="plus"
+            primary={true}
+            onClick={newRecord}
+          />
+        </span>
+        <OnboardingChecklist
+          dismissible={recordCount > 0}
+          forceDismiss={recordCount > 8}
+        />
+      </div>
+      {recordCount > 0 && <ActivityFeed />}
     </div>
   );
 };
 
+// t("activity feed")
+const HomeWithSpinner = ApolloLoaderHoC<IProps>(
+  "activity feed",
+  (p) => p.data,
+  HomeInner
+);
+
+export const HomeWithData = getRecentMeetings<IProps>(
+  () => 0,
+  "data"
+)(HomeWithSpinner);
+
 // t("Home")
-const homeWithPageWrapper = MinimalPageWrapperHoC("Home", "home", HomeInner);
-const homeWithConnection = UrlHOC(homeWithPageWrapper);
-export const Home = withTranslation()(homeWithConnection);
+const homeWithPageWrapper = MinimalPageWrapperHoC("Home", "home", HomeWithData);
+export const Home = UrlHOC(homeWithPageWrapper);

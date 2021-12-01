@@ -79,8 +79,22 @@ interface IGetRecentMeetingsData {
 }
 
 const getRecentMeetingsGQL = gql`
-  query ($page: Int!, $limit: Int!) {
-    getRecentMeetings: recentMeetings(page: $page, limit: $limit) {
+  query (
+    $page: Int!
+    $limit: Int!
+    $bens: [String]
+    $questionnaires: [String]
+    $users: [String]
+    $tags: [String]
+  ) {
+    getRecentMeetings: recentMeetings(
+      page: $page
+      limit: $limit
+      beneficiaries: $bens
+      users: $users
+      tags: $tags
+      questionnaires: $questionnaires
+    ) {
       isMore
       page
       meetings {
@@ -93,7 +107,11 @@ const getRecentMeetingsGQL = gql`
 
 export const getRecentMeetings = <T>(
   pageExtractor: Extractor<T, number>,
-  name?: string
+  name?: string,
+  bens?: Extractor<T, string[]>,
+  questionnaires?: Extractor<T, string[]>,
+  users?: Extractor<T, string[]>,
+  tags?: Extractor<T, string[]>
 ) => {
   return graphql<any, T>(getRecentMeetingsGQL, {
     options: (props: T) => {
@@ -101,6 +119,10 @@ export const getRecentMeetings = <T>(
         variables: {
           limit: 12,
           page: pageExtractor(props),
+          bens: bens ? bens(props) : undefined,
+          questionnaires: questionnaires ? questionnaires(props) : undefined,
+          users: users ? users(props) : undefined,
+          tags: tags ? tags(props) : undefined,
         },
         notifyOnNetworkStatusChange: true,
       };

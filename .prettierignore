@@ -9,3 +9,4 @@ src/i18n/locales
 .prettierignore
 *.ejs
 .gitignore
+*.svg

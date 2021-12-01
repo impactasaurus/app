@@ -1,52 +1,83 @@
+import { useNonInitialEffect } from "helpers/hooks/useNonInitialEffect";
 import { renderArray } from "helpers/react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { Dropdown, Input } from "semantic-ui-react";
 import "./style.less";
 
-interface IOption {
+export interface IOption {
   name: string;
   id: string;
 }
 
-interface IProps {
+export interface IProps {
+  options: IOption[];
+  loading: boolean;
+  error: boolean;
   dropdownText: string;
-  onLoad(search?: string): Promise<IOption[]>;
   onChange(selected: string[]): void;
   // change value to clear selected options
   clearTrigger?: number;
+  autoOpen?: boolean;
 }
 
+const MAX_RESULTS = 10;
+const limitOptions = (_, i: number) => i <= MAX_RESULTS;
+
+const sortOptions = (a: IOption, b: IOption) => {
+  const idDiff = a.id.localeCompare(b.id);
+  return idDiff !== 0 ? idDiff : a.name.localeCompare(b.name);
+};
+
 export const DropdownCheckbox = (p: IProps): JSX.Element => {
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<boolean>(false);
-  const [opened, setOpened] = React.useState<boolean>(false);
   const [options, setOptions] = React.useState<IOption[]>([]);
-  const [selected, setSelected] = React.useState<IOption[]>([]);
+  const [selected, setSelectedInner] = React.useState<IOption[]>([]);
   const [search, setSearch] = React.useState<string>("");
+  const lastCommit = React.useRef<IOption[]>([]);
   const { t } = useTranslation();
 
-  const load = () => {
-    if (loading || !opened) {
+  const commit = (ss: IOption[] = selected) => {
+    const last = lastCommit.current.sort(sortOptions);
+    const noChange =
+      ss.length === last.length &&
+      ss.sort(sortOptions).every((v, i) => v === last[i]);
+    if (noChange) {
       return;
     }
-    setLoading(true);
-    setError(false);
-    p.onLoad(search === "" ? undefined : search)
-      .then((ops) => {
-        setOptions(ops);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError(true);
-        setLoading(false);
-      });
+    lastCommit.current = ss;
+    p.onChange(ss.map((s) => s.id));
   };
 
-  React.useEffect(load, [opened, search]);
+  const setSelected = (newSelected: IOption[], toCommit: boolean) => {
+    setSelectedInner(newSelected);
+    if (toCommit) {
+      commit(newSelected);
+    }
+  };
 
-  React.useEffect(() => {
-    setSelected([]);
+  const onClose = () => {
+    commit();
+    setSearch("");
+  };
+
+  const filterOptions = () => {
+    if (!p.options) {
+      return;
+    }
+    if (search.length === 0) {
+      setOptions([]);
+    } else {
+      setOptions(
+        p.options
+          .filter((o) => o.name.toLowerCase().includes(search.toLowerCase()))
+          .filter(limitOptions)
+      );
+    }
+  };
+  React.useEffect(filterOptions, [search, p.options]);
+
+  useNonInitialEffect(() => {
+    setSelected([], true);
   }, [p.clearTrigger]);
 
   const renderCheckbox = (option: IOption): JSX.Element => {
@@ -56,7 +87,7 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
       const newSelected = checked
         ? selected.filter((s) => s.id !== option.id)
         : selected.concat(option);
-      setSelected(newSelected);
+      setSelected(newSelected, false);
     };
     return (
       <Dropdown.Item
@@ -75,10 +106,24 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
     );
   };
 
+  let message = null;
+  let optionsToShow = options;
+  if (search.length === 0) {
+    optionsToShow = selected;
+  }
+  if (optionsToShow.length === 0 && search.length > 0) {
+    message = (
+      <Dropdown.Item>
+        <span>
+          {t("We couldn't find any results for '{query}'", { query: search })}
+        </span>
+      </Dropdown.Item>
+    );
+  }
+
   return (
     <Dropdown
       text={p.dropdownText}
-      onOpen={() => setOpened(true)}
       closeOnChange={false}
       closeOnBlur={true}
       key={`${p.dropdownText}-dropdown-checkbox`}
@@ -86,6 +131,8 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
       className={
         "dropdown-checkbox " + (selected.length > 0 ? "selections" : "empty")
       }
+      onClose={onClose}
+      defaultOpen={p.autoOpen}
     >
       <Dropdown.Menu key={`${p.dropdownText}-dropdown-menu`}>
         <Dropdown.Item
@@ -100,13 +147,15 @@ export const DropdownCheckbox = (p: IProps): JSX.Element => {
             value={search}
             placeholder={t("Search...")}
             icon="search"
-            loading={loading}
+            loading={p.loading}
             onChange={(_, d) => setSearch(d.value)}
             key={`${p.dropdownText}-input`}
-            error={error}
+            error={p.error}
+            focus={true}
           />
         </Dropdown.Item>
-        {renderArray(renderCheckbox, options)}
+        {renderArray(renderCheckbox, optionsToShow)}
+        {message && message}
       </Dropdown.Menu>
     </Dropdown>
   );
