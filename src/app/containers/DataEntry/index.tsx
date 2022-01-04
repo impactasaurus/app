@@ -20,6 +20,7 @@ import "rc-slider/assets/index.css";
 import { ISODateString } from "components/Moment";
 import { Notepad } from "components/Notepad";
 import { Button, ButtonProps } from "semantic-ui-react";
+import { Error } from "components/Error";
 
 interface IProps extends IURLConnector, IMeetingMutation, ISetMeetingNotes {
   data: IMeetingResult;
@@ -42,7 +43,7 @@ function answeredAllQuestions(p: IProps): boolean {
 
 const DataEntryInner = (p: IProps) => {
   const [saving, setSavingInner] = useState(false);
-  const [savingError, setSavingError] = useState<string>();
+  const [savingError, setSavingError] = useState<boolean>(false);
   const [notes, setNotes] = useState<string>(p.data.getMeeting.notes);
   const { t } = useTranslation();
 
@@ -51,19 +52,20 @@ const DataEntryInner = (p: IProps) => {
     const recordID = p.data.getMeeting.id;
 
     setSavingInner(true);
-    setSavingError(undefined);
+    setSavingError(false);
     p.setMeetingNotes(recordID, notes)
       .then(() => {
         return p.completeMeeting(recordID, ben);
       })
       .then(() => {
         setSavingInner(false);
-        setSavingError(undefined);
+        setSavingError(false);
         p.setURL(`/beneficiary/${ben}`, `?q=${p.data.getMeeting.outcomeSetID}`);
       })
-      .catch((e: string) => {
+      .catch((e: string | Error) => {
+        console.error(e);
         setSavingInner(false);
-        setSavingError(e);
+        setSavingError(true);
       });
   };
 
@@ -118,7 +120,7 @@ const DataEntryInner = (p: IProps) => {
         >
           {t("Save")}
         </Button>
-        {savingError && <p>{savingError}</p>}
+        {savingError && <Error text={t("Failed to finalise record")} />}
       </div>
     );
   };

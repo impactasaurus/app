@@ -5,6 +5,7 @@ import { Button, ButtonProps } from "semantic-ui-react";
 import { IQuestion } from "models/question";
 import { IMeeting } from "models/meeting";
 import { useTranslation } from "react-i18next";
+import { Error } from "components/Error";
 import "rc-slider/assets/index.css";
 import "./style.less";
 
@@ -17,21 +18,22 @@ interface IProps extends IMeetingMutation {
 
 const QuestionnaireReviewInner = (p: IProps) => {
   const [completing, setCompleting] = useState(false);
-  const [completeError, setCompleteError] = useState<string>(undefined);
+  const [completeError, setCompleteError] = useState<boolean>(false);
   const { t } = useTranslation();
 
   const review = () => {
     setCompleting(true);
-    setCompleteError(undefined);
+    setCompleteError(false);
     p.completeMeeting(p.record.id, p.record.beneficiary)
       .then(() => {
         setCompleting(false);
-        setCompleteError(undefined);
+        setCompleteError(false);
         p.onComplete();
       })
-      .catch((e: string) => {
+      .catch((e: string | Error) => {
+        console.error(e);
         setCompleting(false);
-        setCompleteError(e);
+        setCompleteError(true);
       });
   };
 
@@ -72,7 +74,7 @@ const QuestionnaireReviewInner = (p: IProps) => {
       <Button {...props} onClick={review}>
         {t("Save")}
       </Button>
-      <p>{completeError}</p>
+      {completeError && <Error text={t("Failed to finalise record")} />}
     </div>
   );
 };
