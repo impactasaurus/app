@@ -28,6 +28,7 @@ interface IProps extends IUpdateSelf, Partial<WithTranslation> {
 interface IFormOutput {
   name: string;
   subscribed: boolean;
+  notifyOnRemote: boolean;
   language: string;
 }
 
@@ -70,8 +71,11 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
     handleReset,
     t,
   } = props;
-  const checkboxLabel = (
+  const marketingLabel = (
     <label>{t("Email me occasional updates from Impactasaurus")}</label>
+  );
+  const notifyOnRemoteLabel = (
+    <label>{t("Email me when beneficiaries complete my remote links")}</label>
   );
   const languages = getLanguageOptions(t, values.language);
   const languageSelected = (_, e) => {
@@ -105,9 +109,16 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
         <Form.Checkbox
           id="usf-subscribe"
           name="subscribed"
-          label={checkboxLabel}
+          label={marketingLabel}
           onChange={handleChange}
           checked={values.subscribed}
+        />
+        <Form.Checkbox
+          id="usf-notifyOnRemote"
+          name="notifyOnRemote"
+          label={notifyOnRemoteLabel}
+          onChange={handleChange}
+          checked={values.notifyOnRemote}
         />
       </FormField>
       <FormField
@@ -168,7 +179,12 @@ export const UserSettingsInner = withFormik<IProps, IFormOutput>({
     formikBag.setSubmitting(true);
     const vals = v as IFormOutput;
     formikBag.props
-      .updateSelf(vals.name, !vals.subscribed, vals.language)
+      .updateSelf(
+        vals.name,
+        !vals.subscribed,
+        vals.notifyOnRemote,
+        vals.language
+      )
       .then(() => {
         formikBag.setSubmitting(false);
         formikBag.resetForm({ values: vals });
@@ -182,6 +198,7 @@ export const UserSettingsInner = withFormik<IProps, IFormOutput>({
     return {
       name: p.self.getSelf.profile.name,
       subscribed: !p.self.getSelf.settings.unsubscribed,
+      notifyOnRemote: p.self.getSelf.settings.notifyOnRemote,
       language: p.self.getSelf.settings.language || "und",
     };
   },

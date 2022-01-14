@@ -29,11 +29,17 @@ export interface IGetSelf extends QueryProps {
 export function updateSelf<T>(component) {
   return graphql<any, T>(
     gql`
-      mutation ($unsubscribed: Boolean, $name: String, $language: String) {
+      mutation (
+        $unsubscribed: Boolean
+        $name: String
+        $language: String
+        $notifyOnRemote: Boolean
+      ) {
         updateSelf: UpdateSelf(
           unsubscribed: $unsubscribed
           name: $name
           language: $language
+          notifyOnRemote: $notifyOnRemote
         ) {
           ...defaultSelf
         }
@@ -52,11 +58,13 @@ export function updateSelf<T>(component) {
         updateSelf: (
           name: string,
           unsubscribed: boolean,
+          notifyOnRemote: boolean,
           language: string
         ): Promise<ISelf> =>
           mutate({
             variables: {
               unsubscribed,
+              notifyOnRemote,
               name,
               language,
             },
@@ -70,6 +78,7 @@ export interface IUpdateSelf {
   updateSelf?(
     name: string,
     unsubscribed: boolean,
+    notifyOnRemote: boolean,
     language: string
   ): Promise<ISelf>;
 }
