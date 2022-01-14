@@ -6,6 +6,7 @@ export interface IUserProfile {
 
 export interface ISettings {
   unsubscribed: boolean;
+  notifyOnRemote: boolean;
   language: string;
 }
 
@@ -33,6 +34,7 @@ export const selfFragment = gql`
     }
     settings {
       unsubscribed
+      notifyOnRemote
       language
     }
   }
