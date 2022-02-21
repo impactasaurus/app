@@ -3,6 +3,7 @@ import { setMeetingNotes, ISetMeetingNotes } from "apollo/modules/meetings";
 import { Button, ButtonProps } from "semantic-ui-react";
 import { Notepad } from "components/Notepad";
 import { IMeeting } from "models/meeting";
+import { Error } from "components/Error";
 import { isNullOrUndefined } from "util";
 import ReactGA from "react-ga";
 import { useTranslation } from "react-i18next";
@@ -18,7 +19,7 @@ interface IProps extends ISetMeetingNotes {
 const MeetingNotepadInner = (p: IProps) => {
   const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
-  const [savingError, setSavingError] = useState(undefined);
+  const [savingError, setSavingError] = useState<boolean>(false);
   const [notes, setNotes] = useState((p.record || {}).notes);
   useEffect(() => {
     setNotes((p.record || {}).notes);
@@ -32,7 +33,7 @@ const MeetingNotepadInner = (p: IProps) => {
       return p.onComplete();
     }
     setSaving(true);
-    setSavingError(undefined);
+    setSavingError(false);
     p.setMeetingNotes(p.record.id, notes)
       .then(() => {
         ReactGA.event({
@@ -43,8 +44,9 @@ const MeetingNotepadInner = (p: IProps) => {
         p.onComplete();
       })
       .catch((e) => {
-        setSavingError(false);
-        setSavingError(e);
+        console.error(e);
+        setSaving(false);
+        setSavingError(true);
       });
   };
 
@@ -67,7 +69,7 @@ const MeetingNotepadInner = (p: IProps) => {
       <Button {...nextProps} onClick={saveNotes}>
         {t("Next")}
       </Button>
-      <p>{savingError}</p>
+      {savingError && <Error text={t("Failed to save notes")} />}
     </div>
   );
 };

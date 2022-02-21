@@ -4,7 +4,7 @@ import { IQuestion, Question as QuestionType } from "models/question";
 import { Notepad } from "components/Notepad";
 import { IIntAnswer, Answer } from "models/answer";
 import { IMeeting } from "models/meeting";
-import { Loader } from "semantic-ui-react";
+import { Icon, Loader } from "semantic-ui-react";
 import { LikertDebounced } from "../LikertDebounced";
 import { isNullOrUndefined } from "util";
 import { withTranslation, WithTranslation } from "react-i18next";
@@ -200,7 +200,12 @@ class QuestionInlineInner extends React.Component<IProps, IState> {
           onBlur={this.saveNotes}
           disabled={disabled}
         />
-        <p>{this.state.saveError}</p>
+        {this.state.saveError && (
+          <div style={{ marginBottom: "1em" }}>
+            <Icon name="exclamation" color="red" />{" "}
+            {t("Failed to save your answer")}
+          </div>
+        )}
       </div>
     );
   }

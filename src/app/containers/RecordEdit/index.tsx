@@ -17,6 +17,7 @@ import {
   IEditMeetingBeneficiary,
 } from "apollo/modules/meetings";
 import { TagInputWithBenSuggestions } from "components/TagInput";
+import { Error } from "components/Error";
 import { DateTimePicker } from "components/DateTimePicker";
 import { Hint } from "components/Hint";
 import moment from "moment";
@@ -139,6 +140,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
         this.nextPage();
       })
       .catch((e) => {
+        console.error(e);
         this.setState({
           saving: false,
           saveError: e,
@@ -354,7 +356,9 @@ class RecordEditInner extends React.Component<IProps, IState> {
               {t("Save")}
             </Button>
           </div>
-          <p>{this.state.saveError}</p>
+          {this.state.saveError && (
+            <Error text={t("Failed to save your changes")} />
+          )}
         </div>
       </div>
     );
