@@ -13,12 +13,13 @@ interface IProps {
 }
 
 const Inner = (p: IProps) => {
+  const { t } = useTranslation();
+
   const loading = p.data.loading;
   const completed =
     !loading &&
     p.data.getRecentMeetings &&
     p.data.getRecentMeetings.meetings.length > 0;
-  const { t } = useTranslation();
   return (
     <OnboardingChecklistItem
       title={t("Create a record")}

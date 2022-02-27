@@ -18,6 +18,8 @@ const navigateToNewRecord = () => {
 };
 
 const inner = (p: IProps) => {
+  const { t } = useTranslation();
+
   const loading = p.data.loading || p.meetings.loading;
   if (loading) {
     return <div />;
@@ -32,7 +34,6 @@ const inner = (p: IProps) => {
   if (!shouldShow) {
     return <div />;
   }
-  const { t } = useTranslation();
   return (
     <Segment
       key="quickStart"

@@ -125,10 +125,12 @@ const graphGrid = (cols: SemanticWIDTHS, p: IProp): JSX.Element => {
 };
 
 export const AnswerDistributionChart = (p: IProp): JSX.Element => {
+  const { t } = useTranslation();
+
   if (p.data.length === 0) {
     return <div />;
   }
-  const { t } = useTranslation();
+
   const wrapper = (inner: JSX.Element) => (
     <div className="answer-distribution-report">
       {roundingWillOccur(p.data) && (

@@ -37,6 +37,8 @@ const logGAEvent = (v: IFormOutput): void => {
 };
 
 const ReportFormInner = (p: IURLConnector) => {
+  const { t } = useTranslation();
+
   const navigateToReport = (v: IFormOutput) => {
     let start = v.start;
     let end = v.end;
@@ -50,7 +52,6 @@ const ReportFormInner = (p: IURLConnector) => {
     p.setURL(url, qp);
   };
 
-  const { t } = useTranslation();
   return <RFWrapped t={t} onFormSubmit={navigateToReport} />;
 };
 

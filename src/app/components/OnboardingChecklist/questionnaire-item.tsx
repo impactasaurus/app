@@ -15,6 +15,8 @@ interface IProps {
 }
 
 const Inner = (p: IProps) => {
+  const { t } = useTranslation();
+
   const loading = p.data.loading;
   let completed = false;
   if (!loading && p.data.allOutcomeSets && p.data.allOutcomeSets.length > 0) {
@@ -24,7 +26,6 @@ const Inner = (p: IProps) => {
     );
     completed = maxQuestionCount >= 3;
   }
-  const { t } = useTranslation();
   return (
     <OnboardingChecklistItem
       title={t("Define a questionnaire")}

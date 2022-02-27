@@ -14,6 +14,8 @@ interface IProps extends ICategoryMutation {
 }
 
 const NewQuestionCategoryInner = (p: IProps) => {
+  const { t } = useTranslation();
+
   const onSubmitButtonPress = (
     name: string,
     aggregation: string,
@@ -22,7 +24,6 @@ const NewQuestionCategoryInner = (p: IProps) => {
     return p.addCategory(p.QuestionSetID, name, aggregation, description);
   };
 
-  const { t } = useTranslation();
   return (
     <QuestionCategoryForm
       OnSuccess={p.OnSuccess}

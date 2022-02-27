@@ -13,9 +13,9 @@ interface IProps {
 }
 
 const Inner = (p: IProps) => {
+  const { t } = useTranslation();
   const loading = p.data.loading;
   const completed = !loading && p.data.reportGenerated;
-  const { t } = useTranslation();
   return (
     <OnboardingChecklistItem
       title={t("Generate a report")}

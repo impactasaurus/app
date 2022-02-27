@@ -13,6 +13,8 @@ interface IProps extends IQuestionMutation {
 }
 
 const NewLikertQuestionInner = (p: IProps) => {
+  const { t } = useTranslation();
+
   const addQuestion = (q: ILikertQuestionForm): Promise<IOutcomeSet> => {
     return p.addLikertQuestion(
       p.QuestionSetID,
@@ -26,7 +28,6 @@ const NewLikertQuestionInner = (p: IProps) => {
     );
   };
 
-  const { t } = useTranslation();
   const defaults: ILikertForm = p.Defaults || {
     leftValue: 1,
     rightValue: 5,

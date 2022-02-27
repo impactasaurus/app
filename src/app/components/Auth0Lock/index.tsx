@@ -12,22 +12,7 @@ interface IProps {
 
 const Auth0Lock = (p: IProps): JSX.Element => {
   const [error, setError] = useState<Auth0Error>(undefined);
-
-  const parseRedirect = (
-    webAuth: WebAuth,
-    onFailure: (error: Auth0Error) => void
-  ): void => {
-    webAuth.parseHash((err, authResult) => {
-      if (err || authResult === null || authResult === undefined) {
-        onFailure(err);
-        return;
-      }
-      saveAuth(authResult.idToken);
-      if (p.onAuthenticated) {
-        p.onAuthenticated();
-      }
-    });
-  };
+  const { t } = useTranslation();
 
   useEffect(() => {
     const webAuth = getWebAuth();
@@ -45,7 +30,22 @@ const Auth0Lock = (p: IProps): JSX.Element => {
     });
   }, []);
 
-  const { t } = useTranslation();
+  const parseRedirect = (
+    webAuth: WebAuth,
+    onFailure: (error: Auth0Error) => void
+  ): void => {
+    webAuth.parseHash((err, authResult) => {
+      if (err || authResult === null || authResult === undefined) {
+        onFailure(err);
+        return;
+      }
+      saveAuth(authResult.idToken);
+      if (p.onAuthenticated) {
+        p.onAuthenticated();
+      }
+    });
+  };
+
   if (error !== undefined) {
     let description = `${t("Login failed.")} ${t(
       "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org"

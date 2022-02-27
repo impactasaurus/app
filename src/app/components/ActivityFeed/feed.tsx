@@ -40,11 +40,12 @@ const recordCount = (d: IGetRecentMeetings): number | undefined => {
 };
 
 const ActivityFeedInner = (p: IProps) => {
+  const { t } = useTranslation();
+
   const loadMore = () => {
     p.data.fetchMore(getMoreRecentMeetings(p.data.getRecentMeetings.page + 1));
   };
 
-  const { t } = useTranslation();
   const rCount = recordCount(p?.data);
   if (rCount === 0) {
     return (

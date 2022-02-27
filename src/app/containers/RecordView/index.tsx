@@ -31,6 +31,8 @@ function getNextPageURL(p: IProps): string | undefined {
 }
 
 const RecordViewInner = (p: IProps) => {
+  const { t } = useTranslation();
+
   const nextPage = () => {
     const nextPage = getNextPageURL(p);
     if (nextPage !== undefined) {
@@ -53,7 +55,6 @@ const RecordViewInner = (p: IProps) => {
     return <div />;
   }
 
-  const { t } = useTranslation();
   const record = p.data.getMeeting;
   return (
     <div>

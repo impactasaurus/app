@@ -31,6 +31,8 @@ interface IProps extends IURLConnector, IAcceptInvite {
 }
 
 const InviteInner = (p: IProps) => {
+  const { t } = useTranslation();
+
   const onFormSubmit = (v: IFormOutput): Promise<void> => {
     return p
       .acceptInvite(p.match.params.id, v.name, v.email, v.password)
@@ -56,7 +58,6 @@ const InviteInner = (p: IProps) => {
     });
   };
 
-  const { t } = useTranslation();
   if (p.data.error) {
     if (p.data.error.message.includes("expired")) {
       return (

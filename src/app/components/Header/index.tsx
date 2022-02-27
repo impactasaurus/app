@@ -26,6 +26,8 @@ interface IProps {
 }
 
 const HeaderInner = (p: IProps) => {
+  const { t } = useTranslation();
+
   const isActive = (url: string, exact = false): boolean => {
     if (exact) {
       return p.currentURL === url;
@@ -46,7 +48,6 @@ const HeaderInner = (p: IProps) => {
     return false;
   };
 
-  const { t } = useTranslation();
   const { isLoggedIn, isBeneficiary } = p;
   const org = getOrganisation();
   if (isLoggedIn && isBeneficiary !== true && org) {

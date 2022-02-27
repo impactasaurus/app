@@ -14,10 +14,11 @@ interface IProps extends IURLConnector {
 }
 
 const HomeInner = (p: IProps): JSX.Element => {
+  const { t } = useTranslation();
+
   const newRecord = () => {
     p.setURL("/record");
   };
-  const { t } = useTranslation();
   const recordCount = p?.data?.getRecentMeetings?.meetings?.length;
   return (
     <div>
