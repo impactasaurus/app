@@ -20,6 +20,8 @@ interface IProps extends IQuestionMutation, ICategoryMutation {
 }
 
 const EditLikertQuestionInner = (p: IProps) => {
+  const { t } = useTranslation();
+
   const editQuestion = (q: ILikertQuestionForm): Promise<IOutcomeSet> => {
     let prom = p.editLikertQuestion(
       p.QuestionSetID,
@@ -38,7 +40,6 @@ const EditLikertQuestionInner = (p: IProps) => {
   };
 
   const q = p.question;
-  const { t } = useTranslation();
 
   return (
     <LikertQuestionForm

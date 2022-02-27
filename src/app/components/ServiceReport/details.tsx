@@ -11,10 +11,11 @@ interface IProps {
 }
 
 export const ServiceReportDetails = (p: IProps): JSX.Element => {
+  const { t } = useTranslation();
+
   const { serviceReport, questionSet } = p;
   const warnings = getWarnings(serviceReport.excluded, questionSet);
   const includedBens = serviceReport.beneficiaries.map((b) => b.id);
-  const { t } = useTranslation();
   return (
     <ReportDetails
       introduction={t(

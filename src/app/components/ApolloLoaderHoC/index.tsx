@@ -15,12 +15,12 @@ export const ApolloLoaderHoC = <P extends unknown>(
 ): React.ComponentType<P> => {
   const Inner = (p: P) => {
     const [prevLoaded, setPrevLoaded] = useState(false);
+    const { t } = useTranslation();
     const qp = queryProps(p);
     if (!qp) {
       return <span />;
     }
     if (qp.error && isErrorTerminal(qp.error)) {
-      const { t } = useTranslation();
       const text = t("Failed to load {entity}", { entity: t(entity) });
       return <Error text={text} />;
     }

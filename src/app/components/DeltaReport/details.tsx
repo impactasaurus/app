@@ -11,10 +11,12 @@ interface IProps {
 }
 
 export const DeltaReportDetails = (p: IProps): JSX.Element => {
+  const { t } = useTranslation();
+
   const { report, questionnaire } = p;
   const warnings = getWarnings(report.excluded, questionnaire);
   const bens = report.beneficiaries.map((b) => b.id);
-  const { t } = useTranslation();
+
   return (
     <ReportDetails
       introduction={t(

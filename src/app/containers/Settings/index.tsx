@@ -17,6 +17,8 @@ interface IProps extends IURLConnector {
 }
 
 const SettingsInner = (p: IProps) => {
+  const { t } = useTranslation();
+
   const isSelected = (url: string): boolean => {
     return p.currentURL !== undefined && p.currentURL.includes(url);
   };
@@ -30,8 +32,6 @@ const SettingsInner = (p: IProps) => {
       p.setURL(url);
     };
   };
-
-  const { t } = useTranslation();
 
   const match = p.match.url;
   return (

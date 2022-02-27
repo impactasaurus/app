@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 
 const UsersInner = (): JSX.Element => {
   const [showInviteLink, setShowInviteLink] = useState(false);
+  const { t } = useTranslation();
 
   const newClicked = (): void => {
     setShowInviteLink(true);
@@ -16,7 +17,6 @@ const UsersInner = (): JSX.Element => {
     setShowInviteLink(false);
   };
 
-  const { t } = useTranslation();
   const newButton = (
     <span
       className="title-holder"

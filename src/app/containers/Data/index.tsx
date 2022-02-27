@@ -8,12 +8,12 @@ import "./style.less";
 
 const DataInner = (p: IURLConnector) => {
   const [selectedQuestionnaire, setSelectedQuestionnaire] = useState(undefined);
+  const { t } = useTranslation();
 
   const goToExport = () => {
     p.setURL(`/settings/data/questionnaire/export/${selectedQuestionnaire}`);
   };
 
-  const { t } = useTranslation();
   return (
     <>
       <h3>{t("Export")}</h3>

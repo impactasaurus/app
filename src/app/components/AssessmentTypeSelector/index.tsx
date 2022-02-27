@@ -10,6 +10,8 @@ interface IProps {
 }
 
 const AssessmentTypeSelector = (p: IProps): JSX.Element => {
+  const { t } = useTranslation();
+
   const typeClickFn = (t: AssessmentType): (() => void) => {
     return () => {
       ReactGA.event({
@@ -21,7 +23,6 @@ const AssessmentTypeSelector = (p: IProps): JSX.Element => {
     };
   };
 
-  const { t } = useTranslation();
   const items: Item[] = [
     {
       title: t("Live"),

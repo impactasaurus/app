@@ -34,6 +34,8 @@ interface IProps extends IURLConnector {
 }
 
 const OutcomeSetInner = (p: IProps) => {
+  const { t } = useTranslation();
+
   const handleClick = (url: string, search?: string) => {
     return () => {
       p.setURL(url, search);
@@ -101,7 +103,6 @@ const OutcomeSetInner = (p: IProps) => {
     );
   };
 
-  const { t } = useTranslation();
   const {
     data: { loading, getOutcomeSet, error },
     page,

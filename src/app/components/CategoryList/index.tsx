@@ -25,6 +25,10 @@ const wrapCategoryForm = (title: string, inner: JSX.Element): JSX.Element => (
 );
 
 const CategoryListInner = (p: IProps) => {
+  const [editedCategoryId, setEditedCategoryIdInner] = useState(undefined);
+  const [newCategoryClicked, setNewCategoryClickedInner] = useState(false);
+  const { t } = useTranslation();
+
   const deleteCategory = (categoryID: string) => {
     return (): Promise<IOutcomeSet> => {
       return p.deleteCategory(p.outcomeSetID, categoryID).catch((e: Error) => {
@@ -35,9 +39,6 @@ const CategoryListInner = (p: IProps) => {
       });
     };
   };
-
-  const [editedCategoryId, setEditedCategoryIdInner] = useState(undefined);
-  const [newCategoryClicked, setNewCategoryClickedInner] = useState(false);
 
   const setNewCategoryClicked = (newValue: boolean): (() => void) => {
     return () => {
@@ -52,8 +53,6 @@ const CategoryListInner = (p: IProps) => {
       setNewCategoryClickedInner(false);
     };
   };
-
-  const { t } = useTranslation();
 
   const renderCategory = (c: ICategory): JSX.Element => {
     if (editedCategoryId && editedCategoryId === c.id) {

@@ -29,6 +29,8 @@ export enum ReviewPage {
 }
 
 const BeneficiaryInner = (p: IProps) => {
+  const { t } = useTranslation();
+
   const handleClick = (url: string, search?: string) => {
     return () => {
       p.setURL(url, search);
@@ -73,7 +75,6 @@ const BeneficiaryInner = (p: IProps) => {
   }
 
   const match = p.match.path;
-  const { t } = useTranslation();
 
   return (
     <div>

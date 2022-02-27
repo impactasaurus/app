@@ -40,6 +40,8 @@ const CatalogueQuestionnaire = (p: {
 };
 
 const CatalogueInner = (p: IProps) => {
+  const { t } = useTranslation();
+
   const navigateToQuestionnaire = (id: string) => {
     return () => p.setURL(`/catalogue/${id}`);
   };
@@ -53,7 +55,6 @@ const CatalogueInner = (p: IProps) => {
     );
   };
 
-  const { t } = useTranslation();
   return (
     <List divided={true} relaxed={true} verticalAlign="middle" className="list">
       {renderArray(
