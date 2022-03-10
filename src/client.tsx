@@ -18,6 +18,7 @@ import { createBrowserHistory } from "history";
 import { ConnectedRouter } from "connected-react-router";
 import { setupBrandColors } from "theme/branding";
 import { setupI18n } from "./i18n/setup";
+import { Provider as ReactReduxProvider } from "react-redux";
 import {
   UnsupportedBrowser,
   unsupportedBrowser,
@@ -70,11 +71,13 @@ const initApp = () => {
   setupBrandColors();
 
   ReactDOM.render(
-    <ApolloProvider client={client} store={store}>
-      <ConnectedRouter history={history}>
-        <Route path="/" component={withTracker(containers.App)} />
-      </ConnectedRouter>
-    </ApolloProvider>,
+    <ReactReduxProvider store={store}>
+      <ApolloProvider client={client} store={store}>
+        <ConnectedRouter history={history}>
+          <Route path="/" component={withTracker(containers.App)} />
+        </ConnectedRouter>
+      </ApolloProvider>
+    </ReactReduxProvider>,
     rootElement
   );
 };

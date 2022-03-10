@@ -10,10 +10,9 @@ export default function getReducers(apollo, history): Reducer {
     user,
     storage,
   };
-  return connectRouter(history)(
-    combineReducers({
-      ...internalReducers,
-      apollo,
-    })
-  );
+  return combineReducers({
+    router: connectRouter(history),
+    ...internalReducers,
+    apollo,
+  });
 }
