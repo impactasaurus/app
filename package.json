@@ -101,7 +101,7 @@
     "mocha": "5.2.0",
     "node-sass": "4.13.1",
     "phantomjs-prebuilt": "2.1.16",
-    "postcss": "8.2.10",
+    "postcss": "8.2.13",
     "postcss-loader": "4.2.0",
     "postcss-preset-env": "6.7.0",
     "prettier": "2.3.0",
