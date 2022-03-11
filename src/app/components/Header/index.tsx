@@ -16,6 +16,9 @@ import { ProfileMenu } from "./profile";
 import { connect } from "react-redux";
 import { HeaderPlugins } from "./plugins";
 import { getOrganisation } from "helpers/auth";
+import { isTourActive, TourStage, tourStageAction } from "redux/modules/tour";
+import { useSelector, useDispatch } from "react-redux";
+import ReactJoyride from "react-joyride";
 const config = require("../../../../config/main").app.auth;
 
 interface IProps {
@@ -25,8 +28,14 @@ interface IProps {
   logout?: RequestLogoutFunc;
 }
 
+const QuestionnaireButtonID = "questionnaire-menu-item";
+
 const HeaderInner = (p: IProps) => {
   const { t } = useTranslation();
+  const highlightQuestionnaireButton = useSelector(
+    isTourActive(TourStage.QUESTIONNAIRE_1)
+  );
+  const dispatch = useDispatch();
 
   const isActive = (url: string, exact = false): boolean => {
     if (exact) {
@@ -78,6 +87,15 @@ const HeaderInner = (p: IProps) => {
           as={Link}
           to="/questions"
           active={isActive("/catalogue") || isActive("/questions")}
+          id={QuestionnaireButtonID}
+          onClick={() =>
+            dispatch(
+              tourStageAction(
+                TourStage.QUESTIONNAIRE_2,
+                TourStage.QUESTIONNAIRE_1
+              )
+            )
+          }
         >
           <Icon name="question" className="replacement" />
           <span className="title">{t("Questionnaires")}</span>
@@ -103,6 +121,17 @@ const HeaderInner = (p: IProps) => {
           </Menu.Item>
           <ProfileMenu logOut={logOut} />
         </Menu.Menu>
+        <ReactJoyride
+          run={highlightQuestionnaireButton}
+          steps={[
+            {
+              target: `#${QuestionnaireButtonID}`,
+              content: "test",
+              disableBeacon: true,
+              spotlightClicks: true,
+            },
+          ]}
+        />
       </Menu>
     );
   } else if (isLoggedIn) {
