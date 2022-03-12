@@ -26,15 +26,19 @@ export function reducer(state: IState = initialState, action: IAction): IState {
     case "ISetStage":
       if (action.conditional) {
         if (!state.active || state.stage !== action.conditional) {
-          break;
+          return state;
         }
       }
-      state.stage = action.stage;
-      state.active = true;
-      break;
+      return {
+        ...state,
+        stage: action.stage,
+        active: true,
+      };
     case "IEndTour":
-      state.active = false;
-      break;
+      return {
+        ...state,
+        active: false,
+      };
   }
   return state;
 }
