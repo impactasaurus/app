@@ -1,9 +1,11 @@
 import { Action } from "redux";
 import { IStore } from "redux/IStore";
+import { useSelector } from "react-redux";
 
 export enum TourStage {
   QUESTIONNAIRE_1 = 1,
   QUESTIONNAIRE_2,
+  QUESTIONNAIRE_3,
 }
 
 interface IAction extends Action {
@@ -59,10 +61,8 @@ export const tourStageAction = (
   };
 };
 
-export const isTourActive = (
-  stage: TourStage
-): ((state: IStore) => boolean) => {
-  return (state: IStore): boolean => {
-    return state.tour.active && state.tour.stage === stage;
-  };
+export const useTourActive = (stage: TourStage): boolean => {
+  return useSelector(
+    (store: IStore) => store.tour.active && store.tour.stage === stage
+  );
 };

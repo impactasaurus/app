@@ -1,7 +1,7 @@
 import * as React from "react";
 import ReactJoyride from "react-joyride";
-import { isTourActive, TourStage, tourStageAction } from "redux/modules/tour";
-import { useSelector, useDispatch } from "react-redux";
+import { TourStage, tourStageAction, useTourActive } from "redux/modules/tour";
+import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 
 export interface IProps {
@@ -13,7 +13,7 @@ export interface IProps {
 }
 
 export const TourPointer = (p: IProps): JSX.Element => {
-  const active = useSelector(isTourActive(p.stage));
+  const active = useTourActive(p.stage);
   const [iteration, setIteration] = React.useState<number>(0);
   const location = useLocation();
   const dispatch = useDispatch();

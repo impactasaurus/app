@@ -8,14 +8,17 @@ import {
 import { IOutcomeSet } from "models/outcomeSet";
 import { IURLConnector, UrlHOC } from "redux/modules/url";
 import { renderArray } from "helpers/react";
-import { List, Icon } from "semantic-ui-react";
+import { List, Icon, Responsive, Button } from "semantic-ui-react";
 import { ConfirmButton } from "components/ConfirmButton";
 import { OnboardingNewRecordHint } from "components/OnboardingNewRecordHint";
 import ReactGA from "react-ga";
 import { useTranslation } from "react-i18next";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
-import { PageWrapperHoC } from "components/PageWrapperHoC";
+import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
 import "./style.less";
+import { TourStage } from "redux/modules/tour";
+import { TourPointer } from "components/TourPointer";
+import RocketIcon from "./../../theme/rocket.inline.svg";
 
 interface IProps extends IOutcomeMutation, IURLConnector {
   data: IOutcomeResult;
@@ -27,6 +30,8 @@ const logQuestionSetGAEvent = (action: string) => {
     action,
   });
 };
+
+const NewQuestionnaireButtonID = "new-questionnaire-button";
 
 const SettingQuestionsInner = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
@@ -74,6 +79,26 @@ const SettingQuestionsInner = (p: IProps): JSX.Element => {
 
   return (
     <div>
+      <span className="title-holder">
+        <Responsive
+          as={Button}
+          minWidth={1200}
+          icon="plus"
+          content={t("New Questionnaire")}
+          primary={true}
+          onClick={newClicked}
+          id={NewQuestionnaireButtonID}
+        />
+        <Responsive
+          as={Button}
+          maxWidth={1199}
+          icon="plus"
+          primary={true}
+          onClick={newClicked}
+          id={NewQuestionnaireButtonID}
+        />
+      </span>
+      <h1 key="title">{t("Questionnaires")}</h1>
       <OnboardingNewRecordHint />
       <List
         divided={true}
@@ -82,12 +107,21 @@ const SettingQuestionsInner = (p: IProps): JSX.Element => {
         className="list"
       >
         {renderArray(renderOutcomeSet, p.data.allOutcomeSets)}
-        <List.Item className="new-control" key="new">
-          <List.Content onClick={newClicked}>
-            <List.Header as="a">{t("New Questionnaire")}</List.Header>
-          </List.Content>
-        </List.Item>
+        {p.data.allOutcomeSets.length === 0 && (
+          <div>
+            <RocketIcon style={{ marginRight: "0.5em" }} />
+            <a onClick={newClicked}>
+              {t("Get started by creating a questionnaire")}
+            </a>
+          </div>
+        )}
       </List>
+      <TourPointer
+        content={t("test")}
+        stage={TourStage.QUESTIONNAIRE_2}
+        target={`#${NewQuestionnaireButtonID}`}
+        transitionOnLocationChange={TourStage.QUESTIONNAIRE_3}
+      />
     </div>
   );
 };
@@ -103,7 +137,7 @@ const OutcomeSetsWithData = allOutcomeSets<IProps>(
   deleteQuestionSet(OutcomeSetsLoader)
 );
 // t("Questionnaires")
-const OutcomeSets = PageWrapperHoC(
+const OutcomeSets = MinimalPageWrapperHoC(
   "Questionnaires",
   "question-sets",
   OutcomeSetsWithData
