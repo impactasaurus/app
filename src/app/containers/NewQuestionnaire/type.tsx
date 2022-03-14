@@ -46,8 +46,8 @@ const NewQuestionnaireTypSelectionInner = (p: IProps) => {
 
   const renderQuickStart = (data: IOutcomeResult) => {
     if (
-      data.loading !== false ||
-      (data.allOutcomeSets && data.allOutcomeSets.length < 0)
+      data.loading === true ||
+      (data.allOutcomeSets && data.allOutcomeSets.length > 0)
     ) {
       return <div key="noQuickStart" />;
     }
