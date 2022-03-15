@@ -24,13 +24,13 @@ const initialState: IState = {
 };
 
 export function reducer(state: IState = initialState, action: IAction): IState {
+  if (action.conditional) {
+    if (!state.active || state.stage !== action.conditional) {
+      return state;
+    }
+  }
   switch (action.type) {
     case "ISetStage":
-      if (action.conditional) {
-        if (!state.active || state.stage !== action.conditional) {
-          return state;
-        }
-      }
       return {
         ...state,
         stage: action.stage,
@@ -39,6 +39,7 @@ export function reducer(state: IState = initialState, action: IAction): IState {
     case "IEndTour":
       return {
         ...state,
+        stage: undefined,
         active: false,
       };
   }
@@ -52,6 +53,7 @@ export const tourStageAction = (
   if (stage === null) {
     return {
       type: "IEndTour",
+      conditional,
     };
   }
   return {

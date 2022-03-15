@@ -120,7 +120,7 @@ const SettingQuestionsInner = (p: IProps): JSX.Element => {
         content={t("test")}
         stage={TourStage.QUESTIONNAIRE_2}
         target={`#${NewQuestionnaireButtonID}`}
-        transitionOnLocationChange={TourStage.QUESTIONNAIRE_3}
+        transitionOnUnmount={TourStage.QUESTIONNAIRE_3}
       />
     </div>
   );

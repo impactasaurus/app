@@ -13,10 +13,14 @@ import {
 } from "../../apollo/modules/outcomeSets";
 import RocketIcon from "./../../theme/rocket.inline.svg";
 import { useTranslation } from "react-i18next";
+import { TourPointer } from "components/TourPointer";
+import { TourStage } from "redux/modules/tour";
 
 interface IProps extends ICatalogueImport, IURLConnector {
   data?: IOutcomeResult;
 }
+
+const QuickStartID = "quick-start";
 
 const NewQuestionnaireTypSelectionInner = (p: IProps) => {
   const [importing, setImporting] = useState(false);
@@ -70,19 +74,27 @@ const NewQuestionnaireTypSelectionInner = (p: IProps) => {
       ];
     }
     return (
-      <Segment
-        key="quickStart"
-        id="quick-start"
-        raised={true}
-        compact={true}
-        style={{ marginLeft: "auto", marginRight: "auto" }}
-      >
-        <h3 style={{ fontWeight: "normal" }}>
-          <RocketIcon style={{ width: "1rem", marginRight: ".3rem" }} />
-          {t("Quick start")}
-        </h3>
-        {body}
-      </Segment>
+      <div>
+        <Segment
+          key="quickStart"
+          id={QuickStartID}
+          raised={true}
+          compact={true}
+          style={{ marginLeft: "auto", marginRight: "auto" }}
+        >
+          <h3 style={{ fontWeight: "normal" }}>
+            <RocketIcon style={{ width: "1rem", marginRight: ".3rem" }} />
+            {t("Quick start")}
+          </h3>
+          {body}
+        </Segment>
+        <TourPointer
+          content="test"
+          stage={TourStage.QUESTIONNAIRE_3}
+          target={`#${QuickStartID}`}
+          transitionOnUnmount={null}
+        />
+      </div>
     );
   };
 
