@@ -13,6 +13,7 @@ export interface Item {
 
 interface IProps {
   items: Item[];
+  id?: string;
 }
 
 const MultiChoiceItem = ({ i }: { i: Item }): JSX.Element => {
@@ -35,7 +36,7 @@ const MultiChoiceItem = ({ i }: { i: Item }): JSX.Element => {
 
 export const MultiChoice = (p: IProps): JSX.Element => (
   <div style={{ paddingTop: "2rem" }}>
-    <Card.Group className="multi-choice">
+    <Card.Group className="multi-choice" id={p.id}>
       {p.items.map((i) => (
         <MultiChoiceItem key={i.title} i={i} />
       ))}

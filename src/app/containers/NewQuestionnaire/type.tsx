@@ -21,6 +21,7 @@ interface IProps extends ICatalogueImport, IURLConnector {
 }
 
 const QuickStartID = "quick-start";
+const QuestionnaireTypeSelectorID = "questionnaire-source-multi-select";
 
 const NewQuestionnaireTypSelectionInner = (p: IProps) => {
   const [importing, setImporting] = useState(false);
@@ -89,9 +90,22 @@ const NewQuestionnaireTypSelectionInner = (p: IProps) => {
           {body}
         </Segment>
         <TourPointer
-          content="test"
+          steps={[
+            {
+              content: t(
+                "You can create your own questionnaires or select from our catalogue, but for now..."
+              ),
+              target: `#${QuestionnaireTypeSelectorID}`,
+              spotlightClickThrough: false,
+            },
+            {
+              content: t(
+                "let's import the ONS questionnaire, which is a simple questionnaire on wellbeing - great for experimenting with"
+              ),
+              target: `#${QuickStartID}`,
+            },
+          ]}
           stage={TourStage.QUESTIONNAIRE_3}
-          target={`#${QuickStartID}`}
           transitionOnUnmount={null}
         />
       </div>
@@ -113,7 +127,11 @@ const NewQuestionnaireTypSelectionInner = (p: IProps) => {
   return (
     <>
       {renderQuickStart(p.data)}
-      <MultiChoice key="choice" items={items} />
+      <MultiChoice
+        key="choice"
+        items={items}
+        id={QuestionnaireTypeSelectorID}
+      />
     </>
   );
 };

@@ -109,8 +109,14 @@ const HeaderInner = (p: IProps) => {
           <ProfileMenu logOut={logOut} />
         </Menu.Menu>
         <TourPointer
-          content={t("test")}
-          target={`#${QuestionnaireButtonID}`}
+          steps={[
+            {
+              content: t(
+                "Let's head to the questionnaire page - your organisation's questionnaires are stored here"
+              ),
+              target: `#${QuestionnaireButtonID}`,
+            },
+          ]}
           stage={TourStage.QUESTIONNAIRE_1}
           transitionOnLocationChange={TourStage.QUESTIONNAIRE_2}
         />

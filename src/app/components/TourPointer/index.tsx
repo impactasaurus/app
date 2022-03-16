@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from "react";
-import ReactJoyride, { Placement } from "react-joyride";
+import ReactJoyride, { CallBackProps, Placement, Step } from "react-joyride";
 import { TourStage, tourStageAction, useTourActive } from "redux/modules/tour";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import "./style.less";
 
-export interface IProps {
+export interface POI {
   target: string;
   content: string;
-  stage: TourStage;
   title?: string;
+  position?: Placement;
+  spotlightClickThrough?: boolean;
+}
+
+export interface IProps {
+  stage: TourStage;
   // null = stop tour, undefined = no transition required
   transitionOnLocationChange?: TourStage | null;
   transitionOnUnmount?: TourStage | null;
-  position?: Placement;
+  steps: POI[];
 }
 
 export const TourPointer = (p: IProps): JSX.Element => {
@@ -20,6 +27,7 @@ export const TourPointer = (p: IProps): JSX.Element => {
   const [iteration, setIteration] = useState<number>(0);
   const location = useLocation();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setIteration(iteration + 1);
@@ -43,28 +51,41 @@ export const TourPointer = (p: IProps): JSX.Element => {
     return onUnmount;
   }, []);
 
-  const callback = (data) => {
+  const callback = (data: CallBackProps) => {
     if (data.type === "tour:end") {
       dispatch(tourStageAction(null, p.stage));
     }
   };
+
+  const multipleSteps = p.steps.length > 1;
 
   return (
     <ReactJoyride
       key={iteration}
       run={active}
       callback={callback}
-      steps={[
-        {
-          target: p.target,
-          content: p.content,
-          title: p.title,
-          disableBeacon: true,
-          spotlightClicks: true,
-          hideCloseButton: true,
-          placement: p.position,
+      continuous={multipleSteps}
+      showProgress={multipleSteps}
+      steps={p.steps.map<Step>((s) => ({
+        placement: s.position,
+        content: s.content,
+        target: s.target,
+        title: s.title,
+        disableBeacon: true,
+        hideCloseButton: true,
+        spotlightClicks: s.spotlightClickThrough ?? true,
+      }))}
+      styles={{
+        options: {
+          primaryColor: "var(--brand-color)",
         },
-      ]}
+      }}
+      locale={{
+        back: t("Back"),
+        close: t("Close"),
+        last: t("Close"),
+        next: t("Next"),
+      }}
     />
   );
 };

@@ -117,9 +117,15 @@ const SettingQuestionsInner = (p: IProps): JSX.Element => {
         )}
       </List>
       <TourPointer
-        content={t("test")}
+        steps={[
+          {
+            content: t(
+              "Click here to create questionnaires within your organisation"
+            ),
+            target: `#${NewQuestionnaireButtonID}`,
+          },
+        ]}
         stage={TourStage.QUESTIONNAIRE_2}
-        target={`#${NewQuestionnaireButtonID}`}
         transitionOnUnmount={TourStage.QUESTIONNAIRE_3}
       />
     </div>
