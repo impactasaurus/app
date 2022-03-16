@@ -3,8 +3,7 @@ import ReactJoyride, { CallBackProps, Placement, Step } from "react-joyride";
 import { TourStage, tourStageAction, useTourActive } from "redux/modules/tour";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import "./style.less";
+import { TourTooltip } from "./tooltip";
 
 export interface POI {
   target: string;
@@ -27,7 +26,6 @@ export const TourPointer = (p: IProps): JSX.Element => {
   const [iteration, setIteration] = useState<number>(0);
   const location = useLocation();
   const dispatch = useDispatch();
-  const { t } = useTranslation();
 
   useEffect(() => {
     setIteration(iteration + 1);
@@ -75,17 +73,7 @@ export const TourPointer = (p: IProps): JSX.Element => {
         hideCloseButton: true,
         spotlightClicks: s.spotlightClickThrough ?? true,
       }))}
-      styles={{
-        options: {
-          primaryColor: "var(--brand-color)",
-        },
-      }}
-      locale={{
-        back: t("Back"),
-        close: t("Close"),
-        last: t("Close"),
-        next: t("Next"),
-      }}
+      tooltipComponent={TourTooltip}
     />
   );
 };
