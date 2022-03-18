@@ -5,6 +5,8 @@ import {
   IGetRecentMeetings,
 } from "../../apollo/modules/meetings";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { TourStage, tourStageAction } from "redux/modules/tour";
 
 interface IProps {
   data?: IGetRecentMeetings;
@@ -14,6 +16,11 @@ interface IProps {
 
 const Inner = (p: IProps) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+
+  const onClick = () => {
+    dispatch(tourStageAction(TourStage.RECORD_1));
+  };
 
   const loading = p.data.loading;
   const completed =
@@ -31,6 +38,7 @@ const Inner = (p: IProps) => {
       link="/record"
       index={p.index}
       minimal={p.minimal}
+      onClick={onClick}
     />
   );
 };

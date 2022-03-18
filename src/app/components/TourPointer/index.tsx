@@ -11,6 +11,7 @@ export interface POI {
   title?: string;
   position?: Placement;
   spotlightClickThrough?: boolean;
+  isComplete?: boolean;
 }
 
 export interface IProps {
@@ -50,6 +51,11 @@ export const TourPointer = (p: IProps): JSX.Element => {
   }, []);
 
   const callback = (data: CallBackProps) => {
+    if (data.type === "error:target_not_found") {
+      console.error(
+        `TourPointer: ${data.step.target} not found. Is it a valid CSS selector?`
+      );
+    }
     if (data.type === "tour:end") {
       dispatch(tourStageAction(null, p.stage));
     }
@@ -72,6 +78,7 @@ export const TourPointer = (p: IProps): JSX.Element => {
         disableBeacon: true,
         hideCloseButton: true,
         spotlightClicks: s.spotlightClickThrough ?? true,
+        nonce: "" + (s.isComplete ?? true),
       }))}
       tooltipComponent={TourTooltip}
     />

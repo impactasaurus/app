@@ -10,11 +10,12 @@ interface IProps {
   required?: boolean;
   width?: SemanticWIDTHS;
   description?: string;
+  id?: string;
 }
 
 export class FormField extends React.Component<IProps, any> {
   public render() {
-    const { error, inputID, label, touched, required, width, description } =
+    const { error, inputID, label, touched, required, width, description, id } =
       this.props;
     const errored = touched && error !== undefined;
     return (
@@ -23,6 +24,7 @@ export class FormField extends React.Component<IProps, any> {
         required={required}
         width={width}
         className="form-field"
+        id={id}
       >
         <label htmlFor={inputID}>{label}</label>
         {description && <span className="description">{description}</span>}

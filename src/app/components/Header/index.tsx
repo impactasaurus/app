@@ -28,6 +28,7 @@ interface IProps {
 }
 
 const QuestionnaireButtonID = "questionnaire-menu-item";
+const NewRecordButtonID = "add-menu-link";
 
 const HeaderInner = (p: IProps) => {
   const { t } = useTranslation();
@@ -96,7 +97,7 @@ const HeaderInner = (p: IProps) => {
             isActive("/meeting") ||
             isActive("/dataentry")
           }
-          id="add-menu-link"
+          id={NewRecordButtonID}
         >
           <Icon name="plus" className="required" />
         </Menu.Item>
@@ -119,6 +120,18 @@ const HeaderInner = (p: IProps) => {
           ]}
           stage={TourStage.QUESTIONNAIRE_1}
           transitionOnLocationChange={TourStage.QUESTIONNAIRE_2}
+        />
+        <TourPointer
+          steps={[
+            {
+              content: t(
+                "The easiest way to create a new record is to click here"
+              ),
+              target: `#${NewRecordButtonID}`,
+            },
+          ]}
+          stage={TourStage.RECORD_1}
+          transitionOnLocationChange={TourStage.RECORD_2}
         />
       </Menu>
     );

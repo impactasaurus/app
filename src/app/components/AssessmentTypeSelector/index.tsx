@@ -4,10 +4,16 @@ import { Item, MultiChoice } from "../MultiChoice";
 import ReactGA from "react-ga";
 import { useTranslation } from "react-i18next";
 import "./style.less";
+import { TourPointer } from "components/TourPointer";
+import { TourStage } from "redux/modules/tour";
 
 interface IProps {
   typeSelector: (selected: AssessmentType) => void;
 }
+
+const LiveID = "live-new-record";
+const RemoteID = "remote-new-record";
+const HistoricID = "historic-new-record";
 
 const AssessmentTypeSelector = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
@@ -29,6 +35,7 @@ const AssessmentTypeSelector = (p: IProps): JSX.Element => {
       subtitle: t("Complete together"),
       description: t("Complete the questionnaire together"),
       onClick: typeClickFn(AssessmentType.live),
+      id: LiveID,
     },
     {
       title: t("Remote"),
@@ -38,6 +45,7 @@ const AssessmentTypeSelector = (p: IProps): JSX.Element => {
         { noDays: defaultRemoteMeetingLimit }
       ),
       onClick: typeClickFn(AssessmentType.remote),
+      id: RemoteID,
     },
     {
       title: t("Data Entry"),
@@ -46,10 +54,37 @@ const AssessmentTypeSelector = (p: IProps): JSX.Element => {
         `Enter data gathered historically into the system. For example, if you completed the questionnaire on paper with the beneficiary`
       ),
       onClick: typeClickFn(AssessmentType.historic),
+      id: HistoricID,
     },
   ];
 
-  return <MultiChoice items={items} />;
+  return (
+    <>
+      <MultiChoice items={items} />
+      <TourPointer
+        stage={TourStage.RECORD_2}
+        transitionOnUnmount={TourStage.RECORD_3}
+        steps={[
+          {
+            content: t("You can collect questionnaire responses remotely..."),
+            target: `#${RemoteID}`,
+            spotlightClickThrough: false,
+          },
+          {
+            content: t("quickly enter them from offline sources..."),
+            target: `#${HistoricID}`,
+            spotlightClickThrough: false,
+          },
+          {
+            content: t(
+              "or complete them with your beneficiary. Let's select this option"
+            ),
+            target: `#${LiveID}`,
+          },
+        ]}
+      />
+    </>
+  );
 };
 
 export { AssessmentTypeSelector };

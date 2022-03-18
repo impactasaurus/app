@@ -9,6 +9,7 @@ export interface Item {
   description?: string;
   button?: string;
   onClick: () => void;
+  id?: string;
 }
 
 interface IProps {
@@ -19,7 +20,7 @@ interface IProps {
 const MultiChoiceItem = ({ i }: { i: Item }): JSX.Element => {
   const { t } = useTranslation();
   return (
-    <Card className="choice">
+    <Card className="choice" id={i.id}>
       <Card.Content>
         <Card.Header>{i.title}</Card.Header>
         {i.subtitle && <Card.Meta>{i.subtitle}</Card.Meta>}
