@@ -22,6 +22,10 @@ import { setPref, SetPrefFunc } from "redux/modules/pref";
 import { connect } from "react-redux";
 import { WithTranslation, withTranslation } from "react-i18next";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
+import { TourPointer } from "components/TourPointer";
+import { TourStage } from "redux/modules/tour";
+import { BeneficiaryNewRecordButtonID } from "containers/Beneficiary";
+import { HomeButtonID } from "components/Header";
 
 const allowedVisualisations = [
   Visualisation.RADAR,
@@ -191,7 +195,48 @@ class JourneyInner extends React.Component<IProps, null> {
           )}
           autoSelectFirst={true}
         />
-        {this.renderVis()}
+        <div id="journey-vis-container">{this.renderVis()}</div>
+        <TourPointer
+          stage={TourStage.RECORD_4}
+          transitionOnUnmount={TourStage.RECORD_5}
+          steps={[
+            {
+              target: "#journey-vis-container",
+              content: t(
+                "This is the beneficiary page for {name}, it collects all of their records into a single place. In this radar chart you can see the data you just entered",
+                {
+                  name: this.props.match.params.id,
+                }
+              ),
+              disableScrolling: true,
+            },
+            {
+              target: `#${BeneficiaryNewRecordButtonID}`,
+              content: t(
+                "Impactasaurus is designed for distance travelled analysis, so let's quickly answer the questionnaire again for this beneficiary"
+              ),
+            },
+          ]}
+        />
+        <TourPointer
+          stage={TourStage.RECORD_7}
+          transitionOnUnmount={null}
+          steps={[
+            {
+              target: "#journey-vis-container",
+              content: t(
+                "Now you can see both records for this beneficiary and how the answers have changed over time"
+              ),
+              disableScrolling: true,
+            },
+            {
+              target: `#${HomeButtonID}`,
+              content: t(
+                "Head back to the home page and you will see the records within the activity feed under the getting started section"
+              ),
+            },
+          ]}
+        />
       </div>
     );
   }

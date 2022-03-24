@@ -104,6 +104,7 @@ const InnerForm = (
   const questionnaireInputID = "new-record-questionnaire-input";
   const tagInputID = "new-record-tag-input";
   const submitButtonID = "new-record-submit";
+  const dateSelectID = "new-record-date-select";
 
   // if the beneficiary has been set via URL, hide the beneficiary field
   const benField = (
@@ -165,6 +166,7 @@ const InnerForm = (
             label={t("Date Conducted")}
             touched={touched.date as boolean}
             error={errors.date as string}
+            id={dateSelectID}
           >
             <div id="as-datepicker">
               <span className="conductedDate">
@@ -204,22 +206,48 @@ const InnerForm = (
         transitionOnUnmount={TourStage.RECORD_4}
         steps={[
           {
-            content: t("enter ben"),
+            content: t(
+              "We first need to define which beneficiary is answering the questionnaire, this is done with a unique identifier. The ID used will depend on your organisation, but for now let's go with something easy like Ben1"
+            ),
             target: `#${benInputID}`,
             isComplete: !errors.beneficiaryID,
           },
           {
-            content: t("enter q"),
+            content: t(
+              "Here we select the questionnaire we want the beneficiary to answer - select the ONS questionnaire we set up earlier"
+            ),
             target: `#${questionnaireInputID}`,
             isComplete: !errors.outcomeSetID,
           },
           {
-            content: t("enter tags"),
-            target: `#${tagInputID}`,
+            content: t(
+              "That's all we need for now. When you click start, the questionnaire can be answered; provide answers to the four questions and we can continue once completed"
+            ),
+            target: `#${submitButtonID}`,
+          },
+        ]}
+      />
+      <TourPointer
+        stage={TourStage.RECORD_6}
+        transitionOnUnmount={TourStage.RECORD_7}
+        steps={[
+          {
+            content: t(
+              "Using the data entry mode, we can enter in data collected historically. Select a date before today"
+            ),
+            target: `#${dateSelectID}`,
+            isComplete:
+              !errors.date &&
+              values.date &&
+              Date.now() - values.date.getTime() > 8.64e7,
+            disableOverlay: true,
           },
           {
-            content: t("let's start"),
+            content: t(
+              "The data entry mode makes it much quicker to provide answers, give it a try"
+            ),
             target: `#${submitButtonID}`,
+            disableOverlay: true,
           },
         ]}
       />

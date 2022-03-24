@@ -12,6 +12,8 @@ export interface POI {
   position?: Placement;
   spotlightClickThrough?: boolean;
   isComplete?: boolean;
+  disableScrolling?: boolean;
+  disableOverlay?: boolean;
 }
 
 export interface IProps {
@@ -20,13 +22,15 @@ export interface IProps {
   transitionOnLocationChange?: TourStage | null;
   transitionOnUnmount?: TourStage | null;
   steps: POI[];
+  forceOn?: boolean;
 }
 
 export const TourPointer = (p: IProps): JSX.Element => {
-  const active = useTourActive(p.stage);
+  const active = p.forceOn || useTourActive(p.stage);
   const [iteration, setIteration] = useState<number>(0);
   const location = useLocation();
   const dispatch = useDispatch();
+  const [idx, setIdx] = useState<number>(0);
 
   useEffect(() => {
     setIteration(iteration + 1);
@@ -51,6 +55,9 @@ export const TourPointer = (p: IProps): JSX.Element => {
   }, []);
 
   const callback = (data: CallBackProps) => {
+    if (data.index && data.index !== idx) {
+      setIdx(data.index);
+    }
     if (data.type === "error:target_not_found") {
       console.error(
         `TourPointer: ${data.step.target} not found. Is it a valid CSS selector?`
@@ -62,6 +69,7 @@ export const TourPointer = (p: IProps): JSX.Element => {
   };
 
   const multipleSteps = p.steps.length > 1;
+  const interactive = p.steps[idx].spotlightClickThrough !== false;
 
   return (
     <ReactJoyride
@@ -70,6 +78,7 @@ export const TourPointer = (p: IProps): JSX.Element => {
       callback={callback}
       continuous={multipleSteps}
       showProgress={multipleSteps}
+      disableOverlayClose={true}
       steps={p.steps.map<Step>((s) => ({
         placement: s.position,
         content: s.content,
@@ -79,7 +88,17 @@ export const TourPointer = (p: IProps): JSX.Element => {
         hideCloseButton: true,
         spotlightClicks: s.spotlightClickThrough ?? true,
         nonce: "" + (s.isComplete ?? true),
+        disableOverlay: s.disableOverlay ?? false,
+        disableScrolling: s.disableScrolling ?? false,
       }))}
+      styles={{
+        options: {
+          arrowColor: interactive ? "#fff" : "transparent",
+        },
+        overlay: {
+          cursor: interactive ? "default" : "not-allowed",
+        },
+      }}
       tooltipComponent={TourTooltip}
     />
   );

@@ -28,6 +28,8 @@ export enum ReviewPage {
   CONFIG,
 }
 
+export const BeneficiaryNewRecordButtonID = "new-ben-record-button";
+
 const BeneficiaryInner = (p: IProps) => {
   const { t } = useTranslation();
 
@@ -96,6 +98,7 @@ const BeneficiaryInner = (p: IProps) => {
         <Menu.Item
           active={p.child === ReviewPage.NEW_RECORD}
           onClick={innerPageSetter(ReviewPage.NEW_RECORD, `?ben=${ben}`)}
+          id={BeneficiaryNewRecordButtonID}
         >
           <Icon name="plus" />
           {t("New Record")}

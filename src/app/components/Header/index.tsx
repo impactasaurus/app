@@ -29,6 +29,7 @@ interface IProps {
 
 const QuestionnaireButtonID = "questionnaire-menu-item";
 const NewRecordButtonID = "add-menu-link";
+export const HomeButtonID = "home-link";
 
 const HeaderInner = (p: IProps) => {
   const { t } = useTranslation();
@@ -62,7 +63,7 @@ const HeaderInner = (p: IProps) => {
           as={Link}
           to="/"
           active={isActive("/", true)}
-          id="home-link"
+          id={HomeButtonID}
           className="icon-menu-item"
         >
           <Logo />
@@ -124,9 +125,7 @@ const HeaderInner = (p: IProps) => {
         <TourPointer
           steps={[
             {
-              content: t(
-                "The easiest way to create a new record is to click here"
-              ),
+              content: t("Click the plus button to create a record"),
               target: `#${NewRecordButtonID}`,
             },
           ]}

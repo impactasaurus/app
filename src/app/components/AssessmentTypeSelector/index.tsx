@@ -71,7 +71,7 @@ const AssessmentTypeSelector = (p: IProps): JSX.Element => {
             spotlightClickThrough: false,
           },
           {
-            content: t("quickly enter them from offline sources..."),
+            content: t("quickly enter answers gathered offline..."),
             target: `#${HistoricID}`,
             spotlightClickThrough: false,
           },
@@ -80,6 +80,18 @@ const AssessmentTypeSelector = (p: IProps): JSX.Element => {
               "or complete them with your beneficiary. Let's select this option"
             ),
             target: `#${LiveID}`,
+          },
+        ]}
+      />
+      <TourPointer
+        stage={TourStage.RECORD_5}
+        transitionOnUnmount={TourStage.RECORD_6}
+        steps={[
+          {
+            content: t(
+              "this time let's use the data entry option to quickly enter in our answers"
+            ),
+            target: `#${HistoricID}`,
           },
         ]}
       />
