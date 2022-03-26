@@ -17,9 +17,11 @@ import {
   withFormik,
 } from "formik";
 import { withTranslation, WithTranslation } from "react-i18next";
+import {
+  IntroduceDataEntryForm,
+  IntroduceNewRecordForm,
+} from "components/TourRecordCreation";
 import "./style.less";
-import { TourPointer } from "components/TourPointer";
-import { TourStage } from "redux/modules/tour";
 
 interface IProps extends WithTranslation {
   showDatePicker: boolean;
@@ -201,55 +203,21 @@ const InnerForm = (
           </span>
         )}
       </Form>
-      <TourPointer
-        stage={TourStage.RECORD_3}
-        transitionOnUnmount={TourStage.RECORD_4}
-        steps={[
-          {
-            content: t(
-              "We first need to define which beneficiary is answering the questionnaire, this is done with a unique identifier. The ID used will depend on your organisation, but for now let's go with something easy like Ben1"
-            ),
-            target: `#${benInputID}`,
-            isComplete: !errors.beneficiaryID,
-          },
-          {
-            content: t(
-              "Here we select the questionnaire we want the beneficiary to answer - select the ONS questionnaire we set up earlier"
-            ),
-            target: `#${questionnaireInputID}`,
-            isComplete: !errors.outcomeSetID,
-          },
-          {
-            content: t(
-              "That's all we need for now. When you click start, the questionnaire can be answered; provide answers to the four questions and we can continue once completed"
-            ),
-            target: `#${submitButtonID}`,
-          },
-        ]}
+      <IntroduceNewRecordForm
+        benInputID={benInputID}
+        questionnaireInputID={questionnaireInputID}
+        submitButtonID={submitButtonID}
+        isBenComplete={!errors.beneficiaryID}
+        isQuestionnaireSelected={!errors.outcomeSetID}
       />
-      <TourPointer
-        stage={TourStage.RECORD_6}
-        transitionOnUnmount={TourStage.RECORD_7}
-        steps={[
-          {
-            content: t(
-              "Using the data entry mode, we can enter in data collected historically. Select a date before today"
-            ),
-            target: `#${dateSelectID}`,
-            isComplete:
-              !errors.date &&
-              values.date &&
-              Date.now() - values.date.getTime() > 8.64e7,
-            disableOverlay: true,
-          },
-          {
-            content: t(
-              "The data entry mode makes it much quicker to provide answers, give it a try"
-            ),
-            target: `#${submitButtonID}`,
-            disableOverlay: true,
-          },
-        ]}
+      <IntroduceDataEntryForm
+        dateSelectID={dateSelectID}
+        isDateSelectionComplete={
+          !errors.date &&
+          values.date &&
+          Date.now() - values.date.getTime() > 8.64e7
+        }
+        submitButtonID={submitButtonID}
       />
     </>
   );

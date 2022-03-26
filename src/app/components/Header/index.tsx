@@ -16,8 +16,8 @@ import { ProfileMenu } from "./profile";
 import { connect } from "react-redux";
 import { HeaderPlugins } from "./plugins";
 import { getOrganisation } from "helpers/auth";
-import { TourStage } from "redux/modules/tour";
-import { TourPointer } from "components/TourPointer";
+import { IntroduceQuestionnairePage } from "components/TourQuestionnaires";
+import { IntroduceNewRecordButton } from "components/TourRecordCreation";
 const config = require("../../../../config/main").app.auth;
 
 interface IProps {
@@ -29,7 +29,6 @@ interface IProps {
 
 const QuestionnaireButtonID = "questionnaire-menu-item";
 const NewRecordButtonID = "add-menu-link";
-export const HomeButtonID = "home-link";
 
 const HeaderInner = (p: IProps) => {
   const { t } = useTranslation();
@@ -63,7 +62,7 @@ const HeaderInner = (p: IProps) => {
           as={Link}
           to="/"
           active={isActive("/", true)}
-          id={HomeButtonID}
+          id="home-link"
           className="icon-menu-item"
         >
           <Logo />
@@ -110,28 +109,8 @@ const HeaderInner = (p: IProps) => {
           </Menu.Item>
           <ProfileMenu logOut={logOut} />
         </Menu.Menu>
-        <TourPointer
-          steps={[
-            {
-              content: t(
-                "Let's head to the questionnaire page - your organisation's questionnaires are stored here"
-              ),
-              target: `#${QuestionnaireButtonID}`,
-            },
-          ]}
-          stage={TourStage.QUESTIONNAIRE_1}
-          transitionOnLocationChange={TourStage.QUESTIONNAIRE_2}
-        />
-        <TourPointer
-          steps={[
-            {
-              content: t("Click the plus button to create a record"),
-              target: `#${NewRecordButtonID}`,
-            },
-          ]}
-          stage={TourStage.RECORD_1}
-          transitionOnLocationChange={TourStage.RECORD_2}
-        />
+        <IntroduceQuestionnairePage id={QuestionnaireButtonID} />
+        <IntroduceNewRecordButton id={NewRecordButtonID} />
       </Menu>
     );
   } else if (isLoggedIn) {

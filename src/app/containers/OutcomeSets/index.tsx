@@ -15,10 +15,9 @@ import ReactGA from "react-ga";
 import { useTranslation } from "react-i18next";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
-import "./style.less";
-import { TourStage } from "redux/modules/tour";
-import { TourPointer } from "components/TourPointer";
 import RocketIcon from "./../../theme/rocket.inline.svg";
+import { IntroduceNewQuestionnaireButton } from "components/TourQuestionnaires";
+import "./style.less";
 
 interface IProps extends IOutcomeMutation, IURLConnector {
   data: IOutcomeResult;
@@ -116,16 +115,7 @@ const SettingQuestionsInner = (p: IProps): JSX.Element => {
           </div>
         )}
       </List>
-      <TourPointer
-        steps={[
-          {
-            content: t("Click here to create a questionnaire"),
-            target: `#${NewQuestionnaireButtonID}`,
-          },
-        ]}
-        stage={TourStage.QUESTIONNAIRE_2}
-        transitionOnUnmount={TourStage.QUESTIONNAIRE_3}
-      />
+      <IntroduceNewQuestionnaireButton id={NewQuestionnaireButtonID} />
     </div>
   );
 };

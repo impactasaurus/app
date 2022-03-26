@@ -13,8 +13,7 @@ import {
 } from "../../apollo/modules/outcomeSets";
 import RocketIcon from "./../../theme/rocket.inline.svg";
 import { useTranslation } from "react-i18next";
-import { TourPointer } from "components/TourPointer";
-import { TourStage } from "redux/modules/tour";
+import { IntroduceQuestionnaireCreation } from "components/TourQuestionnaires";
 
 interface IProps extends ICatalogueImport, IURLConnector {
   data?: IOutcomeResult;
@@ -89,24 +88,9 @@ const NewQuestionnaireTypSelectionInner = (p: IProps) => {
           </h3>
           {body}
         </Segment>
-        <TourPointer
-          steps={[
-            {
-              content: t(
-                "You can create your own questionnaires or select from our catalogue, but for now..."
-              ),
-              target: `#${QuestionnaireTypeSelectorID}`,
-              spotlightClickThrough: false,
-            },
-            {
-              content: t(
-                "let's import the ONS questionnaire, which is a simple questionnaire on wellbeing - great for experimenting with"
-              ),
-              target: `#${QuickStartID}`,
-            },
-          ]}
-          stage={TourStage.QUESTIONNAIRE_3}
-          transitionOnUnmount={null}
+        <IntroduceQuestionnaireCreation
+          quickStartID={QuickStartID}
+          otherOptionsID={QuestionnaireTypeSelectorID}
         />
       </div>
     );
