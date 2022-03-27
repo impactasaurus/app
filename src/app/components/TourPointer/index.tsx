@@ -4,6 +4,7 @@ import { TourStage, tourStageAction, useTourActive } from "redux/modules/tour";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { TourTooltip } from "./tooltip";
+import ReactGA from "react-ga";
 
 export interface POI {
   target: string;
@@ -65,6 +66,11 @@ export const TourPointer = (p: IProps): JSX.Element => {
     }
     if (data.type === "tour:end") {
       dispatch(tourStageAction(null, p.stage));
+      ReactGA.event({
+        category: "tour",
+        action: "cancelled",
+        label: `${TourStage[p.stage]}-${data.index || idx}`,
+      });
     }
   };
 

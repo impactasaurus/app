@@ -164,14 +164,12 @@ export const IntroduceDataEntryForm = (p: {
           ),
           target: `#${p.dateSelectID}`,
           isComplete: p.isDateSelectionComplete,
-          disableOverlay: true,
         },
         {
           content: t(
             "The data entry mode makes it much quicker to provide answers, give it a try"
           ),
           target: `#${p.submitButtonID}`,
-          disableOverlay: true,
         },
       ]}
     />
