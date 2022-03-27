@@ -10,6 +10,7 @@ import { DeltaReport } from "components/DeltaReport";
 import { ServiceReport } from "components/ServiceReport";
 import { StatusReport } from "components/StatusReport";
 import { WithTranslation, withTranslation } from "react-i18next";
+import { EndOfReportTour } from "components/TourReports";
 const { connect } = require("react-redux");
 
 export enum SubPage {
@@ -145,6 +146,7 @@ class ReportInner extends React.Component<IProps, null> {
             <Helmet>
               <title>{t("Report")}</title>
             </Helmet>
+            <EndOfReportTour />
             {inner}
           </Grid.Column>
         </Grid>

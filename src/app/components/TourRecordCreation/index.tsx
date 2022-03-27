@@ -1,10 +1,11 @@
 import * as React from "react";
 import { TourPointer } from "components/TourPointer";
 import { useTranslation } from "react-i18next";
-import { TourStage } from "redux/modules/tour";
+import { TourStage, tourStageAction } from "redux/modules/tour";
 import { TourContainer } from "components/TourContainer";
 import { Button, Segment } from "semantic-ui-react";
 import RocketIcon from "./../../theme/rocket.inline.svg";
+import { useDispatch } from "react-redux";
 
 interface IProps {
   id: string;
@@ -179,11 +180,15 @@ export const IntroduceDataEntryForm = (p: {
 
 export const WhatNextAfterNewRecordTour = (): JSX.Element => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+
+  const onClick = () => {
+    dispatch(tourStageAction(TourStage.REPORT_1));
+  };
+
   return (
     <TourContainer stage={TourStage.RECORD_7} transitionOnUnmount={null}>
       <Segment
-        key="quickStart"
-        id="quick-start"
         raised={true}
         compact={true}
         style={{ marginLeft: "auto", marginRight: "auto" }}
@@ -202,7 +207,9 @@ export const WhatNextAfterNewRecordTour = (): JSX.Element => {
             "Now we have some data, we can look at the reporting functionality - click below for the tour."
           )}
         </p>
-        <Button primary={true}>{t("Generate a Report")}</Button>
+        <Button onClick={onClick} primary={true}>
+          {t("Generate a Report")}
+        </Button>
       </Segment>
     </TourContainer>
   );

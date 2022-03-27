@@ -13,6 +13,9 @@ export enum TourStage {
   RECORD_5,
   RECORD_6,
   RECORD_7,
+  REPORT_1,
+  REPORT_2,
+  REPORT_3,
 }
 
 interface IAction extends Action {
