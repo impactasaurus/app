@@ -14,7 +14,7 @@ interface IProps {
   onClick?: () => void;
 }
 
-export const OnboardingChecklistItem = (p: IProps) => {
+export const OnboardingChecklistItem = (p: IProps): JSX.Element => {
   const classname = `onboarding-checklist-item ${
     p.completed === true ? "complete" : "incomplete"
   }`;

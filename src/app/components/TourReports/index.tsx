@@ -17,7 +17,7 @@ export const IntroduceReportPage = (p: IProps): JSX.Element => {
       steps={[
         {
           content: t(
-            "Reports provide insight over many beneficiaries. The report tab allows you to generate them"
+            "Reports provide insight over many beneficiaries. This tab allows you to generate reports"
           ),
           target: `#${p.id}`,
         },
@@ -50,7 +50,7 @@ export const IntroduceReportForm = (p: {
         },
         {
           content: t(
-            "Next we pick the time range, only records within the given time range are included. Let's keep it as 'All'"
+            "Next we pick the time range - only records within the given time range are included. Let's keep it as 'All'"
           ),
           target: `#${p.dateRangeID}`,
           isComplete: p.dateRangeCompleted,
@@ -100,7 +100,7 @@ export const EndOfReportTour = (): JSX.Element => {
         </p>
         <p>
           <Trans
-            defaults="Congratulations, you now know the major features of Impactasaurus. If you need any further help getting started, please drop us an email at <email>support@impactasaurus.org</email>."
+            defaults="Congratulations, you have finished the tour - we hope it has been useful in learning the major features of Impactasaurus. If you need any further help getting started, please drop us an email at <email>support@impactasaurus.org</email>."
             components={{
               email: (
                 <a href="mailto:support@impactasaurus.org?Subject=Getting%20Started" />

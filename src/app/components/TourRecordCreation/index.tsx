@@ -117,11 +117,12 @@ export const IntroduceBenPage = (p: {
             }
           ),
           disableScrolling: true,
+          spotlightClickThrough: false,
         },
         {
           target: `#${p.newRecordButtonID}`,
           content: t(
-            "Impactasaurus is designed for distance travelled analysis, so let's quickly answer the questionnaire again for this beneficiary"
+            "Impactasaurus excels at performing distance travelled analysis, so let's quickly answer the questionnaire again for this beneficiary"
           ),
         },
       ]}
