@@ -113,6 +113,7 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
           inputID="rf-qid"
           onQuestionSetSelected={qsOnChange}
           onBlur={qsOnBlur}
+          autoSelectFirst={true}
         />
       </FormField>
       <FormField

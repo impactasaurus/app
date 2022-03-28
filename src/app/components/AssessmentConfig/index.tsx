@@ -144,6 +144,7 @@ const InnerForm = (
             inputID="as-qid"
             onQuestionSetSelected={qsOnChange}
             onBlur={qsOnBlur}
+            autoSelectFirst={true}
           />
         </FormField>
         <FormField
