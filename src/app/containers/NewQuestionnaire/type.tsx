@@ -13,10 +13,14 @@ import {
 } from "../../apollo/modules/outcomeSets";
 import RocketIcon from "./../../theme/rocket.inline.svg";
 import { useTranslation } from "react-i18next";
+import { IntroduceQuestionnaireCreation } from "components/TourQuestionnaires";
 
 interface IProps extends ICatalogueImport, IURLConnector {
   data?: IOutcomeResult;
 }
+
+const QuickStartID = "quick-start";
+const QuestionnaireTypeSelectorID = "questionnaire-source-multi-select";
 
 const NewQuestionnaireTypSelectionInner = (p: IProps) => {
   const [importing, setImporting] = useState(false);
@@ -46,8 +50,8 @@ const NewQuestionnaireTypSelectionInner = (p: IProps) => {
 
   const renderQuickStart = (data: IOutcomeResult) => {
     if (
-      data.loading !== false ||
-      (data.allOutcomeSets && data.allOutcomeSets.length < 0)
+      data.loading === true ||
+      (data.allOutcomeSets && data.allOutcomeSets.length > 0)
     ) {
       return <div key="noQuickStart" />;
     }
@@ -70,19 +74,25 @@ const NewQuestionnaireTypSelectionInner = (p: IProps) => {
       ];
     }
     return (
-      <Segment
-        key="quickStart"
-        id="quick-start"
-        raised={true}
-        compact={true}
-        style={{ marginLeft: "auto", marginRight: "auto" }}
-      >
-        <h3 style={{ fontWeight: "normal" }}>
-          <RocketIcon style={{ width: "1rem", marginRight: ".3rem" }} />
-          {t("Quick start")}
-        </h3>
-        {body}
-      </Segment>
+      <div>
+        <Segment
+          key="quickStart"
+          id={QuickStartID}
+          raised={true}
+          compact={true}
+          style={{ marginLeft: "auto", marginRight: "auto" }}
+        >
+          <h3 style={{ fontWeight: "normal" }}>
+            <RocketIcon style={{ width: "1rem", marginRight: ".3rem" }} />
+            {t("Quick start")}
+          </h3>
+          {body}
+        </Segment>
+        <IntroduceQuestionnaireCreation
+          quickStartID={QuickStartID}
+          otherOptionsID={QuestionnaireTypeSelectorID}
+        />
+      </div>
     );
   };
 
@@ -101,7 +111,11 @@ const NewQuestionnaireTypSelectionInner = (p: IProps) => {
   return (
     <>
       {renderQuickStart(p.data)}
-      <MultiChoice key="choice" items={items} />
+      <MultiChoice
+        key="choice"
+        items={items}
+        id={QuestionnaireTypeSelectorID}
+      />
     </>
   );
 };

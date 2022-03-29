@@ -16,6 +16,9 @@ import { ProfileMenu } from "./profile";
 import { connect } from "react-redux";
 import { HeaderPlugins } from "./plugins";
 import { getOrganisation } from "helpers/auth";
+import { IntroduceQuestionnairePage } from "components/TourQuestionnaires";
+import { IntroduceNewRecordButton } from "components/TourRecordCreation";
+import { IntroduceReportPage } from "components/TourReports";
 const config = require("../../../../config/main").app.auth;
 
 interface IProps {
@@ -24,6 +27,10 @@ interface IProps {
   isBeneficiary?: boolean;
   logout?: RequestLogoutFunc;
 }
+
+const QuestionnaireButtonID = "questionnaire-menu-item";
+const NewRecordButtonID = "add-menu-link";
+const ReportButtonID = "reports-menu-item";
 
 const HeaderInner = (p: IProps) => {
   const { t } = useTranslation();
@@ -70,7 +77,12 @@ const HeaderInner = (p: IProps) => {
           <Icon name="user" className="replacement" />
           <span className="title">{t("Beneficiary")}</span>
         </Menu.Item>
-        <Menu.Item as={Link} to="/report" active={isActive("/report")}>
+        <Menu.Item
+          as={Link}
+          to="/report"
+          active={isActive("/report")}
+          id={ReportButtonID}
+        >
           <Icon name="line graph" className="replacement" />
           <span className="title">{t("Report")}</span>
         </Menu.Item>
@@ -78,6 +90,7 @@ const HeaderInner = (p: IProps) => {
           as={Link}
           to="/questions"
           active={isActive("/catalogue") || isActive("/questions")}
+          id={QuestionnaireButtonID}
         >
           <Icon name="question" className="replacement" />
           <span className="title">{t("Questionnaires")}</span>
@@ -91,7 +104,7 @@ const HeaderInner = (p: IProps) => {
             isActive("/meeting") ||
             isActive("/dataentry")
           }
-          id="add-menu-link"
+          id={NewRecordButtonID}
         >
           <Icon name="plus" className="required" />
         </Menu.Item>
@@ -103,6 +116,9 @@ const HeaderInner = (p: IProps) => {
           </Menu.Item>
           <ProfileMenu logOut={logOut} />
         </Menu.Menu>
+        <IntroduceQuestionnairePage id={QuestionnaireButtonID} />
+        <IntroduceNewRecordButton id={NewRecordButtonID} />
+        <IntroduceReportPage id={ReportButtonID} />
       </Menu>
     );
   } else if (isLoggedIn) {

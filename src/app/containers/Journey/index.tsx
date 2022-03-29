@@ -22,6 +22,11 @@ import { setPref, SetPrefFunc } from "redux/modules/pref";
 import { connect } from "react-redux";
 import { WithTranslation, withTranslation } from "react-i18next";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
+import { BeneficiaryNewRecordButtonID } from "containers/Beneficiary";
+import {
+  IntroduceBenPage,
+  WhatNextAfterNewRecordTour,
+} from "components/TourRecordCreation";
 
 const allowedVisualisations = [
   Visualisation.RADAR,
@@ -177,8 +182,10 @@ class JourneyInner extends React.Component<IProps, null> {
         </p>
       );
     }
+    const JourneyVisContainerID = "journey-vis-container";
     return (
       <div>
+        <WhatNextAfterNewRecordTour />
         <VizControlPanel
           canCategoryAg={this.props.isCategoryAgPossible}
           visualisations={allowedVisualisations}
@@ -191,7 +198,12 @@ class JourneyInner extends React.Component<IProps, null> {
           )}
           autoSelectFirst={true}
         />
-        {this.renderVis()}
+        <div id={JourneyVisContainerID}>{this.renderVis()}</div>
+        <IntroduceBenPage
+          benID={this.props.match.params.id}
+          visContainerID={JourneyVisContainerID}
+          newRecordButtonID={BeneficiaryNewRecordButtonID}
+        />
       </div>
     );
   }

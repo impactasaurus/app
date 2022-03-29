@@ -9,6 +9,7 @@ interface IProps {
   moment: moment.Moment;
   onChange: (newDate: moment.Moment) => void;
   allowFutureDates?: boolean;
+  id?: string;
 }
 
 const DateTimePicker = (p: IProps): JSX.Element => {
@@ -35,6 +36,7 @@ const DateTimePicker = (p: IProps): JSX.Element => {
         onChange={onChange}
         prevMonthIcon={leftIcon}
         nextMonthIcon={rightIcon}
+        id={p.id}
       />
       <p>{error}</p>
     </div>

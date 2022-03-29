@@ -7,18 +7,27 @@ import {
 import { allOutcomeSets, IOutcomeResult } from "apollo/modules/outcomeSets";
 import RocketIcon from "./../../theme/rocket.inline.svg";
 import { useTranslation } from "react-i18next";
+import { TourStage, tourStageAction } from "redux/modules/tour";
+import { useDispatch } from "react-redux";
+import ReactGA from "react-ga";
 
 interface IProps {
   meetings?: IGetRecentMeetings;
   data?: IOutcomeResult;
 }
 
-const navigateToNewRecord = () => {
-  window.location.href = "/record";
-};
-
 const inner = (p: IProps) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+
+  const startNewRecordTour = () => {
+    ReactGA.event({
+      category: "tour",
+      label: "record",
+      action: "started-whats-next",
+    });
+    dispatch(tourStageAction(TourStage.RECORD_1));
+  };
 
   const loading = p.data.loading || p.meetings.loading;
   if (loading) {
@@ -54,7 +63,7 @@ const inner = (p: IProps) => {
           "Let's imitate a beneficiary and answer the questions, creating your first record"
         )}
       </p>
-      <Button primary={true} onClick={navigateToNewRecord}>
+      <Button primary={true} onClick={startNewRecordTour}>
         {t("New Record")}
       </Button>
     </Segment>

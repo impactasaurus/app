@@ -11,20 +11,25 @@ interface IProps {
   link: string;
   index: number;
   minimal?: boolean; // defaults to false
+  onClick?: () => void;
 }
 
-export const OnboardingChecklistItem = (p: IProps) => {
+export const OnboardingChecklistItem = (p: IProps): JSX.Element => {
   const classname = `onboarding-checklist-item ${
     p.completed === true ? "complete" : "incomplete"
   }`;
+
+  const link = p.onClick ? (
+    <a onClick={p.onClick}>{p.title}</a>
+  ) : (
+    <Link to={p.link}>{p.title}</Link>
+  );
 
   return (
     <div className={classname}>
       <Tick complete={p.completed} loading={p.loading} index={p.index} />
       <div className="content">
-        <h3 className="title">
-          <Link to={p.link}>{p.title}</Link>
-        </h3>
+        <h3 className="title">{link}</h3>
         {(!p.completed || !p.minimal) && (
           <p className="description">{p.description}</p>
         )}

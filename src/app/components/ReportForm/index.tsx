@@ -14,6 +14,7 @@ import {
 } from "formik";
 import { TagInputWithQuestionnaireSuggestions } from "components/TagInput";
 import { Trans } from "react-i18next";
+import { IntroduceReportForm } from "components/TourReports";
 
 export interface IFormOutput {
   questionSetID: string;
@@ -93,6 +94,11 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
     </span>
   );
 
+  const questionnaireInputID = "report-questionnaire-input";
+  const dateSelectID = "report-date-input";
+  const tagSelectID = "report-tag-input";
+  const submitButtonID = "report-submit-button";
+
   return (
     <Form className="screen" onSubmit={submitForm} id="report-form-component">
       <FormField
@@ -101,11 +107,13 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
         inputID="rf-qid"
         required={true}
         label={t("Questionnaire")}
+        id={questionnaireInputID}
       >
         <QuestionSetSelect
           inputID="rf-qid"
           onQuestionSetSelected={qsOnChange}
           onBlur={qsOnBlur}
+          autoSelectFirst={true}
         />
       </FormField>
       <FormField
@@ -114,6 +122,7 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
         inputID="filter-options"
         error={errors.all}
         touched={touched.all}
+        id={dateSelectID}
       >
         <div id="filter-options">
           <Radio
@@ -146,6 +155,7 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
         label={tagLabel}
         touched={touched.tags}
         error={errors.tags as string}
+        id={tagSelectID}
       >
         <TagInputWithQuestionnaireSuggestions
           inputID="rf-tags"
@@ -190,10 +200,20 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
           primary={true}
           disabled={!isValid || isSubmitting}
           loading={isSubmitting}
+          id={submitButtonID}
         >
           {t("Generate")}
         </Form.Button>
       </Form.Group>
+      <IntroduceReportForm
+        questionnaireID={questionnaireInputID}
+        questionnaireCompleted={!errors.questionSetID}
+        dateRangeID={dateSelectID}
+        dateRangeCompleted={values.all}
+        tagsID={tagSelectID}
+        tagsComplete={!errors.tags && values.tags.length === 0}
+        submitID={submitButtonID}
+      />
     </Form>
   );
 };
