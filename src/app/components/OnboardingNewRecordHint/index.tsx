@@ -9,6 +9,7 @@ import RocketIcon from "./../../theme/rocket.inline.svg";
 import { useTranslation } from "react-i18next";
 import { TourStage, tourStageAction } from "redux/modules/tour";
 import { useDispatch } from "react-redux";
+import ReactGA from "react-ga";
 
 interface IProps {
   meetings?: IGetRecentMeetings;
@@ -20,6 +21,11 @@ const inner = (p: IProps) => {
   const dispatch = useDispatch();
 
   const startNewRecordTour = () => {
+    ReactGA.event({
+      category: "tour",
+      label: "record",
+      action: "started-whats-next",
+    });
     dispatch(tourStageAction(TourStage.RECORD_1));
   };
 

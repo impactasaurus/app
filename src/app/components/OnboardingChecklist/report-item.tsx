@@ -7,6 +7,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { TourStage, tourStageAction } from "redux/modules/tour";
+import ReactGA from "react-ga";
 
 interface IProps {
   data?: IHasOrgGeneratedReport;
@@ -19,6 +20,11 @@ const Inner = (p: IProps) => {
   const dispatch = useDispatch();
 
   const onClick = () => {
+    ReactGA.event({
+      category: "tour",
+      label: "report",
+      action: "started-onboarding-list",
+    });
     dispatch(tourStageAction(TourStage.REPORT_1));
   };
 

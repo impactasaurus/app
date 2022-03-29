@@ -6,6 +6,7 @@ import { TourContainer } from "components/TourContainer";
 import { Button, Segment } from "semantic-ui-react";
 import RocketIcon from "./../../theme/rocket.inline.svg";
 import { useDispatch } from "react-redux";
+import ReactGA from "react-ga";
 
 interface IProps {
   id: string;
@@ -182,6 +183,11 @@ export const WhatNextAfterNewRecordTour = (): JSX.Element => {
   const dispatch = useDispatch();
 
   const onClick = () => {
+    ReactGA.event({
+      category: "tour",
+      label: "report",
+      action: "started-whats-next",
+    });
     dispatch(tourStageAction(TourStage.REPORT_1));
   };
 

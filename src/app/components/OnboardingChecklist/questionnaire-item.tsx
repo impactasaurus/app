@@ -9,6 +9,7 @@ import { getQuestions } from "helpers/questionnaire";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { TourStage, tourStageAction } from "redux/modules/tour";
+import ReactGA from "react-ga";
 
 interface IProps {
   data?: IOutcomeResult;
@@ -30,6 +31,11 @@ const Inner = (p: IProps) => {
     completed = maxQuestionCount >= 3;
   }
   const onClick = () => {
+    ReactGA.event({
+      category: "tour",
+      label: "questionnaire",
+      action: "started-onboarding-list",
+    });
     dispatch(tourStageAction(TourStage.QUESTIONNAIRE_1));
   };
   return (

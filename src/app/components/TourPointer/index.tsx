@@ -69,7 +69,7 @@ export const TourPointer = (p: IProps): JSX.Element => {
       ReactGA.event({
         category: "tour",
         action: "cancelled",
-        label: `${TourStage[p.stage]}-${data.index || idx}`,
+        label: `${TourStage[p.stage]}:i${data.index || idx}`,
       });
     }
   };
