@@ -10,13 +10,15 @@ import { IURLConnector, UrlHOC } from "redux/modules/url";
 import { renderArray } from "helpers/react";
 import { List, Icon, Responsive, Button } from "semantic-ui-react";
 import { ConfirmButton } from "components/ConfirmButton";
-import { OnboardingNewRecordHint } from "components/OnboardingNewRecordHint";
 import ReactGA from "react-ga";
 import { useTranslation } from "react-i18next";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
 import RocketIcon from "./../../theme/rocket.inline.svg";
-import { IntroduceNewQuestionnaireButton } from "components/TourQuestionnaires";
+import {
+  IntroduceNewQuestionnaireButton,
+  WhatNextAfterQuestionnaireTour,
+} from "components/TourQuestionnaires";
 import "./style.less";
 
 interface IProps extends IOutcomeMutation, IURLConnector {
@@ -98,7 +100,7 @@ const SettingQuestionsInner = (p: IProps): JSX.Element => {
         />
       </span>
       <h1 key="title">{t("Questionnaires")}</h1>
-      <OnboardingNewRecordHint />
+      <WhatNextAfterQuestionnaireTour />
       <List
         divided={true}
         relaxed={true}
