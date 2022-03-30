@@ -17,7 +17,8 @@ interface IProps {
   minimal?: boolean; /// defaults to false
 }
 
-const isDismissed = () => localStorage.getItem(localStorageKey) !== null;
+export const isDismissed = (): boolean =>
+  localStorage.getItem(localStorageKey) !== null;
 const setDismissed = () =>
   localStorage.setItem(localStorageKey, localStorageValue);
 

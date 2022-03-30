@@ -7,17 +7,12 @@ import {
   ICatalogueImport,
   importQuestionnaire,
 } from "../../apollo/modules/catalogue";
-import {
-  allOutcomeSets,
-  IOutcomeResult,
-} from "../../apollo/modules/outcomeSets";
 import RocketIcon from "./../../theme/rocket.inline.svg";
 import { useTranslation } from "react-i18next";
 import { IntroduceQuestionnaireCreation } from "components/TourQuestionnaires";
+import { isDismissed } from "components/OnboardingChecklist";
 
-interface IProps extends ICatalogueImport, IURLConnector {
-  data?: IOutcomeResult;
-}
+interface IProps extends ICatalogueImport, IURLConnector {}
 
 const QuickStartID = "quick-start";
 const QuestionnaireTypeSelectorID = "questionnaire-source-multi-select";
@@ -42,17 +37,18 @@ const NewQuestionnaireTypSelectionInner = (p: IProps) => {
       .then(() => {
         p.setURL("/questions");
       })
-      .catch(() => {
-        setImporting(false);
-        setError(true);
+      .catch((e: Error) => {
+        if (e.message.includes("name already in use")) {
+          p.setURL("/questions");
+        } else {
+          setImporting(false);
+          setError(true);
+        }
       });
   };
 
-  const renderQuickStart = (data: IOutcomeResult) => {
-    if (
-      data.loading === true ||
-      (data.allOutcomeSets && data.allOutcomeSets.length > 0)
-    ) {
+  const renderQuickStart = () => {
+    if (isDismissed()) {
       return <div key="noQuickStart" />;
     }
     let body: JSX.Element | JSX.Element[] = (
@@ -110,7 +106,7 @@ const NewQuestionnaireTypSelectionInner = (p: IProps) => {
   ];
   return (
     <>
-      {renderQuickStart(p.data)}
+      {renderQuickStart()}
       <MultiChoice
         key="choice"
         items={items}
@@ -123,8 +119,8 @@ const NewQuestionnaireTypSelectionInner = (p: IProps) => {
 const NewQuestionnaireTypSelectionConnected = UrlHOC(
   NewQuestionnaireTypSelectionInner
 );
-const NewQuestionnaireTypSelectionWithData = allOutcomeSets(
-  importQuestionnaire<IProps>(NewQuestionnaireTypSelectionConnected)
+const NewQuestionnaireTypSelectionWithData = importQuestionnaire<IProps>(
+  NewQuestionnaireTypSelectionConnected
 );
 
 // t('New Questionnaire')
