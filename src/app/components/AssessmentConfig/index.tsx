@@ -17,6 +17,10 @@ import {
   withFormik,
 } from "formik";
 import { withTranslation, WithTranslation } from "react-i18next";
+import {
+  IntroduceDataEntryForm,
+  IntroduceNewRecordForm,
+} from "components/TourRecordCreation";
 import "./style.less";
 
 interface IProps extends WithTranslation {
@@ -98,6 +102,12 @@ const InnerForm = (
     </span>
   );
 
+  const benInputID = "new-record-ben-input";
+  const questionnaireInputID = "new-record-questionnaire-input";
+  const tagInputID = "new-record-tag-input";
+  const submitButtonID = "new-record-submit";
+  const dateSelectID = "new-record-date-select";
+
   // if the beneficiary has been set via URL, hide the beneficiary field
   const benField = (
     <FormField
@@ -106,6 +116,7 @@ const InnerForm = (
       inputID="as-ben"
       required={true}
       label={benLabel}
+      id={benInputID}
     >
       <BeneficiaryInput
         inputID="rsf-ben"
@@ -118,75 +129,98 @@ const InnerForm = (
   );
 
   return (
-    <Form className="screen assessment-config" onSubmit={submitForm}>
-      {!values.defaultBen && benField}
-      <FormField
-        error={errors.outcomeSetID as string}
-        touched={touched.outcomeSetID}
-        inputID="as-qid"
-        required={true}
-        label={t("Questionnaire")}
-      >
-        <QuestionSetSelect
-          inputID="as-qid"
-          onQuestionSetSelected={qsOnChange}
-          onBlur={qsOnBlur}
-        />
-      </FormField>
-      <FormField
-        inputID="as-tags"
-        label={tagLabel}
-        touched={touched.tags}
-        error={errors.tags as string}
-      >
-        <BeneficiaryTags beneficiaryID={values.debouncedBenID} />
-        <TagInputWithBenSuggestions
-          inputID="as-tags"
-          onChange={setTags}
-          tags={values.tags}
-          id={values.debouncedBenID}
-          allowNewTags={true}
-        />
-      </FormField>
-      <div style={datePickerStyle}>
+    <>
+      <Form className="screen assessment-config" onSubmit={submitForm}>
+        {!values.defaultBen && benField}
         <FormField
-          inputID="as-datepicker"
-          label={t("Date Conducted")}
-          touched={touched.date as boolean}
-          error={errors.date as string}
+          error={errors.outcomeSetID as string}
+          touched={touched.outcomeSetID}
+          inputID="as-qid"
+          required={true}
+          label={t("Questionnaire")}
+          id={questionnaireInputID}
         >
-          <div id="as-datepicker">
-            <span className="conductedDate">
-              {moment(values.date).format("llll")}
-            </span>
-            <DateTimePicker
-              moment={moment(values.date)}
-              onChange={setConductedDate}
-              allowFutureDates={true}
-            />
-          </div>
+          <QuestionSetSelect
+            inputID="as-qid"
+            onQuestionSetSelected={qsOnChange}
+            onBlur={qsOnBlur}
+            autoSelectFirst={true}
+          />
         </FormField>
-      </div>
-      <Form.Group>
-        <Form.Button
-          type="submit"
-          primary={true}
-          disabled={!isValid || isSubmitting}
-          loading={isSubmitting}
+        <FormField
+          inputID="as-tags"
+          label={tagLabel}
+          touched={touched.tags}
+          error={errors.tags as string}
+          id={tagInputID}
         >
-          {props.buttonText}
-        </Form.Button>
-      </Form.Group>
-      {status && (
-        <span className="submit-error">
-          <Icon name="exclamation" />
-          {t("Starting the assessment failed.")}{" "}
-          {t(
-            "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org"
-          )}
-        </span>
-      )}
-    </Form>
+          <BeneficiaryTags beneficiaryID={values.debouncedBenID} />
+          <TagInputWithBenSuggestions
+            inputID="as-tags"
+            onChange={setTags}
+            tags={values.tags}
+            id={values.debouncedBenID}
+            allowNewTags={true}
+          />
+        </FormField>
+        <div style={datePickerStyle}>
+          <FormField
+            inputID="as-datepicker"
+            label={t("Date Conducted")}
+            touched={touched.date as boolean}
+            error={errors.date as string}
+            id={dateSelectID}
+          >
+            <div id="as-datepicker">
+              <span className="conductedDate">
+                {moment(values.date).format("llll")}
+              </span>
+              <DateTimePicker
+                moment={moment(values.date)}
+                onChange={setConductedDate}
+                allowFutureDates={true}
+              />
+            </div>
+          </FormField>
+        </div>
+        <Form.Group>
+          <Form.Button
+            type="submit"
+            primary={true}
+            disabled={!isValid || isSubmitting}
+            loading={isSubmitting}
+            id={submitButtonID}
+          >
+            {props.buttonText}
+          </Form.Button>
+        </Form.Group>
+        {status && (
+          <span className="submit-error">
+            <Icon name="exclamation" />
+            {t("Starting the assessment failed.")}{" "}
+            {t(
+              "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org"
+            )}
+          </span>
+        )}
+      </Form>
+      <IntroduceNewRecordForm
+        benInputID={benInputID}
+        questionnaireInputID={questionnaireInputID}
+        submitButtonID={submitButtonID}
+        isBenComplete={!errors.beneficiaryID}
+        isQuestionnaireSelected={!errors.outcomeSetID}
+      />
+      <IntroduceDataEntryForm
+        dateSelectID={dateSelectID}
+        isDateSelectionComplete={
+          !errors.date &&
+          values.date &&
+          Date.now() - values.date.getTime() > 8.64e7
+        }
+        submitButtonID={submitButtonID}
+      />
+    </>
   );
 };
 

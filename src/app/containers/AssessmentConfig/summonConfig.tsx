@@ -51,6 +51,7 @@ const InnerForm = (props: FormikProps<IAssessmentConfig> & IProps) => {
           inputID="as-qid"
           onQuestionSetSelected={qsOnChange}
           onBlur={qsOnBlur}
+          autoSelectFirst={true}
         />
       </FormField>
       <Form.Group>

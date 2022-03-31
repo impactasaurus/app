@@ -24,7 +24,7 @@ export class ActivityFeedEntry extends React.Component<IProp, null> {
     const Radar = MeetingRadarWithImpl(RadarChartStatic);
     const m = this.props.meeting;
     return (
-      <Card>
+      <Card className="activity-feed-entry">
         <Link
           className="topper"
           to={journeyURI(m.beneficiary, m.outcomeSet.id)}

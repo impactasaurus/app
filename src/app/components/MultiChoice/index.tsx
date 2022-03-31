@@ -9,16 +9,18 @@ export interface Item {
   description?: string;
   button?: string;
   onClick: () => void;
+  id?: string;
 }
 
 interface IProps {
   items: Item[];
+  id?: string;
 }
 
 const MultiChoiceItem = ({ i }: { i: Item }): JSX.Element => {
   const { t } = useTranslation();
   return (
-    <Card className="choice">
+    <Card className="choice" id={i.id}>
       <Card.Content>
         <Card.Header>{i.title}</Card.Header>
         {i.subtitle && <Card.Meta>{i.subtitle}</Card.Meta>}
@@ -35,7 +37,7 @@ const MultiChoiceItem = ({ i }: { i: Item }): JSX.Element => {
 
 export const MultiChoice = (p: IProps): JSX.Element => (
   <div style={{ paddingTop: "2rem" }}>
-    <Card.Group className="multi-choice">
+    <Card.Group className="multi-choice" id={p.id}>
       {p.items.map((i) => (
         <MultiChoiceItem key={i.title} i={i} />
       ))}

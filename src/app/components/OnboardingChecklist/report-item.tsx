@@ -5,6 +5,9 @@ import {
   IHasOrgGeneratedReport,
 } from "apollo/modules/organisation";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { TourStage, tourStageAction } from "redux/modules/tour";
+import ReactGA from "react-ga";
 
 interface IProps {
   data?: IHasOrgGeneratedReport;
@@ -14,6 +17,17 @@ interface IProps {
 
 const Inner = (p: IProps) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+
+  const onClick = () => {
+    ReactGA.event({
+      category: "tour",
+      label: "report",
+      action: "started-onboarding-list",
+    });
+    dispatch(tourStageAction(TourStage.REPORT_1));
+  };
+
   const loading = p.data.loading;
   const completed = !loading && p.data.reportGenerated;
   return (
@@ -27,6 +41,7 @@ const Inner = (p: IProps) => {
       link="/report"
       index={p.index}
       minimal={p.minimal}
+      onClick={onClick}
     />
   );
 };

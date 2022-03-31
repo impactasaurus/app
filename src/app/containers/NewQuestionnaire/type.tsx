@@ -7,16 +7,15 @@ import {
   ICatalogueImport,
   importQuestionnaire,
 } from "../../apollo/modules/catalogue";
-import {
-  allOutcomeSets,
-  IOutcomeResult,
-} from "../../apollo/modules/outcomeSets";
 import RocketIcon from "./../../theme/rocket.inline.svg";
 import { useTranslation } from "react-i18next";
+import { IntroduceQuestionnaireCreation } from "components/TourQuestionnaires";
+import { isDismissed } from "components/OnboardingChecklist";
 
-interface IProps extends ICatalogueImport, IURLConnector {
-  data?: IOutcomeResult;
-}
+interface IProps extends ICatalogueImport, IURLConnector {}
+
+const QuickStartID = "quick-start";
+const QuestionnaireTypeSelectorID = "questionnaire-source-multi-select";
 
 const NewQuestionnaireTypSelectionInner = (p: IProps) => {
   const [importing, setImporting] = useState(false);
@@ -38,17 +37,18 @@ const NewQuestionnaireTypSelectionInner = (p: IProps) => {
       .then(() => {
         p.setURL("/questions");
       })
-      .catch(() => {
-        setImporting(false);
-        setError(true);
+      .catch((e: Error) => {
+        if (e.message.includes("name already in use")) {
+          p.setURL("/questions");
+        } else {
+          setImporting(false);
+          setError(true);
+        }
       });
   };
 
-  const renderQuickStart = (data: IOutcomeResult) => {
-    if (
-      data.loading !== false ||
-      (data.allOutcomeSets && data.allOutcomeSets.length < 0)
-    ) {
+  const renderQuickStart = () => {
+    if (isDismissed()) {
       return <div key="noQuickStart" />;
     }
     let body: JSX.Element | JSX.Element[] = (
@@ -70,19 +70,25 @@ const NewQuestionnaireTypSelectionInner = (p: IProps) => {
       ];
     }
     return (
-      <Segment
-        key="quickStart"
-        id="quick-start"
-        raised={true}
-        compact={true}
-        style={{ marginLeft: "auto", marginRight: "auto" }}
-      >
-        <h3 style={{ fontWeight: "normal" }}>
-          <RocketIcon style={{ width: "1rem", marginRight: ".3rem" }} />
-          {t("Quick start")}
-        </h3>
-        {body}
-      </Segment>
+      <div>
+        <Segment
+          key="quickStart"
+          id={QuickStartID}
+          raised={true}
+          compact={true}
+          style={{ marginLeft: "auto", marginRight: "auto" }}
+        >
+          <h3 style={{ fontWeight: "normal" }}>
+            <RocketIcon style={{ width: "1rem", marginRight: ".3rem" }} />
+            {t("Quick start")}
+          </h3>
+          {body}
+        </Segment>
+        <IntroduceQuestionnaireCreation
+          quickStartID={QuickStartID}
+          otherOptionsID={QuestionnaireTypeSelectorID}
+        />
+      </div>
     );
   };
 
@@ -100,8 +106,12 @@ const NewQuestionnaireTypSelectionInner = (p: IProps) => {
   ];
   return (
     <>
-      {renderQuickStart(p.data)}
-      <MultiChoice key="choice" items={items} />
+      {renderQuickStart()}
+      <MultiChoice
+        key="choice"
+        items={items}
+        id={QuestionnaireTypeSelectorID}
+      />
     </>
   );
 };
@@ -109,8 +119,8 @@ const NewQuestionnaireTypSelectionInner = (p: IProps) => {
 const NewQuestionnaireTypSelectionConnected = UrlHOC(
   NewQuestionnaireTypSelectionInner
 );
-const NewQuestionnaireTypSelectionWithData = allOutcomeSets(
-  importQuestionnaire<IProps>(NewQuestionnaireTypSelectionConnected)
+const NewQuestionnaireTypSelectionWithData = importQuestionnaire<IProps>(
+  NewQuestionnaireTypSelectionConnected
 );
 
 // t('New Questionnaire')
