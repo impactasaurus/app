@@ -10,18 +10,32 @@ interface IProps {
   onChange: (d: moment.Moment) => void;
 }
 
-const Day = (p: { i: number; w: number; d: number; onClick: () => void }) => {
-  const prevMonth = p.w === 0 && p.i > 7;
-  const nextMonth = p.w >= 4 && p.i <= 14;
+const Day = (p: {
+  dayInMonthIndex: number;
+  weekInMonthIndex: number;
+  selectedDate: number;
+  focussedMonthIndex: number;
+  onClick: () => void;
+}) => {
+  const prevMonth = p.weekInMonthIndex === 0 && p.dayInMonthIndex > 7;
+  const nextMonth = p.weekInMonthIndex >= 4 && p.dayInMonthIndex <= 14;
+  const cellMonth = prevMonth
+    ? p.focussedMonthIndex - 1
+    : nextMonth
+    ? p.focussedMonthIndex + 1
+    : p.focussedMonthIndex;
+  const today = moment();
   const cls = cx({
     "prev-month": prevMonth,
     "next-month": nextMonth,
-    "current-day": !prevMonth && !nextMonth && p.i === p.d,
+    "selected-day":
+      !prevMonth && !nextMonth && p.dayInMonthIndex === p.selectedDate,
+    "current-day":
+      today.month() === cellMonth && today.date() === p.dayInMonthIndex,
   });
-
   return (
     <td onClick={p.onClick} className={cls}>
-      {p.i}
+      {p.dayInMonthIndex}
     </td>
   );
 };
@@ -65,7 +79,7 @@ export const Calendar = (p: IProps): JSX.Element => {
     range(1, d3 + 1),
     range(1, 42 - d3 - d2 + 1)
   );
-  const weeks = [
+  const daysOfTheWeek = [
     t("Sun"),
     t("Mon"),
     t("Tue"),
@@ -90,7 +104,7 @@ export const Calendar = (p: IProps): JSX.Element => {
       <table>
         <thead>
           <tr>
-            {weeks.map((w, i) => (
+            {daysOfTheWeek.map((w, i) => (
               <td key={i}>{w}</td>
             ))}
           </tr>
@@ -102,9 +116,10 @@ export const Calendar = (p: IProps): JSX.Element => {
               {row.map((i) => (
                 <Day
                   key={i}
-                  i={i}
-                  d={d}
-                  w={w}
+                  dayInMonthIndex={i}
+                  selectedDate={d}
+                  weekInMonthIndex={w}
+                  focussedMonthIndex={m.month()}
                   onClick={() => selectDate(i, w)}
                 />
               ))}
