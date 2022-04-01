@@ -159,7 +159,7 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
 
   private trackUser() {
     const userID = getUserID();
-    if (userID !== this.props.lastUserID) {
+    if (userID && userID !== this.props.lastUserID) {
       const ben = isBeneficiaryUser();
       const org = getOrganisation();
       ReactGA.set({
