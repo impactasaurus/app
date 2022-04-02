@@ -7,7 +7,7 @@ import {
 } from "apollo/modules/questions";
 import { ILikertForm, Question } from "models/question";
 import { IOutcomeSet } from "models/outcomeSet";
-import { Message, List } from "semantic-ui-react";
+import { Message, List, Button } from "semantic-ui-react";
 import { NewLikertQuestion } from "components/NewLikertQuestion";
 import { EditLikertQuestion } from "components/EditLikertQuestion";
 import { List as QList } from "./List";
@@ -140,7 +140,7 @@ const QuestionListInner = (p: IProps) => {
       return (
         <List.Item className="new-control">
           <List.Content>
-            <WrappedQuestionForm title={t("New Likert Question")}>
+            <WrappedQuestionForm title={t("Add Question")}>
               <NewLikertQuestion
                 QuestionSetID={p.outcomeSetID}
                 OnSuccess={setCreatingQuestion(false)}
@@ -153,9 +153,14 @@ const QuestionListInner = (p: IProps) => {
       );
     } else {
       return (
-        <List.Item className="new-control">
-          <List.Content onClick={setCreatingQuestion(true)}>
-            <List.Header as="a">{t("New Question")}</List.Header>
+        <List.Item className="new-button">
+          <List.Content style={{ textAlign: "center", marginTop: "1em" }}>
+            <Button
+              icon="plus"
+              content={t("Add Question")}
+              primary={true}
+              onClick={setCreatingQuestion(true)}
+            />
           </List.Content>
         </List.Item>
       );

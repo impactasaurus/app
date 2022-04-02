@@ -17,10 +17,13 @@ interface IProps extends ICategoryMutation {
 
 const editable = (p: IProps) => p.readOnly !== true;
 
-const wrapCategoryForm = (title: string, inner: JSX.Element): JSX.Element => (
+const WrapCategoryForm = (p: {
+  title: string;
+  children: JSX.Element;
+}): JSX.Element => (
   <Message className="form-container">
-    <Message.Header>{title}</Message.Header>
-    <Message.Content>{inner}</Message.Content>
+    <Message.Header>{p.title}</Message.Header>
+    <Message.Content>{p.children}</Message.Content>
   </Message>
 );
 
@@ -59,15 +62,14 @@ const CategoryListInner = (p: IProps) => {
       return (
         <List.Item className="edit-control" key={c.id}>
           <List.Content>
-            {wrapCategoryForm(
-              t("Edit Category"),
+            <WrapCategoryForm title={t("Edit Category")}>
               <EditQuestionCategory
                 category={c}
                 QuestionSetID={p.outcomeSetID}
                 OnSuccess={setEditedCategoryId(null)}
                 OnCancel={setEditedCategoryId(null)}
               />
-            )}
+            </WrapCategoryForm>
           </List.Content>
         </List.Item>
       );
@@ -113,22 +115,26 @@ const CategoryListInner = (p: IProps) => {
       return (
         <List.Item className="new-control">
           <List.Content>
-            {wrapCategoryForm(
-              t("New Category"),
+            <WrapCategoryForm title={t("Add Category")}>
               <NewQuestionCategory
                 QuestionSetID={p.outcomeSetID}
                 OnSuccess={setNewCategoryClicked(false)}
                 OnCancel={setNewCategoryClicked(false)}
               />
-            )}
+            </WrapCategoryForm>
           </List.Content>
         </List.Item>
       );
     } else {
       return (
-        <List.Item className="new-control">
-          <List.Content onClick={setNewCategoryClicked(true)}>
-            <List.Header as="a">{t("New Category")}</List.Header>
+        <List.Item className="new-button">
+          <List.Content style={{ textAlign: "center", marginTop: "1em" }}>
+            <Button
+              icon="plus"
+              content={t("Add Category")}
+              primary={true}
+              onClick={setNewCategoryClicked(true)}
+            />
           </List.Content>
         </List.Item>
       );
