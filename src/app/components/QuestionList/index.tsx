@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useMemo, useState } from "react";
 import {
   IQuestionMutation,
   deleteQuestion,
@@ -7,27 +7,19 @@ import {
 } from "apollo/modules/questions";
 import { ILikertForm, Question } from "models/question";
 import { IOutcomeSet } from "models/outcomeSet";
-import { Loader, Message, List } from "semantic-ui-react";
+import { Message, List } from "semantic-ui-react";
 import { NewLikertQuestion } from "components/NewLikertQuestion";
 import { EditLikertQuestion } from "components/EditLikertQuestion";
 import { List as QList } from "./List";
-import { isNullOrUndefined } from "util";
 import { getQuestions } from "helpers/questionnaire";
 import ReactGA from "react-ga";
-import { WithTranslation, withTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import "./style.less";
 
-interface IProps extends IQuestionMutation, IQuestionMover, WithTranslation {
+interface IProps extends IQuestionMutation, IQuestionMover {
   questionnaire: IOutcomeSet;
   outcomeSetID: string;
   readOnly?: boolean; // defaults to false
-}
-
-interface IState {
-  newQuestionClicked?: boolean;
-  editedQuestionId?: string;
-  categoryClasses?: { [catID: string]: string };
-  sorting?: boolean;
 }
 
 function assignCategoriesClasses(
@@ -35,18 +27,15 @@ function assignCategoriesClasses(
   questionnaire: IOutcomeSet
 ): { [catID: string]: string } {
   const assignments = { ...current };
-  if (
-    isNullOrUndefined(questionnaire) ||
-    !Array.isArray(questionnaire.questions)
-  ) {
+  if (!questionnaire || !Array.isArray(questionnaire.questions)) {
     return assignments;
   }
   questionnaire.questions.forEach((q: Question) => {
-    if (isNullOrUndefined(q.categoryID)) {
+    if (!q.categoryID) {
       return;
     }
     const assignment = assignments[q.categoryID];
-    if (!isNullOrUndefined(assignment)) {
+    if (assignment) {
       return;
     }
     const noAssigned = Object.keys(assignments).length;
@@ -55,159 +44,70 @@ function assignCategoriesClasses(
   return assignments;
 }
 
-const wrapQuestionForm = (title: string, inner: JSX.Element): JSX.Element => (
+const WrappedQuestionForm = (p: {
+  title: string;
+  children: JSX.Element;
+}): JSX.Element => (
   <Message className="form-container likert-form-container" key="question-form">
-    <Message.Header>{title}</Message.Header>
-    <Message.Content>{inner}</Message.Content>
+    <Message.Header>{p.title}</Message.Header>
+    <Message.Content>{p.children}</Message.Content>
   </Message>
 );
 
-class QuestionListInner extends React.Component<IProps, IState> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      categoryClasses: assignCategoriesClasses({}, this.props.questionnaire),
-      sorting: false,
-    };
-    this.renderNewQuestionControl = this.renderNewQuestionControl.bind(this);
-    this.renderEditQuestionForm = this.renderEditQuestionForm.bind(this);
-    this.deleteQuestion = this.deleteQuestion.bind(this);
-    this.setNewQuestionClicked = this.setNewQuestionClicked.bind(this);
-    this.getCategoryPillClass = this.getCategoryPillClass.bind(this);
-    this.setEditedQuestionId = this.setEditedQuestionId.bind(this);
-    this.onSortEnd = this.onSortEnd.bind(this);
-    this.onSortStart = this.onSortStart.bind(this);
-  }
+const QuestionListInner = (p: IProps) => {
+  const categoryClasses = useMemo(
+    () => assignCategoriesClasses({}, p.questionnaire),
+    [p.questionnaire]
+  );
+  const [sorting, setSorting] = useState<boolean>(false);
+  const [creatingQuestion, setRawCreatingQuestion] = useState<boolean>(false);
+  const [editingQuestionID, setRawEditingQuestionID] =
+    useState<string | undefined>(undefined);
+  const { t } = useTranslation();
 
-  public componentWillUpdate(nextProps: IProps) {
-    const currentAssignment = this.state.categoryClasses;
-    const newAssignments = assignCategoriesClasses(
-      currentAssignment,
-      nextProps.questionnaire
-    );
-    if (
-      Object.keys(newAssignments).length !==
-      Object.keys(currentAssignment).length
-    ) {
-      this.setState({
-        ...this.state,
-        categoryClasses: newAssignments,
-      });
-    }
-  }
-
-  private logQuestionDeletedGAEvent() {
-    ReactGA.event({
-      category: "question",
-      action: "deleted",
-      label: "likert",
-    });
-  }
-
-  private deleteQuestion(questionID: string) {
+  const deleteQuestion = (questionID: string): (() => Promise<IOutcomeSet>) => {
     return (): Promise<IOutcomeSet> => {
-      this.logQuestionDeletedGAEvent();
-      return this.props.deleteQuestion(this.props.outcomeSetID, questionID);
-    };
-  }
-
-  private setNewQuestionClicked(newValue: boolean): () => void {
-    return () => {
-      this.setState({
-        newQuestionClicked: newValue,
-        editedQuestionId: undefined,
+      ReactGA.event({
+        category: "question",
+        action: "deleted",
+        label: "likert",
       });
+      return p.deleteQuestion(p.outcomeSetID, questionID);
     };
-  }
+  };
 
-  private setEditedQuestionId(questionId: string): () => void {
+  const setCreatingQuestion = (newValue: boolean): (() => void) => {
     return () => {
-      this.setState({
-        newQuestionClicked: false,
-        editedQuestionId: questionId,
-      });
+      setRawCreatingQuestion(newValue);
+      setRawEditingQuestionID(undefined);
     };
-  }
+  };
 
-  private renderEditQuestionForm(q: Question): JSX.Element {
-    const { t } = this.props;
-    return wrapQuestionForm(
-      t("Edit Likert Question"),
-      <EditLikertQuestion
-        key={"edit-" + q.id}
-        question={q}
-        QuestionSetID={this.props.outcomeSetID}
-        OnSuccess={this.setEditedQuestionId(null)}
-        OnCancel={this.setEditedQuestionId(null)}
-      />
-    );
-  }
+  const setEditingQuestionID = (questionId: string): (() => void) => {
+    return () => {
+      setRawCreatingQuestion(false);
+      setRawEditingQuestionID(questionId);
+    };
+  };
 
-  private getCategoryPillClass(catID?: string): string | undefined {
-    return isNullOrUndefined(catID)
-      ? undefined
-      : this.state.categoryClasses[catID];
-  }
+  const getCategoryPillClass = (catID?: string): string | undefined =>
+    !catID ? undefined : categoryClasses[catID];
 
-  private renderNewQuestionControl(): JSX.Element {
-    const { t } = this.props;
-    if (this.state.newQuestionClicked === true) {
-      let defaults: ILikertForm;
-      const qs = getQuestions(this.props.questionnaire) || [];
-      if (qs.length > 0) {
-        const last = qs[qs.length - 1] as Question;
-        defaults = {
-          labels: last.labels,
-          rightValue: last.rightValue,
-          leftValue: last.leftValue,
-        };
-      }
-      return (
-        <List.Item className="new-control">
-          <List.Content>
-            {wrapQuestionForm(
-              t("New Likert Question"),
-              <NewLikertQuestion
-                QuestionSetID={this.props.outcomeSetID}
-                OnSuccess={this.setNewQuestionClicked(false)}
-                OnCancel={this.setNewQuestionClicked(false)}
-                Defaults={defaults}
-              />
-            )}
-          </List.Content>
-        </List.Item>
-      );
-    } else {
-      return (
-        <List.Item className="new-control">
-          <List.Content onClick={this.setNewQuestionClicked(true)}>
-            <List.Header as="a">{t("New Question")}</List.Header>
-          </List.Content>
-        </List.Item>
-      );
-    }
-  }
+  const onSortStart = () => {
+    setSorting(true);
+  };
 
-  private onSortStart() {
-    this.setState({
-      sorting: true,
-    });
-  }
-
-  private onSortEnd({ oldIndex, newIndex }) {
-    this.setState({
-      sorting: false,
-    });
+  const onSortEnd = ({ oldIndex, newIndex }): void => {
+    setSorting(false);
     if (oldIndex === newIndex) {
       return;
     }
-    const questions = getQuestions(this.props.questionnaire);
+    const questions = getQuestions(p.questionnaire);
     if (oldIndex >= questions.length) {
       throw new Error("Old index does not exist in array");
     }
     const q = questions[oldIndex];
-    this.props
-      .moveQuestion(this.props.questionnaire, q.id, newIndex)
+    p.moveQuestion(p.questionnaire, q.id, newIndex)
       .then(() => {
         ReactGA.event({
           category: "question",
@@ -223,37 +123,85 @@ class QuestionListInner extends React.Component<IProps, IState> {
         });
         console.error(e);
       });
-  }
+  };
 
-  public render() {
-    if (!this.props.questionnaire) {
-      return <Loader active={true} inline="centered" />;
+  const renderNewQuestionControl = (): JSX.Element => {
+    if (creatingQuestion) {
+      let defaults: ILikertForm;
+      const qs = getQuestions(p.questionnaire) || [];
+      if (qs.length > 0) {
+        const last = qs[qs.length - 1] as Question;
+        defaults = {
+          labels: last.labels,
+          rightValue: last.rightValue,
+          leftValue: last.leftValue,
+        };
+      }
+      return (
+        <List.Item className="new-control">
+          <List.Content>
+            <WrappedQuestionForm title={t("New Likert Question")}>
+              <NewLikertQuestion
+                QuestionSetID={p.outcomeSetID}
+                OnSuccess={setCreatingQuestion(false)}
+                OnCancel={setCreatingQuestion(false)}
+                Defaults={defaults}
+              />
+            </WrappedQuestionForm>
+          </List.Content>
+        </List.Item>
+      );
+    } else {
+      return (
+        <List.Item className="new-control">
+          <List.Content onClick={setCreatingQuestion(true)}>
+            <List.Header as="a">{t("New Question")}</List.Header>
+          </List.Content>
+        </List.Item>
+      );
     }
+  };
 
+  const renderEditQuestionForm = (q: Question): JSX.Element => {
     return (
-      <QList
-        className={this.state.sorting ? "sorting" : ""}
-        key={`qlist-${this.state.editedQuestionId}-${this.state.newQuestionClicked}`}
-        outcomeSetID={this.props.outcomeSetID}
-        questionnaire={this.props.questionnaire}
-        editedQuestionID={this.state.editedQuestionId}
-        newQuestionControl={this.renderNewQuestionControl()}
-        renderEditQuestionForm={this.renderEditQuestionForm}
-        deleteQuestion={this.deleteQuestion}
-        getCategoryPillClass={this.getCategoryPillClass}
-        setEditedQuestionId={this.setEditedQuestionId}
-        axis="y"
-        lockAxis="y"
-        useDragHandle={true}
-        onSortEnd={this.onSortEnd}
-        onSortStart={this.onSortStart}
-        readOnly={this.props.readOnly}
-      />
+      <WrappedQuestionForm title={t("Edit Likert Question")}>
+        <EditLikertQuestion
+          key={"edit-" + q.id}
+          question={q}
+          QuestionSetID={p.outcomeSetID}
+          OnSuccess={setEditingQuestionID(null)}
+          OnCancel={setEditingQuestionID(null)}
+        />
+      </WrappedQuestionForm>
     );
+  };
+
+  if (!p.questionnaire) {
+    return <div />;
   }
-}
-const QuestionListConnected = moveQuestion<IProps>(
+
+  return (
+    <QList
+      className={sorting ? "sorting" : ""}
+      key={`qlist-${editingQuestionID}-${creatingQuestion}`}
+      outcomeSetID={p.outcomeSetID}
+      questionnaire={p.questionnaire}
+      editedQuestionID={editingQuestionID}
+      newQuestionControl={renderNewQuestionControl()}
+      renderEditQuestionForm={renderEditQuestionForm}
+      deleteQuestion={deleteQuestion}
+      getCategoryPillClass={getCategoryPillClass}
+      setEditedQuestionId={setEditingQuestionID}
+      axis="y"
+      lockAxis="y"
+      useDragHandle={true}
+      onSortEnd={onSortEnd}
+      onSortStart={onSortStart}
+      readOnly={p.readOnly}
+    />
+  );
+};
+
+export const QuestionList = moveQuestion<IProps>(
   deleteQuestion<IProps>(QuestionListInner)
 );
-const QuestionList = withTranslation()(QuestionListConnected);
-export { QuestionList };
