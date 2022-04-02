@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Question } from "models/question";
 import { List, Button, Popup } from "semantic-ui-react";
-import { isNullOrUndefined } from "util";
 import { ConfirmButton } from "components/ConfirmButton";
 import { CategoryPill } from "components/CategoryPill";
 import { IOutcomeSet } from "models/outcomeSet";
@@ -33,7 +32,7 @@ function getQuestionDescription(q: Question): string {
 }
 
 function getQuestionTitle(q: Question): string {
-  if (!isNullOrUndefined(q.short) && q.short !== "") {
+  if (q.short && q.short !== "") {
     return `${q.question} [${q.short}]`;
   }
   return q.question;
