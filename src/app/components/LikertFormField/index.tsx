@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Input, InputProps, Form, Popup } from "semantic-ui-react";
-import { FormField } from "components/FormField";
 import { Likert } from "components/Likert";
 import { ILabel, ILikertForm } from "models/question";
-import { useTranslation } from "react-i18next";
+import { LikertValueInput } from "./scoreInput";
+import { LikertLabelControl } from "./labelInput";
+import { useNonInitialMemo } from "helpers/hooks/useNonInitialMemo";
 import "./style.less";
 
 interface ILikertFormFields<T> {
@@ -20,7 +20,6 @@ interface IProps {
   touched: ILikertFormFields<boolean>;
 }
 
-const toInt = (s: string) => parseInt(s, 10);
 const addOrEditLabel = (l: ILabel, ls: ILabel[]): ILabel[] => {
   const base = ls.concat().filter((x) => x.value !== l.value);
   if (l.label && l.label.length > 0) {
@@ -52,14 +51,10 @@ const replaceLabel = (
 };
 
 export const LikertFormField = (p: IProps): JSX.Element => {
-  const [selectedLabel, setSelectedLabel] = useState(p.values.leftValue);
-  const [labelSelected, setLabelSelected] = useState<boolean>(false);
-  const { t } = useTranslation();
-
-  const setLabelBeingEdited = (val: number) => {
-    setSelectedLabel(val);
-    setLabelSelected(true);
-  };
+  const [selectedLabel, setSelectedLabel] = useState<number | null>(
+    p.values.leftValue
+  );
+  const labelAutoFocus = useNonInitialMemo(() => true, false, [selectedLabel]);
 
   const getLeftLabel = (): string => {
     const l = p.values.labels.find((l) => l.value === p.values.leftValue);
@@ -71,12 +66,11 @@ export const LikertFormField = (p: IProps): JSX.Element => {
     return l === undefined ? undefined : l.label;
   };
 
-  const setLeftValue = (_, data) => {
-    let newV = toInt(data.value);
+  const setLeftValue = (newV) => {
     if (isNaN(newV)) {
       newV = p.values.leftValue;
     }
-    setSelectedLabel(undefined);
+    setSelectedLabel(null);
     p.onChange({
       // also need to update the left label as it will now have a new value
       labels: replaceLabel(
@@ -90,12 +84,11 @@ export const LikertFormField = (p: IProps): JSX.Element => {
     });
   };
 
-  const setRightValue = (_, data) => {
-    let newV = toInt(data.value);
+  const setRightValue = (newV) => {
     if (isNaN(newV)) {
       newV = p.values.rightValue;
     }
-    setSelectedLabel(undefined);
+    setSelectedLabel(null);
     p.onChange({
       // also need to update the right label as it will now have a new value
       labels: replaceLabel(
@@ -109,12 +102,12 @@ export const LikertFormField = (p: IProps): JSX.Element => {
     });
   };
 
-  const setLabel = (_, data) => {
+  const setLabel = (label) => {
     p.onChange({
       labels: addOrEditLabel(
         {
           value: selectedLabel,
-          label: data.value,
+          label,
         },
         p.values.labels
       ),
@@ -123,120 +116,47 @@ export const LikertFormField = (p: IProps): JSX.Element => {
     });
   };
 
-  const renderLabelControl = (labelSelected: boolean): JSX.Element => {
-    const props: InputProps = {};
-    if (selectedLabel === undefined) {
-      props.disabled = true;
-    }
-    if (labelSelected) {
-      props.autoFocus = true;
-    }
-    const editedLabel = p.values.labels.find((l) => l.value === selectedLabel);
-    const { errors, touched } = p;
-    const desc = t("Click a point on the scale to set or edit labels");
-    return (
-      <FormField
-        description={desc}
-        key={"fflc-" + selectedLabel}
-        error={errors.labels as string}
-        touched={touched.labels}
-        inputID="lff-labels"
-        label={t("Scale Labels")}
-        required={true}
-      >
-        <Input
-          {...props}
-          id="lff-labels"
-          name="labels"
-          placeholder={t("Label for highlighted point")}
-          value={editedLabel ? editedLabel.label : ""}
-          onChange={setLabel}
-        />
-      </FormField>
-    );
-  };
-
-  const renderValueInputs = (): JSX.Element => {
-    const { errors, touched, values, edit } = p;
-    const editMessage = t(
-      "We do not allow the values of the scale to be edited to ensure data consistency. If you would like to change them, please delete this question and recreate it or contact support@impactasaurus.org"
-    );
-    const InputWithPopupInEdit = (p: {
-      children: JSX.Element;
-    }): JSX.Element => {
-      if (edit) {
-        // div here is to make the popup work on a disabled input field
-        return (
-          <Popup content={editMessage} trigger={<div>{p.children}</div>} />
-        );
-      }
-      return p.children;
-    };
-    return (
-      <div>
-        <Form.Group>
-          <FormField
-            error={errors.leftValue as string}
-            touched={touched.leftValue}
-            inputID="lff-left"
-            label={t("Left Value")}
-            required={true}
-            width={4}
-          >
-            <InputWithPopupInEdit>
-              <Input
-                id="lff-left"
-                name="leftValue"
-                type="number"
-                placeholder={t("Left Value")}
-                value={values.leftValue}
-                onChange={setLeftValue}
-                disabled={edit}
-              />
-            </InputWithPopupInEdit>
-          </FormField>
-          <Form.Input className="padding" width={8} />
-          <FormField
-            error={errors.rightValue as string}
-            touched={touched.rightValue}
-            inputID="lff-right"
-            label={t("Right Value")}
-            required={true}
-            width={4}
-          >
-            <InputWithPopupInEdit>
-              <Input
-                id="lff-right"
-                name="rightValue"
-                type="number"
-                placeholder={t("Right Value")}
-                value={values.rightValue}
-                onChange={setRightValue}
-                disabled={edit}
-              />
-            </InputWithPopupInEdit>
-          </FormField>
-        </Form.Group>
-      </div>
-    );
-  };
-
   return (
     <div className="likert-form">
-      <div className="section mid">{renderValueInputs()}</div>
+      <div className="section mid">
+        <LikertValueInput
+          edit={p.edit}
+          errors={{
+            leftValue: p.errors.leftValue,
+            rightValue: p.errors.rightValue,
+          }}
+          touched={{
+            leftValue: p.touched.leftValue,
+            rightValue: p.touched.rightValue,
+          }}
+          values={{
+            leftValue: p.values.leftValue,
+            rightValue: p.values.rightValue,
+          }}
+          setLeftValue={setLeftValue}
+          setRightValue={setRightValue}
+        />
+      </div>
       <div className="section likert">
         <Likert
           key={`${p.values.leftValue}-${p.values.rightValue}`}
           leftValue={p.values.leftValue}
           rightValue={p.values.rightValue}
-          onChange={setLabelBeingEdited}
+          onChange={setSelectedLabel}
           disabled={false}
           value={selectedLabel}
           labels={p.values.labels}
         />
       </div>
       <div className="section lower">
-        {renderLabelControl(labelSelected === true)}
+        <LikertLabelControl
+          selectedLabel={selectedLabel}
+          autoFocus={labelAutoFocus}
+          setLabel={setLabel}
+          error={p.errors.labels}
+          touched={p.touched.labels}
+          labels={p.values.labels}
+        />
       </div>
     </div>
   );
