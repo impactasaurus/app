@@ -57,10 +57,7 @@ const HomeWithSpinner = ApolloLoaderHoC<IProps>(
   HomeInner
 );
 
-export const HomeWithData = getRecentMeetings<IProps>(
-  () => 0,
-  "data"
-)(HomeWithSpinner);
+export const HomeWithData = getRecentMeetings<IProps>({})(HomeWithSpinner);
 
 // t("Home")
 const homeWithPageWrapper = MinimalPageWrapperHoC("Home", "home", HomeWithData);
