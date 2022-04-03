@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Message, Input, InputProps, Form } from "semantic-ui-react";
+import { Input, InputProps, Form, Popup } from "semantic-ui-react";
 import { FormField } from "components/FormField";
 import { Likert } from "components/Likert";
 import { ILabel, ILikertForm } from "models/question";
@@ -158,16 +158,20 @@ export const LikertFormField = (p: IProps): JSX.Element => {
 
   const renderValueInputs = (): JSX.Element => {
     const { errors, touched, values, edit } = p;
-    if (edit) {
-      return (
-        <Message
-          content={t(
-            "We do not allow the values of the scale to be edited to ensure data consistency. If you would like to change them, please delete this question and recreate it or contact support@impactasaurus.org"
-          )}
-          info={true}
-        />
-      );
-    }
+    const editMessage = t(
+      "We do not allow the values of the scale to be edited to ensure data consistency. If you would like to change them, please delete this question and recreate it or contact support@impactasaurus.org"
+    );
+    const InputWithPopupInEdit = (p: {
+      children: JSX.Element;
+    }): JSX.Element => {
+      if (edit) {
+        // div here is to make the popup work on a disabled input field
+        return (
+          <Popup content={editMessage} trigger={<div>{p.children}</div>} />
+        );
+      }
+      return p.children;
+    };
     return (
       <div>
         <Form.Group>
@@ -179,14 +183,17 @@ export const LikertFormField = (p: IProps): JSX.Element => {
             required={true}
             width={4}
           >
-            <Input
-              id="lff-left"
-              name="leftValue"
-              type="number"
-              placeholder={t("Left Value")}
-              value={values.leftValue}
-              onChange={setLeftValue}
-            />
+            <InputWithPopupInEdit>
+              <Input
+                id="lff-left"
+                name="leftValue"
+                type="number"
+                placeholder={t("Left Value")}
+                value={values.leftValue}
+                onChange={setLeftValue}
+                disabled={edit}
+              />
+            </InputWithPopupInEdit>
           </FormField>
           <Form.Input className="padding" width={8} />
           <FormField
@@ -197,14 +204,17 @@ export const LikertFormField = (p: IProps): JSX.Element => {
             required={true}
             width={4}
           >
-            <Input
-              id="lff-right"
-              name="rightValue"
-              type="number"
-              placeholder={t("Right Value")}
-              value={values.rightValue}
-              onChange={setRightValue}
-            />
+            <InputWithPopupInEdit>
+              <Input
+                id="lff-right"
+                name="rightValue"
+                type="number"
+                placeholder={t("Right Value")}
+                value={values.rightValue}
+                onChange={setRightValue}
+                disabled={edit}
+              />
+            </InputWithPopupInEdit>
           </FormField>
         </Form.Group>
       </div>
