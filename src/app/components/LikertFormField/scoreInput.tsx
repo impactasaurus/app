@@ -11,6 +11,7 @@ interface ILikertValueFields<T> {
 interface IProps {
   setLeftValue(num: number): void;
   setRightValue(num: number): void;
+  switchValues(): void;
   edit: boolean;
   values: ILikertValueFields<number>;
   errors: ILikertValueFields<string>;
@@ -61,7 +62,15 @@ export const LikertValueInput = (p: IProps): JSX.Element => {
             disabled={edit}
           />
         </FormField>
-        <Form.Input className="padding" width={8} />
+        <Form.Button
+          width={8}
+          basic={true}
+          content={t("Reverse Scoring")}
+          onClick={p.switchValues}
+          className="invert"
+          icon="exchange"
+          disabled={edit}
+        />
         <FormField
           error={errors.rightValue as string}
           touched={touched.rightValue}

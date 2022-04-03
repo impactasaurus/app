@@ -4,6 +4,7 @@ import { ILabel, ILikertForm } from "models/question";
 import { LikertValueInput } from "./scoreInput";
 import { LikertLabelControl } from "./labelInput";
 import { useNonInitialMemo } from "helpers/hooks/useNonInitialMemo";
+import { flipLabelsAroundMidPoint } from "helpers/questionnaire";
 import "./style.less";
 
 interface ILikertFormFields<T> {
@@ -106,6 +107,19 @@ export const LikertFormField = (p: IProps): JSX.Element => {
     });
   };
 
+  const switchValues = () => {
+    setSelectedLabel(undefined);
+    p.onChange({
+      labels: flipLabelsAroundMidPoint(
+        p.values.labels,
+        p.values.leftValue,
+        p.values.rightValue
+      ),
+      leftValue: p.values.rightValue,
+      rightValue: p.values.leftValue,
+    });
+  };
+
   const setLabel = (label) => {
     p.onChange({
       labels: addOrEditLabel(
@@ -139,6 +153,7 @@ export const LikertFormField = (p: IProps): JSX.Element => {
           }}
           setLeftValue={setLeftValue}
           setRightValue={setRightValue}
+          switchValues={switchValues}
         />
       </div>
       <div className="section likert">

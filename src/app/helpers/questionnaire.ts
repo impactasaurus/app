@@ -1,5 +1,5 @@
 import { IOutcomeSet } from "../models/outcomeSet";
-import { IQuestion, Question } from "models/question";
+import { ILabel, IQuestion, Question } from "models/question";
 import { ICategory } from "../models/category";
 import { isNullOrUndefined } from "util";
 
@@ -163,3 +163,18 @@ export function getQuestionFriendlyName(
   }
   return question;
 }
+
+// flipLabelsAroundMidPoint will invert the labels along the given scale
+export const flipLabelsAroundMidPoint = (
+  l: ILabel[],
+  left: number,
+  right: number
+): ILabel[] => {
+  const halfway = left + (right - left) / 2;
+  return l.map((lab) => {
+    return {
+      label: lab.label,
+      value: halfway + (halfway - lab.value),
+    };
+  });
+};
