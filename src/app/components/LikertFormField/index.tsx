@@ -51,10 +51,14 @@ const replaceLabel = (
 };
 
 export const LikertFormField = (p: IProps): JSX.Element => {
-  const [selectedLabel, setSelectedLabel] = useState<number | null>(
+  const [selectedLabel, setSelectedLabel] = useState<number | undefined>(
     p.values.leftValue
   );
-  const labelAutoFocus = useNonInitialMemo(() => true, false, [selectedLabel]);
+  const labelAutoFocus = useNonInitialMemo(
+    () => selectedLabel !== undefined,
+    false,
+    [selectedLabel]
+  );
 
   const getLeftLabel = (): string => {
     const l = p.values.labels.find((l) => l.value === p.values.leftValue);
@@ -70,7 +74,7 @@ export const LikertFormField = (p: IProps): JSX.Element => {
     if (isNaN(newV)) {
       newV = p.values.leftValue;
     }
-    setSelectedLabel(null);
+    setSelectedLabel(undefined);
     p.onChange({
       // also need to update the left label as it will now have a new value
       labels: replaceLabel(
@@ -88,7 +92,7 @@ export const LikertFormField = (p: IProps): JSX.Element => {
     if (isNaN(newV)) {
       newV = p.values.rightValue;
     }
-    setSelectedLabel(null);
+    setSelectedLabel(undefined);
     p.onChange({
       // also need to update the right label as it will now have a new value
       labels: replaceLabel(

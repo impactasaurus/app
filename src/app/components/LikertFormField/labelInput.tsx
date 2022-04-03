@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Input } from "semantic-ui-react";
 
 interface IProps {
-  selectedLabel: number | null;
+  selectedLabel?: number;
   autoFocus?: boolean;
   labels: ILabel[];
   error: string;
@@ -29,7 +29,7 @@ export const LikertLabelControl = (p: IProps): JSX.Element => {
     >
       <Input
         autoFocus={p.autoFocus}
-        disabled={p.selectedLabel === null}
+        disabled={p.selectedLabel === undefined}
         id="lff-labels"
         name="labels"
         placeholder={t("Label for highlighted point")}
