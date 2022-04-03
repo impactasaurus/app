@@ -75,12 +75,14 @@ const BeneficiaryConfigWithLoader = ApolloLoaderHoC<IProps>(
   "beneficiary",
   (p: IProps) => p.data,
   BeneficiaryConfigInner,
-  (e: ApolloError) => {
-    // tags can be set on beneficiaries not currently in the system
-    const notFound =
-      e.graphQLErrors.length === 1 &&
-      e.graphQLErrors[0].message.includes("not found");
-    return !notFound;
+  {
+    isErrorTerminal: (e: ApolloError) => {
+      // tags can be set on beneficiaries not currently in the system
+      const notFound =
+        e.graphQLErrors.length === 1 &&
+        e.graphQLErrors[0].message.includes("not found");
+      return !notFound;
+    },
   }
 );
 const BeneficiaryConfig = getBeneficiary<IProps>(getBen)(
