@@ -82,12 +82,12 @@ const InnerForm = (props: IProps & FormikProps<ILikertQuestionForm>) => {
 
   const shortenedLabel: JSX.Element = (
     <span>
-      {t("Shortened Form")}
       <Hint
         text={t(
           "Shortened form of the question. Used instead of the question, when reviewing data in visualisations and exports"
         )}
       />
+      {t("Shortened Form")}
     </span>
   );
 
