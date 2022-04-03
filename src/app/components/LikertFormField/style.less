@@ -1,35 +1,48 @@
 @import (reference) "./../../theme/variables.less";
+#impactasaurus {
+  .likert-form {
+    padding-bottom: 2em;
 
-.likert-form {
-  padding-bottom: 2em;
+    .right {
+      float: right;
+    }
 
-  .right {
-    float: right;
-  }
-
-  .section.likert {
-    margin-left: 5em;
-    margin-right: 5em;
-
-    .likert-scale {
-      margin-top: 10px;
-      margin-bottom: 35px;
-
-      .rc-slider-track {
-        display: none;
+    .section.mid {
+      .fields {
+        align-items: flex-end;
       }
-
-      .rc-slider-dot {
-        border-color: @primary;
+      .field.invert {
+        text-align: center;
+        .button {
+          margin-top: 1em;
+        }
       }
     }
-  }
 
-  .section.lower {
-    text-align: left;
-  }
+    .section.likert {
+      margin-left: 5em;
+      margin-right: 5em;
 
-  .ui.left.pointing {
-    font-weight: normal;
+      .likert-scale {
+        margin-top: 10px;
+        margin-bottom: 35px;
+
+        .rc-slider-track {
+          display: none;
+        }
+
+        .rc-slider-dot {
+          border-color: @primary;
+        }
+      }
+    }
+
+    .section.lower {
+      text-align: left;
+    }
+
+    .ui.left.pointing {
+      font-weight: normal;
+    }
   }
 }
