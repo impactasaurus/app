@@ -1,4 +1,4 @@
-import { gql, graphql, QueryProps } from "react-apollo";
+import { ChildProps, gql, graphql, QueryProps } from "react-apollo";
 import {
   IMeeting,
   fragment,
@@ -12,6 +12,7 @@ import {
 } from "helpers/apollo";
 import { invalidateFields, ROOT } from "apollo-cache-invalidation";
 import { IAssessmentConfig } from "models/assessment";
+import { ComponentDecorator } from "react-apollo/types";
 
 // see impactasaurus/app#55, not an ideal fix
 // forces refetch of meeting related queries by deleting root query pointers for `meeting` and `meetings` queries
@@ -105,29 +106,43 @@ const getRecentMeetingsGQL = gql`
   ${fragmentWithOutcomeSet}
 `;
 
-export const getRecentMeetings = <T>(
-  pageExtractor: Extractor<T, number>,
-  name?: string,
-  bens?: Extractor<T, string[]>,
-  questionnaires?: Extractor<T, string[]>,
-  users?: Extractor<T, string[]>,
-  tags?: Extractor<T, string[]>
-) => {
-  return graphql<any, T>(getRecentMeetingsGQL, {
+interface IGetRecentMeetingsOptions<T> {
+  pageExtractor?: Extractor<T, number>;
+  name?: string;
+  bens?: Extractor<T, string[]>;
+  questionnaires?: Extractor<T, string[]>;
+  users?: Extractor<T, string[]>;
+  tags?: Extractor<T, string[]>;
+  limit?: number;
+}
+
+export const getRecentMeetings = <T>({
+  pageExtractor = () => 0,
+  name = "data",
+  bens = () => undefined,
+  questionnaires = () => undefined,
+  users = () => undefined,
+  tags = () => undefined,
+  limit = 12,
+}: IGetRecentMeetingsOptions<T>): ComponentDecorator<
+  T,
+  ChildProps<T, IGetRecentMeetingsData>
+> => {
+  return graphql<IGetRecentMeetingsData, T>(getRecentMeetingsGQL, {
     options: (props: T) => {
       return {
         variables: {
-          limit: 12,
+          limit: limit,
           page: pageExtractor(props),
-          bens: bens ? bens(props) : undefined,
-          questionnaires: questionnaires ? questionnaires(props) : undefined,
-          users: users ? users(props) : undefined,
-          tags: tags ? tags(props) : undefined,
+          bens: bens(props),
+          questionnaires: questionnaires(props),
+          users: users(props),
+          tags: tags(props),
         },
         notifyOnNetworkStatusChange: true,
       };
     },
-    name: name ? name : "data",
+    name: name,
   });
 };
 

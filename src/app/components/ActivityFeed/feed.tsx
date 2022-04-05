@@ -92,11 +92,9 @@ const ActivityFeedWithSpinner = ApolloLoaderHoC<IProps>(
   ActivityFeedInner
 );
 
-export const ActivityFeedEntries = getRecentMeetings<IProps>(
-  () => 0,
-  "data",
-  (p) => p.filter?.bens,
-  (p) => p.filter?.questionnaires,
-  (p) => p.filter?.users,
-  (p) => p.filter?.tags
-)(ActivityFeedWithSpinner);
+export const ActivityFeedEntries = getRecentMeetings<IProps>({
+  bens: (p) => p.filter?.bens,
+  questionnaires: (p) => p.filter?.questionnaires,
+  users: (p) => p.filter?.users,
+  tags: (p) => p.filter?.tags,
+})(ActivityFeedWithSpinner);

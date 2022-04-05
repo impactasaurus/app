@@ -15,7 +15,7 @@ interface ILikertFormFields<T> {
 
 interface IProps {
   onChange(likert: ILikertForm);
-  edit: boolean;
+  canEdit: boolean;
   values: ILikertForm;
   errors: ILikertFormFields<string>;
   touched: ILikertFormFields<boolean>;
@@ -138,7 +138,7 @@ export const LikertFormField = (p: IProps): JSX.Element => {
     <div className="likert-form">
       <div className="section mid">
         <LikertValueInput
-          edit={p.edit}
+          canEdit={p.canEdit}
           errors={{
             leftValue: p.errors.leftValue,
             rightValue: p.errors.rightValue,

@@ -49,4 +49,4 @@ const Inner = (p: IProps) => {
   );
 };
 
-export const RecordChecklistItem = getRecentMeetings<IProps>(() => 0)(Inner);
+export const RecordChecklistItem = getRecentMeetings<IProps>({})(Inner);

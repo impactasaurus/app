@@ -4,7 +4,7 @@ import { mutationResultExtractor } from "helpers/apollo";
 import { ILabel } from "models/question";
 
 // cleanLabelArray defends against __typename attributes
-const cleanLabelArray = (labels: ILabel[]): ILabel[] => {
+export const cleanLabelArray = (labels: ILabel[]): ILabel[] => {
   return labels.map<ILabel>(
     (l: ILabel): ILabel => ({
       label: l.label,
@@ -65,55 +65,6 @@ export function addLikertQuestion<T>(component) {
               categoryID,
             },
           }).then(mutationResultExtractor<IOutcomeSet>("addLikertQuestion")),
-      }),
-    }
-  )(component);
-}
-
-export function editLikertQuestion<T>(component) {
-  return graphql<any, T>(
-    gql`
-      mutation (
-        $outcomeSetID: ID!
-        $questionID: ID!
-        $question: String!
-        $description: String
-        $short: String
-        $labels: [LabelInput]
-      ) {
-        editLikertQuestion: EditLikertQuestion(
-          outcomeSetID: $outcomeSetID
-          questionID: $questionID
-          question: $question
-          description: $description
-          labels: $labels
-          short: $short
-        ) {
-          ...defaultOutcomeSet
-        }
-      }
-      ${osFragment}
-    `,
-    {
-      props: ({ mutate }) => ({
-        editLikertQuestion: (
-          outcomeSetID: string,
-          questionID: string,
-          question: string,
-          description?: string,
-          short?: string,
-          labels?: ILabel[]
-        ): Promise<IOutcomeSet> =>
-          mutate({
-            variables: {
-              outcomeSetID,
-              questionID,
-              question,
-              description,
-              short,
-              labels: cleanLabelArray(labels),
-            },
-          }).then(mutationResultExtractor<IOutcomeSet>("editLikertQuestion")),
       }),
     }
   )(component);
@@ -216,14 +167,6 @@ export interface IQuestionMutation {
     description?: string,
     short?: string,
     categoryID?: string,
-    labels?: ILabel[]
-  ): Promise<IOutcomeSet>;
-  editLikertQuestion?(
-    outcomeSetID: string,
-    questionID: string,
-    question: string,
-    description?: string,
-    short?: string,
     labels?: ILabel[]
   ): Promise<IOutcomeSet>;
   deleteQuestion?(

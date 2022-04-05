@@ -12,7 +12,7 @@ interface IProps {
   setLeftValue(num: number): void;
   setRightValue(num: number): void;
   switchValues(): void;
-  edit: boolean;
+  canEdit: boolean;
   values: ILikertValueFields<number>;
   errors: ILikertValueFields<string>;
   touched: ILikertValueFields<boolean>;
@@ -20,12 +20,13 @@ interface IProps {
 
 const InputWithPopupInEdit = (
   p: {
-    editing: boolean;
+    canEdit: boolean;
   } & InputProps
 ): JSX.Element => {
   const { t } = useTranslation();
-  const input = <Input {...p} />;
-  if (p.editing) {
+  const { canEdit, ...inputProps } = p;
+  const input = <Input {...inputProps} />;
+  if (!canEdit) {
     const editMessage = t(
       "We do not allow the values of the scale to be edited to ensure data consistency. If you would like to change them, please delete this question and recreate it or contact support@impactasaurus.org"
     );
@@ -39,7 +40,7 @@ const toInt = (s: string) => parseInt(s, 10);
 
 export const LikertValueInput = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
-  const { errors, touched, values, edit } = p;
+  const { errors, touched, values, canEdit } = p;
   return (
     <div>
       <Form.Group>
@@ -52,14 +53,14 @@ export const LikertValueInput = (p: IProps): JSX.Element => {
           width={4}
         >
           <InputWithPopupInEdit
-            editing={edit}
+            canEdit={canEdit}
             id="lff-left"
             name="leftValue"
             type="number"
             placeholder={t("Left Value")}
             value={values.leftValue}
             onChange={(_, d) => p.setLeftValue(toInt(d.value))}
-            disabled={edit}
+            disabled={!canEdit}
           />
         </FormField>
         <Form.Button
@@ -69,7 +70,7 @@ export const LikertValueInput = (p: IProps): JSX.Element => {
           onClick={p.switchValues}
           className="invert"
           icon="exchange"
-          disabled={edit}
+          disabled={!canEdit}
         />
         <FormField
           error={errors.rightValue as string}
@@ -80,14 +81,14 @@ export const LikertValueInput = (p: IProps): JSX.Element => {
           width={4}
         >
           <InputWithPopupInEdit
-            editing={edit}
+            canEdit={canEdit}
             id="lff-right"
             name="rightValue"
             type="number"
             placeholder={t("Right Value")}
             value={values.rightValue}
             onChange={(_, d) => p.setRightValue(toInt(d.value))}
-            disabled={edit}
+            disabled={!canEdit}
           />
         </FormField>
       </Form.Group>
