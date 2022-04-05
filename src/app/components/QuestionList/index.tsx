@@ -138,7 +138,7 @@ const QuestionListInner = (p: IProps) => {
         };
       }
       return (
-        <List.Item className="new-control">
+        <List.Item className="new-control" key="new-control">
           <List.Content>
             <WrappedQuestionForm title={t("Add Question")}>
               <NewLikertQuestion
@@ -153,7 +153,7 @@ const QuestionListInner = (p: IProps) => {
       );
     } else {
       return (
-        <List.Item className="new-button">
+        <List.Item className="new-button" key="new-button">
           <List.Content style={{ textAlign: "center", marginTop: "1em" }}>
             <Button
               icon="plus"
@@ -169,7 +169,10 @@ const QuestionListInner = (p: IProps) => {
 
   const renderEditQuestionForm = (q: Question): JSX.Element => {
     return (
-      <WrappedQuestionForm title={t("Edit Likert Question")}>
+      <WrappedQuestionForm
+        title={t("Edit Likert Question")}
+        key="edit-question-form"
+      >
         <EditLikertQuestion
           key={"edit-" + q.id}
           question={q}

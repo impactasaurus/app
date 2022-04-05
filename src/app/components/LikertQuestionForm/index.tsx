@@ -30,75 +30,59 @@ interface IProps extends WithTranslation {
   OnSuccess: () => void;
   onCancel: () => void;
   onSubmitButtonClick: (question: ILikertQuestionForm) => Promise<IOutcomeSet>;
-  edit?: boolean;
   values: ILikertQuestionForm;
   submitButtonText: string;
+
+  editing?: boolean;
+  inUse?: boolean;
 }
 
-const InnerForm = (props: IProps & FormikProps<ILikertQuestionForm>) => {
-  const {
-    touched,
-    values,
-    status,
-    errors,
-    isSubmitting,
-    handleChange,
-    onCancel,
-    edit,
-    dirty,
-    t,
-    submitForm,
-    handleBlur,
-    isValid,
-    submitButtonText,
-    setFieldValue,
-    setFieldTouched,
-  } = props;
-  const categoryOptions = (values as any).categoryOptions;
+const InnerForm = (p: IProps & FormikProps<ILikertQuestionForm>) => {
+  const categoryOptions = (p.values as any).categoryOptions;
 
   const standardActions = {
-    onChange: handleChange,
-    onBlur: handleBlur,
+    onChange: p.handleChange,
+    onBlur: p.handleBlur,
   };
 
   const setLikertOptions = (options: ILikertForm) => {
-    setFieldValue("leftValue", options.leftValue);
-    setFieldTouched("leftValue");
-    setFieldValue("rightValue", options.rightValue);
-    setFieldTouched("rightValue");
-    setFieldValue("labels", options.labels);
-    setFieldTouched("labels");
+    p.setFieldValue("leftValue", options.leftValue);
+    p.setFieldTouched("leftValue");
+    p.setFieldValue("rightValue", options.rightValue);
+    p.setFieldTouched("rightValue");
+    p.setFieldValue("labels", options.labels);
+    p.setFieldTouched("labels");
   };
 
   // standardActions don't work as it is not a normal input component
   // and formik doesn't get a name attribute to work with
   const onCategoryChanged = (_, v) => {
-    setFieldValue("categoryID", v.value);
+    p.setFieldValue("categoryID", v.value);
   };
 
   const onCategoryBlur = () => {
-    setFieldTouched("categoryID");
+    p.setFieldTouched("categoryID");
   };
 
   const shortenedLabel: JSX.Element = (
     <span>
       <Hint
-        text={t(
+        text={p.t(
           "Shortened form of the question. Used instead of the question, when reviewing data in visualisations and exports"
         )}
       />
-      {t("Shortened Form")}
+      {p.t("Shortened Form")}
     </span>
   );
 
   return (
-    <Form onSubmit={submitForm}>
+    <Form onSubmit={p.submitForm}>
       <Form.Group>
         <FormField
-          error={errors.question as string}
-          touched={touched.question}
+          error={p.errors.question as string}
+          touched={p.touched.question}
           inputID="lqf-question"
-          label={t("Question")}
+          label={p.t("Question")}
           required={true}
           width={12}
         >
@@ -106,15 +90,15 @@ const InnerForm = (props: IProps & FormikProps<ILikertQuestionForm>) => {
             id="lqf-question"
             name="question"
             type="text"
-            placeholder={t("Question")}
+            placeholder={p.t("Question")}
             autoFocus={true}
-            value={values.question}
+            value={p.values.question}
             {...standardActions}
           />
         </FormField>
         <FormField
-          error={errors.short as string}
-          touched={touched.short}
+          error={p.errors.short as string}
+          touched={p.touched.short}
           inputID="lqf-short"
           label={shortenedLabel}
           width={4}
@@ -123,83 +107,83 @@ const InnerForm = (props: IProps & FormikProps<ILikertQuestionForm>) => {
             id="lqf-short"
             name="short"
             type="text"
-            placeholder={t("Shortened Form")}
-            value={values.short}
+            placeholder={p.t("Shortened Form")}
+            value={p.values.short}
             {...standardActions}
           />
         </FormField>
       </Form.Group>
       <Form.Group>
         <FormField
-          error={errors.description as string}
-          touched={touched.description}
+          error={p.errors.description as string}
+          touched={p.touched.description}
           inputID="lqf-desc"
-          label={t("Description")}
+          label={p.t("Description")}
           width={12}
         >
           <Input
             id="lqf-desc"
             name="description"
             type="text"
-            placeholder={t("Description")}
-            value={values.description}
+            placeholder={p.t("Description")}
+            value={p.values.description}
             {...standardActions}
           />
         </FormField>
         <FormField
-          error={errors.categoryID as string}
-          touched={touched.categoryID}
+          error={p.errors.categoryID as string}
+          touched={p.touched.categoryID}
           inputID="lqf-cat"
-          label={t("Category")}
+          label={p.t("Category")}
           width={4}
         >
           <Select
             id="lqf-cat"
             options={categoryOptions}
-            placeholder={t("Category")}
-            value={values.categoryID}
+            placeholder={p.t("Category")}
+            value={p.values.categoryID}
             onChange={onCategoryChanged}
             onBlur={onCategoryBlur}
           />
         </FormField>
       </Form.Group>
       <LikertFormField
-        edit={edit}
+        canEdit={!p.inUse}
         values={{
-          labels: values.labels,
-          leftValue: values.leftValue,
-          rightValue: values.rightValue,
+          labels: p.values.labels,
+          leftValue: p.values.leftValue,
+          rightValue: p.values.rightValue,
         }}
         errors={{
-          labels: errors.labels as string,
-          leftValue: errors.leftValue as string,
-          rightValue: errors.rightValue as string,
+          labels: p.errors.labels as string,
+          leftValue: p.errors.leftValue as string,
+          rightValue: p.errors.rightValue as string,
         }}
         touched={{
-          labels: !!touched.labels,
-          leftValue: touched.leftValue as boolean,
-          rightValue: touched.rightValue as boolean,
+          labels: !!p.touched.labels,
+          leftValue: p.touched.leftValue as boolean,
+          rightValue: p.touched.rightValue as boolean,
         }}
         onChange={setLikertOptions}
       />
       <Form.Group>
-        <Form.Button type="reset" onClick={onCancel}>
-          {t("Cancel")}
+        <Form.Button type="reset" onClick={p.onCancel}>
+          {p.t("Cancel")}
         </Form.Button>
         <Form.Button
           type="submit"
           primary={true}
-          disabled={!dirty || !isValid || isSubmitting}
-          loading={isSubmitting}
+          disabled={!p.dirty || !p.isValid || p.isSubmitting}
+          loading={p.isSubmitting}
         >
-          {submitButtonText}
+          {p.submitButtonText}
         </Form.Button>
       </Form.Group>
-      {status && (
+      {p.status && (
         <span className="submit-error">
           <Icon name="exclamation" />
-          {t("Saving the question failed.")}{" "}
-          {t(
+          {p.t("Saving the question failed.")}{" "}
+          {p.t(
             "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org"
           )}
         </span>
@@ -269,7 +253,7 @@ const LikertQuestionFormInner = withFormik<IProps, ILikertQuestionForm>({
     formikBag.props
       .onSubmitButtonClick(v as ILikertQuestionForm)
       .then(() => {
-        logQuestionGAEvent(formikBag.props.edit ? "edited" : "created");
+        logQuestionGAEvent(formikBag.props.editing ? "edited" : "created");
         formikBag.setSubmitting(false);
         formikBag.props.OnSuccess();
       })
