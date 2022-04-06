@@ -1,18 +1,11 @@
 import React, { useState } from "react";
-import { isNullOrUndefined } from "util";
-import {
-  Search,
-  Input,
-  InputOnChangeData,
-  SearchResultData,
-} from "semantic-ui-react";
+import { Search, Input, SearchResultData } from "semantic-ui-react";
 import {
   getBeneficiaries,
   IBeneficiariesResult,
 } from "apollo/modules/beneficiaries";
-import { getOrganisation, IGetOrgResult } from "apollo/modules/organisation";
 import { useTranslation } from "react-i18next";
-const escapeStringRegexp = require("escape-string-regexp");
+import escapeStringRegexp from "escape-string-regexp";
 import "./style.less";
 
 interface IProps {
@@ -23,7 +16,6 @@ interface IProps {
   inputID?: string;
 
   bens?: IBeneficiariesResult;
-  data?: IGetOrgResult;
 }
 
 const BeneficiaryInputInner = (p: IProps) => {
@@ -42,10 +34,6 @@ const BeneficiaryInputInner = (p: IProps) => {
       } catch {}
       p.onChange(benID, existingBen);
     }
-  };
-
-  const onInputChange = (_, data: InputOnChangeData) => {
-    onChange(data.value);
   };
 
   const onSearchResultSelect = (_, data: SearchResultData) => {
@@ -68,7 +56,7 @@ const BeneficiaryInputInner = (p: IProps) => {
       description: t(`Create {name}'s first record`, { name: value }),
     };
 
-    if (isNullOrUndefined(p.bens.getBeneficiaries) || value.length < 1) {
+    if (!p.bens.getBeneficiaries || value.length < 1) {
       const noMatches = [];
       if (p.allowUnknown === true) {
         noMatches.push(newBeneficiaryResult);
@@ -93,44 +81,29 @@ const BeneficiaryInputInner = (p: IProps) => {
     setSearchResults(searchResults);
   };
 
-  let shouldShowTypeahead = false;
-  if (!isNullOrUndefined(p.data.getOrganisation)) {
-    shouldShowTypeahead = p.data.getOrganisation.settings.beneficiaryTypeAhead;
-  }
-  if (shouldShowTypeahead) {
-    return (
-      <div className="beneficiary-input">
-        <Search
-          loading={p.bens.loading}
-          onResultSelect={onSearchResultSelect}
-          onSearchChange={handleSearchChange}
-          results={searchResults}
-          onBlur={onBlur}
-          onFocus={p.onFocus}
-          icon={undefined}
-          fluid={true}
-          showNoResults={true}
-          noResultsMessage={t("Unknown beneficiary")}
-          input={
-            <Input type="text" placeholder={t("Beneficiary")} icon={false} />
-          }
-          id={p.inputID}
-        />
-      </div>
-    );
-  }
   return (
-    <Input
-      type="text"
-      placeholder={t("Beneficiary")}
-      onChange={onInputChange}
-      onBlur={onBlur}
-      onFocus={p.onFocus}
-    />
+    <div className="beneficiary-input">
+      <Search
+        loading={p.bens.loading}
+        onResultSelect={onSearchResultSelect}
+        onSearchChange={handleSearchChange}
+        results={searchResults}
+        onBlur={onBlur}
+        onFocus={p.onFocus}
+        icon={undefined}
+        fluid={true}
+        showNoResults={true}
+        noResultsMessage={t("Unknown beneficiary")}
+        input={
+          <Input type="text" placeholder={t("Beneficiary")} icon={false} />
+        }
+        id={p.inputID}
+      />
+    </div>
   );
 };
 
-const BeneficiaryInput = getOrganisation<IProps>(
-  getBeneficiaries<IProps>(BeneficiaryInputInner, "bens")
+export const BeneficiaryInput = getBeneficiaries<IProps>(
+  BeneficiaryInputInner,
+  "bens"
 );
-export { BeneficiaryInput };
