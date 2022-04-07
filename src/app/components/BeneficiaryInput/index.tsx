@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Search, Input, SearchResultData } from "semantic-ui-react";
 import {
   getBeneficiaries,
@@ -13,6 +13,7 @@ import {
   resultRenderer,
 } from "./renderers";
 import { useNonInitialEffect } from "helpers/hooks/useNonInitialEffect";
+import { getRecentMeetings, IGetRecentMeetings } from "apollo/modules/meetings";
 
 interface IProps {
   onChange?: (ben: string, existing: boolean | undefined) => void;
@@ -22,6 +23,7 @@ interface IProps {
   inputID?: string;
 
   bens?: IBeneficiariesResult;
+  recent?: IGetRecentMeetings;
 }
 
 interface ISearchResult {
@@ -41,39 +43,39 @@ const newBeneficiaryResult = (
   description: t(`Create {name}'s first record`, { name: ben }),
 });
 
-const exampleCategories = {
-  "Recently viewed": {
-    name: "Recently viewed",
-    results: [
-      {
-        title: "John Doe",
-      },
-      {
-        title: "Xav T",
-      },
-    ],
-  },
-  "Recent activity": {
-    name: "Recent activity",
-    results: [
-      {
-        title: "Dari",
-      },
-      {
-        title: "Logan",
-      },
-    ],
-  },
+const getZeroStateResults = (
+  r: IGetRecentMeetings
+): Record<string, ICategorisedSearchResult> | undefined => {
+  const results: Record<string, ICategorisedSearchResult> = {};
+  if (
+    !r.error &&
+    !r.loading &&
+    r.getRecentMeetings &&
+    Array.isArray(r.getRecentMeetings?.meetings)
+  ) {
+    if (r.getRecentMeetings.meetings.length > 0) {
+      const recentBeneficiaries = r.getRecentMeetings.meetings
+        .map((m) => m.beneficiary)
+        .reduce<string[]>((bens, b) => {
+          return bens.indexOf(b) === -1 ? bens.concat(b) : bens;
+        }, []);
+      results["recent"] = {
+        name: "Recent Activity",
+        results: recentBeneficiaries.map((b) => ({ title: b })),
+      };
+    }
+  }
+  return Object.keys(results).length === 0 ? undefined : results;
 };
 
 const BeneficiaryInputInner = (p: IProps) => {
   const [benID, setBenID] = useState<string>(undefined);
-  const [searchResults, setSearchResults] =
-    useState<ISearchResult[] | Record<string, ICategorisedSearchResult>>(
-      exampleCategories
-    );
+  const [searchResults, setSearchResults] = useState<
+    ISearchResult[] | Record<string, ICategorisedSearchResult>
+  >([]);
   const [search, setSearch] = useState<string>("");
   const { t } = useTranslation();
+  const zeroState = useMemo(() => getZeroStateResults(p.recent), [p.recent]);
 
   useNonInitialEffect(() => {
     onChange(search);
@@ -92,7 +94,7 @@ const BeneficiaryInputInner = (p: IProps) => {
 
   useEffect(() => {
     if (search.length === 0) {
-      setSearchResults(exampleCategories);
+      setSearchResults(zeroState);
       return;
     }
 
@@ -119,7 +121,7 @@ const BeneficiaryInputInner = (p: IProps) => {
     }
 
     setSearchResults(searchResults);
-  }, [search]);
+  }, [search, zeroState, p.bens, p.allowUnknown]);
 
   const onChange = (benID) => {
     setBenID(benID);
@@ -145,7 +147,7 @@ const BeneficiaryInputInner = (p: IProps) => {
   return (
     <div className="beneficiary-input">
       <Search
-        loading={p.bens.loading}
+        loading={p.bens.loading || p.recent.loading}
         onResultSelect={onSearchResultSelect}
         onSearchChange={handleSearchChange}
         results={searchResults}
@@ -159,7 +161,7 @@ const BeneficiaryInputInner = (p: IProps) => {
           <Input type="text" placeholder={t("Beneficiary")} icon={false} />
         }
         id={p.inputID}
-        minCharacters={0}
+        minCharacters={zeroState === undefined ? 1 : 0}
         categoryLayoutRenderer={categoryLayoutRenderer}
         categoryRenderer={categoryRenderer}
         resultRenderer={resultRenderer}
@@ -169,7 +171,6 @@ const BeneficiaryInputInner = (p: IProps) => {
   );
 };
 
-export const BeneficiaryInput = getBeneficiaries<IProps>(
-  BeneficiaryInputInner,
-  "bens"
+export const BeneficiaryInput = getRecentMeetings<IProps>({ name: "recent" })(
+  getBeneficiaries<IProps>(BeneficiaryInputInner, "bens")
 );
