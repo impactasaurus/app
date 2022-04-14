@@ -1,53 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form } from "semantic-ui-react";
 import { BeneficiaryInput } from "components/BeneficiaryInput";
 import { FormField } from "components/FormField";
-import { IURLConnector, UrlHOC } from "redux/modules/url";
+import { useNavigator } from "redux/modules/url";
 import { Hint } from "components/Hint";
-import {
-  FormikBag,
-  FormikErrors,
-  FormikValues,
-  FormikProps,
-  withFormik,
-} from "formik";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
-import { WithTranslation, withTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
-interface IFormOutput {
-  beneficiaryID: string;
-  existing?: boolean;
-}
+const Inner = () => {
+  const setURL = useNavigator();
+  const { t } = useTranslation();
+  const [ben, setBen] = useState<{ id: string; existing: boolean }>();
+  const [touched, setTouched] = useState<boolean>(false);
 
-interface IFormProps extends WithTranslation {
-  onBeneficiarySelect(benID: string, newBen: boolean | undefined): void;
-}
+  const review = (benID: string, existingBen: boolean) => {
+    let url = `/beneficiary/${benID}`;
+    if (!existingBen) {
+      url = url + "/record";
+    }
+    setURL(url, new URLSearchParams({ ben: benID }));
+  };
 
-const InnerForm = (props: FormikProps<IFormOutput> & IFormProps) => {
-  const {
-    touched,
-    errors,
-    isSubmitting,
-    setFieldValue,
-    submitForm,
-    setFieldTouched,
-    isValid,
-    values,
-    t,
-  } = props;
   const onChange = (
-    benID: string,
-    existing: boolean | undefined,
+    ben: string,
+    existing: boolean,
     selected: boolean
-  ) => {
-    setFieldValue("beneficiaryID", benID);
-    setFieldValue("existing", existing);
+  ): void => {
     if (selected) {
-      setFieldTouched("beneficiaryID");
-      submitForm();
+      review(ben, existing);
+      return;
+    }
+    if (ben.length === 0) {
+      setBen(undefined);
+    } else {
+      setBen({ id: ben, existing });
     }
   };
-  const onBlur = () => setFieldTouched("beneficiaryID");
+
+  const onSubmit = () => {
+    review(ben.id, ben.existing);
+  };
+
+  let submitText = t("Submit");
+  if (ben?.existing !== undefined) {
+    submitText = ben?.existing ? t("View") : t("Create");
+  }
+
   const label = (
     <span>
       <Hint
@@ -58,15 +56,12 @@ const InnerForm = (props: FormikProps<IFormOutput> & IFormProps) => {
       {t("New or Existing Beneficiary")}
     </span>
   );
-  let submitText = t("Submit");
-  if (values.existing !== undefined) {
-    submitText = values.existing ? t("View") : t("Create");
-  }
+
   return (
-    <Form className="screen" onSubmit={submitForm}>
+    <Form className="screen" onSubmit={onSubmit}>
       <FormField
-        error={errors.beneficiaryID as string}
-        touched={touched.beneficiaryID}
+        error={!ben ? t("Please select a beneficiary") : undefined}
+        touched={touched}
         inputID="rsf-ben"
         required={true}
         label={label}
@@ -74,17 +69,12 @@ const InnerForm = (props: FormikProps<IFormOutput> & IFormProps) => {
         <BeneficiaryInput
           inputID="rsf-ben"
           onChange={onChange}
-          onBlur={onBlur}
+          onBlur={() => setTouched(true)}
           allowUnknown={true}
         />
       </FormField>
       <Form.Group>
-        <Form.Button
-          type="submit"
-          primary={true}
-          disabled={!isValid || isSubmitting}
-          loading={isSubmitting}
-        >
+        <Form.Button type="submit" primary={true} disabled={!ben}>
           {submitText}
         </Form.Button>
       </Form.Group>
@@ -92,42 +82,9 @@ const InnerForm = (props: FormikProps<IFormOutput> & IFormProps) => {
   );
 };
 
-const BeneficairyFormInner = withFormik<IFormProps, IFormOutput>({
-  validate: (values: IFormOutput, p: IFormProps) => {
-    const errors: FormikErrors<IFormOutput> = {};
-    if (!values.beneficiaryID) {
-      errors.beneficiaryID = p.t("Please select a beneficiary");
-    }
-    return errors;
-  },
-  handleSubmit: (
-    v: FormikValues,
-    formikBag: FormikBag<IFormProps, IFormOutput>
-  ): void => {
-    formikBag.setSubmitting(true);
-    formikBag.props.onBeneficiarySelect(v.beneficiaryID, v.existing === false);
-  },
-})(InnerForm);
-
-const BeneficairyForm = withTranslation()(BeneficairyFormInner);
-
-const BeneficiarySelectorInner = (p: IURLConnector) => {
-  const review = (benID: string, newBen: boolean) => {
-    let url = `/beneficiary/${benID}`;
-    if (newBen) {
-      url = url + "/record";
-    }
-    p.setURL(url, `?ben=${benID}`);
-  };
-
-  return <BeneficairyForm onBeneficiarySelect={review} />;
-};
-
 // t('Beneficiary')
-const BeneficiarySelectorPage = PageWrapperHoC(
+export const BeneficiarySelector = PageWrapperHoC(
   "Beneficiary",
   "reviewselector",
-  BeneficiarySelectorInner
+  Inner
 );
-const BeneficiarySelector = UrlHOC(BeneficiarySelectorPage);
-export { BeneficiarySelector };
