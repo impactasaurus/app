@@ -12,12 +12,18 @@
       display: none;
     }
 
-    .results .category {
-      background-color: @offWhite;
-      .name {
-        padding: 0.4em 0;
-        margin-bottom: 0;
-        color: @text;
+    .results {
+      .category {
+        background-color: @offWhite;
+        .name {
+          padding: 0.4em 0;
+          margin-bottom: 0;
+          color: @text;
+        }
+      }
+
+      .message.empty .header {
+        font-weight: normal;
       }
     }
   }

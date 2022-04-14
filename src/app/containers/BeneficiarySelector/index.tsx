@@ -70,7 +70,6 @@ const Inner = () => {
           inputID="rsf-ben"
           onChange={onChange}
           onBlur={() => setTouched(true)}
-          allowUnknown={true}
         />
       </FormField>
       <Form.Group>

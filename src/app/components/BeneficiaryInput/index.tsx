@@ -22,7 +22,6 @@ interface IProps {
   ) => void;
   onBlur?: (ben: string) => void;
   onFocus?: () => void;
-  allowUnknown?: boolean; // defaults to false
   inputID?: string;
 
   bens?: IBeneficiariesResult;
@@ -38,6 +37,8 @@ interface ICategorisedSearchResult {
   results: ISearchResult[];
 }
 
+type SearchResults = ISearchResult[] | Record<string, ICategorisedSearchResult>;
+
 const newBeneficiaryResult = (
   ben: string,
   t: (s: string, p: Record<string, string>) => string
@@ -46,10 +47,7 @@ const newBeneficiaryResult = (
   description: t(`Create {name}'s first record`, { name: ben }),
 });
 
-const getZeroStateResults = (
-  r: IGetRecentMeetings
-): Record<string, ICategorisedSearchResult> | undefined => {
-  const results: Record<string, ICategorisedSearchResult> = {};
+const getZeroStateResults = (r: IGetRecentMeetings): SearchResults => {
   if (
     !r.error &&
     !r.loading &&
@@ -62,20 +60,20 @@ const getZeroStateResults = (
         .reduce<string[]>((bens, b) => {
           return bens.indexOf(b) === -1 ? bens.concat(b) : bens;
         }, []);
-      results["recent"] = {
-        name: "Recent Activity",
-        results: recentBeneficiaries.map((b) => ({ title: b })),
+      return {
+        recent: {
+          name: "Recent Activity",
+          results: recentBeneficiaries.map((b) => ({ title: b })),
+        },
       };
     }
   }
-  return Object.keys(results).length === 0 ? undefined : results;
+  return [];
 };
 
 const BeneficiaryInputInner = (p: IProps) => {
   const [benID, setBenID] = useState<string>(undefined);
-  const [searchResults, setSearchResults] = useState<
-    ISearchResult[] | Record<string, ICategorisedSearchResult>
-  >([]);
+  const [searchResults, setSearchResults] = useState<SearchResults>([]);
   const [search, setSearch] = useState<string>("");
   const { t } = useTranslation();
   const zeroState = useMemo(() => getZeroStateResults(p.recent), [p.recent]);
@@ -87,11 +85,7 @@ const BeneficiaryInputInner = (p: IProps) => {
     }
 
     if (!p.bens.getBeneficiaries) {
-      const results = [];
-      if (p.allowUnknown === true) {
-        results.push(newBeneficiaryResult(search, t));
-      }
-      setSearchResults(results);
+      setSearchResults([newBeneficiaryResult(search, t)]);
       return;
     }
 
@@ -104,12 +98,12 @@ const BeneficiaryInputInner = (p: IProps) => {
     }));
 
     const exactMatch = p.bens.getBeneficiaries.find((b) => b === search);
-    if (exactMatch === undefined && p.allowUnknown === true) {
+    if (exactMatch === undefined) {
       searchResults.push(newBeneficiaryResult(search, t));
     }
 
     setSearchResults(searchResults);
-  }, [search, zeroState, p.bens, p.allowUnknown]);
+  }, [search, zeroState, p.bens]);
 
   const onChange = (benID: string, selected: boolean) => {
     setBenID(benID);
@@ -138,6 +132,22 @@ const BeneficiaryInputInner = (p: IProps) => {
     onChange(value, false);
   };
 
+  const noResultMessage = (): string => {
+    // no results only happen in the zero state
+    if (p.recent.error) {
+      return t("Failed to load {entity}", {
+        entity: t("beneficiaries with recent activity"),
+      });
+    }
+    if (p.recent.loading) {
+      return t("Loading...");
+    }
+    // this will be for new organisations without any previous records
+    return t(
+      "No need to tell us your beneficiary's life story, just provide an ID so we can identify them in future"
+    );
+  };
+
   return (
     <div className="beneficiary-input">
       <Search
@@ -150,12 +160,12 @@ const BeneficiaryInputInner = (p: IProps) => {
         icon={undefined}
         fluid={true}
         showNoResults={true}
-        noResultsMessage={t("Unknown beneficiary")}
+        noResultsMessage={noResultMessage()}
         input={
           <Input type="text" placeholder={t("Beneficiary")} icon={false} />
         }
         id={p.inputID}
-        minCharacters={zeroState === undefined ? 1 : 0}
+        minCharacters={0}
         categoryLayoutRenderer={categoryLayoutRenderer}
         categoryRenderer={categoryRenderer}
         resultRenderer={resultRenderer}
