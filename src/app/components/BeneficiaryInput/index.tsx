@@ -12,11 +12,14 @@ import {
   categoryRenderer,
   resultRenderer,
 } from "./renderers";
-import { useNonInitialEffect } from "helpers/hooks/useNonInitialEffect";
 import { getRecentMeetings, IGetRecentMeetings } from "apollo/modules/meetings";
 
 interface IProps {
-  onChange?: (ben: string, existing: boolean | undefined) => void;
+  onChange: (
+    ben: string,
+    existing: boolean | undefined,
+    selected: boolean
+  ) => void;
   onBlur?: (ben: string) => void;
   onFocus?: () => void;
   allowUnknown?: boolean; // defaults to false
@@ -77,21 +80,6 @@ const BeneficiaryInputInner = (p: IProps) => {
   const { t } = useTranslation();
   const zeroState = useMemo(() => getZeroStateResults(p.recent), [p.recent]);
 
-  useNonInitialEffect(() => {
-    onChange(search);
-  }, [search]);
-
-  useNonInitialEffect(() => {
-    if (p.onChange) {
-      let existingBen = false;
-      try {
-        existingBen =
-          p.bens.getBeneficiaries.find((b) => b === benID) !== undefined;
-      } catch {}
-      p.onChange(benID, existingBen);
-    }
-  }, [benID]);
-
   useEffect(() => {
     if (search.length === 0) {
       setSearchResults(zeroState);
@@ -123,15 +111,20 @@ const BeneficiaryInputInner = (p: IProps) => {
     setSearchResults(searchResults);
   }, [search, zeroState, p.bens, p.allowUnknown]);
 
-  const onChange = (benID) => {
+  const onChange = (benID: string, selected: boolean) => {
     setBenID(benID);
+    if (p.onChange) {
+      let existingBen = false;
+      try {
+        existingBen =
+          p.bens.getBeneficiaries.find((b) => b === benID) !== undefined;
+      } catch {}
+      p.onChange(benID, existingBen, selected);
+    }
   };
 
   const onSearchResultSelect = (_, data: SearchResultData) => {
-    onChange(data.result.title);
-    if (p.onBlur) {
-      p.onBlur(data.result.title);
-    }
+    onChange(data.result.title, true);
   };
 
   const onBlur = () => {
@@ -142,6 +135,7 @@ const BeneficiaryInputInner = (p: IProps) => {
 
   const handleSearchChange = (_, { value }) => {
     setSearch(value);
+    onChange(value, false);
   };
 
   return (

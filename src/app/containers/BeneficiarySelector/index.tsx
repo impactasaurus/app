@@ -35,9 +35,17 @@ const InnerForm = (props: FormikProps<IFormOutput> & IFormProps) => {
     values,
     t,
   } = props;
-  const onChange = (benID: string, existing: boolean | undefined) => {
+  const onChange = (
+    benID: string,
+    existing: boolean | undefined,
+    selected: boolean
+  ) => {
     setFieldValue("beneficiaryID", benID);
     setFieldValue("existing", existing);
+    if (selected) {
+      setFieldTouched("beneficiaryID");
+      submitForm();
+    }
   };
   const onBlur = () => setFieldTouched("beneficiaryID");
   const label = (
