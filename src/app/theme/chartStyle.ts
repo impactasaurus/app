@@ -4,7 +4,7 @@ import { fillCanvasWithColour } from "helpers/canvas";
 import distinctColors from "distinct-colors";
 
 Chart.plugins.register({
-  afterRender: (c) => {
+  beforeDraw: (c) => {
     fillCanvasWithColour(c.canvas, "white");
   },
 });
