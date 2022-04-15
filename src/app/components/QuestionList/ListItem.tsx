@@ -1,12 +1,13 @@
 import * as React from "react";
 import { Question } from "models/question";
-import { List, Button, Popup } from "semantic-ui-react";
+import { List } from "semantic-ui-react";
 import { ConfirmButton } from "components/ConfirmButton";
 import { CategoryPill } from "components/CategoryPill";
 import { IOutcomeSet } from "models/outcomeSet";
 import { SortableElement } from "react-sortable-hoc";
 import { Handle } from "./Handle";
 import { useTranslation } from "react-i18next";
+import { TooltipButton } from "components/TooltipButton";
 
 interface IProps {
   questionnaire: IOutcomeSet;
@@ -47,15 +48,6 @@ const ListItemInner = (p: IProps) => {
     deleteQuestion,
     readOnly,
   } = p;
-  const editButton = (
-    <Button
-      onClick={editQuestion}
-      icon="edit"
-      tooltip={t("Edit")}
-      compact={true}
-      size="tiny"
-    />
-  );
   const editable = readOnly !== true;
 
   return (
@@ -73,7 +65,18 @@ const ListItemInner = (p: IProps) => {
           cssClass={categoryPillStyle}
           questionnaire={p.questionnaire}
         />
-        {editable && <Popup trigger={editButton} content={t("Edit")} />}
+        {editable && (
+          <TooltipButton
+            buttonProps={{
+              onClick: editQuestion,
+              icon: "edit",
+              tooltip: t("Edit"),
+              compact: true,
+              size: "tiny",
+            }}
+            tooltipContent={t("Edit")}
+          />
+        )}
         {editable && (
           <ConfirmButton
             onConfirm={deleteQuestion}

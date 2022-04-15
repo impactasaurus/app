@@ -8,6 +8,7 @@ import { ActivityFeed } from "components/ActivityFeed";
 import "./style.less";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { getRecentMeetings, IGetRecentMeetings } from "apollo/modules/meetings";
+import { TooltipButton } from "components/TooltipButton";
 
 interface IProps extends IURLConnector {
   data?: IGetRecentMeetings;
@@ -33,11 +34,14 @@ const HomeInner = (p: IProps): JSX.Element => {
             onClick={newRecord}
           />
           <Responsive
-            as={Button}
+            as={TooltipButton}
             maxWidth={619}
-            icon="plus"
-            primary={true}
-            onClick={newRecord}
+            buttonProps={{
+              icon: "plus",
+              primary: true,
+              onClick: newRecord,
+            }}
+            tooltipContent={t("New Record")}
           />
         </span>
         <OnboardingChecklist

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, Popup } from "semantic-ui-react";
+import { Button } from "semantic-ui-react";
 import "./style.less";
 import { bindActionCreators } from "redux";
 import { setPref, SetPrefFunc } from "redux/modules/pref";
@@ -16,6 +16,7 @@ import { isNullOrUndefined } from "util";
 import ReactGA from "react-ga";
 import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { TooltipButton } from "components/TooltipButton";
 
 export const pageRegex =
   /(\/beneficiary\/[^/]*\/journey|\/beneficiary\/[^/]*$|\/beneficiary\/[^/]*\/$|\/report\/service\/|\/report\/delta\/)/;
@@ -151,19 +152,22 @@ const VizControlPanelInner = (p: IProps) => {
     const cpItems: JSX.Element[] = [];
     if (!isNullOrUndefined(p.export)) {
       cpItems.push(
-        <Popup
+        <TooltipButton
           key="excel"
-          trigger={<Button icon="download" onClick={p.export} />}
-          content={t("Export data")}
+          buttonProps={{
+            icon: "download",
+            onClick: p.export,
+          }}
+          tooltipContent={t("Export data")}
         />
       );
     }
     if (p.allowCanvasSnapshot === true) {
       cpItems.push(
-        <Popup
+        <TooltipButton
           key="image"
-          trigger={<Button icon="image outline" onClick={canvasSnapshot} />}
-          content={t("Download image")}
+          buttonProps={{ icon: "image outline", onClick: canvasSnapshot }}
+          tooltipContent={t("Download image")}
         />
       );
     }
