@@ -20,6 +20,7 @@ import {
   WhatNextAfterQuestionnaireTour,
 } from "components/TourQuestionnaires";
 import "./style.less";
+import { TooltipButton } from "components/TooltipButton";
 
 interface IProps extends IOutcomeMutation, IURLConnector {
   data: IOutcomeResult;
@@ -65,6 +66,7 @@ const SettingQuestionsInner = (p: IProps): JSX.Element => {
             }
           )}
           onConfirm={deleteQS(os.id)}
+          tooltip={t("Delete")}
         >
           <Icon name="delete" />
         </ConfirmButton>
@@ -91,12 +93,15 @@ const SettingQuestionsInner = (p: IProps): JSX.Element => {
           id={NewQuestionnaireButtonID}
         />
         <Responsive
-          as={Button}
+          as={TooltipButton}
           maxWidth={1199}
-          icon="plus"
-          primary={true}
-          onClick={newClicked}
-          id={NewQuestionnaireButtonID}
+          buttonProps={{
+            icon: "plus",
+            primary: true,
+            onClick: newClicked,
+            id: NewQuestionnaireButtonID,
+          }}
+          tooltipContent={t("New Questionnaire")}
         />
       </span>
       <h1 key="title">{t("Questionnaires")}</h1>

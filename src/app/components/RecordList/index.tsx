@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, Icon, Popup, Button } from "semantic-ui-react";
+import { Table, Icon, Popup } from "semantic-ui-react";
 import { IMeeting, sortMeetingsByConducted } from "../../models/meeting";
 import { renderArrayForArray } from "../../helpers/react";
 import { IURLConnector, UrlHOC } from "redux/modules/url";
@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { Tags } from "../Tag";
 import { useTranslation } from "react-i18next";
 import { ISODateString } from "components/Moment";
+import { TooltipButton } from "components/TooltipButton";
 import "./style.less";
 
 interface IProp extends IURLConnector, IDeleteMeetingMutation {
@@ -54,37 +55,41 @@ const RecordListInner = (p: IProp) => {
       />
     );
     actions.push(
-      <Popup
+      <TooltipButton
         key="edit"
-        trigger={
-          <Button onClick={edit(r)} icon="edit" compact={true} size="tiny" />
-        }
-        content={t("Edit")}
+        buttonProps={{
+          onClick: edit(r),
+          icon: "edit",
+          compact: true,
+          size: "tiny",
+        }}
+        tooltipContent={t("Edit")}
       />
     );
     if (r.incomplete) {
       actions.push(
-        <Popup
+        <TooltipButton
           key="continue"
-          trigger={
-            <Button
-              onClick={resume(r)}
-              icon="arrow right"
-              compact={true}
-              size="tiny"
-            />
-          }
-          content={t("Continue")}
+          buttonProps={{
+            onClick: resume(r),
+            icon: "arrow right",
+            compact: true,
+            size: "tiny",
+          }}
+          tooltipContent={t("Continue")}
         />
       );
     } else {
       actions.push(
-        <Popup
+        <TooltipButton
           key="view"
-          trigger={
-            <Button onClick={view(r)} icon="eye" compact={true} size="tiny" />
-          }
-          content={t("View")}
+          buttonProps={{
+            onClick: view(r),
+            icon: "eye",
+            compact: true,
+            size: "tiny",
+          }}
+          tooltipContent={t("View")}
         />
       );
     }

@@ -4,6 +4,7 @@ import { OrganisationUsers } from "components/OrganisationUsers";
 import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
 import { Button, Responsive } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
+import { TooltipButton } from "components/TooltipButton";
 
 const UsersInner = (): JSX.Element => {
   const [showInviteLink, setShowInviteLink] = useState(false);
@@ -32,12 +33,15 @@ const UsersInner = (): JSX.Element => {
         loading={showInviteLink}
       />
       <Responsive
-        as={Button}
+        as={TooltipButton}
         maxWidth={619}
-        icon="plus"
-        primary={true}
-        onClick={newClicked}
-        loading={showInviteLink}
+        buttonProps={{
+          icon: "plus",
+          primary: true,
+          onClick: newClicked,
+          loading: showInviteLink,
+        }}
+        tooltipContent={t("Invite User")}
       />
     </span>
   );
