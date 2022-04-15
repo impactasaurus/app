@@ -71,6 +71,7 @@ export const LikertValueInput = (p: IProps): JSX.Element => {
           className="invert"
           icon="exchange"
           disabled={!canEdit}
+          type="button"
         />
         <FormField
           error={errors.rightValue as string}
