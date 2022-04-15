@@ -51,12 +51,6 @@ const SettingsInner = (p: IProps) => {
           {t("Data")}
         </Menu.Item>
         <Menu.Item
-          active={isSelected("/settings/organisation")}
-          onClick={handleClick("/settings/organisation")}
-        >
-          {t("Organisation")}
-        </Menu.Item>
-        <Menu.Item
           active={isSelected("/settings/users")}
           onClick={handleClick("/settings/users")}
         >
@@ -71,10 +65,6 @@ const SettingsInner = (p: IProps) => {
           component={containers.ExportQuestionnaire}
         />
         <Route path={`${match}/data`} component={containers.Data} />
-        <Route
-          path={`${match}/organisation`}
-          component={containers.Organisation}
-        />
         <Route path={`${match}/users`} component={containers.Users} />
       </Switch>
     </div>

@@ -1,1 +1,10 @@
-{}
+{
+  "overrides": [
+    {
+      "files": ["*.overrides", "*.variables"],
+      "options": {
+        "parser": "less"
+      }
+    }
+  ]
+}

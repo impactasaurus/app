@@ -123,7 +123,6 @@ const InnerForm = (
         onChange={onBenChange}
         onBlur={onBenBlur}
         onFocus={onBenFocus}
-        allowUnknown={true}
       />
     </FormField>
   );

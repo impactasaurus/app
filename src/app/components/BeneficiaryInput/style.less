@@ -1,11 +1,30 @@
-.beneficiary-input {
-  display: block;
+@import (reference) "./../../theme/variables.less";
 
-  .ui.search .prompt {
-    border-radius: 4px;
-  }
+#impactasaurus {
+  .beneficiary-input {
+    display: block;
 
-  i {
-    display: none;
+    .ui.search .prompt {
+      border-radius: 4px;
+    }
+
+    i {
+      display: none;
+    }
+
+    .results {
+      .category {
+        background-color: @offWhite;
+        .name {
+          padding: 0.4em 0;
+          margin-bottom: 0;
+          color: @text;
+        }
+      }
+
+      .message.empty .header {
+        font-weight: normal;
+      }
+    }
   }
 }
