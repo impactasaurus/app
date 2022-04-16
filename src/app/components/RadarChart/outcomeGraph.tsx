@@ -1,9 +1,14 @@
 import { SessionsConverter } from "./sessionsConverter";
 import { OutcomeGraphData } from "./index";
 import { getChartJSTypographyStyle } from "theme/chartStyle";
+import { ChartConfiguration } from "chart.js";
 const sessionsConverter = SessionsConverter();
 
-export function getConfig(data: OutcomeGraphData, min, max) {
+export function getConfig(
+  data: OutcomeGraphData,
+  min: number,
+  max: number
+): ChartConfiguration {
   return {
     type: "radar",
     data: sessionsConverter.getChartJSConvertedData(data),
@@ -23,6 +28,7 @@ export function getConfig(data: OutcomeGraphData, min, max) {
         enabled: true,
       },
       aspectRatio: 1,
+      maintainAspectRatio: false, // allows us to support a max height
     },
   };
 }

@@ -19,6 +19,11 @@ export enum SeriesType {
   INDEPENDENT = 2,
 }
 
+export type ColorSchemeGetter = (
+  noSeries: number,
+  seriesType: SeriesType
+) => string | string[];
+
 export const getColorScheme = (
   noSeries: number,
   seriesType: SeriesType

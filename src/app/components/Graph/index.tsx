@@ -2,6 +2,7 @@ import React from "react";
 import { GraphData, getMaximumNumberOfPointsPerSeries } from "models/graph";
 import { Message } from "semantic-ui-react";
 import { Chart } from "components/Chart";
+import { ChartConfiguration, ChartDataSets } from "chart.js";
 import { useTranslation } from "react-i18next";
 
 interface IProps {
@@ -11,7 +12,7 @@ interface IProps {
 const Graph = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
 
-  const prepareDataset = (data: GraphData): any => {
+  const prepareDataset = (data: GraphData): ChartDataSets[] => {
     return data.series.map((x) => {
       return {
         label: x.label,
@@ -23,7 +24,7 @@ const Graph = (p: IProps): JSX.Element => {
     });
   };
 
-  const chartConfig = (data: GraphData) => {
+  const chartConfig = (data: GraphData): ChartConfiguration => {
     return {
       type: "line",
       data: {

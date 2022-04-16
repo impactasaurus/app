@@ -10,6 +10,7 @@ import {
 } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
 import "./style.less";
+import { ChartConfiguration, ChartData } from "chart.js";
 
 export interface IAnswerDistributionSeries {
   name: string;
@@ -28,7 +29,7 @@ export interface IProp {
   data: IAnswerDistribution[];
 }
 
-const prepareDataset = (data: IAnswerDistribution): any => {
+const prepareDataset = (data: IAnswerDistribution): ChartData => {
   const seriesStyler = (x: IAnswerDistributionSeries) => ({
     label: x.name,
     data: x.values.reduce((arr, v) => {
@@ -53,7 +54,7 @@ const prepareDataset = (data: IAnswerDistribution): any => {
   };
 };
 
-const chartConfig = (data: IAnswerDistribution) => {
+const chartConfig = (data: IAnswerDistribution): ChartConfiguration => {
   return {
     type: "bar",
     data: prepareDataset(data),
