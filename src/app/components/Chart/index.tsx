@@ -1,6 +1,10 @@
-import * as React from "react";
-import { Chart as ChartJS } from "chart.js";
-import { getColorScheme, SeriesType } from "theme/chartStyle";
+import React, { useEffect, useRef, useState } from "react";
+import Chart, { ChartConfiguration } from "chart.js";
+import {
+  ColorSchemeGetter,
+  getColorScheme,
+  SeriesType,
+} from "theme/chartStyle";
 import { loadBrandChartColorScheme, shouldLoadBranding } from "theme/branding";
 
 let count = 0;
@@ -10,90 +14,89 @@ interface IStyleOptions {
   seriesType?: SeriesType;
 }
 
+interface ILayoutOptions {
+  height?: string; // css format expected
+}
+
 interface IProps {
-  config: any;
+  config: ChartConfiguration;
   style?: IStyleOptions;
+  layout?: ILayoutOptions;
 }
 
-interface IState {
-  style: (noSeries: number, seriesType: SeriesType) => string | string[];
-}
+const applyStyling = (
+  config: ChartConfiguration,
+  colorScheme: ColorSchemeGetter,
+  style?: IStyleOptions
+): ChartConfiguration => {
+  const out = { ...config };
+  if (!out.options.plugins) {
+    out.options.plugins = {};
+  }
+  out.options.plugins.colorschemes = {
+    scheme: colorScheme(
+      config.data.datasets.length,
+      style.seriesType || SeriesType.INDEPENDENT
+    ),
+    fillAlpha: style.fillAlpha || 1,
+  };
+  return out;
+};
 
-class Chart extends React.Component<IProps, IState> {
-  private canvasID: string;
-  private chart;
+const drawChart = (
+  canvasID: string,
+  config: ChartConfiguration,
+  colorScheme: ColorSchemeGetter,
+  style?: IStyleOptions
+) => {
+  const canvasElement = (
+    document.getElementById(canvasID) as HTMLCanvasElement
+  ).getContext("2d");
+  if (canvasElement === null) {
+    throw new Error("The canvas element specified does not exist!");
+  }
+  return new Chart(canvasElement, applyStyling(config, colorScheme, style));
+};
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      style: getColorScheme,
-    };
+const C = (p: IProps): JSX.Element => {
+  const [colorScheme, setColorScheme] = useState<ColorSchemeGetter>(
+    () => getColorScheme
+  );
+  const chart = useRef<Chart | undefined>();
+  const canvasID = useRef(`chart-${count++}`);
+
+  useEffect(() => {
     if (shouldLoadBranding()) {
       loadBrandChartColorScheme()
         .then((fn) => {
-          this.setState({ style: fn });
+          setColorScheme(() => fn);
         })
         .catch((err) => {
           console.error(err);
         });
     }
-    this.canvasID = `chart-${count++}`;
-    this.renderDOM = this.renderDOM.bind(this);
-    this.applyStyling = this.applyStyling.bind(this);
-  }
+  }, []);
 
-  public componentDidMount() {
-    this.renderDOM();
-  }
-
-  public componentDidUpdate() {
-    this.renderDOM();
-  }
-
-  private renderDOM() {
-    if (this.chart !== undefined) {
-      this.chart.destroy();
-      this.chart = undefined;
+  useEffect(() => {
+    if (chart.current) {
+      chart.current.destroy();
     }
-    this.chart = this.drawChart(
-      this.canvasID,
-      this.props.config,
-      this.props.style || {}
+    chart.current = drawChart(
+      canvasID.current,
+      p.config,
+      colorScheme,
+      p.style || {}
     );
-  }
+  }, [p.config, p.style, colorScheme, canvasID]);
 
-  private applyStyling(config, style?: IStyleOptions) {
-    const out = { ...config };
-    if (!out.options.plugins) {
-      out.options.plugins = {};
-    }
-    out.options.plugins.colorschemes = {
-      scheme: this.state.style(
-        config.data.datasets.length,
-        style.seriesType || SeriesType.INDEPENDENT
-      ),
-      fillAlpha: style.fillAlpha || 1,
-    };
-    return out;
-  }
+  return (
+    <div
+      className="chart"
+      style={{ height: p?.layout?.height, position: "relative" }}
+    >
+      <canvas id={canvasID.current} />
+    </div>
+  );
+};
 
-  private drawChart(canvasID: string, config, style) {
-    const canvasElement = (
-      document.getElementById(canvasID) as HTMLCanvasElement
-    ).getContext("2d");
-    if (canvasElement === null) {
-      throw new Error("The canvas element specified does not exist!");
-    }
-    return new ChartJS(canvasElement, this.applyStyling(config, style));
-  }
-
-  public render() {
-    return (
-      <div className="chart">
-        <canvas id={this.canvasID} />
-      </div>
-    );
-  }
-}
-
-export { Chart };
+export { C as Chart };

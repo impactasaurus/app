@@ -3,6 +3,7 @@ import { BarChartData } from "models/bar";
 import { precisionRound } from "helpers/numbers";
 import { Chart } from "components/Chart";
 import { SeriesType } from "theme/chartStyle";
+import { ChartConfiguration, ChartData, ChartDataSets } from "chart.js";
 
 interface IProps {
   data: BarChartData;
@@ -31,8 +32,8 @@ function getAxisTitle(original: string): string {
   return original;
 }
 
-const prepareDataset = (data: BarChartData): any => {
-  const seriesStyler = (x) => {
+const prepareDataset = (data: BarChartData): ChartData => {
+  const seriesStyler = (x): ChartDataSets => {
     return {
       label: x.label,
       data: x.data,
@@ -47,7 +48,7 @@ const prepareDataset = (data: BarChartData): any => {
   };
 };
 
-const chartConfig = (p: IProps) => {
+const chartConfig = (p: IProps): ChartConfiguration => {
   const maxX = maxXValue(p.data);
   return {
     type: "horizontalBar",
@@ -75,7 +76,7 @@ const chartConfig = (p: IProps) => {
               beginAtZero: true,
               max: maxX,
               stepSize: p.showPercentage ? maxX / 5 : undefined,
-              callback: (value) => {
+              callback: (value: number) => {
                 if (!p.showPercentage) {
                   return value;
                 } else {
@@ -95,21 +96,19 @@ const chartConfig = (p: IProps) => {
   };
 };
 
-class StackedBarChart extends React.Component<IProps, any> {
-  public render() {
-    if (this.props.data === undefined || this.props.data.series.length === 0) {
-      return <div />;
-    }
-
-    return (
-      <div className="stacked-bar">
-        <Chart
-          config={chartConfig(this.props)}
-          style={{ fillAlpha: 0.8, seriesType: SeriesType.SCALE }}
-        />
-      </div>
-    );
+const StackedBarChart = (p: IProps): JSX.Element => {
+  if (p.data === undefined || p.data.series.length === 0) {
+    return <div />;
   }
-}
+
+  return (
+    <div className="stacked-bar">
+      <Chart
+        config={chartConfig(p)}
+        style={{ fillAlpha: 0.8, seriesType: SeriesType.SCALE }}
+      />
+    </div>
+  );
+};
 
 export { StackedBarChart };

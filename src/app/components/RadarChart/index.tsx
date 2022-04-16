@@ -111,6 +111,9 @@ const RadarChart = (p: IProp): JSX.Element => {
       style={{
         fillAlpha: 0.07,
       }}
+      layout={{
+        height: "95vh",
+      }}
     />
   );
 };
