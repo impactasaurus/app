@@ -1,17 +1,17 @@
-@import (reference) './../../variables.less';
-@import (reference) './../../typo.less';
+@import (reference) "./../../variables.less";
+@import (reference) "./../../typo.less";
 
 #impactasaurus {
   .ui.form {
     // need to be separate for each prefix to work correctly
     :-ms-input-placeholder {
-        color: @placeholder;
+      color: @placeholder;
     }
     ::-moz-placeholder {
-        color: @placeholder;
+      color: @placeholder;
     }
     ::-webkit-input-placeholder {
-        color: @placeholder;
+      color: @placeholder;
     }
 
     .field {
@@ -49,18 +49,27 @@
       margin: 0px auto;
 
       .fields:last-child {
-          margin-top: 2em
+        margin-top: 2em;
       }
 
       .field {
         text-align: center;
 
         > label {
-          &:extend(h3, #impactasaurus h3);
+          &:extend(h3,
+          #impactasaurus h3);
           margin-top: 25px;
           margin-bottom: 10px;
         }
       }
+    }
+
+    .required.fields:not(.grouped) > .field > label:after,
+    .required.fields.grouped > label:after,
+    .required.field > label:after,
+    .required.fields:not(.grouped) > .field > .checkbox:after,
+    .required.field > .checkbox:after {
+      font-size: 1.3em;
     }
   }
 }
