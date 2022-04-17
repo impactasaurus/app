@@ -37,6 +37,8 @@ interface IProps extends WithTranslation {
   inUse?: boolean;
 }
 
+const QuestionLengthRequiresShort = 30;
+
 const InnerForm = (p: IProps & FormikProps<ILikertQuestionForm>) => {
   const categoryOptions = (p.values as any).categoryOptions;
 
@@ -68,10 +70,10 @@ const InnerForm = (p: IProps & FormikProps<ILikertQuestionForm>) => {
     <span>
       <Hint
         text={p.t(
-          "Shortened form of the question. Used instead of the question, when reviewing data in visualisations and exports"
+          "Used in graphs and exports, instead of the question. This isn't shown to beneficiaries"
         )}
       />
-      {p.t("Shortened Form")}
+      {p.t("Shortened Question")}
     </span>
   );
 
@@ -101,13 +103,14 @@ const InnerForm = (p: IProps & FormikProps<ILikertQuestionForm>) => {
           touched={p.touched.short}
           inputID="lqf-short"
           label={shortenedLabel}
+          required={p.values.question.length > QuestionLengthRequiresShort}
           width={4}
         >
           <Input
             id="lqf-short"
             name="short"
             type="text"
-            placeholder={p.t("Shortened Form")}
+            placeholder={p.t("Shortened Question")}
             value={p.values.short}
             {...standardActions}
           />
@@ -202,6 +205,14 @@ const LikertQuestionFormInner = withFormik<IProps, ILikertQuestionForm>({
       values.question.length === 0
     ) {
       errors.question = t("Please enter a question");
+    }
+    if (
+      values.question.length > QuestionLengthRequiresShort &&
+      (!values.short || values.short.length === 0)
+    ) {
+      errors.short = t(
+        "Please provide a shorter version of your question for use in graphs"
+      );
     }
     if (
       values.leftValue === undefined ||
