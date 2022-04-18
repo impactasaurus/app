@@ -100,7 +100,11 @@ const InnerForm = (p: IProps & FormikProps<ILikertQuestionForm>) => {
         </FormField>
         <FormField
           error={p.errors.short as string}
-          touched={p.touched.short}
+          // because it depends on the length of the question as to whether this is required
+          // show it as red without it having to be touched.
+          // only show the error once it has been touched so it isn't too shouty
+          touched={true}
+          hideErrorMessage={p.touched.short !== true}
           inputID="lqf-short"
           label={shortenedLabel}
           required={p.values.question.length > QuestionLengthRequiresShort}
