@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Icon, Form, SemanticWIDTHS } from "semantic-ui-react";
 import "./style.less";
 
@@ -11,31 +11,29 @@ interface IProps {
   width?: SemanticWIDTHS;
   description?: string;
   id?: string;
+  hideErrorMessage?: boolean;
+  children?: JSX.Element | JSX.Element[];
 }
 
-export class FormField extends React.Component<IProps, any> {
-  public render() {
-    const { error, inputID, label, touched, required, width, description, id } =
-      this.props;
-    const errored = touched && error !== undefined;
-    return (
-      <Form.Field
-        error={errored}
-        required={required}
-        width={width}
-        className="form-field"
-        id={id}
-      >
-        <label htmlFor={inputID}>{label}</label>
-        {description && <span className="description">{description}</span>}
-        {this.props.children}
-        {errored && (
-          <span className="error validation">
-            <Icon name="exclamation" />
-            {error}
-          </span>
-        )}
-      </Form.Field>
-    );
-  }
-}
+export const FormField = (p: IProps): JSX.Element => {
+  const errored = p.touched && p.error !== undefined;
+  return (
+    <Form.Field
+      error={errored}
+      required={p.required}
+      width={p.width}
+      className="form-field"
+      id={p.id}
+    >
+      <label htmlFor={p.inputID}>{p.label}</label>
+      {p.description && <span className="description">{p.description}</span>}
+      {p.children}
+      {errored && p.hideErrorMessage !== true && (
+        <span className="error validation">
+          <Icon name="exclamation" />
+          {p.error}
+        </span>
+      )}
+    </Form.Field>
+  );
+};
