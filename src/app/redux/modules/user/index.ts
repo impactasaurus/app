@@ -1,7 +1,9 @@
 import { Action } from "redux";
+import { useSelector } from "react-redux";
+import { IStore } from "redux/IStore";
+import { useDispatch } from "react-redux";
 
 export const SET_USER_DETAILS = "SET_USER_DETAILS";
-export const SET_LOGIN_STATUS = "SET_LOGIN_STATUS";
 export const REQUEST_LOGOUT = "REQUEST_LOGOUT";
 
 export interface IAction extends Action {
@@ -32,11 +34,6 @@ export function reducer(state: IState = initialState, action: IAction) {
         ...state,
         userID: action.payload.userID,
         beneficiaryUser: action.payload.beneficiaryUser,
-      };
-
-    case SET_LOGIN_STATUS:
-      return {
-        ...state,
         loggedIn: action.payload.loggedIn,
       };
 
@@ -49,33 +46,6 @@ export function reducer(state: IState = initialState, action: IAction) {
     default:
       return state;
   }
-}
-
-export type SetUserDetailsFunc = (
-  userID: string,
-  beneficiaryUser: boolean
-) => void;
-export function setUserDetails(
-  userID: string,
-  beneficiaryUser: boolean
-): IAction {
-  return {
-    type: SET_USER_DETAILS,
-    payload: {
-      userID,
-      beneficiaryUser,
-    },
-  };
-}
-
-export type SetLoggedInStatusFunc = (loggedIn: boolean) => void;
-export function setLoggedInStatus(loggedIn: boolean): IAction {
-  return {
-    type: SET_LOGIN_STATUS,
-    payload: {
-      loggedIn,
-    },
-  };
 }
 
 export type RequestLogoutFunc = (redirect: string) => void;
@@ -103,3 +73,30 @@ export function isBeneficiaryUser(state: IState): boolean | undefined {
 export function isLogoutRequested(state: IState): string | undefined {
   return state.logOutRequest;
 }
+
+export const useUser = (): IState => {
+  return useSelector((store: IStore) => store.user);
+};
+
+export const useSetUser = (): ((
+  loggedIn: boolean,
+  userID: string | null,
+  beneficiaryUser: boolean
+) => void) => {
+  const dispatch = useDispatch();
+  const setUser = (
+    loggedIn: boolean,
+    userID: string | null,
+    beneficiaryUser: boolean
+  ): void => {
+    dispatch({
+      type: SET_USER_DETAILS,
+      payload: {
+        loggedIn,
+        userID,
+        beneficiaryUser,
+      },
+    });
+  };
+  return setUser;
+};

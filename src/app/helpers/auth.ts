@@ -178,3 +178,22 @@ export function getLogoutOptions(redirect?: string): LogoutOptions {
     clientID: appConfig.app.auth.clientID,
   };
 }
+
+export const getTimeToExpiry = (): number => {
+  const expiry = getExpiryDate();
+  if (expiry === null) {
+    return -1;
+  }
+  return expiry.getTime() - Date.now();
+};
+
+export const isStoredJWTValid = (): boolean => {
+  const token = getToken();
+  if (token === null || token === undefined) {
+    return false;
+  }
+  if (getTimeToExpiry() < 0) {
+    return false;
+  }
+  return true;
+};
