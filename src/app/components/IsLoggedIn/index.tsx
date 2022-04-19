@@ -1,127 +1,59 @@
-import * as React from "react";
+import React, { useEffect, useRef } from "react";
 import {
-  getToken,
-  getExpiryDate,
-  getUserEmail,
   getUserID,
   saveAuth,
   isBeneficiaryUser,
-  getUserName,
   getOrganisation,
-  getCreatedDate,
   clearAuth,
   getLogoutOptions,
   getWebAuth,
+  getTimeToExpiry,
+  isStoredJWTValid,
 } from "helpers/auth";
-import { setURL, IURLConnector } from "redux/modules/url";
-import { bindActionCreators } from "redux";
-import { RouterState } from "connected-react-router";
-import { IStore } from "redux/IStore";
-import {
-  setUserDetails,
-  setLoggedInStatus,
-  SetUserDetailsFunc,
-  SetLoggedInStatusFunc,
-  getUserID as getUserIDFromStore,
-  isUserLoggedIn,
-  isLogoutRequested,
-} from "redux/modules/user";
+import { useNavigator } from "redux/modules/url";
+import { useUser, useSetUser } from "redux/modules/user";
 import { WebAuth } from "auth0-js";
-
-const { connect } = require("react-redux");
+import ReactGA from "react-ga";
+import { useLocation } from "react-router";
 const config = require("../../../../config/main").app.auth;
-const ReactGA = require("react-ga");
 
-interface IProps extends IURLConnector {
-  routeState?: RouterState;
-  setUserDetails?: SetUserDetailsFunc;
-  setLoggedInStatus?: SetLoggedInStatusFunc;
-  lastUserID?: string;
-  isLoggedIn?: boolean;
-  logoutRequest?: string;
+interface IProps {
+  children?: JSX.Element | JSX.Element[];
 }
 
-interface IState {
-  webAuth: WebAuth;
-}
-
-@connect(
-  (state: IStore) => ({
-    routeState: state.router,
-    lastUserID: getUserIDFromStore(state.user),
-    isLoggedIn: isUserLoggedIn(state.user),
-    logoutRequest: isLogoutRequested(state.user),
-  }),
-  (dispatch) => ({
-    setURL: bindActionCreators(setURL, dispatch),
-    setUserDetails: bindActionCreators(setUserDetails, dispatch),
-    setLoggedInStatus: bindActionCreators(setLoggedInStatus, dispatch),
-  })
-)
-export class IsLoggedIn extends React.Component<IProps, IState> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      webAuth: getWebAuth(),
-    };
-    this.setup = this.setup.bind(this);
-    this.sendToLogin = this.sendToLogin.bind(this);
-    this.isStoredJWTValid = this.isStoredJWTValid.bind(this);
-    this.setupRefreshTrigger = this.setupRefreshTrigger.bind(this);
-    this.trackUser = this.trackUser.bind(this);
-    this.isPublicPage = this.isPublicPage.bind(this);
-    this.refreshToken = this.refreshToken.bind(this);
-  }
-
-  public componentDidMount() {
-    this.setup();
-  }
-
-  public componentDidUpdate() {
-    this.setup();
-  }
-
-  private isPublicPage(): boolean {
-    for (const p of config.publicPages) {
-      if (p.test(this.props.routeState.location.pathname)) {
-        return true;
-      }
+const isPublicPage = (path: string): boolean => {
+  for (const p of config.publicPages) {
+    if (p.test(path)) {
+      return true;
     }
-    return false;
   }
+  return false;
+};
 
-  private sendToLogin() {
-    const redirectURL =
-      this.props.routeState.location.pathname +
-      this.props.routeState.location.search;
-    this.props.setURL("/login", "?redirect=" + encodeURIComponent(redirectURL));
-  }
+export const IsLoggedIn = (p: IProps): JSX.Element => {
+  const webAuth = useRef<WebAuth>(getWebAuth());
+  const timer = useRef<number>();
+  const setURL = useNavigator();
+  const stateUser = useUser();
+  const location = useLocation();
+  const setUser = useSetUser();
 
-  private sendToNoOrgPage() {
-    this.props.setURL("/no-org");
-  }
+  useEffect(() => setup(), [stateUser, location]);
 
-  private getTimeToExpiry(): number {
-    const expiry = getExpiryDate();
-    if (expiry === null) {
-      return -1;
-    }
-    return expiry.getTime() - Date.now();
-  }
+  const sendToLogin = (): void => {
+    const redirectURL = location.pathname + location.search;
+    setURL(
+      "/login",
+      new URLSearchParams({ redirect: encodeURIComponent(redirectURL) })
+    );
+  };
 
-  private isStoredJWTValid() {
-    const token = getToken();
-    if (token === null || token === undefined) {
-      return false;
-    }
-    if (this.getTimeToExpiry() < 0) {
-      return false;
-    }
-    return true;
-  }
+  const sendToNoOrgPage = (): void => {
+    setURL("/no-org");
+  };
 
-  private refreshToken() {
-    this.state.webAuth.checkSession({}, (err, authResult) => {
+  const refreshToken = () => {
+    webAuth.current.checkSession({}, (err, authResult) => {
       if (err !== undefined && err !== null) {
         console.error(err.description);
         ReactGA.event({
@@ -136,78 +68,48 @@ export class IsLoggedIn extends React.Component<IProps, IState> {
         action: "success",
       });
       saveAuth(authResult.idToken);
-      this.setup();
+      setup();
     });
-  }
+  };
 
-  private setupRefreshTrigger() {
+  const setupRefreshTrigger = () => {
     const msBefore = 240000;
-    const setTimer = (timerName: string, onTrigger: () => void) => {
-      if (this[timerName] !== undefined) {
-        clearTimeout(this[timerName]);
+    const setTimer = (onTrigger: () => void) => {
+      if (timer.current !== undefined) {
+        clearTimeout(timer.current);
       }
-      const delta = this.getTimeToExpiry();
+      const delta = getTimeToExpiry();
       if (delta < msBefore) {
         onTrigger();
         return;
       }
       const waitFor = delta - msBefore;
-      this[timerName] = setTimeout(onTrigger, waitFor);
+      timer.current = setTimeout(onTrigger, waitFor);
     };
-    setTimer("refreshTimer", this.refreshToken);
-  }
+    setTimer(refreshToken);
+  };
 
-  private trackUser() {
+  const setup = () => {
+    const isLoggedIn = isStoredJWTValid();
     const userID = getUserID();
-    if (userID && userID !== this.props.lastUserID) {
-      const ben = isBeneficiaryUser();
-      const org = getOrganisation();
-      ReactGA.set({
-        userId: userID,
-        dimension1: org,
-        dimension2: ben ? "true" : "false",
-      });
-      this.props.setUserDetails(userID, ben);
-
-      const delighted = (window as any).delighted;
-      if (!ben && delighted !== undefined && delighted.survey !== undefined) {
-        delighted.survey({
-          email: getUserEmail(),
-          name: getUserName(),
-          createdAt: getCreatedDate(),
-          properties: {
-            org,
-          },
-        });
-      }
+    const ben = isBeneficiaryUser();
+    const org = getOrganisation();
+    if (stateUser.loggedIn !== isLoggedIn || stateUser.userID !== userID) {
+      setUser(isLoggedIn, userID, ben);
     }
-  }
-
-  private setup() {
-    this.trackUser();
-    const isLoggedIn = this.isStoredJWTValid();
-    if (this.props.isLoggedIn !== isLoggedIn) {
-      this.props.setLoggedInStatus(isLoggedIn);
-      const org = getOrganisation();
-      const ben = isBeneficiaryUser();
-      if (isLoggedIn && !org && !ben && !this.isPublicPage()) {
-        this.sendToNoOrgPage();
-      }
-    }
-    if (isLoggedIn === false) {
-      if (this.isPublicPage() === false) {
-        this.sendToLogin();
-      }
+    if (isLoggedIn === false && isPublicPage(location.pathname) === false) {
+      sendToLogin();
       return;
     }
-    this.setupRefreshTrigger();
-    if (this.props.logoutRequest !== undefined) {
-      clearAuth();
-      this.state.webAuth.logout(getLogoutOptions(this.props.logoutRequest));
+    if (isLoggedIn && !org && !ben && !isPublicPage(location.pathname)) {
+      sendToNoOrgPage();
     }
-  }
+    setupRefreshTrigger();
+    if (stateUser.logOutRequest !== undefined) {
+      clearAuth();
+      webAuth.current.logout(getLogoutOptions(stateUser.logOutRequest));
+    }
+  };
 
-  public render() {
-    return <div>{this.props.isLoggedIn && this.props.children}</div>;
-  }
-}
+  return <div>{stateUser.loggedIn && p.children}</div>;
+};

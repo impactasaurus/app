@@ -1,29 +1,47 @@
 import React, { useEffect } from "react";
-import { IStore } from "redux/IStore";
 import { IRecordUsage, recordUsage } from "apollo/modules/user";
-import { isUserLoggedIn, isBeneficiaryUser } from "redux/modules/user";
-import { connect } from "react-redux";
+import { useUser } from "redux/modules/user";
+import {
+  getCreatedDate,
+  getOrganisation,
+  getUserEmail,
+  getUserName,
+} from "helpers/auth";
+import ReactGA from "react-ga";
 
-interface IProps extends IRecordUsage {
-  isLoggedIn: boolean;
-  isBeneficiary: boolean;
-}
+const Inner = (p: IRecordUsage) => {
+  const user = useUser();
 
-const Inner = (p: IProps) => {
   useEffect(() => {
-    if (!p.isLoggedIn || p.isBeneficiary) {
+    if (!user.loggedIn || !user.userID) {
       return;
     }
-    p.recordUsage().catch(console.error);
-  }, [p.isLoggedIn, p.isBeneficiary]);
+
+    const org = getOrganisation();
+    ReactGA.set({
+      userId: user.userID,
+      dimension1: org,
+      dimension2: user.beneficiaryUser ? "true" : "false",
+    });
+
+    if (!user.beneficiaryUser) {
+      p.recordUsage().catch(console.error);
+
+      const delighted = (window as any).delighted;
+      if (delighted && delighted.survey) {
+        delighted.survey({
+          email: getUserEmail(),
+          name: getUserName(),
+          createdAt: getCreatedDate(),
+          properties: {
+            org,
+          },
+        });
+      }
+    }
+  }, [user]);
 
   return <div />;
 };
 
-const storeToProps = (state: IStore) => ({
-  isLoggedIn: isUserLoggedIn(state.user),
-  isBeneficiary: isBeneficiaryUser(state.user),
-});
-
-export const Connected = connect(storeToProps)(Inner);
-export const Tracker = recordUsage(Connected);
+export const Tracker = recordUsage(Inner);
