@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from "react";
-import {
-  saveAuth,
-  isBeneficiaryUser,
-  getBeneficiaryScope,
-  getExpiryDateOfToken,
-} from "helpers/auth";
 import { IURLConnector, UrlHOC } from "redux/modules/url";
 import { getJWT, IJWTResult } from "apollo/modules/jwt";
 import { Message, Loader } from "semantic-ui-react";
 import { Error } from "components/Error";
 import ReactGA from "react-ga";
 import { useTranslation } from "react-i18next";
+import { useSetJWT, useUser } from "redux/modules/user";
 
 interface IProps extends IURLConnector {
   jti: string;
@@ -29,35 +24,38 @@ const JTILoaderInner = (p: IProps) => {
   const [error, setError] = useState(false);
   const [expired, setExpired] = useState(false);
   const { t } = useTranslation();
+  const setJWT = useSetJWT();
+  const user = useUser();
 
-  const performLoginProcess = () => {
-    if (p.data.getJWT === undefined || p.data.getJWT === null) {
+  useEffect(() => {
+    if (!p.data?.getJWT || user.JWT !== p.data?.getJWT) {
       return;
     }
-    const token = p.data.getJWT;
-    const expires = getExpiryDateOfToken(token);
-    if (expires === null || expires < new Date()) {
+    if (user.expiry === null || user.expiry < new Date()) {
       setError(true);
       setExpired(true);
       return;
     }
-    saveAuth(token);
-    if (isBeneficiaryUser() === false) {
+    if (!user.beneficiaryUser) {
       setError(true);
       setExpired(false);
       return;
     }
-    const scope = getBeneficiaryScope();
-    if (scope === null) {
+    if (!user.beneficiaryScope) {
       setError(true);
       setExpired(false);
       return;
     }
     logSuccessfulBenLogin();
-    p.setURL(`/meeting/${scope}`);
-  };
+    p.setURL(`/meeting/${user.beneficiaryScope}`);
+  }, [user]);
 
-  useEffect(performLoginProcess, [p.data.getJWT]);
+  useEffect(() => {
+    if (p.data?.getJWT) {
+      return;
+    }
+    setJWT(p.data.getJWT);
+  }, [p.data.getJWT]);
 
   if (p.data.loading || (p.data.error === undefined && error === false)) {
     return <Loader active={true} inline="centered" />;

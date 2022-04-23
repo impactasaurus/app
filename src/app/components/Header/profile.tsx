@@ -3,7 +3,7 @@ import { Icon, Dropdown, Loader } from "semantic-ui-react";
 import { UserImage } from "./../UserImage";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getUserName, getOrganisation, refreshToken } from "helpers/auth";
+import { refreshToken } from "helpers/auth";
 import {
   IGetOrgsResult,
   getOrganisations,
@@ -11,15 +11,19 @@ import {
   setOrganisation,
   ISetOrganisation,
 } from "apollo/modules/organisation";
+import { useSetJWT, useUser } from "redux/modules/user";
 
 interface IProps extends ISetOrganisation {
   logOut: () => void;
   data?: IGetOrgsResult;
 }
 
-const orgs = (data?: IGetOrgsResult, excludeCurrent = false): IUserOrg[] => {
+const orgs = (
+  activeOrgID: string,
+  data?: IGetOrgsResult,
+  excludeCurrent = false
+): IUserOrg[] => {
   if (data && data.getOrganisations) {
-    const activeOrgID = getOrganisation();
     return data.getOrganisations.filter(
       (o) => !excludeCurrent || o.id !== activeOrgID
     );
@@ -27,10 +31,10 @@ const orgs = (data?: IGetOrgsResult, excludeCurrent = false): IUserOrg[] => {
   return [];
 };
 
-const ActiveOrg = (p: { data?: IGetOrgsResult }) => {
-  const oo = orgs(p.data);
-  const activeOrgID = getOrganisation();
-  const activeOrg = oo.find((o) => o.id === activeOrgID);
+const ActiveOrg = (p: { data?: IGetOrgsResult; org: string }): JSX.Element => {
+  const activeOrg = (p?.data?.getOrganisations || []).find(
+    (o) => o.id === p.org
+  );
   if (activeOrg) {
     return (
       <span className="active-org elipsis-overflow">{activeOrg.name}</span>
@@ -41,7 +45,9 @@ const ActiveOrg = (p: { data?: IGetOrgsResult }) => {
 
 const ProfileMenuInner = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
-  const oo = orgs(p.data, true);
+  const setJWT = useSetJWT();
+  const { name, org } = useUser();
+  const oo = orgs(org, p.data, true);
   const [changingOrg, setChangingOrg] = useState(false);
   const [changingOrgErr, setChangingOrgErr] = useState(false);
   const setActiveOrg = (id: string): (() => void) => {
@@ -51,6 +57,9 @@ const ProfileMenuInner = (p: IProps): JSX.Element => {
       p.setOrganisation(id)
         .then(() => {
           return refreshToken();
+        })
+        .then((token) => {
+          setJWT(token);
         })
         .then(() => {
           // hard refresh to homepage to clear cache and avoid permission issues
@@ -95,10 +104,8 @@ const ProfileMenuInner = (p: IProps): JSX.Element => {
           <div style={{ display: "flex" }}>
             <UserImage />
             <span style={{ display: "flex", flexDirection: "column" }}>
-              <span className="user-name elipsis-overflow">
-                {getUserName()}
-              </span>
-              <ActiveOrg data={p.data} />
+              <span className="user-name elipsis-overflow">{name}</span>
+              <ActiveOrg data={p.data} org={org} />
             </span>
           </div>
         </Dropdown.Item>

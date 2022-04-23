@@ -1,6 +1,6 @@
-import { getOrganisation } from "helpers/auth";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useUser } from "redux/modules/user";
 import { Button, Message } from "semantic-ui-react";
 
 interface IProps {
@@ -11,6 +11,7 @@ interface IProps {
 
 export const AddOrg = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
+  const { org: currentOrg } = useUser();
   const [state, setState] = useState<{
     loading: boolean;
     error: boolean;
@@ -27,7 +28,6 @@ export const AddOrg = (p: IProps): JSX.Element => {
     });
   };
 
-  const currentOrg = getOrganisation();
   if (currentOrg === p.orgID) {
     return (
       <Message warning={true}>

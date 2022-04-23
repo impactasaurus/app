@@ -21,7 +21,6 @@ import {
   initialState,
 } from "./state-machine";
 import { journey } from "helpers/url";
-import { isBeneficiaryUser } from "helpers/auth";
 import { Thanks } from "./thanks";
 import { EmptyQuestionnaire } from "containers/Meeting/empty";
 import { WithTranslation, withTranslation } from "react-i18next";
@@ -29,6 +28,7 @@ import { connect } from "react-redux";
 import ReactGA from "react-ga";
 import "rc-slider/assets/index.css";
 import "./style.less";
+import { IStore } from "redux/IStore";
 
 interface IProps extends IURLConnector, WithTranslation {
   data: IMeetingResult;
@@ -40,6 +40,7 @@ interface IProps extends IURLConnector, WithTranslation {
   questions?: IQuestion[];
   answers?: IAnswer[];
   questionnaire?: IOutcomeSet;
+  isBeneficiary: boolean;
 }
 
 interface IState {
@@ -91,7 +92,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       category: "assessment",
       action: "completed",
     });
-    if (isBeneficiaryUser()) {
+    if (this.props.isBeneficiary) {
       this.setMeetingState({
         screen: Screen.THANKS,
         qIdx: this.currentQuestionIdx(),
@@ -250,7 +251,7 @@ class MeetingInner extends React.Component<IProps, IState> {
       return wrapper(
         <EmptyQuestionnaire
           questionnaireID={this.props.questionnaire.id}
-          isBeneficiary={isBeneficiaryUser()}
+          isBeneficiary={this.props.isBeneficiary}
         />
       );
     }
@@ -273,9 +274,13 @@ class MeetingInner extends React.Component<IProps, IState> {
   }
 }
 
-const propTransform = (_, ownProps: IProps) => {
+const propTransform = (state: IStore, ownProps: IProps) => {
+  const out = {
+    isBeneficiary: state.user.beneficiaryUser,
+  };
   if (ownProps.data !== undefined && ownProps.data.getMeeting !== undefined) {
     return {
+      ...out,
       questions: (ownProps.data.getMeeting.outcomeSet.questions || []).filter(
         (q) => !q.archived
       ),
@@ -283,7 +288,7 @@ const propTransform = (_, ownProps: IProps) => {
       questionnaire: ownProps.data.getMeeting.outcomeSet,
     };
   }
-  return {};
+  return out;
 };
 
 const MeetingWithConnection = connect(

@@ -2,40 +2,125 @@ import { Action } from "redux";
 import { useSelector } from "react-redux";
 import { IStore } from "redux/IStore";
 import { useDispatch } from "react-redux";
+import { getDecodedToken } from "helpers/auth";
 
-export const SET_USER_DETAILS = "SET_USER_DETAILS";
+export const SET_JWT = "SET_JWT";
 export const REQUEST_LOGOUT = "REQUEST_LOGOUT";
 
 export interface IAction extends Action {
   type: string;
   payload: {
-    userID?: string;
-    beneficiaryUser?: boolean;
-    loggedIn?: boolean;
+    jwt?: string;
     redirect?: string;
   };
 }
 
 export interface IState {
-  userID?: string;
+  JWT?: string;
+
+  userID: string | null;
+  email: string | null;
+  name: string | null;
   loggedIn: boolean;
-  beneficiaryUser?: boolean;
+  beneficiaryUser: boolean;
+  beneficiaryScope: string | null;
+  org: string | null;
+  created: string | null;
+  expiry: Date | null;
+
   logOutRequest?: string;
 }
 
 const initialState: IState = {
+  userID: null,
+  email: null,
+  name: null,
   loggedIn: false,
+  beneficiaryUser: false,
+  beneficiaryScope: null,
+  org: null,
+  created: null,
+  expiry: null,
 };
 
-export function reducer(state: IState = initialState, action: IAction) {
+const getKey = <T>(token: any, key: string, def: T): T => {
+  if (!token || !token[key]) {
+    return def;
+  }
+  return token[key];
+};
+
+const getStringOrNull = (token: any, key: string): string | null =>
+  getKey<string | null>(token, key, null);
+
+const getIsBeneficiaryUser = (token: any): boolean => {
+  const qualified = getKey<boolean | null>(
+    token,
+    "https://app.impactasaurus.org/beneficiary",
+    null
+  );
+  if (qualified !== null) {
+    return qualified;
+  }
+  if (token?.app_metadata?.beneficiary !== undefined) {
+    return token?.app_metadata?.beneficiary;
+  }
+  return false;
+};
+
+const getBeneficiaryScope = (token: any): string | null => {
+  const qualified = getKey(token, "https://app.impactasaurus.org/scope", null);
+  if (qualified !== null) {
+    return qualified;
+  }
+  if (token?.app_metadata?.scope !== undefined) {
+    return token?.app_metadata?.scope;
+  }
+  return null;
+};
+
+export const getExpiryDate = (token: any): Date | null => {
+  const exp = getKey<number | null>(token, "exp", null);
+  if (exp === null) {
+    return null;
+  }
+  return new Date(exp * 1000);
+};
+
+const getOrganisation = (token: any): string | null => {
+  const val = getKey<string>(
+    token,
+    "https://app.impactasaurus.org/organisation",
+    ""
+  );
+  return val === "" ? null : val;
+};
+
+export function reducer(state: IState = initialState, action: IAction): IState {
   switch (action.type) {
-    case SET_USER_DETAILS:
+    case SET_JWT: {
+      if (!action.payload.jwt) {
+        return initialState;
+      }
+      const decoded = getDecodedToken(action.payload.jwt);
+      const expiry = getExpiryDate(decoded);
       return {
         ...state,
-        userID: action.payload.userID,
-        beneficiaryUser: action.payload.beneficiaryUser,
-        loggedIn: action.payload.loggedIn,
+        JWT: action.payload.jwt,
+        userID: getStringOrNull(decoded, "sub"),
+        email: getStringOrNull(decoded, "email"),
+        name: getStringOrNull(decoded, "name"),
+        beneficiaryUser: getIsBeneficiaryUser(decoded),
+        beneficiaryScope: getBeneficiaryScope(decoded),
+        loggedIn: expiry === null ? false : expiry.getTime() - Date.now() > 0,
+        org: getOrganisation(decoded),
+        created: getStringOrNull(
+          decoded,
+          "https://app.impactasaurus.org/created_at"
+        ),
+        expiry,
       };
+    }
 
     case REQUEST_LOGOUT:
       return {
@@ -58,45 +143,23 @@ export function requestLogOut(redirect: string): IAction {
   };
 }
 
-export function getUserID(state: IState): string | undefined {
-  return state.userID;
-}
-
-export function isUserLoggedIn(state: IState): boolean {
-  return state.loggedIn;
-}
-
 export function isBeneficiaryUser(state: IState): boolean | undefined {
   return state.beneficiaryUser;
-}
-
-export function isLogoutRequested(state: IState): string | undefined {
-  return state.logOutRequest;
 }
 
 export const useUser = (): IState => {
   return useSelector((store: IStore) => store.user);
 };
 
-export const useSetUser = (): ((
-  loggedIn: boolean,
-  userID: string | null,
-  beneficiaryUser: boolean
-) => void) => {
+export const useSetJWT = (): ((jwt: string | null) => void) => {
   const dispatch = useDispatch();
-  const setUser = (
-    loggedIn: boolean,
-    userID: string | null,
-    beneficiaryUser: boolean
-  ): void => {
+  const setJWT = (jwt: string | null): void => {
     dispatch({
-      type: SET_USER_DETAILS,
+      type: SET_JWT,
       payload: {
-        loggedIn,
-        userID,
-        beneficiaryUser,
+        jwt,
       },
     });
   };
-  return setUser;
+  return setJWT;
 };

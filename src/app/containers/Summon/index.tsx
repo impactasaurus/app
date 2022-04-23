@@ -1,31 +1,26 @@
 import * as React from "react";
-import {
-  isUserLoggedIn,
-  isBeneficiaryUser as isCurrentUserABeneficiary,
-} from "redux/modules/user";
-import { IStore } from "redux/IStore";
 import { LoggedInUserConfirmation } from "components/LogoutConfirmation";
 import { SummonForm } from "./form";
-import { IURLConnector, UrlConnector } from "redux/modules/url";
+import { useNavigator } from "redux/modules/url";
 import { ISummonAcceptanceMutation } from "apollo/modules/summon";
 import { newMeetingFromSummon } from "../../apollo/modules/summon";
 import { PageWrapperHoC } from "../../components/PageWrapperHoC";
-import { connect } from "react-redux";
 import ReactGA from "react-ga";
 import { useTranslation } from "react-i18next";
+import { useUser } from "redux/modules/user";
 
-interface IProps extends IURLConnector, ISummonAcceptanceMutation {
+interface IProps extends ISummonAcceptanceMutation {
   match: {
     params: {
       id: string;
     };
   };
-  isLoggedIn?: boolean;
-  isBeneficiary?: boolean;
 }
 
 const SummonAcceptanceInner = (p: IProps) => {
   const { t } = useTranslation();
+  const { loggedIn, beneficiaryUser } = useUser();
+  const setURL = useNavigator();
 
   const logResult = (label: string) => {
     ReactGA.event({
@@ -40,7 +35,7 @@ const SummonAcceptanceInner = (p: IProps) => {
       .newMeetingFromSummon(p.match.params.id, beneficiaryID)
       .then((jti) => {
         logResult("success");
-        p.setURL(`/jti/${jti}`);
+        setURL(`/jti/${jti}`);
       })
       .catch((e: Error) => {
         logResult(e.message);
@@ -66,23 +61,14 @@ const SummonAcceptanceInner = (p: IProps) => {
       });
   };
 
-  if (p.isLoggedIn && !p.isBeneficiary) {
+  if (loggedIn && !beneficiaryUser) {
     return <LoggedInUserConfirmation />;
   }
   return <SummonForm onBeneficiarySelect={createRecord} />;
 };
 
-const storeToProps = (state: IStore) => ({
-  isLoggedIn: isUserLoggedIn(state.user),
-  isBeneficiary: isCurrentUserABeneficiary(state.user),
-});
-
-const SummonAcceptanceConnected = connect(
-  storeToProps,
-  UrlConnector
-)(SummonAcceptanceInner);
 const SummonAcceptanceData = newMeetingFromSummon<IProps>(
-  SummonAcceptanceConnected
+  SummonAcceptanceInner
 );
 // t("Welcome")
 export const SummonAcceptance = PageWrapperHoC<IProps>(

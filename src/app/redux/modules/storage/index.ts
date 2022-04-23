@@ -1,4 +1,4 @@
-import { LOAD } from "redux-storage";
+export const LOADED = "IMPACTASAURUS-LOADED";
 
 export interface IState {
   loaded: boolean;
@@ -10,7 +10,7 @@ const initialState: IState = {
 
 export function reducer(state: IState = initialState, action) {
   switch (action.type) {
-    case LOAD:
+    case LOADED:
       return { ...state, loaded: true };
 
     default:
