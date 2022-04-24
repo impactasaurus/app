@@ -64,8 +64,10 @@ export const getExpiryDate = (token: any): Date | null => {
 export function reducer(state: IState = initialState, action: IAction): IState {
   switch (action.type) {
     case SET_JWT: {
-      if (!action.payload.jwt) {
-        return initialState;
+      if (action.payload.jwt === null) {
+        const c = { ...state };
+        delete c.JWT;
+        return c;
       }
       const decoded = getDecodedToken(action.payload.jwt);
       const expiry = getExpiryDate(decoded);

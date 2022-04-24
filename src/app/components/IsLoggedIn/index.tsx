@@ -22,11 +22,14 @@ const isPublicPage = (path: string): boolean => {
 export const IsLoggedIn = (p: IProps): JSX.Element => {
   const webAuth = useRef<WebAuth>(getWebAuth());
   const setURL = useNavigator();
-  const user = useUser();
+  const { loggedIn, logOutRequest, org, beneficiaryUser } = useUser();
   const location = useLocation();
   const setJWT = useSetJWT();
 
-  useEffect(() => setup(), [user, location]);
+  useEffect(
+    () => setup(),
+    [loggedIn, org, beneficiaryUser, logOutRequest, location]
+  );
 
   const sendToLogin = (): void => {
     const redirectURL = location.pathname + location.search;
@@ -41,23 +44,23 @@ export const IsLoggedIn = (p: IProps): JSX.Element => {
   };
 
   const setup = () => {
-    if (!user.loggedIn && !isPublicPage(location.pathname)) {
+    if (!loggedIn && !isPublicPage(location.pathname)) {
       sendToLogin();
       return;
     }
     if (
-      user.loggedIn &&
-      !user.org &&
-      !user.beneficiaryUser &&
+      loggedIn &&
+      !org &&
+      !beneficiaryUser &&
       !isPublicPage(location.pathname)
     ) {
       sendToNoOrgPage();
     }
-    if (user.logOutRequest !== undefined) {
+    if (logOutRequest !== undefined) {
       setJWT(null);
-      webAuth.current.logout(getLogoutOptions(user.logOutRequest));
+      webAuth.current.logout(getLogoutOptions(logOutRequest));
     }
   };
 
-  return <div>{user.loggedIn && p.children}</div>;
+  return <div>{loggedIn && p.children}</div>;
 };

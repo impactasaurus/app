@@ -60,7 +60,9 @@ const initApp = () => {
           req.options.headers = {};
         }
         const token = store.getState()?.user?.JWT;
-        req.options.headers.authorization = token ? `Bearer ${token}` : null;
+        req.options.headers.authorization = token
+          ? `Bearer ${token}`
+          : undefined;
         next();
       },
     },

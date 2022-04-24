@@ -32,7 +32,7 @@ const Inner = (p: IRecordUsage) => {
         });
       }
     }
-  }, [user]);
+  }, [user.userID]);
 
   return <div />;
 };
