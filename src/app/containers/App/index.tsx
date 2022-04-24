@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Helmet } from "react-helmet";
 import { IStore } from "redux/IStore";
-import { Switch } from "react-router-dom";
+import { Redirect, Switch } from "react-router-dom";
 import * as containers from "containers";
 import { Loader } from "semantic-ui-react";
 import { Footer } from "components/Footer";
@@ -101,7 +101,13 @@ export const App = (): JSX.Element[] => {
         />
         <Route path="/catalogue" component={containers.Catalogue} />
         <Route public={true} path="/redirect" component={containers.Redirect} />
-        <Route public={true} path="/signup" component={containers.Signup} />
+        <Route
+          public={true}
+          user={<Redirect to={"/"} />}
+          beneficiary={false}
+          path="/signup"
+          component={containers.Signup}
+        />
         <Route public={true} path="/invite/:id" component={containers.Invite} />
         <Route
           public={true}
