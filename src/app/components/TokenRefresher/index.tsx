@@ -1,51 +1,52 @@
 import React, { useEffect, useRef } from "react";
 import { refreshToken, timeToExpiry } from "helpers/auth";
 import { useSetJWT, useUser } from "redux/modules/user";
-import ReactGA from "react-ga";
+
+const REFRESH_DELTA = 4 * 60 * 1000;
+const TRIGGER_FREQ = 5 * 1000;
 
 export const TokenRefresher = (): JSX.Element => {
   const setJWT = useSetJWT();
-  const user = useUser();
-  const timer = useRef<number>();
+  const { expiry, JWT, loggedIn } = useUser();
+  const refreshing = useRef<boolean>(false);
 
   useEffect(() => {
-    setupRefreshTrigger();
-  }, [user]);
+    window.setInterval(trigger, TRIGGER_FREQ);
+  }, []);
+
+  useEffect(() => {
+    trigger();
+  }, [expiry]);
 
   const refresh = () => {
+    if (refreshing.current) {
+      return;
+    }
+    refreshing.current = true;
     refreshToken()
       .then((token) => {
         setJWT(token);
-        ReactGA.event({
-          category: "silent_auth",
-          action: "success",
-        });
+        refreshing.current = false;
       })
       .catch((err) => {
         console.error(err.description);
-        ReactGA.event({
-          category: "silent_auth",
-          action: "failed",
-          label: err.description,
-        });
+        refreshing.current = false;
       });
   };
 
-  const setupRefreshTrigger = () => {
-    const msBefore = 240000;
-    const setTimer = (onTrigger: () => void) => {
-      if (timer.current !== undefined) {
-        clearTimeout(timer.current);
-      }
-      const delta = timeToExpiry(user.expiry);
-      if (delta < msBefore) {
-        onTrigger();
-        return;
-      }
-      const waitFor = delta - msBefore;
-      timer.current = window.setTimeout(onTrigger, waitFor);
-    };
-    setTimer(refresh);
+  const resetJWT = () => {
+    setJWT(JWT);
+  };
+
+  const trigger = () => {
+    const delta = timeToExpiry(expiry);
+
+    if (delta < 0 && loggedIn) {
+      resetJWT();
+    }
+    if (delta > 0 && delta < REFRESH_DELTA) {
+      refresh();
+    }
   };
 
   return <div />;

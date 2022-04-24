@@ -62,7 +62,7 @@ export const getWebAuth = (): WebAuth => {
 };
 
 export const refreshToken = (): Promise<string> => {
-  return new Promise<null>((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     getWebAuth().checkSession({}, (err, authResult) => {
       if (err) {
         reject(err);
