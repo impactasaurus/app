@@ -1,5 +1,4 @@
 import * as React from "react";
-import { LoggedInUserConfirmation } from "components/LogoutConfirmation";
 import { SummonForm } from "./form";
 import { useNavigator } from "redux/modules/url";
 import { ISummonAcceptanceMutation } from "apollo/modules/summon";
@@ -7,7 +6,6 @@ import { newMeetingFromSummon } from "../../apollo/modules/summon";
 import { PageWrapperHoC } from "../../components/PageWrapperHoC";
 import ReactGA from "react-ga";
 import { useTranslation } from "react-i18next";
-import { useUser } from "redux/modules/user";
 
 interface IProps extends ISummonAcceptanceMutation {
   match: {
@@ -19,7 +17,6 @@ interface IProps extends ISummonAcceptanceMutation {
 
 const SummonAcceptanceInner = (p: IProps) => {
   const { t } = useTranslation();
-  const { loggedIn, beneficiaryUser } = useUser();
   const setURL = useNavigator();
 
   const logResult = (label: string) => {
@@ -60,10 +57,6 @@ const SummonAcceptanceInner = (p: IProps) => {
         }
       });
   };
-
-  if (loggedIn && !beneficiaryUser) {
-    return <LoggedInUserConfirmation />;
-  }
   return <SummonForm onBeneficiarySelect={createRecord} />;
 };
 

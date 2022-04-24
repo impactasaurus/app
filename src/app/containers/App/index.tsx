@@ -1,14 +1,19 @@
 import * as React from "react";
 import { Helmet } from "react-helmet";
-import { Header, IsLoggedIn, Localiser } from "components";
 import { IStore } from "redux/IStore";
-import { Route, Switch } from "react-router-dom";
+import { Switch } from "react-router-dom";
 import * as containers from "containers";
 import { Loader } from "semantic-ui-react";
 import { Footer } from "components/Footer";
 import { Tracker } from "components/Tracker";
 import { TokenRefresher } from "components/TokenRefresher";
 import { useSelector } from "react-redux";
+import Route from "components/Route";
+import { LogoutConfirmation } from "components/LogoutConfirmation";
+import { LogOutListener } from "components/LogOutListener";
+import { Header } from "components/Header";
+import { IfLoggedIn } from "components/IfLoggedIn";
+import { Localiser } from "components/Localiser";
 const appConfig = require("../../../../config/main");
 import "./style.less";
 import "./../../theme/typo.less";
@@ -32,11 +37,12 @@ export const App = (): JSX.Element[] => {
 
   return wrapper(
     <div key="content" id="main-app-content">
-      <IsLoggedIn>
+      <IfLoggedIn>
         <Localiser />
         <Tracker />
         <TokenRefresher />
-      </IsLoggedIn>
+        <LogOutListener />
+      </IfLoggedIn>
       <Switch>
         <Route exact={true} path="/" component={containers.Home} />
         <Route path="/record/:type" component={containers.AssessmentConfig} />
@@ -49,12 +55,21 @@ export const App = (): JSX.Element[] => {
         <Route path="/beneficiary" component={containers.BeneficiarySelector} />
         <Route path="/profile" component={containers.Account} />
         <Route path="/settings" component={containers.Settings} />
-        <Route path="/login" component={containers.Login} />
+        <Route public={true} path="/login" component={containers.Login} />
         <Route path="/dataentry/:id" component={containers.DataEntry} />
         <Route path="/meeting/:id/edit" component={containers.RecordEdit} />
         <Route path="/meeting/:id/view" component={containers.RecordView} />
-        <Route path="/meeting/:id" component={containers.Meeting} />
-        <Route path="/smn/:id" component={containers.SummonAcceptance} />
+        <Route
+          beneficiary={true}
+          path="/meeting/:id"
+          component={containers.Meeting}
+        />
+        <Route
+          public={true}
+          user={<LogoutConfirmation />}
+          path="/smn/:id"
+          component={containers.SummonAcceptance}
+        />
         <Route
           path="/report/export/:questionSetID/:start/:end"
           component={containers.ExportReport}
@@ -64,7 +79,12 @@ export const App = (): JSX.Element[] => {
           component={containers.Report}
         />
         <Route path="/report" component={containers.ReportForm} />
-        <Route path="/jti/:jti" component={containers.BeneficiaryRedirect} />
+        <Route
+          public={true}
+          user={<LogoutConfirmation />}
+          path="/jti/:jti"
+          component={containers.BeneficiaryRedirect}
+        />
         <Route
           path="/questions/new/custom"
           component={containers.NewQuestionnaireForm}
@@ -80,10 +100,14 @@ export const App = (): JSX.Element[] => {
           component={containers.CatalogueQuestionnaire}
         />
         <Route path="/catalogue" component={containers.Catalogue} />
-        <Route path="/redirect" component={containers.Redirect} />
-        <Route path="/signup" component={containers.Signup} />
-        <Route path="/invite/:id" component={containers.Invite} />
-        <Route path="/unsubscribe/:uid" component={containers.Unsubscribe} />
+        <Route public={true} path="/redirect" component={containers.Redirect} />
+        <Route public={true} path="/signup" component={containers.Signup} />
+        <Route public={true} path="/invite/:id" component={containers.Invite} />
+        <Route
+          public={true}
+          path="/unsubscribe/:uid"
+          component={containers.Unsubscribe}
+        />
         <Route path="/plugin/sve" component={containers.SVE} />
         <Route path="/no-org" component={containers.NoOrgPage} />
       </Switch>
