@@ -24,9 +24,9 @@ const orgs = (
   excludeCurrent = false
 ): IUserOrg[] => {
   if (data && data.getOrganisations) {
-    return data.getOrganisations.filter(
-      (o) => !excludeCurrent || o.id !== activeOrgID
-    );
+    return data.getOrganisations
+      .filter((o) => !excludeCurrent || o.id !== activeOrgID)
+      .sort((a, b) => a.name.localeCompare(b.name));
   }
   return [];
 };

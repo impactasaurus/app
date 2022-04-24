@@ -51,7 +51,7 @@ const JTILoaderInner = (p: IProps) => {
   }, [user]);
 
   useEffect(() => {
-    if (p.data?.getJWT) {
+    if (!p.data?.getJWT) {
       return;
     }
     setJWT(p.data.getJWT);

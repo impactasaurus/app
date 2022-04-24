@@ -1,4 +1,4 @@
-export const LOADED = "IMPACTASAURUS-LOADED";
+export const LOADED = "IMPACTASAURUS_LOADED";
 
 export interface IState {
   loaded: boolean;

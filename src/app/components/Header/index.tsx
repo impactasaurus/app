@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Menu, Icon } from "semantic-ui-react";
-import { RequestLogoutFunc, useUser } from "redux/modules/user";
+import { requestLogOut, useUser } from "redux/modules/user";
 import "./style.less";
 import Logo from "../Logo";
 import { Link, useLocation } from "react-router-dom";
@@ -10,17 +10,14 @@ import { HeaderPlugins } from "./plugins";
 import { IntroduceQuestionnairePage } from "components/TourQuestionnaires";
 import { IntroduceNewRecordButton } from "components/TourRecordCreation";
 import { IntroduceReportPage } from "components/TourReports";
+import { useDispatch } from "react-redux";
 const config = require("../../../../config/main").app.auth;
-
-interface IProps {
-  logout?: RequestLogoutFunc;
-}
 
 const QuestionnaireButtonID = "questionnaire-menu-item";
 const NewRecordButtonID = "add-menu-link";
 const ReportButtonID = "reports-menu-item";
 
-const Header = (p: IProps): JSX.Element => {
+const Header = (): JSX.Element => {
   const { t } = useTranslation();
   const {
     org,
@@ -28,6 +25,7 @@ const Header = (p: IProps): JSX.Element => {
     beneficiaryUser: isBeneficiary,
   } = useUser();
   const { pathname: currentURL } = useLocation();
+  const dispatch = useDispatch();
 
   const isActive = (url: string, exact = false): boolean => {
     if (exact) {
@@ -37,7 +35,7 @@ const Header = (p: IProps): JSX.Element => {
   };
 
   const logOut = () => {
-    p.logout("/login");
+    dispatch(requestLogOut("/login"));
   };
 
   const shouldShowLoginPrompt = () => {

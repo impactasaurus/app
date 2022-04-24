@@ -53,47 +53,12 @@ const getKey = <T>(token: any, key: string, def: T): T => {
 const getStringOrNull = (token: any, key: string): string | null =>
   getKey<string | null>(token, key, null);
 
-const getIsBeneficiaryUser = (token: any): boolean => {
-  const qualified = getKey<boolean | null>(
-    token,
-    "https://app.impactasaurus.org/beneficiary",
-    null
-  );
-  if (qualified !== null) {
-    return qualified;
-  }
-  if (token?.app_metadata?.beneficiary !== undefined) {
-    return token?.app_metadata?.beneficiary;
-  }
-  return false;
-};
-
-const getBeneficiaryScope = (token: any): string | null => {
-  const qualified = getKey(token, "https://app.impactasaurus.org/scope", null);
-  if (qualified !== null) {
-    return qualified;
-  }
-  if (token?.app_metadata?.scope !== undefined) {
-    return token?.app_metadata?.scope;
-  }
-  return null;
-};
-
 export const getExpiryDate = (token: any): Date | null => {
   const exp = getKey<number | null>(token, "exp", null);
   if (exp === null) {
     return null;
   }
   return new Date(exp * 1000);
-};
-
-const getOrganisation = (token: any): string | null => {
-  const val = getKey<string>(
-    token,
-    "https://app.impactasaurus.org/organisation",
-    ""
-  );
-  return val === "" ? null : val;
 };
 
 export function reducer(state: IState = initialState, action: IAction): IState {
@@ -110,10 +75,22 @@ export function reducer(state: IState = initialState, action: IAction): IState {
         userID: getStringOrNull(decoded, "sub"),
         email: getStringOrNull(decoded, "email"),
         name: getStringOrNull(decoded, "name"),
-        beneficiaryUser: getIsBeneficiaryUser(decoded),
-        beneficiaryScope: getBeneficiaryScope(decoded),
+        beneficiaryUser: getKey<boolean>(
+          decoded,
+          "https://app.impactasaurus.org/beneficiary",
+          false
+        ),
+        beneficiaryScope: getKey(
+          decoded,
+          "https://app.impactasaurus.org/scope",
+          null
+        ),
         loggedIn: expiry === null ? false : expiry.getTime() - Date.now() > 0,
-        org: getOrganisation(decoded),
+        org: getKey<string | null>(
+          decoded,
+          "https://app.impactasaurus.org/organisation",
+          null
+        ),
         created: getStringOrNull(
           decoded,
           "https://app.impactasaurus.org/created_at"
