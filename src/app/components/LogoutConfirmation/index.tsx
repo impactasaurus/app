@@ -1,19 +1,17 @@
 import * as React from "react";
 import { Message, Button } from "semantic-ui-react";
-import { requestLogOut, RequestLogoutFunc } from "../../redux/modules/user";
-import { bindActionCreators } from "redux";
-import { IStore } from "../../redux/IStore";
 import { useTranslation } from "react-i18next";
-import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router";
+import { requestLogOut } from "../../redux/modules/user";
+import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
 
-interface IProps {
-  currentURL?: string;
-  logout?: RequestLogoutFunc;
-}
+const LogoutConfirmationInner = (): JSX.Element => {
+  const dispatch = useDispatch();
+  const { pathname: currentURL } = useLocation();
 
-const LoggedInUserConfirmationInner = (p: IProps) => {
   const confirmed = () => {
-    p.logout(p.currentURL);
+    dispatch(requestLogOut(currentURL));
   };
 
   const { t } = useTranslation();
@@ -27,15 +25,8 @@ const LoggedInUserConfirmationInner = (p: IProps) => {
   );
 };
 
-const storeToProps = (state: IStore) => ({
-  currentURL: state.router.location.pathname,
-});
-
-const dispatchToProps = (dispatch) => ({
-  logout: bindActionCreators(requestLogOut, dispatch),
-});
-
-export const LoggedInUserConfirmation = connect(
-  storeToProps,
-  dispatchToProps
-)(LoggedInUserConfirmationInner);
+export const LogoutConfirmation = MinimalPageWrapperHoC(
+  "Logout Confirmation",
+  "logout-confirmation",
+  LogoutConfirmationInner
+);
