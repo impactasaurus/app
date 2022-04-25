@@ -25,7 +25,7 @@ export function configureStore(
   initialState?: IStore
 ): Store<IStore> {
   let storeEngine = createEngine("state");
-  storeEngine = filter(storeEngine, ["pref", ["user", "JWT"]]);
+  storeEngine = filter(storeEngine, ["pref", ["user", "session", "JWT"]]);
   const storageMiddleware = storage.createMiddleware(storeEngine);
   const reducer = storage.reducer(getReducers(apolloReducer, history));
 
@@ -62,7 +62,7 @@ export function configureStore(
   const load = storage.createLoader(storeEngine);
   load(store).then(
     () => {
-      const jwt = store.getState()?.user?.JWT;
+      const jwt = store.getState()?.user?.session?.JWT;
       if (jwt) {
         const hydrateUserStore = {
           type: SET_JWT,

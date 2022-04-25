@@ -59,7 +59,7 @@ const initApp = () => {
         if (!req.options.headers) {
           req.options.headers = {};
         }
-        const token = store.getState()?.user?.JWT;
+        const token = store.getState()?.user?.session?.JWT;
         req.options.headers.authorization = token
           ? `Bearer ${token}`
           : undefined;

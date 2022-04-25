@@ -5,7 +5,7 @@ import { Message, Loader } from "semantic-ui-react";
 import { Error } from "components/Error";
 import ReactGA from "react-ga";
 import { useTranslation } from "react-i18next";
-import { useSetJWT, useUser } from "redux/modules/user";
+import { useSession, useSetJWT, useUser } from "redux/modules/user";
 
 interface IProps extends IURLConnector {
   jti: string;
@@ -25,30 +25,31 @@ const JTILoaderInner = (p: IProps) => {
   const [expired, setExpired] = useState(false);
   const { t } = useTranslation();
   const setJWT = useSetJWT();
-  const user = useUser();
+  const { beneficiaryUser, beneficiaryScope } = useUser();
+  const { JWT, expiry } = useSession();
 
   useEffect(() => {
-    if (!p.data?.getJWT || user.JWT !== p.data?.getJWT) {
+    if (!p.data?.getJWT || JWT !== p.data?.getJWT) {
       return;
     }
-    if (user.expiry === null || user.expiry < new Date()) {
+    if (expiry === null || expiry < new Date()) {
       setError(true);
       setExpired(true);
       return;
     }
-    if (!user.beneficiaryUser) {
+    if (!beneficiaryUser) {
       setError(true);
       setExpired(false);
       return;
     }
-    if (!user.beneficiaryScope) {
+    if (!beneficiaryScope) {
       setError(true);
       setExpired(false);
       return;
     }
     logSuccessfulBenLogin();
-    p.setURL(`/meeting/${user.beneficiaryScope}`);
-  }, [user]);
+    p.setURL(`/meeting/${beneficiaryScope}`);
+  }, [beneficiaryScope, beneficiaryUser]);
 
   useEffect(() => {
     if (!p.data?.getJWT) {

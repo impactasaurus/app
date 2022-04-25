@@ -29,6 +29,7 @@ import ReactGA from "react-ga";
 import "rc-slider/assets/index.css";
 import "./style.less";
 import { IStore } from "redux/IStore";
+import { isBeneficiaryUser } from "redux/modules/user";
 
 interface IProps extends IURLConnector, WithTranslation {
   data: IMeetingResult;
@@ -276,7 +277,7 @@ class MeetingInner extends React.Component<IProps, IState> {
 
 const propTransform = (state: IStore, ownProps: IProps) => {
   const out = {
-    isBeneficiary: state.user.beneficiaryUser,
+    isBeneficiary: isBeneficiaryUser(state.user),
   };
   if (ownProps.data !== undefined && ownProps.data.getMeeting !== undefined) {
     return {

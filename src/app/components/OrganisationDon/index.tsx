@@ -3,7 +3,7 @@ import { Button, ButtonProps } from "semantic-ui-react";
 import { getOrganisation, IGetOrgResult } from "apollo/modules/organisation";
 import { useTranslation } from "react-i18next";
 import * as appConfig from "../../../../config/main";
-import { useUser } from "redux/modules/user";
+import { useJWT } from "redux/modules/user";
 
 interface IProps {
   org?: IGetOrgResult;
@@ -13,7 +13,7 @@ const OrganisationDonInner = (p: IProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>(undefined);
   const { t } = useTranslation();
-  const { JWT } = useUser();
+  const JWT = useJWT();
 
   const redirect = () => {
     if (loading) {

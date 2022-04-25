@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { getLogoutOptions, getWebAuth } from "helpers/auth";
 import { useNavigator } from "redux/modules/url";
-import { useSetJWT, useUser } from "redux/modules/user";
+import { useSession, useSetJWT, useUser } from "redux/modules/user";
 import { WebAuth } from "auth0-js";
 import { useLocation } from "react-router";
 const config = require("../../../../config/main").app.auth;
@@ -22,14 +22,12 @@ const isPublicPage = (path: string): boolean => {
 export const IsLoggedIn = (p: IProps): JSX.Element => {
   const webAuth = useRef<WebAuth>(getWebAuth());
   const setURL = useNavigator();
-  const { loggedIn, logOutRequest, org, beneficiaryUser } = useUser();
+  const user = useUser();
+  const { logOutRequest } = useSession();
   const location = useLocation();
   const setJWT = useSetJWT();
 
-  useEffect(
-    () => setup(),
-    [loggedIn, org, beneficiaryUser, logOutRequest, location]
-  );
+  useEffect(() => setup(), [user, logOutRequest, location]);
 
   const sendToLogin = (): void => {
     const redirectURL = location.pathname + location.search;
@@ -44,14 +42,14 @@ export const IsLoggedIn = (p: IProps): JSX.Element => {
   };
 
   const setup = () => {
-    if (!loggedIn && !isPublicPage(location.pathname)) {
+    if (!user.loggedIn && !isPublicPage(location.pathname)) {
       sendToLogin();
       return;
     }
     if (
-      loggedIn &&
-      !org &&
-      !beneficiaryUser &&
+      user.loggedIn &&
+      !user.org &&
+      !user.beneficiaryUser &&
       !isPublicPage(location.pathname)
     ) {
       sendToNoOrgPage();
@@ -62,5 +60,5 @@ export const IsLoggedIn = (p: IProps): JSX.Element => {
     }
   };
 
-  return <div>{loggedIn && p.children}</div>;
+  return <div>{user.loggedIn && p.children}</div>;
 };

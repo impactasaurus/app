@@ -1,7 +1,7 @@
 import { Action } from "redux";
 import { useSelector } from "react-redux";
 import { IStore } from "redux/IStore";
-import { useDispatch } from "react-redux";
+import { useDispatch, shallowEqual } from "react-redux";
 import { getDecodedToken } from "helpers/auth";
 
 export const SET_JWT = "SET_JWT";
@@ -15,9 +15,7 @@ export interface IAction extends Action {
   };
 }
 
-export interface IState {
-  JWT?: string;
-
+export interface IUser {
   userID: string | null;
   email: string | null;
   name: string | null;
@@ -26,21 +24,33 @@ export interface IState {
   beneficiaryScope: string | null;
   org: string | null;
   created: string | null;
-  expiry: Date | null;
+}
 
+export interface ISession {
+  JWT?: string;
   logOutRequest?: string;
+  expiry: Date | null;
+}
+
+export interface IState {
+  hydrated: IUser;
+  session: ISession;
 }
 
 const initialState: IState = {
-  userID: null,
-  email: null,
-  name: null,
-  loggedIn: false,
-  beneficiaryUser: false,
-  beneficiaryScope: null,
-  org: null,
-  created: null,
-  expiry: null,
+  hydrated: {
+    userID: null,
+    email: null,
+    name: null,
+    loggedIn: false,
+    beneficiaryUser: false,
+    beneficiaryScope: null,
+    org: null,
+    created: null,
+  },
+  session: {
+    expiry: null,
+  },
 };
 
 const getKey = <T>(token: any, key: string, def: T): T => {
@@ -53,7 +63,7 @@ const getKey = <T>(token: any, key: string, def: T): T => {
 const getStringOrNull = (token: any, key: string): string | null =>
   getKey<string | null>(token, key, null);
 
-export const getExpiryDate = (token: any): Date | null => {
+const getExpiryDate = (token: any): Date | null => {
   const exp = getKey<number | null>(token, "exp", null);
   if (exp === null) {
     return null;
@@ -61,50 +71,58 @@ export const getExpiryDate = (token: any): Date | null => {
   return new Date(exp * 1000);
 };
 
+const hydrateUser = (token: any): IUser => {
+  const expiry = getExpiryDate(token);
+  return {
+    userID: getStringOrNull(token, "sub"),
+    email: getStringOrNull(token, "email"),
+    name: getStringOrNull(token, "name"),
+    beneficiaryUser: getKey<boolean>(
+      token,
+      "https://app.impactasaurus.org/beneficiary",
+      false
+    ),
+    beneficiaryScope: getKey(
+      token,
+      "https://app.impactasaurus.org/scope",
+      null
+    ),
+    loggedIn: expiry === null ? false : expiry.getTime() - Date.now() > 0,
+    org: getKey<string | null>(
+      token,
+      "https://app.impactasaurus.org/organisation",
+      null
+    ),
+    created: getStringOrNull(token, "https://app.impactasaurus.org/created_at"),
+  };
+};
+
 export function reducer(state: IState = initialState, action: IAction): IState {
   switch (action.type) {
     case SET_JWT: {
       if (action.payload.jwt === null) {
         const c = { ...state };
-        delete c.JWT;
+        delete c.session.JWT;
         return c;
       }
       const decoded = getDecodedToken(action.payload.jwt);
-      const expiry = getExpiryDate(decoded);
       return {
-        ...state,
-        JWT: action.payload.jwt,
-        userID: getStringOrNull(decoded, "sub"),
-        email: getStringOrNull(decoded, "email"),
-        name: getStringOrNull(decoded, "name"),
-        beneficiaryUser: getKey<boolean>(
-          decoded,
-          "https://app.impactasaurus.org/beneficiary",
-          false
-        ),
-        beneficiaryScope: getKey(
-          decoded,
-          "https://app.impactasaurus.org/scope",
-          null
-        ),
-        loggedIn: expiry === null ? false : expiry.getTime() - Date.now() > 0,
-        org: getKey<string | null>(
-          decoded,
-          "https://app.impactasaurus.org/organisation",
-          null
-        ),
-        created: getStringOrNull(
-          decoded,
-          "https://app.impactasaurus.org/created_at"
-        ),
-        expiry,
+        session: {
+          expiry: getExpiryDate(decoded),
+          JWT: action.payload.jwt,
+          logOutRequest: state.session.logOutRequest,
+        },
+        hydrated: hydrateUser(decoded),
       };
     }
 
     case REQUEST_LOGOUT:
       return {
-        ...state,
-        logOutRequest: action.payload.redirect,
+        hydrated: { ...state.hydrated },
+        session: {
+          ...state.session,
+          logOutRequest: action.payload.redirect,
+        },
       };
 
     default:
@@ -122,14 +140,6 @@ export function requestLogOut(redirect: string): IAction {
   };
 }
 
-export function isBeneficiaryUser(state: IState): boolean | undefined {
-  return state.beneficiaryUser;
-}
-
-export const useUser = (): IState => {
-  return useSelector((store: IStore) => store.user);
-};
-
 export const useSetJWT = (): ((jwt: string | null) => void) => {
   const dispatch = useDispatch();
   const setJWT = (jwt: string | null): void => {
@@ -141,4 +151,20 @@ export const useSetJWT = (): ((jwt: string | null) => void) => {
     });
   };
   return setJWT;
+};
+
+export const isBeneficiaryUser = (state: IState): boolean | undefined => {
+  return state.hydrated.beneficiaryUser;
+};
+
+export const useUser = (): IUser => {
+  return useSelector((store: IStore) => store.user.hydrated, shallowEqual);
+};
+
+export const useJWT = (): string | undefined => {
+  return useSelector((store: IStore) => store.user.session.JWT);
+};
+
+export const useSession = (): ISession => {
+  return useSelector((store: IStore) => store.user.session, shallowEqual);
 };
