@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { refreshToken, timeToExpiry } from "helpers/auth";
-import { useJWT, useSession, useSetJWT, useUser } from "redux/modules/user";
+import { useSession, useSetJWT, useUser } from "redux/modules/user";
 
 const REFRESH_DELTA = 4 * 60 * 1000;
 const TRIGGER_FREQ = 5 * 1000;
@@ -8,8 +8,7 @@ const TRIGGER_FREQ = 5 * 1000;
 export const TokenRefresher = (): JSX.Element => {
   const setJWT = useSetJWT();
   const { loggedIn } = useUser();
-  const { expiry } = useSession();
-  const JWT = useJWT();
+  const { expiry, JWT } = useSession();
   const refreshing = useRef<boolean>(false);
 
   useEffect(() => {

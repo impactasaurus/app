@@ -6,6 +6,7 @@ import { getDecodedToken } from "helpers/auth";
 
 export const SET_JWT = "SET_JWT";
 export const REQUEST_LOGOUT = "REQUEST_LOGOUT";
+export const HYDRATE_JWT = "HYDRATE_JWT";
 
 export interface IAction extends Action {
   type: string;
@@ -71,6 +72,15 @@ const getExpiryDate = (token: any): Date | null => {
   return new Date(exp * 1000);
 };
 
+const getOrg = (token: any): string | null => {
+  const o = getKey<string | null>(
+    token,
+    "https://app.impactasaurus.org/organisation",
+    null
+  );
+  return o === "" ? null : o;
+};
+
 const hydrateUser = (token: any): IUser => {
   const expiry = getExpiryDate(token);
   return {
@@ -88,12 +98,20 @@ const hydrateUser = (token: any): IUser => {
       null
     ),
     loggedIn: expiry === null ? false : expiry.getTime() - Date.now() > 0,
-    org: getKey<string | null>(
-      token,
-      "https://app.impactasaurus.org/organisation",
-      null
-    ),
+    org: getOrg(token),
     created: getStringOrNull(token, "https://app.impactasaurus.org/created_at"),
+  };
+};
+
+const hydrateJWT = (jwt: string, state: IState): IState => {
+  const decoded = getDecodedToken(jwt);
+  return {
+    session: {
+      expiry: getExpiryDate(decoded),
+      JWT: jwt,
+      logOutRequest: state.session.logOutRequest,
+    },
+    hydrated: hydrateUser(decoded),
   };
 };
 
@@ -101,19 +119,21 @@ export function reducer(state: IState = initialState, action: IAction): IState {
   switch (action.type) {
     case SET_JWT: {
       if (action.payload.jwt === null) {
-        const c = { ...state };
+        const c: IState = {
+          hydrated: { ...state.hydrated },
+          session: { ...state.session },
+        };
         delete c.session.JWT;
         return c;
       }
-      const decoded = getDecodedToken(action.payload.jwt);
-      return {
-        session: {
-          expiry: getExpiryDate(decoded),
-          JWT: action.payload.jwt,
-          logOutRequest: state.session.logOutRequest,
-        },
-        hydrated: hydrateUser(decoded),
-      };
+      return hydrateJWT(action.payload.jwt, state);
+    }
+
+    case HYDRATE_JWT: {
+      if (!state.session?.JWT) {
+        return state;
+      }
+      return hydrateJWT(state.session.JWT, state);
     }
 
     case REQUEST_LOGOUT:

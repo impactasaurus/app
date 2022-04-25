@@ -14,7 +14,7 @@ import createEngine from "redux-storage-engine-localstorage";
 import filter from "redux-storage-decorator-filter";
 import logger from "redux-logger";
 import { ConfigureQuerySyncers } from "./syncers";
-import { SET_JWT } from "./modules/user";
+import { HYDRATE_JWT } from "./modules/user";
 import { LOADED } from "./modules/storage";
 const appConfig = require("../../../config/main");
 
@@ -62,16 +62,9 @@ export function configureStore(
   const load = storage.createLoader(storeEngine);
   load(store).then(
     () => {
-      const jwt = store.getState()?.user?.session?.JWT;
-      if (jwt) {
-        const hydrateUserStore = {
-          type: SET_JWT,
-          payload: {
-            jwt,
-          },
-        };
-        store.dispatch(hydrateUserStore);
-      }
+      store.dispatch({
+        type: HYDRATE_JWT,
+      });
       store.dispatch({
         type: LOADED,
       });

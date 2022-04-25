@@ -52,7 +52,8 @@ const InviteInner = (p: IProps) => {
             reset();
           })
           // token refresh is best effort
-          .catch(() => {
+          .catch((e) => {
+            console.error(e);
             reset();
           })
       );
