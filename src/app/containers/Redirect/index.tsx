@@ -1,10 +1,7 @@
-import * as React from "react";
-import { bindActionCreators } from "redux";
-import { IURLConnector, setURL } from "../../redux/modules/url";
-const { connect } = require("react-redux");
-import { Loader } from "semantic-ui-react";
+import React from "react";
+import { Redirect as R } from "react-router-dom";
 
-interface IProps extends IURLConnector {
+interface IProps {
   location: {
     search: string;
   };
@@ -13,24 +10,11 @@ interface IProps extends IURLConnector {
 const getRedirectURL = (p: IProps): string | undefined => {
   const urlParams = new URLSearchParams(p.location.search);
   if (urlParams.has("redirect") === false) {
-    return undefined;
+    return "/";
   }
   return urlParams.get("redirect");
 };
 
-@connect(undefined, (dispatch) => ({
-  setURL: bindActionCreators(setURL, dispatch),
-}))
-export class Redirect extends React.Component<IProps, any> {
-  public componentDidMount() {
-    let redirect = getRedirectURL(this.props);
-    if (redirect === undefined) {
-      redirect = "/";
-    }
-    this.props.setURL(redirect);
-  }
-
-  public render() {
-    return <Loader active={true} inline="centered" />;
-  }
-}
+export const Redirect = (p: IProps): JSX.Element => (
+  <R to={getRedirectURL(p)} />
+);

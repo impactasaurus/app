@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Button, ButtonProps } from "semantic-ui-react";
 import { getOrganisation, IGetOrgResult } from "apollo/modules/organisation";
-import { getToken } from "helpers/auth";
 import { useTranslation } from "react-i18next";
 import * as appConfig from "../../../../config/main";
+import { useJWT } from "redux/modules/user";
 
 interface IProps {
   org?: IGetOrgResult;
@@ -13,6 +13,7 @@ const OrganisationDonInner = (p: IProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>(undefined);
   const { t } = useTranslation();
+  const JWT = useJWT();
 
   const redirect = () => {
     if (loading) {
@@ -26,7 +27,7 @@ const OrganisationDonInner = (p: IProps) => {
       `${appConfig.app.api}/v1/don/redirect?return=${window.location.href}`,
       {
         headers: {
-          Authorization: `Bearer ${getToken()}`,
+          Authorization: `Bearer ${JWT}`,
         },
       }
     )

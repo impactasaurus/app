@@ -1,56 +1,30 @@
-import * as React from "react";
-import { IURLConnector, setURL } from "redux/modules/url";
-import { bindActionCreators } from "redux";
+import React, { useEffect } from "react";
+import { useNavigator } from "redux/modules/url";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
 import { ISignup, signup } from "../../apollo/modules/organisation";
 import { IFormOutput, SignupForm } from "../../components/SignupForm";
-import { isUserLoggedIn } from "../../redux/modules/user";
-import { IStore } from "../../redux/IStore";
-const { connect } = require("react-redux");
+import { useUser } from "redux/modules/user";
 
-interface IProps extends IURLConnector, ISignup {
-  isLoggedIn: boolean;
-}
+type IProps = ISignup;
 
-@connect(
-  (state: IStore) => ({
-    isLoggedIn: isUserLoggedIn(state.user),
-  }),
-  (dispatch) => ({
-    setURL: bindActionCreators(setURL, dispatch),
-  })
-)
-class SignupInner extends React.Component<IProps, any> {
-  constructor(props) {
-    super(props);
-    this.state = {};
-    this.onSubmit = this.onSubmit.bind(this);
-  }
+const SignupInner = (p: IProps): JSX.Element => {
+  const { loggedIn } = useUser();
+  const setURL = useNavigator();
 
-  public componentDidMount() {
-    if (this.props.isLoggedIn) {
-      this.props.setURL("/");
+  useEffect(() => {
+    if (loggedIn) {
+      setURL("/");
     }
-  }
+  }, [loggedIn]);
 
-  public componentDidUpdate() {
-    if (this.props.isLoggedIn) {
-      this.props.setURL("/");
-    }
-  }
+  const onSubmit = (v: IFormOutput): Promise<void> => {
+    return p.signup(v.name, v.email, v.password, v.organisation).then(() => {
+      setURL("/login");
+    });
+  };
 
-  private onSubmit(v: IFormOutput): Promise<void> {
-    return this.props
-      .signup(v.name, v.email, v.password, v.organisation)
-      .then(() => {
-        this.props.setURL("/login");
-      });
-  }
-
-  public render() {
-    return <SignupForm onFormSubmit={this.onSubmit} />;
-  }
-}
+  return <SignupForm onFormSubmit={onSubmit} />;
+};
 
 const SignupInnerWithWrapper = PageWrapperHoC("Signup", "signup", SignupInner);
 export const Signup = signup<IProps>(SignupInnerWithWrapper);

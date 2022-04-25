@@ -3,7 +3,6 @@ import "core-js";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { configureStore } from "./app/redux/store";
-import { getToken } from "helpers/auth";
 import Raven from "raven-js";
 import {
   ApolloClient,
@@ -38,19 +37,6 @@ const initApp = () => {
   const networkInterface = createNetworkInterface({
     uri: appConfig.app.api + "/v1/graphql",
   });
-  networkInterface.use([
-    {
-      applyMiddleware(req: any, next) {
-        if (!req.options.headers) {
-          req.options.headers = {};
-        }
-        req.options.headers.authorization = getToken()
-          ? `Bearer ${getToken()}`
-          : null;
-        next();
-      },
-    },
-  ]);
   const fragmentMatcher = new IntrospectionFragmentMatcher({
     introspectionQueryResultData,
   });
@@ -66,6 +52,21 @@ const initApp = () => {
     [client.middleware()],
     window.__INITIAL_STATE__
   );
+
+  networkInterface.use([
+    {
+      applyMiddleware(req: any, next) {
+        if (!req.options.headers) {
+          req.options.headers = {};
+        }
+        const token = store.getState()?.user?.session?.JWT;
+        req.options.headers.authorization = token
+          ? `Bearer ${token}`
+          : undefined;
+        next();
+      },
+    },
+  ]);
 
   setupI18n();
   setupBrandColors();

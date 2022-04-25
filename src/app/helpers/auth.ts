@@ -1,23 +1,7 @@
 import { AuthOptions, LogoutOptions, WebAuth } from "auth0-js";
 const appConfig = require("../../../config/main");
 
-const localStorageKey = "token";
-
-export function getToken(): string | null {
-  return localStorage.getItem("token");
-}
-
-export function saveAuth(token: string): void {
-  localStorage.setItem(localStorageKey, token);
-}
-
-export function clearAuth(): void {
-  localStorage.removeItem(localStorageKey);
-}
-
-function getDecodedToken(inputToken?: string) {
-  const token = inputToken || getToken();
-
+export const getDecodedToken = (token: string): any => {
   const urlBase64Decode = (str) => {
     let output = str.replace(/-/g, "+").replace(/_/g, "/");
     switch (output.length % 4) {
@@ -63,86 +47,9 @@ function getDecodedToken(inputToken?: string) {
     console.error(e);
     return null;
   }
-}
+};
 
-export function getExpiryDateOfToken(token: string): Date | null {
-  const decoded = getDecodedToken(token);
-  if (decoded === null || decoded.exp === undefined) {
-    return null;
-  }
-  return new Date(decoded.exp * 1000);
-}
-
-export function getExpiryDate(): Date | null {
-  return getExpiryDateOfToken(getToken());
-}
-
-function getKeyOrNull(k: string): string | null {
-  const decoded = getDecodedToken();
-  if (decoded === null || decoded[k] === undefined) {
-    return null;
-  }
-  return decoded[k];
-}
-
-export function getUserID(): string | null {
-  return getKeyOrNull("sub");
-}
-
-export function getUserEmail(): string | null {
-  return getKeyOrNull("email");
-}
-
-export function getUserName(): string | null {
-  return getKeyOrNull("name");
-}
-
-export function getOrganisation(): string | null {
-  const val = getKeyOrNull("https://app.impactasaurus.org/organisation");
-  return val === "" ? null : val;
-}
-
-export function getCreatedDate(): string | null {
-  return getKeyOrNull("https://app.impactasaurus.org/created_at");
-}
-
-export function isBeneficiaryUser(): boolean {
-  const decoded = getDecodedToken();
-  if (
-    decoded !== null &&
-    decoded["https://app.impactasaurus.org/beneficiary"] !== undefined
-  ) {
-    return decoded["https://app.impactasaurus.org/beneficiary"];
-  }
-  if (
-    decoded === null ||
-    decoded.app_metadata === undefined ||
-    decoded.app_metadata.beneficiary === undefined
-  ) {
-    return false;
-  }
-  return decoded.app_metadata.beneficiary;
-}
-
-export function getBeneficiaryScope(): string | null {
-  const decoded = getDecodedToken();
-  if (
-    decoded !== null &&
-    decoded["https://app.impactasaurus.org/scope"] !== undefined
-  ) {
-    return decoded["https://app.impactasaurus.org/scope"];
-  }
-  if (
-    decoded === null ||
-    decoded.app_metadata === undefined ||
-    decoded.app_metadata.scope === undefined
-  ) {
-    return null;
-  }
-  return decoded.app_metadata.scope;
-}
-
-export function getWebAuth(): WebAuth {
+export const getWebAuth = (): WebAuth => {
   const options: AuthOptions = {
     domain: appConfig.app.auth.domain,
     clientID: appConfig.app.auth.clientID,
@@ -152,22 +59,21 @@ export function getWebAuth(): WebAuth {
   };
 
   return new WebAuth(options);
-}
+};
 
-export const refreshToken = (): Promise<null> => {
-  return new Promise<null>((resolve, reject) => {
+export const refreshToken = (): Promise<string> => {
+  return new Promise<string>((resolve, reject) => {
     getWebAuth().checkSession({}, (err, authResult) => {
       if (err) {
         reject(err);
         return;
       }
-      saveAuth(authResult.idToken);
-      resolve(null);
+      resolve(authResult.idToken);
     });
   });
 };
 
-export function getLogoutOptions(redirect?: string): LogoutOptions {
+export const getLogoutOptions = (redirect?: string): LogoutOptions => {
   let returnTo = `${appConfig.app.root}/redirect`;
   if (redirect !== undefined) {
     returnTo = `${returnTo}?redirect=${encodeURI(redirect)}`;
@@ -177,23 +83,8 @@ export function getLogoutOptions(redirect?: string): LogoutOptions {
     returnTo,
     clientID: appConfig.app.auth.clientID,
   };
-}
-
-export const getTimeToExpiry = (): number => {
-  const expiry = getExpiryDate();
-  if (expiry === null) {
-    return -1;
-  }
-  return expiry.getTime() - Date.now();
 };
 
-export const isStoredJWTValid = (): boolean => {
-  const token = getToken();
-  if (token === null || token === undefined) {
-    return false;
-  }
-  if (getTimeToExpiry() < 0) {
-    return false;
-  }
-  return true;
+export const timeToExpiry = (expiry: Date): number => {
+  return !expiry ? -1 : expiry.getTime() - Date.now();
 };

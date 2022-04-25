@@ -1,22 +1,23 @@
 import React, { useState } from "react";
 import { Button, Message } from "semantic-ui-react";
-import { getUserEmail, getWebAuth } from "../../helpers/auth";
+import { getWebAuth } from "../../helpers/auth";
 import { UserSettings } from "components/UserSettings";
 import ReactGA from "react-ga";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
 import * as config from "../../../../config/main";
 import { useTranslation } from "react-i18next";
+import { useUser } from "redux/modules/user";
 
 const AccountInner = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [triggered, setTriggered] = useState(false);
   const { t } = useTranslation();
+  const { email } = useUser();
 
   const startChangePassword = () => {
     setTriggered(true);
 
-    const email = getUserEmail();
     if (email === null) {
       setError(
         t("Failed to gather your email address, please try refreshing the page")

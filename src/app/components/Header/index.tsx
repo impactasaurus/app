@@ -1,62 +1,52 @@
 import * as React from "react";
 import { Menu, Icon } from "semantic-ui-react";
-import { bindActionCreators } from "redux";
-import { IStore } from "redux/IStore";
-import {
-  isUserLoggedIn,
-  isBeneficiaryUser,
-  RequestLogoutFunc,
-  requestLogOut,
-} from "redux/modules/user";
+import { requestLogOut, useUser } from "redux/modules/user";
 import "./style.less";
 import Logo from "../Logo";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ProfileMenu } from "./profile";
-import { connect } from "react-redux";
 import { HeaderPlugins } from "./plugins";
-import { getOrganisation } from "helpers/auth";
 import { IntroduceQuestionnairePage } from "components/TourQuestionnaires";
 import { IntroduceNewRecordButton } from "components/TourRecordCreation";
 import { IntroduceReportPage } from "components/TourReports";
+import { useDispatch } from "react-redux";
 const config = require("../../../../config/main").app.auth;
-
-interface IProps {
-  currentURL?: string;
-  isLoggedIn?: boolean;
-  isBeneficiary?: boolean;
-  logout?: RequestLogoutFunc;
-}
 
 const QuestionnaireButtonID = "questionnaire-menu-item";
 const NewRecordButtonID = "add-menu-link";
 const ReportButtonID = "reports-menu-item";
 
-const HeaderInner = (p: IProps) => {
+const Header = (): JSX.Element => {
   const { t } = useTranslation();
+  const {
+    org,
+    loggedIn: isLoggedIn,
+    beneficiaryUser: isBeneficiary,
+  } = useUser();
+  const { pathname: currentURL } = useLocation();
+  const dispatch = useDispatch();
 
   const isActive = (url: string, exact = false): boolean => {
     if (exact) {
-      return p.currentURL === url;
+      return currentURL === url;
     }
-    return p.currentURL !== undefined && p.currentURL.startsWith(url);
+    return currentURL !== undefined && currentURL.startsWith(url);
   };
 
   const logOut = () => {
-    p.logout("/login");
+    dispatch(requestLogOut("/login"));
   };
 
   const shouldShowLoginPrompt = () => {
     for (const lp of config.loginPrompt) {
-      if (lp.test(p.currentURL)) {
+      if (lp.test(currentURL)) {
         return true;
       }
     }
     return false;
   };
 
-  const { isLoggedIn, isBeneficiary } = p;
-  const org = getOrganisation();
   if (isLoggedIn && isBeneficiary !== true && org) {
     return (
       <Menu size="massive">
@@ -156,15 +146,4 @@ const HeaderInner = (p: IProps) => {
   }
 };
 
-const stateToProps = (state: IStore) => ({
-  isLoggedIn: isUserLoggedIn(state.user),
-  isBeneficiary: isBeneficiaryUser(state.user),
-  currentURL: state.router.location.pathname,
-});
-
-const dispatchToProps = (dispatch) => ({
-  logout: bindActionCreators(requestLogOut, dispatch),
-});
-
-const Header = connect(stateToProps, dispatchToProps)(HeaderInner);
 export { Header };

@@ -1,12 +1,6 @@
 import React, { useEffect } from "react";
 import { IRecordUsage, recordUsage } from "apollo/modules/user";
 import { useUser } from "redux/modules/user";
-import {
-  getCreatedDate,
-  getOrganisation,
-  getUserEmail,
-  getUserName,
-} from "helpers/auth";
 import ReactGA from "react-ga";
 
 const Inner = (p: IRecordUsage) => {
@@ -17,10 +11,9 @@ const Inner = (p: IRecordUsage) => {
       return;
     }
 
-    const org = getOrganisation();
     ReactGA.set({
       userId: user.userID,
-      dimension1: org,
+      dimension1: user.org,
       dimension2: user.beneficiaryUser ? "true" : "false",
     });
 
@@ -30,16 +23,16 @@ const Inner = (p: IRecordUsage) => {
       const delighted = (window as any).delighted;
       if (delighted && delighted.survey) {
         delighted.survey({
-          email: getUserEmail(),
-          name: getUserName(),
-          createdAt: getCreatedDate(),
+          email: user.email,
+          name: user.name,
+          createdAt: user.created,
           properties: {
-            org,
+            org: user.org,
           },
         });
       }
     }
-  }, [user]);
+  }, [user.userID]);
 
   return <div />;
 };

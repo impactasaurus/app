@@ -1,4 +1,10 @@
-import { createStore, applyMiddleware, compose, Middleware } from "redux";
+import {
+  createStore,
+  applyMiddleware,
+  compose,
+  Middleware,
+  Store,
+} from "redux";
 import { routerMiddleware } from "connected-react-router";
 import thunk from "redux-thunk";
 import getReducers from "./reducers";
@@ -8,6 +14,8 @@ import createEngine from "redux-storage-engine-localstorage";
 import filter from "redux-storage-decorator-filter";
 import logger from "redux-logger";
 import { ConfigureQuerySyncers } from "./syncers";
+import { HYDRATE_JWT } from "./modules/user";
+import { LOADED } from "./modules/storage";
 const appConfig = require("../../../config/main");
 
 export function configureStore(
@@ -15,9 +23,9 @@ export function configureStore(
   apolloReducer,
   clientMiddlewares: Middleware[],
   initialState?: IStore
-) {
+): Store<IStore> {
   let storeEngine = createEngine("state");
-  storeEngine = filter(storeEngine, ["pref"]);
+  storeEngine = filter(storeEngine, ["pref", ["user", "session", "JWT"]]);
   const storageMiddleware = storage.createMiddleware(storeEngine);
   const reducer = storage.reducer(getReducers(apolloReducer, history));
 
@@ -39,7 +47,7 @@ export function configureStore(
       window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
     compose;
 
-  const store = createStore<IStore, any, any, any>(
+  const store: Store<IStore> = createStore<IStore, any, any, any>(
     reducer,
     initialState,
     composeEnhancers(applyMiddleware(...middlewares))
@@ -54,7 +62,12 @@ export function configureStore(
   const load = storage.createLoader(storeEngine);
   load(store).then(
     () => {
-      console.log("store loaded");
+      store.dispatch({
+        type: HYDRATE_JWT,
+      });
+      store.dispatch({
+        type: LOADED,
+      });
       ConfigureQuerySyncers(store);
     },
     (e) => {

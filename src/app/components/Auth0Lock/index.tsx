@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Auth0Error, WebAuth } from "auth0-js";
-import { saveAuth, getWebAuth } from "helpers/auth";
+import { getWebAuth } from "helpers/auth";
 import { Message } from "semantic-ui-react";
 import ReactGA from "react-ga";
 import { useTranslation } from "react-i18next";
 import "./style.less";
+import { useSetJWT } from "redux/modules/user";
 
 interface IProps {
   onAuthenticated?: () => void;
@@ -13,6 +14,7 @@ interface IProps {
 const Auth0Lock = (p: IProps): JSX.Element => {
   const [error, setError] = useState<Auth0Error>(undefined);
   const { t } = useTranslation();
+  const setJWT = useSetJWT();
 
   useEffect(() => {
     const webAuth = getWebAuth();
@@ -39,7 +41,7 @@ const Auth0Lock = (p: IProps): JSX.Element => {
         onFailure(err);
         return;
       }
-      saveAuth(authResult.idToken);
+      setJWT(authResult.idToken);
       if (p.onAuthenticated) {
         p.onAuthenticated();
       }

@@ -1,9 +1,8 @@
 import React from "react";
-import { isUserLoggedIn } from "redux/modules/user";
-import { IStore } from "redux/IStore";
+import { useSetJWT, useUser } from "redux/modules/user";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
 import { Loader, Message } from "semantic-ui-react";
-import { IURLConnector, UrlConnector } from "redux/modules/url";
+import { useNavigator } from "redux/modules/url";
 import {
   acceptInvite,
   checkInvite,
@@ -12,12 +11,11 @@ import {
 } from "apollo/modules/organisation";
 import { IFormOutput, SignupForm } from "components/SignupForm";
 import { Error } from "components/Error";
-import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { refreshToken } from "helpers/auth";
 import { AddOrg } from "./AddOrg";
 
-interface IProps extends IURLConnector, IAcceptInvite {
+interface IProps extends IAcceptInvite {
   match: {
     params: {
       id: string;
@@ -26,18 +24,20 @@ interface IProps extends IURLConnector, IAcceptInvite {
   location: {
     search: string;
   };
-  isLoggedIn?: boolean;
   data?: ICheckInvite;
 }
 
 const InviteInner = (p: IProps) => {
   const { t } = useTranslation();
+  const setJWT = useSetJWT();
+  const { loggedIn } = useUser();
+  const setURL = useNavigator();
 
   const onFormSubmit = (v: IFormOutput): Promise<void> => {
     return p
       .acceptInvite(p.match.params.id, v.name, v.email, v.password)
       .then(() => {
-        p.setURL("/login");
+        setURL("/login");
       });
   };
   const onAddOrg = (): Promise<void> => {
@@ -46,12 +46,14 @@ const InviteInner = (p: IProps) => {
     return p.acceptInvite(p.match.params.id).then(() => {
       return (
         refreshToken()
-          .then(() => {
+          .then((token) => {
+            setJWT(token);
             // hard reset to clear cache
             reset();
           })
           // token refresh is best effort
-          .catch(() => {
+          .catch((e) => {
+            console.error(e);
             reset();
           })
       );
@@ -84,7 +86,7 @@ const InviteInner = (p: IProps) => {
   if (p.data.loading) {
     return <Loader active={true} inline="centered" />;
   }
-  if (p.isLoggedIn) {
+  if (loggedIn) {
     const urlParams = new URLSearchParams(p.location.search);
     return (
       <AddOrg
@@ -99,18 +101,13 @@ const InviteInner = (p: IProps) => {
   return <SignupForm onFormSubmit={onFormSubmit} collectOrgName={false} />;
 };
 
-const storeToProps = (state: IStore) => ({
-  isLoggedIn: isUserLoggedIn(state.user),
-});
-
 const InviteWithChecker = checkInvite<IProps>((p: IProps) => p.match.params.id)(
   InviteInner
 );
 const InviteWithAccepter = acceptInvite<IProps>(InviteWithChecker);
-const InviteConnected = connect(storeToProps, UrlConnector)(InviteWithAccepter);
 // t("Welcome")
 export const Invite = PageWrapperHoC<IProps>(
   "Welcome",
   "invite",
-  InviteConnected
+  InviteWithAccepter
 );

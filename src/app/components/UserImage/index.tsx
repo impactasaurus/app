@@ -1,9 +1,9 @@
-import { getUserName } from "helpers/auth";
 import React from "react";
+import { useUser } from "redux/modules/user";
 import "./style.less";
 
 export const UserImage = (): JSX.Element => {
-  const name = getUserName();
+  const { name } = useUser();
   let initials = "?";
   if (name !== null) {
     initials = name
