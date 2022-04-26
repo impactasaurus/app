@@ -8,7 +8,12 @@ const BeneficiaryBlockerInner = (): JSX.Element => {
   return (
     <Message error={true}>
       <Message.Header>{t("Sorry")}</Message.Header>
-      <div>{t("Beneficiaries are not allowed access to this page")}</div>
+      <p>{t("Beneficiaries aren't allowed to access this page")}</p>
+      <p>
+        {t(
+          "If you have an Impactasaurus account, please log out and log back in"
+        )}
+      </p>
     </Message>
   );
 };

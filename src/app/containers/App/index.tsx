@@ -81,6 +81,7 @@ export const App = (): JSX.Element[] => {
         <Route path="/report" component={containers.ReportForm} />
         <Route
           public={true}
+          beneficiary={true}
           user={<LogoutConfirmation />}
           path="/jti/:jti"
           component={containers.BeneficiaryRedirect}
@@ -115,7 +116,6 @@ export const App = (): JSX.Element[] => {
           component={containers.Unsubscribe}
         />
         <Route path="/plugin/sve" component={containers.SVE} />
-        <Route path="/no-org" component={containers.NoOrgPage} />
       </Switch>
     </div>
   );

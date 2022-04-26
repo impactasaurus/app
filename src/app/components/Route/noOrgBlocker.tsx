@@ -3,7 +3,7 @@ import { CustomError } from "components/Error";
 import { useTranslation } from "react-i18next";
 import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
 
-const NoOrgPageInner = (): JSX.Element => {
+const NoOrgBlockerInner = (): JSX.Element => {
   const { t } = useTranslation();
   return (
     <CustomError
@@ -28,8 +28,8 @@ const NoOrgPageInner = (): JSX.Element => {
   );
 };
 
-export const NoOrgPage = MinimalPageWrapperHoC(
+export const NoOrgBlocker = MinimalPageWrapperHoC(
   "No Organisation",
   "no-org-error",
-  NoOrgPageInner
+  NoOrgBlockerInner
 );

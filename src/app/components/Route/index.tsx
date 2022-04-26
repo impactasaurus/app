@@ -2,6 +2,7 @@ import React from "react";
 import { Redirect, Route as R, RouteProps } from "react-router-dom";
 import { useUser } from "redux/modules/user";
 import { BeneficiaryBlocker } from "./benBlocker";
+import { NoOrgBlocker } from "./noOrgBlocker";
 
 interface IProps {
   public?: boolean; // default = false
@@ -28,7 +29,7 @@ const Route = (p: IProps & RouteProps): React.ReactElement => {
         return <BeneficiaryBlocker />;
       }
       if (!user.org && !user.beneficiaryUser && !publicAccess) {
-        <Redirect to={"/no-org"} />;
+        return <NoOrgBlocker />;
       }
     } else {
       if (!publicAccess) {

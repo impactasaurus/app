@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { getLogoutOptions, getWebAuth } from "helpers/auth";
-import { useSetJWT, useUser } from "redux/modules/user";
+import { useSession, useSetJWT } from "redux/modules/user";
 import { WebAuth } from "auth0-js";
 
 export const LogOutListener = (): JSX.Element => {
   const webAuth = useRef<WebAuth>(getWebAuth());
-  const { logOutRequest } = useUser();
+  const { logOutRequest } = useSession();
   const setJWT = useSetJWT();
 
   useEffect(() => {
