@@ -1,10 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CustomError } from "components/Error";
 import { useTranslation } from "react-i18next";
 import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
+import ReactGA from "react-ga";
 
 const NoOrgBlockerInner = (): JSX.Element => {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    ReactGA.event({
+      category: "route",
+      action: "blocked",
+      label: "noOrgBlocker",
+    });
+  }, []);
+
   return (
     <CustomError
       inner={
