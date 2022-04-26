@@ -6,7 +6,7 @@ import { SecondaryMenu } from "components/SecondaryMenu";
 import { General } from "./general";
 import { Questions } from "./questions";
 import { Categories } from "./categories";
-import { Switch, Route } from "react-router-dom";
+import { Switch } from "react-router-dom";
 import { useNavigator } from "redux/modules/url";
 import { Hint } from "components/Hint";
 import { useLocation } from "react-router-dom";
@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { Location } from "history";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import "./style.less";
+import Route from "components/Route";
 
 export enum Page {
   GENERAL,

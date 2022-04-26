@@ -3,12 +3,13 @@ import { Helmet } from "react-helmet";
 import { Grid, Icon, Menu } from "semantic-ui-react";
 import { IURLConnector, UrlConnector } from "redux/modules/url";
 import { IStore } from "redux/IStore";
-import { Switch, Route } from "react-router-dom";
+import { Switch } from "react-router-dom";
 import * as containers from "containers";
 import { SecondaryMenu } from "components/SecondaryMenu";
 import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
 import "./style.less";
+import Route from "components/Route";
 
 interface IProps extends IURLConnector {
   match: {

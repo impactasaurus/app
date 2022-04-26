@@ -1,10 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CustomError } from "components/Error";
 import { useTranslation } from "react-i18next";
 import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
+import ReactGA from "react-ga";
 
-const NoOrgPageInner = (): JSX.Element => {
+const NoOrgBlockerInner = (): JSX.Element => {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    ReactGA.event({
+      category: "route",
+      action: "blocked",
+      label: "noOrgBlocker",
+    });
+  }, []);
+
   return (
     <CustomError
       inner={
@@ -28,8 +38,8 @@ const NoOrgPageInner = (): JSX.Element => {
   );
 };
 
-export const NoOrgPage = MinimalPageWrapperHoC(
+export const NoOrgBlocker = MinimalPageWrapperHoC(
   "No Organisation",
   "no-org-error",
-  NoOrgPageInner
+  NoOrgBlockerInner
 );

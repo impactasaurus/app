@@ -6,7 +6,7 @@ import { General } from "./general";
 import { Questions } from "./questions";
 import { Categories } from "./categories";
 import { Error } from "components/Error";
-import { Switch, Route } from "react-router-dom";
+import { Switch } from "react-router-dom";
 import { IStore } from "redux/IStore";
 import { Hint } from "components/Hint";
 import { IURLConnector, UrlConnector } from "../../redux/modules/url";
@@ -18,6 +18,7 @@ import { ImportQuestionnaireButton } from "components/ImportQuestionnaireButton"
 import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
 import "./style.less";
+import Route from "components/Route";
 
 export enum Page {
   GENERAL,
