@@ -85,8 +85,8 @@ const hydrateUser = (token: any): IUser => {
   const expiry = getExpiryDate(token);
   return {
     userID: getStringOrNull(token, "sub"),
-    email: getStringOrNull(token, "email"),
-    name: getStringOrNull(token, "name"),
+    email: getStringOrNull(token, "https://app.impactasaurus.org/email"),
+    name: getStringOrNull(token, "https://app.impactasaurus.org/name"),
     beneficiaryUser: getKey<boolean>(
       token,
       "https://app.impactasaurus.org/beneficiary",

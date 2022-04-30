@@ -125,7 +125,7 @@
   },
   "dependencies": {
     "apollo-cache-invalidation": "0.0.3",
-    "auth0-js": "9.14.0",
+    "auth0-js": "9.19.0",
     "chart.js": "2.9.4",
     "chartjs-color": "2.4.1",
     "chartjs-plugin-colorschemes": "0.4.0",

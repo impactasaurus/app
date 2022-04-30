@@ -41,7 +41,7 @@ const Auth0Lock = (p: IProps): JSX.Element => {
         onFailure(err);
         return;
       }
-      setJWT(authResult.idToken);
+      setJWT(authResult.accessToken);
       if (p.onAuthenticated) {
         p.onAuthenticated();
       }
