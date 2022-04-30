@@ -56,6 +56,7 @@ export const getWebAuth = (): WebAuth => {
     scope: appConfig.app.auth.scope,
     responseType: "token id_token",
     redirectUri: `${appConfig.app.root}/login`,
+    audience: "https://api.impactasaurus.org",
   };
 
   return new WebAuth(options);
@@ -68,7 +69,7 @@ export const refreshToken = (): Promise<string> => {
         reject(err);
         return;
       }
-      resolve(authResult.idToken);
+      resolve(authResult.accessToken);
     });
   });
 };
