@@ -14,8 +14,8 @@ import createEngine from "redux-storage-engine-localstorage";
 import filter from "redux-storage-decorator-filter";
 import logger from "redux-logger";
 import { ConfigureQuerySyncers } from "./syncers";
-import { HYDRATE_JWT } from "./modules/user";
 import { LOADED } from "./modules/storage";
+import { hydrateAuth } from "helpers/auth";
 const appConfig = require("../../../config/main");
 
 export function configureStore(
@@ -61,14 +61,12 @@ export function configureStore(
 
   const load = storage.createLoader(storeEngine);
   load(store).then(
-    () => {
-      store.dispatch({
-        type: HYDRATE_JWT,
-      });
+    async () => {
+      await hydrateAuth(store.dispatch, store.getState);
+      ConfigureQuerySyncers(store);
       store.dispatch({
         type: LOADED,
       });
-      ConfigureQuerySyncers(store);
     },
     (e) => {
       console.error("Failed to load previous state: " + e);

@@ -3,6 +3,15 @@ import Helmet from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { Grid } from "semantic-ui-react";
 
+export const PageWrapper = (p: {
+  children: JSX.Element | JSX.Element[];
+  id?: string;
+}): JSX.Element => (
+  <Grid container={true} columns={1} id={p.id}>
+    <Grid.Column>{p.children}</Grid.Column>
+  </Grid>
+);
+
 export const MinimalPageWrapperHoC = <P extends unknown>(
   title: string,
   id: string,
@@ -11,14 +20,12 @@ export const MinimalPageWrapperHoC = <P extends unknown>(
   const minPageWrapper = (p: P) => {
     const { t } = useTranslation();
     return (
-      <Grid container={true} columns={1} id={id}>
-        <Grid.Column>
-          <Helmet>
-            <title>{t(title)}</title>
-          </Helmet>
-          <WrappedComponent {...p} />
-        </Grid.Column>
-      </Grid>
+      <PageWrapper id={id}>
+        <Helmet>
+          <title>{t(title)}</title>
+        </Helmet>
+        <WrappedComponent {...p} />
+      </PageWrapper>
     );
   };
   return minPageWrapper;

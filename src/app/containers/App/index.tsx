@@ -14,6 +14,7 @@ import { LogOutListener } from "components/LogOutListener";
 import { Header } from "components/Header";
 import { IfLoggedIn } from "components/IfLoggedIn";
 import { Localiser } from "components/Localiser";
+import { PageWrapper } from "components/PageWrapperHoC";
 const appConfig = require("../../../../config/main");
 import "./style.less";
 import "./../../theme/typo.less";
@@ -24,7 +25,9 @@ const wrapper = (child: JSX.Element): JSX.Element[] => {
   return [
     <Helmet key="helm" {...appConfig.app} {...appConfig.app.head} />,
     <Header key="header" />,
-    child,
+    <div key="content" id="main-app-content">
+      {child}
+    </div>,
     <Footer key="footer" />,
   ];
 };
@@ -32,11 +35,15 @@ const wrapper = (child: JSX.Element): JSX.Element[] => {
 export const App = (): JSX.Element[] => {
   const storeLoaded = useSelector((s: IStore) => s.storage.loaded);
   if (storeLoaded !== true) {
-    return wrapper(<Loader key="loader" active={true} inline="centered" />);
+    return wrapper(
+      <PageWrapper>
+        <Loader key="loader" active={true} inline="centered" />
+      </PageWrapper>
+    );
   }
 
   return wrapper(
-    <div key="content" id="main-app-content">
+    <>
       <IfLoggedIn>
         <Localiser />
         <Tracker />
@@ -117,6 +124,6 @@ export const App = (): JSX.Element[] => {
         />
         <Route path="/plugin/sve" component={containers.SVE} />
       </Switch>
-    </div>
+    </>
   );
 };
