@@ -15,6 +15,7 @@ import { Header } from "components/Header";
 import { IfLoggedIn } from "components/IfLoggedIn";
 import { Localiser } from "components/Localiser";
 import { PageWrapper } from "components/PageWrapperHoC";
+import { Toaster } from "react-hot-toast";
 const appConfig = require("../../../../config/main");
 import "./style.less";
 import "./../../theme/typo.less";
@@ -28,6 +29,7 @@ const wrapper = (child: JSX.Element): JSX.Element[] => {
     <div key="content" id="main-app-content">
       {child}
     </div>,
+    <Toaster key="toast" />,
     <Footer key="footer" />,
   ];
 };
