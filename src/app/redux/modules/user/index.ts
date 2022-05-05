@@ -173,6 +173,16 @@ export const useSetJWT = (): ((jwt: string | null) => void) => {
   return setJWT;
 };
 
+export const useHydrateJWT = (): (() => void) => {
+  const dispatch = useDispatch();
+  const hydrateJWT = (): void => {
+    dispatch({
+      type: HYDRATE_JWT,
+    });
+  };
+  return hydrateJWT;
+};
+
 export const isBeneficiaryUser = (state: IState): boolean | undefined => {
   return state.hydrated.beneficiaryUser;
 };

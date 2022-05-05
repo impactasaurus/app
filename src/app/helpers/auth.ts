@@ -4,6 +4,8 @@ import { IStore } from "redux/IStore";
 import { HYDRATE_JWT, SET_JWT } from "redux/modules/user";
 const appConfig = require("../../../config/main");
 
+export const REFRESH_TRIGGER_MS = 6 * 60 * 60 * 1000;
+
 export const getDecodedToken = (token: string): any => {
   const urlBase64Decode = (str) => {
     let output = str.replace(/-/g, "+").replace(/_/g, "/");
@@ -82,7 +84,7 @@ export const hydrateAuth = (
   state: () => IStore
 ): Promise<void> => {
   dispatch({ type: HYDRATE_JWT });
-  if (timeToExpiry(state().user.session.expiry) > 6 * 60 * 60 * 1000) {
+  if (timeToExpiry(state().user.session.expiry) > REFRESH_TRIGGER_MS) {
     return Promise.resolve();
   }
   return refreshToken()

@@ -1,15 +1,22 @@
 import React, { useEffect, useRef } from "react";
-import { refreshToken, timeToExpiry } from "helpers/auth";
-import { useSession, useSetJWT, useUser } from "redux/modules/user";
+import { refreshToken, REFRESH_TRIGGER_MS, timeToExpiry } from "helpers/auth";
+import {
+  useHydrateJWT,
+  useSession,
+  useSetJWT,
+  useUser,
+} from "redux/modules/user";
 
-const REFRESH_DELTA = 4 * 60 * 1000;
 const TRIGGER_FREQ = 5 * 1000;
+const REFRESH_COOL_OFF = REFRESH_TRIGGER_MS / 10;
 
 export const TokenRefresher = (): JSX.Element => {
   const setJWT = useSetJWT();
+  const hydrateJWT = useHydrateJWT();
   const { loggedIn } = useUser();
-  const { expiry, JWT } = useSession();
+  const { expiry } = useSession();
   const refreshing = useRef<boolean>(false);
+  const lastRefreshAttempt = useRef<number>(0);
 
   useEffect(() => {
     window.setInterval(trigger, TRIGGER_FREQ);
@@ -19,12 +26,13 @@ export const TokenRefresher = (): JSX.Element => {
     trigger();
   }, [expiry]);
 
-  const refresh = () => {
+  const refresh = (): Promise<void> => {
     if (refreshing.current) {
-      return;
+      return Promise.resolve();
     }
     refreshing.current = true;
-    refreshToken()
+    lastRefreshAttempt.current = Date.now();
+    return refreshToken()
       .then((token) => {
         setJWT(token);
         refreshing.current = false;
@@ -35,18 +43,20 @@ export const TokenRefresher = (): JSX.Element => {
       });
   };
 
-  const resetJWT = () => {
-    setJWT(JWT);
-  };
-
   const trigger = () => {
     const delta = timeToExpiry(expiry);
 
     if (delta < 0 && loggedIn) {
-      resetJWT();
-    }
-    if (delta > 0 && delta < REFRESH_DELTA) {
-      refresh();
+      // hydrate the current JWT:
+      // if we failed to refresh, we will ensure the hydrated state reflects the expired token
+      // if we successfully refreshed, we are just duplicating a little hydration effort
+      // catch should never fire, but just in case
+      refresh().then(hydrateJWT).catch(hydrateJWT);
+    } else if (delta > 0 && delta < REFRESH_TRIGGER_MS) {
+      const timeSinceLastTry = Date.now() - lastRefreshAttempt.current;
+      if (delta < 60 * 1000 || timeSinceLastTry > REFRESH_COOL_OFF) {
+        refresh();
+      }
     }
   };
 
