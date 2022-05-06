@@ -1,5 +1,10 @@
 import { AuthOptions, LogoutOptions, WebAuth } from "auth0-js";
+import { Dispatch } from "redux";
+import { IStore } from "redux/IStore";
+import { HYDRATE_JWT, IAction, SET_JWT } from "redux/modules/user";
 const appConfig = require("../../../config/main");
+
+export const REFRESH_TRIGGER_MS = 6 * 60 * 60 * 1000;
 
 export const getDecodedToken = (token: string): any => {
   const urlBase64Decode = (str) => {
@@ -72,6 +77,28 @@ export const refreshToken = (): Promise<string> => {
       resolve(authResult.accessToken);
     });
   });
+};
+
+export const hydrateAuth = (
+  dispatch: Dispatch,
+  state: () => IStore
+): Promise<void> => {
+  dispatch({ type: HYDRATE_JWT });
+  if (timeToExpiry(state().user?.session?.expiry) > REFRESH_TRIGGER_MS) {
+    return Promise.resolve();
+  }
+  return refreshToken()
+    .then((token) => {
+      dispatch({
+        type: SET_JWT,
+        payload: {
+          jwt: token,
+        },
+      } as IAction);
+    })
+    .catch((e) => {
+      console.error(e);
+    });
 };
 
 export const getLogoutOptions = (redirect?: string): LogoutOptions => {

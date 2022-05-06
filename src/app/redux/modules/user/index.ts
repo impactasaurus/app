@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { IStore } from "redux/IStore";
 import { useDispatch, shallowEqual } from "react-redux";
 import { getDecodedToken } from "helpers/auth";
+import { useLocation } from "react-router-dom";
 
 export const SET_JWT = "SET_JWT";
 export const REQUEST_LOGOUT = "REQUEST_LOGOUT";
@@ -160,6 +161,15 @@ export function requestLogOut(redirect: string): IAction {
   };
 }
 
+export const useLogout = (): ((redirect?: string) => void) => {
+  const dispatch = useDispatch();
+  const { pathname: currentURL } = useLocation();
+  const logout = (redirect?: string): void => {
+    dispatch(requestLogOut(redirect ?? currentURL));
+  };
+  return logout;
+};
+
 export const useSetJWT = (): ((jwt: string | null) => void) => {
   const dispatch = useDispatch();
   const setJWT = (jwt: string | null): void => {
@@ -171,6 +181,16 @@ export const useSetJWT = (): ((jwt: string | null) => void) => {
     });
   };
   return setJWT;
+};
+
+export const useHydrateJWT = (): (() => void) => {
+  const dispatch = useDispatch();
+  const hydrateJWT = (): void => {
+    dispatch({
+      type: HYDRATE_JWT,
+    });
+  };
+  return hydrateJWT;
 };
 
 export const isBeneficiaryUser = (state: IState): boolean | undefined => {
