@@ -28,12 +28,13 @@ export const TokenRefresher = (): JSX.Element => {
   const toastActive = useRef<boolean>(false);
 
   useEffect(() => {
-    window.setInterval(trigger, TRIGGER_FREQ);
+    const ticker = window.setInterval(trigger, TRIGGER_FREQ);
+    return () => {
+      window.clearInterval(ticker);
+    };
   }, []);
 
-  useEffect(() => {
-    trigger();
-  }, [expiry]);
+  useEffect(() => trigger(), [expiry]);
 
   const refresh = (): Promise<void> => {
     if (refreshing.current) {
