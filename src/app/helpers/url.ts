@@ -14,13 +14,14 @@ export const journeyURI = (
 };
 
 export const journey = (
-  setURL: (url: string, query?: string) => void,
+  setURL: (url: string, query?: URLSearchParams) => void,
   beneficiary: string,
   questionnaire?: string
-) => {
-  const uri = journeyURI(beneficiary, questionnaire);
-  const parts = uri.split("?");
-  setURL(parts[0], parts.length > 1 ? parts[1] : undefined);
+): void => {
+  setURL(
+    `/beneficiary/${beneficiary}`,
+    questionnaire ? new URLSearchParams({ q: questionnaire }) : undefined
+  );
 };
 
 export const questionnaireURI = (questionnaire: string): string => {
