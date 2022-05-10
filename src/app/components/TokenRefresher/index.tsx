@@ -8,6 +8,7 @@ import {
 } from "redux/modules/user";
 import toast from "react-hot-toast";
 import { RefreshFailedToast, SuccessToast } from "./toast";
+import useInterval from "helpers/hooks/useInterval";
 
 const TRIGGER_FREQ = 5 * 1000;
 
@@ -27,13 +28,7 @@ export const TokenRefresher = (): JSX.Element => {
   const lastRefreshAttempt = useRef<number>(0);
   const toastActive = useRef<boolean>(false);
 
-  useEffect(() => {
-    const ticker = window.setInterval(trigger, TRIGGER_FREQ);
-    return () => {
-      window.clearInterval(ticker);
-    };
-  }, []);
-
+  useInterval(() => trigger(), TRIGGER_FREQ);
   useEffect(() => trigger(), [expiry]);
 
   const refresh = (): Promise<void> => {

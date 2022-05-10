@@ -1,5 +1,6 @@
 import { timeToExpiry } from "helpers/auth";
-import React, { useEffect, useState } from "react";
+import useInterval from "helpers/hooks/useInterval";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLogout, useSession } from "redux/modules/user";
 import { Button } from "semantic-ui-react";
@@ -13,14 +14,9 @@ export const RefreshFailedToast = (): JSX.Element => {
   const logout = useLogout();
   const [secondsLeft, setSecondsLeft] = useState(secondsToExpiry(expiry));
 
-  useEffect(() => {
-    const ticker = window.setInterval(() => {
-      setSecondsLeft(secondsToExpiry(expiry));
-    }, 1000);
-    return () => {
-      window.clearInterval(ticker);
-    };
-  }, []);
+  useInterval(() => {
+    setSecondsLeft(secondsToExpiry(expiry));
+  }, 1000);
 
   return (
     <div>
