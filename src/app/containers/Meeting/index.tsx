@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet";
 import { IMeetingResult, getMeeting } from "apollo/modules/meetings";
 import { Question } from "components/Question";
@@ -25,6 +25,8 @@ import { useUser } from "redux/modules/user";
 import { getQuestions } from "helpers/questionnaire";
 import "rc-slider/assets/index.css";
 import "./style.less";
+import { IOutcomeSet } from "models/outcomeSet";
+import { IQuestion } from "models/question";
 
 interface IProps {
   data: IMeetingResult;
@@ -35,23 +37,68 @@ interface IProps {
   };
 }
 
+const Wrapper = (p: {
+  children: JSX.Element;
+  progress?: JSX.Element;
+}): JSX.Element => {
+  const { children, progress = <div /> } = p;
+  const { t } = useTranslation();
+  return (
+    <div id="meeting">
+      {progress}
+      <Grid container={true} columns={1}>
+        <Grid.Column>
+          <Helmet>
+            <title>{t("Questionnaire")}</title>
+          </Helmet>
+          <div>{children}</div>
+        </Grid.Column>
+      </Grid>
+    </div>
+  );
+};
+
+const hasInstructions = (q: IOutcomeSet) =>
+  q.instructions && q.instructions.length !== 0;
+const questionIdx = (qId: string, questions: IQuestion[]): number =>
+  questions.findIndex((q) => q.id === qId);
+
 const MeetingInner = (p: IProps) => {
-  const [currentQuestion, setCurrentQuestion] = useState<string>();
+  const [currentQuestionID, setCurrentQuestionID] = useState<string>();
   const [screen, setScreen] = useState<Screen>(Screen.QUESTION);
-  const [init, setInit] = useState<boolean>(false);
+  const { beneficiaryUser } = useUser();
+  const init = useRef<boolean>(false);
   const { t } = useTranslation();
   const setURL = useNavigator();
-  const { beneficiaryUser } = useUser();
 
   const questionnaire = p.data?.getMeeting?.outcomeSet;
   const questions = questionnaire ? getQuestions(questionnaire) : undefined;
 
   useEffect(() => {
-    if (!init && questions) {
-      setInit(true);
-      setMeetingState(initialState(hasInstructions(), questions.length));
+    if (!init.current && questions) {
+      init.current = true;
+      const iState = initialState(
+        hasInstructions(questionnaire),
+        questions.length
+      );
+      setMeetingState(iState);
     }
   }, [questions]);
+
+  const setMeetingState = (s: IMeetingState) => {
+    setScreen(s.screen);
+    let idxx = s.qIdx;
+    if (idxx < 0) {
+      idxx = 0;
+    }
+    if (idxx >= questions.length) {
+      idxx = questions.length - 1;
+    }
+    const question = questions[idxx];
+    if (question !== undefined) {
+      setCurrentQuestionID(question.id);
+    }
+  };
 
   const goToQuestionWithID = (qID: string) => {
     const idx = questions.findIndex((q) => q.id === qID);
@@ -69,7 +116,7 @@ const MeetingInner = (p: IProps) => {
     if (beneficiaryUser) {
       setMeetingState({
         screen: Screen.THANKS,
-        qIdx: currentQuestionIdx(),
+        qIdx: questionIdx(currentQuestionID, questions),
       });
     } else {
       journey(
@@ -80,86 +127,34 @@ const MeetingInner = (p: IProps) => {
     }
   };
 
-  const hasInstructions = () => {
-    return (
-      questionnaire.instructions && questionnaire.instructions.length !== 0
-    );
-  };
-
-  const currentQuestionIdx = (): number => {
-    return questions.findIndex((q) => q.id === currentQuestion);
-  };
-
   const goToNextScreen = () => {
     const nextState = getNextState(
       screen,
-      currentQuestionIdx(),
+      questionIdx(currentQuestionID, questions),
       questions.length
     );
     setMeetingState(nextState);
   };
 
-  const setMeetingState = (s: IMeetingState) => {
-    setScreen(s.screen);
-    let idxx = s.qIdx;
-    if (idxx < 0) {
-      idxx = 0;
-    }
-    if (idxx >= questions.length) {
-      idxx = questions.length - 1;
-    }
-    const question = questions[idxx];
-    if (question !== undefined) {
-      setCurrentQuestion(question.id);
-    }
-  };
-
   const goToPreviousScreen = () => {
     const prevState = getPreviousState(
       screen,
-      currentQuestionIdx(),
-      hasInstructions()
+      questionIdx(currentQuestionID, questions),
+      hasInstructions(questionnaire)
     );
     setMeetingState(prevState);
   };
 
   const canGoToPrevious = (): boolean => {
-    return canGoBack(screen, currentQuestionIdx(), hasInstructions());
-  };
-
-  const renderFinished = (): JSX.Element => {
-    return (
-      <QuestionnaireReview
-        record={p.data.getMeeting}
-        onQuestionClick={goToQuestionWithID}
-        onBack={goToPreviousScreen}
-        onComplete={completed}
-      />
+    return canGoBack(
+      screen,
+      questionIdx(currentQuestionID, questions),
+      hasInstructions(questionnaire)
     );
   };
 
-  const renderNotepad = (): JSX.Element => {
-    return (
-      <MeetingNotepad
-        record={p.data.getMeeting}
-        onComplete={goToNextScreen}
-        onBack={goToPreviousScreen}
-      />
-    );
-  };
-
-  const renderInstructions = (): JSX.Element => {
-    return (
-      <QuestionnaireInstructions
-        title={questionnaire.name}
-        text={questionnaire.instructions}
-        onNext={goToNextScreen}
-      />
-    );
-  };
-
-  const renderProgressBar = (): JSX.Element => {
-    let value = currentQuestionIdx();
+  const ProgressBar = (): JSX.Element => {
+    let value = questionIdx(currentQuestionID, questions);
     if (screen === Screen.NOTES || screen === Screen.REVIEW) {
       value = questions.length;
     }
@@ -167,66 +162,90 @@ const MeetingInner = (p: IProps) => {
   };
 
   const { data } = p;
-  const wrapper = (
-    inner: JSX.Element,
-    progress: JSX.Element = <div />
-  ): JSX.Element => {
-    return (
-      <div id="meeting">
-        {progress}
-        <Grid container={true} columns={1}>
-          <Grid.Column>
-            <Helmet>
-              <title>{t("Questionnaire")}</title>
-            </Helmet>
-            <div>{inner}</div>
-          </Grid.Column>
-        </Grid>
-      </div>
-    );
-  };
-
   if (data.error) {
-    return wrapper(<Error text={t("Failed to load")} />);
+    return (
+      <Wrapper>
+        <Error text={t("Failed to load")} />
+      </Wrapper>
+    );
   }
   if (data.loading || data.getMeeting === undefined) {
-    return wrapper(<Loader active={true} inline="centered" />);
-  }
-  if (screen === Screen.REVIEW) {
-    return wrapper(renderFinished(), renderProgressBar());
-  }
-  if (screen === Screen.NOTES) {
-    return wrapper(renderNotepad(), renderProgressBar());
-  }
-  if (screen === Screen.INSTRUCTIONS) {
-    return wrapper(renderInstructions(), renderProgressBar());
-  }
-  if (screen === Screen.THANKS) {
-    return wrapper(<Thanks />);
-  }
-  if (screen === Screen.EMPTY) {
-    return wrapper(
-      <EmptyQuestionnaire
-        questionnaireID={questionnaire.id}
-        isBeneficiary={beneficiaryUser}
-      />
+    return (
+      <Wrapper>
+        <Loader active={true} inline="centered" />
+      </Wrapper>
     );
   }
-  const currentQuestionID = currentQuestion;
-  if (currentQuestionID === undefined) {
-    return wrapper(<Loader active={true} inline="centered" />);
+  if (screen === Screen.REVIEW) {
+    return (
+      <Wrapper progress={<ProgressBar />}>
+        <QuestionnaireReview
+          record={p.data.getMeeting}
+          onQuestionClick={goToQuestionWithID}
+          onBack={goToPreviousScreen}
+          onComplete={completed}
+        />
+      </Wrapper>
+    );
   }
-  const meeting = data.getMeeting;
-  return wrapper(
-    <Question
-      key={currentQuestionID}
-      record={meeting}
-      questionID={currentQuestionID}
-      showPrevious={canGoToPrevious()}
-      onPrevious={goToPreviousScreen}
-      onNext={goToNextScreen}
-    />,
-    renderProgressBar()
+  if (screen === Screen.NOTES) {
+    return (
+      <Wrapper progress={<ProgressBar />}>
+        <MeetingNotepad
+          record={p.data.getMeeting}
+          onComplete={goToNextScreen}
+          onBack={goToPreviousScreen}
+        />
+      </Wrapper>
+    );
+  }
+  if (screen === Screen.INSTRUCTIONS) {
+    return (
+      <Wrapper progress={<ProgressBar />}>
+        <QuestionnaireInstructions
+          title={questionnaire.name}
+          text={questionnaire.instructions}
+          onNext={goToNextScreen}
+        />
+      </Wrapper>
+    );
+  }
+  if (screen === Screen.THANKS) {
+    return (
+      <Wrapper>
+        <Thanks />
+      </Wrapper>
+    );
+  }
+  if (screen === Screen.EMPTY) {
+    return (
+      <Wrapper>
+        <EmptyQuestionnaire
+          questionnaireID={questionnaire.id}
+          isBeneficiary={beneficiaryUser}
+        />
+      </Wrapper>
+    );
+  }
+  if (currentQuestionID === undefined) {
+    return (
+      <Wrapper>
+        <Loader active={true} inline="centered" />
+      </Wrapper>
+    );
+  }
+
+  return (
+    <Wrapper progress={<ProgressBar />}>
+      <Question
+        key={currentQuestionID}
+        record={data.getMeeting}
+        questionID={currentQuestionID}
+        showPrevious={canGoToPrevious()}
+        onPrevious={goToPreviousScreen}
+        onNext={goToNextScreen}
+      />
+    </Wrapper>
   );
 };
 
