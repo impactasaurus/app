@@ -35,80 +35,77 @@ export function initialState(
 }
 
 export function getPreviousState(
-  current: Screen,
-  qIdx: number,
+  current: IMeetingState,
   hasInstructions: boolean
 ): IMeetingState {
   const noChange = {
-    screen: current,
-    qIdx,
+    ...current,
   };
-  if (current === Screen.REVIEW) {
+  if (current.screen === Screen.REVIEW) {
     return {
       screen: Screen.NOTES,
-      qIdx,
+      qIdx: current.qIdx,
     };
   }
-  if (current === Screen.INSTRUCTIONS) {
+  if (current.screen === Screen.INSTRUCTIONS) {
     return noChange;
   }
-  if (current === Screen.NOTES) {
+  if (current.screen === Screen.NOTES) {
     return {
       screen: Screen.QUESTION,
-      qIdx,
+      qIdx: current.qIdx,
     };
   }
-  const firstQuestion = qIdx === -1 || qIdx === 0;
+  const firstQuestion = current.qIdx === -1 || current.qIdx === 0;
   if (firstQuestion && hasInstructions) {
     return {
       screen: Screen.INSTRUCTIONS,
-      qIdx,
+      qIdx: current.qIdx,
     };
   }
   if (firstQuestion) {
     return noChange;
   }
   return {
-    screen: current,
-    qIdx: qIdx - 1,
+    screen: current.screen,
+    qIdx: current.qIdx - 1,
   };
 }
 
 export function canGoBack(
-  current: Screen,
-  qIdx: number,
+  current: IMeetingState,
   hasInstructions: boolean
 ): boolean {
-  const prev = getPreviousState(current, qIdx, hasInstructions);
-  const identical = prev.screen === current && prev.qIdx === qIdx;
+  const prev = getPreviousState(current, hasInstructions);
+  const identical =
+    prev.screen === current.screen && prev.qIdx === current.qIdx;
   return !identical;
 }
 
 export function getNextState(
-  current: Screen,
-  qIdx: number,
+  current: IMeetingState,
   noQuestions: number
 ): IMeetingState {
-  if (current === Screen.INSTRUCTIONS) {
+  if (current.screen === Screen.INSTRUCTIONS) {
     return {
       screen: Screen.QUESTION,
       qIdx: 0,
     };
   }
-  if (current === Screen.NOTES) {
+  if (current.screen === Screen.NOTES) {
     return {
       screen: Screen.REVIEW,
-      qIdx,
+      qIdx: current.qIdx,
     };
   }
-  if (noQuestions > qIdx + 1) {
+  if (noQuestions > current.qIdx + 1) {
     return {
       screen: Screen.QUESTION,
-      qIdx: qIdx + 1,
+      qIdx: current.qIdx + 1,
     };
   }
   return {
     screen: Screen.NOTES,
-    qIdx,
+    qIdx: current.qIdx,
   };
 }
