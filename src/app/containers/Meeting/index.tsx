@@ -5,7 +5,6 @@ import { Question } from "components/Question";
 import { Grid, Loader, Progress } from "semantic-ui-react";
 import { useNavigator } from "redux/modules/url";
 import { Error } from "components/Error";
-import { QuestionnaireReview } from "components/QuestionnaireReview";
 import { QuestionnaireInstructions } from "components/QuestionnaireInstructions";
 import { MeetingNotepad } from "components/MeetingNotepad";
 import {
@@ -24,6 +23,7 @@ import ReactGA from "react-ga";
 import { useUser } from "redux/modules/user";
 import { getQuestions } from "helpers/questionnaire";
 import { IOutcomeSet } from "models/outcomeSet";
+import { Finalise } from "./finalise";
 import "rc-slider/assets/index.css";
 import "./style.less";
 
@@ -99,14 +99,6 @@ const MeetingInner = (p: IProps) => {
   };
   const setScreen = (screen: Screen) => setState({ qIdx: state.qIdx, screen });
 
-  const goToQuestionWithID = (qID: string) => {
-    const idx = questions.findIndex((q) => q.id === qID);
-    setState({
-      screen: Screen.QUESTION,
-      qIdx: idx,
-    });
-  };
-
   const completed = () => {
     ReactGA.event({
       category: "assessment",
@@ -139,7 +131,7 @@ const MeetingInner = (p: IProps) => {
 
   const ProgressBar = (): JSX.Element => {
     let value = state.qIdx;
-    if (state.screen === Screen.NOTES || state.screen === Screen.REVIEW) {
+    if (state.screen === Screen.NOTES) {
       value = questions.length;
     }
     return <Progress value={value} total={questions.length} size="tiny" />;
@@ -160,14 +152,13 @@ const MeetingInner = (p: IProps) => {
       </Wrapper>
     );
   }
-  if (state.screen === Screen.REVIEW) {
+  if (state.screen === Screen.FINALISE) {
     return (
-      <Wrapper progress={<ProgressBar />}>
-        <QuestionnaireReview
-          record={p.data.getMeeting}
-          onQuestionClick={goToQuestionWithID}
-          onBack={goToPreviousScreen}
-          onComplete={completed}
+      <Wrapper>
+        <Finalise
+          next={completed}
+          recordID={p.data.getMeeting.id}
+          benID={p.data.getMeeting.beneficiary}
         />
       </Wrapper>
     );

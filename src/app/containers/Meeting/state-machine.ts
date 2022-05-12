@@ -1,10 +1,10 @@
 export enum Screen {
+  EMPTY,
+  INSTRUCTIONS,
   QUESTION,
   NOTES,
-  REVIEW,
-  INSTRUCTIONS,
+  FINALISE,
   THANKS,
-  EMPTY,
 }
 
 export interface IMeetingState {
@@ -41,13 +41,10 @@ export function getPreviousState(
   const noChange = {
     ...current,
   };
-  if (current.screen === Screen.REVIEW) {
-    return {
-      screen: Screen.NOTES,
-      qIdx: current.qIdx,
-    };
-  }
-  if (current.screen === Screen.INSTRUCTIONS) {
+  if (
+    current.screen === Screen.INSTRUCTIONS ||
+    current.screen === Screen.FINALISE
+  ) {
     return noChange;
   }
   if (current.screen === Screen.NOTES) {
@@ -94,7 +91,7 @@ export function getNextState(
   }
   if (current.screen === Screen.NOTES) {
     return {
-      screen: Screen.REVIEW,
+      screen: Screen.FINALISE,
       qIdx: current.qIdx,
     };
   }
