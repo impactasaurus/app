@@ -67,7 +67,7 @@ const MeetingNotepadInner = (p: IProps) => {
       />
       <Button onClick={p.onBack}>{t("Back")}</Button>
       <Button {...nextProps} onClick={saveNotes}>
-        {t("Next")}
+        {t("Finish")}
       </Button>
       {savingError && <Error text={t("Failed to save notes")} />}
     </div>
