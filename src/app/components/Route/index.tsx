@@ -1,5 +1,10 @@
 import React from "react";
-import { Redirect, Route as R, RouteProps } from "react-router-dom";
+import {
+  Redirect,
+  Route as R,
+  RouteProps,
+  useLocation,
+} from "react-router-dom";
 import { useUser } from "redux/modules/user";
 import { BeneficiaryBlocker } from "./benBlocker";
 import { NoOrgBlocker } from "./noOrgBlocker";
@@ -19,6 +24,7 @@ const Route = (p: IProps & RouteProps): React.ReactElement => {
     ...rest
   } = p;
   const user = useUser();
+  const { pathname, search } = useLocation();
 
   const render = (props) => {
     if (user.loggedIn) {
@@ -33,7 +39,10 @@ const Route = (p: IProps & RouteProps): React.ReactElement => {
       }
     } else {
       if (!publicAccess) {
-        return <Redirect to={"/login"} />;
+        const redirectURL = pathname + search;
+        return (
+          <Redirect to={`/login?redirect=${encodeURIComponent(redirectURL)}`} />
+        );
       }
     }
     return <Component {...props} />;
