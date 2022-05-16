@@ -26,6 +26,7 @@ const appConfig = require("../config/main");
 const introspectionQueryResultData = require("./app/apollo/fragmentTypes.json");
 
 const rootElement = document.getElementById("impactasaurus");
+rootElement.classList.add(window.self == window.top ? "top" : "framed");
 
 const initApp = () => {
   if (appConfig.env === "production") {

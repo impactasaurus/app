@@ -80,7 +80,7 @@ const BeneficiaryInner = (p: IProps) => {
   const match = p.match.path;
 
   return (
-    <div>
+    <div id="ben-page">
       <SecondaryMenu signpost={ben}>
         <Menu.Item
           active={p.child === ReviewPage.JOURNEY}
