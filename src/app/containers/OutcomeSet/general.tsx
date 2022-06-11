@@ -16,6 +16,7 @@ import {
   withFormik,
 } from "formik";
 import { WithTranslation, withTranslation } from "react-i18next";
+import { QuestionnaireGeneral } from "components/QuestionnaireGeneral";
 
 interface IProps extends IOutcomeMutation, Partial<WithTranslation> {
   data?: IOutcomeResult;
@@ -136,7 +137,7 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
   );
 };
 
-const GeneralInner = withFormik<IProps, IFormOutput>({
+const Editable = withFormik<IProps, IFormOutput>({
   validate: (values: IFormOutput) => {
     const errors: FormikErrors<IFormOutput> = {};
     if (!values.name || values.name === "") {
@@ -181,6 +182,18 @@ const GeneralInner = withFormik<IProps, IFormOutput>({
   },
   validateOnMount: true,
 })(InnerForm);
+
+const ReadOnly = (p: IProps) => (
+  <QuestionnaireGeneral questionnaire={p.data.getOutcomeSet} />
+);
+
+const GeneralInner = (p: IProps) => {
+  return p.data.getOutcomeSet?.readOnly === true ? (
+    <ReadOnly {...p} />
+  ) : (
+    <Editable {...p} />
+  );
+};
 
 const GeneralTranslated = withTranslation()(GeneralInner);
 export const General = editQuestionSet<IProps>(
