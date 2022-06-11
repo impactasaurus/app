@@ -1,7 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import { IOutcomeResult, getOutcomeSet } from "apollo/modules/outcomeSets";
-import { Grid, Menu } from "semantic-ui-react";
+import { Grid, Menu, Message } from "semantic-ui-react";
 import { SecondaryMenu } from "components/SecondaryMenu";
 import { General } from "./general";
 import { Questions } from "./questions";
@@ -15,6 +15,7 @@ import { Location } from "history";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import "./style.less";
 import Route from "components/Route";
+import { TooltipIcon } from "components/TooltipIcon";
 
 export enum Page {
   GENERAL,
@@ -70,9 +71,21 @@ const OutcomeSetInner = (p: IProps) => {
   };
 
   const match = p.match.path;
+  const qq = p.data.getOutcomeSet;
+  const title = (
+    <>
+      {qq.readOnly && (
+        <TooltipIcon
+          i={{ name: "lock", size: "small" }}
+          tooltipContent={t("Read only")}
+        />
+      )}
+      {qq.name}
+    </>
+  );
   return (
     <div>
-      <SecondaryMenu signpost={p.data.getOutcomeSet.name}>
+      <SecondaryMenu signpost={title}>
         <Menu.Item
           active={page === Page.GENERAL}
           onClick={innerPageSetter(Page.GENERAL)}
@@ -100,8 +113,20 @@ const OutcomeSetInner = (p: IProps) => {
       <Grid container={true} columns={1} id="question-set">
         <Grid.Column>
           <Helmet>
-            <title>{p.data.getOutcomeSet.name}</title>
+            <title>{qq.name}</title>
           </Helmet>
+          {qq.readOnly && (
+            <Message warning={true} className="readonly-message">
+              <Message.Header>{t("Read Only")}</Message.Header>
+              <Message.Content>
+                {t(
+                  "This questionnaire cannot be edited as it has been imported from another Impactasaurus account."
+                )}
+                <br />
+                {t("If this is unexpected, please contact support.")}
+              </Message.Content>
+            </Message>
+          )}
           <Switch>
             <Route exact={true} path={`${match}/`} component={General} />
             <Route path={`${match}/questions`} component={Questions} />

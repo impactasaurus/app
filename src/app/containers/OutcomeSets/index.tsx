@@ -21,6 +21,7 @@ import {
 } from "components/TourQuestionnaires";
 import "./style.less";
 import { TooltipButton } from "components/TooltipButton";
+import { TooltipIcon } from "components/TooltipIcon";
 
 interface IProps extends IOutcomeMutation, IURLConnector {
   data: IOutcomeResult;
@@ -57,22 +58,32 @@ const SettingQuestionsInner = (p: IProps): JSX.Element => {
   const renderOutcomeSet = (os: IOutcomeSet): JSX.Element => (
     <List.Item className="question-set" key={os.id}>
       <List.Content floated="right">
-        <ConfirmButton
-          buttonProps={{ icon: true }}
-          promptText={t(
-            `Are you sure you want to delete the '{questionnaireName}' questionnaire?`,
-            {
-              questionnaireName: os.name,
-            }
-          )}
-          onConfirm={deleteQS(os.id)}
-          tooltip={t("Delete")}
-        >
-          <Icon name="delete" />
-        </ConfirmButton>
+        {!os.readOnly && (
+          <ConfirmButton
+            buttonProps={{ icon: true }}
+            promptText={t(
+              `Are you sure you want to delete the '{questionnaireName}' questionnaire?`,
+              {
+                questionnaireName: os.name,
+              }
+            )}
+            onConfirm={deleteQS(os.id)}
+            tooltip={t("Delete")}
+          >
+            <Icon name="delete" />
+          </ConfirmButton>
+        )}
       </List.Content>
       <List.Content onClick={navigateToOutcomeSet(os.id)}>
-        <List.Header as="a">{os.name}</List.Header>
+        <List.Header as="a">
+          {os.readOnly && (
+            <TooltipIcon
+              i={{ name: "lock", size: "small" }}
+              tooltipContent={t("Read only")}
+            />
+          )}
+          {os.name}
+        </List.Header>
         {os.description && (
           <List.Description as="a">{os.description}</List.Description>
         )}

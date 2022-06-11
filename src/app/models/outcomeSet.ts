@@ -10,6 +10,7 @@ export interface IOutcomeSet {
   instructions: string;
   questions: IQuestion[];
   categories: ICategory[];
+  readOnly: boolean;
 }
 
 export const fragment = gql`
@@ -24,6 +25,7 @@ export const fragment = gql`
     categories {
       ...defaultCategory
     }
+    readOnly
   }
   ${qFragment}
   ${cFragment}
