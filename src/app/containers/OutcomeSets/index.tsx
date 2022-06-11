@@ -123,8 +123,9 @@ const SettingQuestionsInner = (p: IProps): JSX.Element => {
         verticalAlign="middle"
         className="list"
       >
-        {renderArray(renderOutcomeSet, p.data.allOutcomeSets)}
-        {p.data.allOutcomeSets.length === 0 && (
+        {renderArray(
+          renderOutcomeSet,
+          p.data.allOutcomeSets,
           <div>
             <RocketIcon style={{ marginRight: "0.5em" }} />
             <a onClick={newClicked}>

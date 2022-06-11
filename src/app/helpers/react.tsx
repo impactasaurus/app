@@ -2,12 +2,13 @@ export type ArrayItemRenderer<T> = (T, idx: number, arr?: T[]) => JSX.Element;
 
 export function renderArray<T>(
   fn: ArrayItemRenderer<T>,
-  arr?: T[]
+  arr: T[],
+  emptyList?: JSX.Element
 ): JSX.Element[] {
-  if (Array.isArray(arr)) {
+  if (Array.isArray(arr) && arr.length > 0) {
     return arr.map(fn);
   }
-  return [];
+  return emptyList ? [emptyList] : [];
 }
 
 export type ArrayItemArrayRenderer<T> = (
@@ -18,7 +19,7 @@ export type ArrayItemArrayRenderer<T> = (
 
 export function renderArrayForArray<T>(
   fn: ArrayItemArrayRenderer<T>,
-  arr?: T[]
+  arr: T[]
 ): JSX.Element[] {
   if (Array.isArray(arr)) {
     return arr.reduce<JSX.Element[]>(
