@@ -132,11 +132,13 @@ const CatalogueQuestionnaireInner = (p: IProps) => {
         questionnaireID={p.match.params.id}
         text={true}
       />
-      <Switch>
-        <Route exact={true} path={`${match}/`} component={General} />
-        <Route path={`${match}/questions`} component={Questions} />
-        <Route path={`${match}/categories`} component={Categories} />
-      </Switch>
+      <div style={{ marginTop: "3em" }}>
+        <Switch>
+          <Route exact={true} path={`${match}/`} component={General} />
+          <Route path={`${match}/questions`} component={Questions} />
+          <Route path={`${match}/categories`} component={Categories} />
+        </Switch>
+      </div>
     </div>,
     getCatalogueQuestionnaire.outcomeset.name
   );

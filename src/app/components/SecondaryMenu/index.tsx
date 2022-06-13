@@ -3,7 +3,7 @@ import { Menu } from "semantic-ui-react";
 import "./style.less";
 
 interface IProps {
-  signpost?: string;
+  signpost?: string | JSX.Element;
 }
 
 // Secondary Menu is a wrapper around Semantic UI's menu

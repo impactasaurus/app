@@ -17,6 +17,7 @@ const QuestionsInner = (p: IProps) => {
     <QuestionList
       outcomeSetID={p.match.params.id}
       questionnaire={p.data.getOutcomeSet}
+      readOnly={p.data.getOutcomeSet?.readOnly}
     />
   );
 };

@@ -1,7 +1,7 @@
 {
   "overrides": [
     {
-      "files": ["*.overrides", "*.variables"],
+      "files": ["*.overrides", "*.variables", "*.branding"],
       "options": {
         "parser": "less"
       }

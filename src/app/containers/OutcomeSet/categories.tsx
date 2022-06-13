@@ -18,6 +18,7 @@ const CategoriesInner = (p: IProps) => {
       <CategoryList
         outcomeSetID={p.match.params.id}
         questionnaire={p.data.getOutcomeSet}
+        readOnly={p.data.getOutcomeSet?.readOnly}
       />
     </div>
   );

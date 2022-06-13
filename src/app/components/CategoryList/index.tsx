@@ -144,9 +144,14 @@ const CategoryListInner = (p: IProps) => {
   if (!p.questionnaire) {
     return <Loader active={true} inline="centered" />;
   }
+  const emptyList = editable(p) ? undefined : (
+    <List.Item>
+      <div style={{ textAlign: "center" }}>{t("No categories defined")}</div>
+    </List.Item>
+  );
   return (
     <List divided={true} relaxed={true} verticalAlign="middle" className="list">
-      {renderArray(renderCategory, p.questionnaire.categories)}
+      {renderArray(renderCategory, p.questionnaire.categories, emptyList)}
       {editable(p) && renderNewCategoryControl()}
     </List>
   );
