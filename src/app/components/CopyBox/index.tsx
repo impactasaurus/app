@@ -27,6 +27,7 @@ export const CopyBox = (p: IProps): JSX.Element => {
 
   return (
     <Input
+      className="copy-box"
       action={action}
       defaultValue={p.text}
       ref={linkInput}
