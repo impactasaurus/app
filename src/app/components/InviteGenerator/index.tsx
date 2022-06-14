@@ -13,22 +13,18 @@ interface IProps extends IGenerateInvite {
 const InviteGeneratorInner = (p: IProps) => {
   const [inviteID, setInviteID] = useState<string>(undefined);
   const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
     setError(false);
-    setLoading(true);
     p.generateInvite()
       .then((invite: string) => {
         setInviteID(invite);
         setError(false);
-        setLoading(false);
       })
       .catch((e) => {
         console.error(e);
         setError(true);
-        setLoading(false);
       });
   }, []);
 
@@ -51,7 +47,7 @@ const InviteGeneratorInner = (p: IProps) => {
           </span>
         </p>
         <p>
-          <CopyBox text={url} loading={loading} />
+          <CopyBox text={url} />
         </p>
       </div>
     );

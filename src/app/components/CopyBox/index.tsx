@@ -5,7 +5,6 @@ import { ButtonProps, Input } from "semantic-ui-react";
 
 interface IProps {
   text: string;
-  loading?: boolean;
 }
 
 const showCopiedLabelDuration = 4000;
@@ -44,7 +43,6 @@ export const CopyBox = (p: IProps): JSX.Element => {
       action={action}
       defaultValue={p.text}
       ref={linkInput}
-      loading={p.loading}
     />
   );
 };
