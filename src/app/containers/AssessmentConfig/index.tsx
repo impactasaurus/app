@@ -19,6 +19,7 @@ import { generateSummon, IGenerateSummon } from "../../apollo/modules/summon";
 import { WithTranslation, withTranslation } from "react-i18next";
 import ReactGA from "react-ga";
 import * as config from "../../../../config/main";
+import { CopyBox } from "components/CopyBox";
 
 const ConfigComponent = QuestionnaireRequired(AssessmentConfigComponent);
 
@@ -137,7 +138,9 @@ class AssessmentConfigInner extends React.Component<IProp, IState> {
             }
           )}
         </div>
-        <a href={url}>{url}</a>
+        <div style={{ marginTop: "1em" }}>
+          <CopyBox text={url} />
+        </div>
       </Message>
     );
   }
