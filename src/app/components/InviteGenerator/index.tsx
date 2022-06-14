@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Input, ButtonProps } from "semantic-ui-react";
+import { Modal } from "semantic-ui-react";
 import { generateInvite, IGenerateInvite } from "apollo/modules/organisation";
 import { Error } from "components/Error";
 import { useTranslation } from "react-i18next";
 import * as config from "../../../../config/main";
+import { CopyBox } from "components/CopyBox";
 
 interface IProps extends IGenerateInvite {
   onClosed?: () => void;
 }
 
 const InviteGeneratorInner = (p: IProps) => {
-  const linkInput: React.RefObject<Input> = React.createRef();
-
   const [inviteID, setInviteID] = useState<string>(undefined);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -33,12 +32,6 @@ const InviteGeneratorInner = (p: IProps) => {
       });
   }, []);
 
-  const copyLink = () => {
-    const node: any = linkInput.current;
-    node.select();
-    document.execCommand("copy");
-  };
-
   const onClose = () => {
     setInviteID(undefined);
     if (p.onClosed !== undefined) {
@@ -48,13 +41,6 @@ const InviteGeneratorInner = (p: IProps) => {
 
   if (inviteID) {
     const url = `${config.app.root}/invite/${inviteID}`;
-    const action: ButtonProps = {
-      primary: true,
-      labelPosition: "right",
-      icon: "copy",
-      content: t("Copy"),
-      onClick: copyLink,
-    };
     const modalContent = (
       <div style={{ margin: "1em" }}>
         <p>
@@ -65,12 +51,7 @@ const InviteGeneratorInner = (p: IProps) => {
           </span>
         </p>
         <p>
-          <Input
-            action={action}
-            defaultValue={url}
-            ref={linkInput}
-            loading={loading}
-          />
+          <CopyBox text={url} loading={loading} />
         </p>
       </div>
     );
