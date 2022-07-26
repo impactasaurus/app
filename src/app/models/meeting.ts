@@ -19,6 +19,7 @@ export interface IMeeting {
   meetingTags?: string[];
   incomplete: boolean;
   notes?: string;
+  completed?: string;
 }
 
 export const fragment = gql`
@@ -38,6 +39,7 @@ export const fragment = gql`
     benTags
     meetingTags
     notes
+    completed
   }
   ${aFragment}
 `;
