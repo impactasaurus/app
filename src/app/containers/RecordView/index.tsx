@@ -6,8 +6,8 @@ import { RecordQuestionSummary } from "components/RecordQuestionSummary";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { useTranslation } from "react-i18next";
-import "./style.less";
 import { ISODateString } from "components/Moment";
+import "./style.less";
 
 interface IProps extends IURLConnector {
   match: {
@@ -68,11 +68,19 @@ const RecordViewInner = (p: IProps) => {
           <span>{record.outcomeSet.name}</span>
         </div>
         <div>
-          <h4 className="label inline">{t("Date Conducted")}</h4>
+          <h4 className="label inline">{t("Started")}</h4>
           <span className="conductedDate">
             <ISODateString iso={record.conducted} />
           </span>
         </div>
+        {!record.incomplete && (
+          <div>
+            <h4 className="label inline">{t("Completed")}</h4>
+            <span className="completedDate">
+              <ISODateString iso={record.completed} />
+            </span>
+          </div>
+        )}
       </div>
       <RecordQuestionSummary
         recordID={p.match.params.id}
