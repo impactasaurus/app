@@ -1,35 +1,22 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { addLikertAnswer, IMeetingMutation } from "apollo/modules/meetings";
 import { IQuestion, Question as QuestionType } from "models/question";
 import { Likert } from "components/Likert";
 import { Notepad } from "components/Notepad";
-import "rc-slider/assets/index.css";
 import { Button, ButtonProps } from "semantic-ui-react";
 import { IIntAnswer, Answer, IAnswer } from "models/answer";
 import { IMeeting } from "models/meeting";
 import ReactGA from "react-ga";
-import { WithTranslation, withTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
+import "rc-slider/assets/index.css";
 
-interface IProps extends IMeetingMutation, Partial<WithTranslation> {
+interface IProps extends IMeetingMutation {
   record: IMeeting;
   questionID: string;
   // defaults to true
   showPrevious?: boolean;
   onPrevious: () => void;
   onNext: () => void;
-}
-
-interface IState {
-  value?: number;
-  notes?: string;
-  saveError?: string;
-  saving?: boolean;
-}
-
-function hasAnswerChanged(prev: Answer, s: IState): boolean {
-  return (
-    prev === undefined || s.value !== prev.answer || s.notes !== prev.notes
-  );
 }
 
 function logGAEvent(action: string) {
@@ -40,161 +27,101 @@ function logGAEvent(action: string) {
   });
 }
 
-class QuestionInner extends React.Component<IProps, IState> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: undefined,
-      saveError: undefined,
-      saving: false,
-    };
-    this.setAnswer = this.setAnswer.bind(this);
-    this.setNotes = this.setNotes.bind(this);
-    this.next = this.next.bind(this);
-    this.goToPreviousQuestion = this.goToPreviousQuestion.bind(this);
-    this.getQuestion = this.getQuestion.bind(this);
-    this.getAnswer = this.getAnswer.bind(this);
-  }
+const QuestionInner = (p: IProps) => {
+  const { t } = useTranslation();
+  const [value, setValue] = useState<number>();
+  const [notes, setNotes] = useState<string>();
+  const [saveState, setSaveState] = useState<{ err: boolean; saving: boolean }>(
+    { err: false, saving: false }
+  );
 
-  public componentDidMount() {
-    this.loadQuestionIntoState(this.props);
-  }
-
-  public componentDidUpdate(prevProps: IProps) {
-    if (
-      prevProps.questionID !== this.props.questionID ||
-      (prevProps.record === undefined && this.props.record !== undefined)
-    ) {
-      this.loadQuestionIntoState(this.props);
-    }
-  }
-
-  private getQuestion(p?: IProps): IQuestion {
-    const props = p || this.props;
-    return props.record.outcomeSet.questions.find(
-      (q) => q.id === props.questionID
-    );
-  }
-
-  private getAnswer(p?: IProps): IAnswer {
-    const props = p || this.props;
-    return props.record.answers.find(
-      (answer) => answer.questionID === props.questionID
-    );
-  }
-
-  private loadQuestionIntoState(p: IProps) {
+  useEffect(() => {
     if (p.record === undefined) {
       return;
     }
-    const a = this.getAnswer(p) as IIntAnswer;
+    const a = getAnswer() as IIntAnswer;
     if (a === undefined || a === null) {
-      this.setState({
-        notes: undefined,
-        value: undefined,
-      });
+      setNotes(undefined);
+      setValue(undefined);
     } else {
-      this.setState({
-        notes: a.notes,
-        value: a.answer,
-      });
+      setNotes(a.notes);
+      setValue(a.answer);
     }
-  }
+  }, [p.questionID, p.record]);
 
-  private goToPreviousQuestion() {
-    this.props.onPrevious();
-  }
+  const getQuestion = (): IQuestion | undefined =>
+    p.record.outcomeSet.questions.find((q) => q.id === p.questionID);
 
-  private setAnswer(value: number) {
-    this.setState({
-      value,
-    });
-  }
+  const getAnswer = (): IAnswer | undefined =>
+    p.record.answers.find((a) => a.questionID === p.questionID);
 
-  private setNotes(notes: string) {
-    this.setState({
-      notes,
-    });
-  }
+  const hasAnswerChanged = (prev: Answer): boolean =>
+    prev === undefined || value !== prev.answer || notes !== prev.notes;
 
-  private next() {
-    const answer = this.getAnswer();
-    if (hasAnswerChanged(answer as IIntAnswer, this.state) === false) {
-      this.props.onNext();
+  const goToPreviousQuestion = () => p.onPrevious();
+
+  const next = () => {
+    const answer = getAnswer();
+    if (hasAnswerChanged(answer as IIntAnswer) === false) {
+      p.onNext();
       return;
     }
-    this.setState({
-      saving: true,
-    });
-    this.props
-      .addLikertAnswer(
-        this.props.record.id,
-        this.props.questionID,
-        this.state.value,
-        this.state.notes
-      )
+    setSaveState({ saving: true, err: false });
+    p.addLikertAnswer(p.record.id, p.questionID, value, notes)
       .then(() => {
-        this.setState({
+        setSaveState({
           saving: false,
-          saveError: undefined,
+          err: false,
         });
         logGAEvent("answered");
-        this.props.onNext();
+        p.onNext();
       })
       .catch(() => {
-        this.setState({
+        setSaveState({
           saving: false,
-          saveError: "Failed to save your answer",
+          err: true,
         });
       });
-  }
+  };
 
-  public render(): JSX.Element {
-    const { record, t } = this.props;
-    if (record === undefined) {
-      return <div />;
-    }
-    const question = this.getQuestion();
-    if (question === undefined) {
-      return <div>{t("Unknown question")}</div>;
-    }
-    const q = question as QuestionType;
-    const nextProps: ButtonProps = {};
-    if (this.state.saving) {
-      nextProps.loading = true;
-      nextProps.disabled = true;
-    }
-    if (this.state.value === undefined) {
-      nextProps.disabled = true;
-    }
-    return (
-      <div>
-        <h1 className="close">{q.question}</h1>
-        <h3>{q.description}</h3>
-        <Likert
-          key={"l-" + q.id}
-          leftValue={q.leftValue}
-          rightValue={q.rightValue}
-          labels={q.labels}
-          onChange={this.setAnswer}
-          value={this.state.value}
-        />
-        <Notepad
-          key={"np-" + q.id}
-          onChange={this.setNotes}
-          notes={this.state.notes}
-        />
-        {this.props.showPrevious !== false && (
-          <Button onClick={this.goToPreviousQuestion}>{t("Back")}</Button>
-        )}
-        <Button {...nextProps} onClick={this.next}>
-          {t("Next")}
-        </Button>
-        <p>{this.state.saveError}</p>
-      </div>
-    );
+  if (p.record === undefined) {
+    return <div />;
   }
-}
-const QuestionTranslated = withTranslation()(QuestionInner);
-const Question = addLikertAnswer<IProps>(QuestionTranslated);
+  const question = getQuestion();
+  if (question === undefined) {
+    return <div>{t("Unknown question")}</div>;
+  }
+  const q = question as QuestionType;
+  const nextProps: ButtonProps = {};
+  if (saveState.saving) {
+    nextProps.loading = true;
+    nextProps.disabled = true;
+  }
+  if (value === undefined) {
+    nextProps.disabled = true;
+  }
+  return (
+    <div>
+      <h1 className="close">{q.question}</h1>
+      <h3>{q.description}</h3>
+      <Likert
+        key={"l-" + q.id}
+        leftValue={q.leftValue}
+        rightValue={q.rightValue}
+        labels={q.labels}
+        onChange={setValue}
+        value={value}
+      />
+      <Notepad key={"np-" + q.id} onChange={setNotes} notes={notes} />
+      {p.showPrevious !== false && (
+        <Button onClick={goToPreviousQuestion}>{t("Back")}</Button>
+      )}
+      <Button {...nextProps} onClick={next}>
+        {t("Next")}
+      </Button>
+      {saveState.err && <p>{t("Failed to save your answer")}</p>}
+    </div>
+  );
+};
+const Question = addLikertAnswer<IProps>(QuestionInner);
 export { Question };
