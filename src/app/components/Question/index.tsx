@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { addLikertAnswer, IMeetingMutation } from "apollo/modules/meetings";
-import { IQuestion, Question as QuestionType } from "models/question";
+import { Question as QuestionType } from "models/question";
 import { Likert } from "components/Likert";
 import { Notepad } from "components/Notepad";
 import { Button, ButtonProps } from "semantic-ui-react";
-import { IIntAnswer, Answer, IAnswer } from "models/answer";
+import { IIntAnswer } from "models/answer";
 import { IMeeting } from "models/meeting";
 import ReactGA from "react-ga";
 import { useTranslation } from "react-i18next";
@@ -35,34 +35,34 @@ const QuestionInner = (p: IProps) => {
     { err: false, saving: false }
   );
 
+  const question: QuestionType = (p?.record?.outcomeSet?.questions || []).find(
+    (q) => q.id === p.questionID
+  ) as QuestionType;
+  const answer: IIntAnswer = (p?.record?.answers || []).find(
+    (a) => a.questionID === p.questionID
+  ) as IIntAnswer;
+  const hasAnswerChanged =
+    answer === undefined || value !== answer.answer || notes !== answer.notes;
+
   useEffect(() => {
-    if (p.record === undefined) {
-      return;
-    }
-    const a = getAnswer() as IIntAnswer;
-    if (a === undefined || a === null) {
+    if (answer === undefined || answer === null) {
       setNotes(undefined);
       setValue(undefined);
     } else {
-      setNotes(a.notes);
-      setValue(a.answer);
+      setNotes(answer.notes);
+      setValue(answer.answer);
     }
-  }, [p.questionID, p.record]);
-
-  const getQuestion = (): IQuestion | undefined =>
-    p.record.outcomeSet.questions.find((q) => q.id === p.questionID);
-
-  const getAnswer = (): IAnswer | undefined =>
-    p.record.answers.find((a) => a.questionID === p.questionID);
-
-  const hasAnswerChanged = (prev: Answer): boolean =>
-    prev === undefined || value !== prev.answer || notes !== prev.notes;
+  }, [answer]);
 
   const goToPreviousQuestion = () => p.onPrevious();
+  const canProgress =
+    value && (question?.noteRequired !== true || (notes || "").length > 0);
 
   const next = () => {
-    const answer = getAnswer();
-    if (hasAnswerChanged(answer as IIntAnswer) === false) {
+    if (!canProgress) {
+      return;
+    }
+    if (!hasAnswerChanged) {
       p.onNext();
       return;
     }
@@ -87,32 +87,36 @@ const QuestionInner = (p: IProps) => {
   if (p.record === undefined) {
     return <div />;
   }
-  const question = getQuestion();
   if (question === undefined) {
     return <div>{t("Unknown question")}</div>;
   }
-  const q = question as QuestionType;
   const nextProps: ButtonProps = {};
   if (saveState.saving) {
     nextProps.loading = true;
     nextProps.disabled = true;
   }
-  if (value === undefined) {
+  if (!canProgress) {
     nextProps.disabled = true;
   }
   return (
     <div>
-      <h1 className="close">{q.question}</h1>
-      <h3>{q.description}</h3>
+      <h1 className="close">{question.question}</h1>
+      <h3>{question.description}</h3>
       <Likert
-        key={"l-" + q.id}
-        leftValue={q.leftValue}
-        rightValue={q.rightValue}
-        labels={q.labels}
+        key={"l-" + question.id}
+        leftValue={question.leftValue}
+        rightValue={question.rightValue}
+        labels={question.labels}
         onChange={setValue}
         value={value}
       />
-      <Notepad key={"np-" + q.id} onChange={setNotes} notes={notes} />
+      <Notepad
+        key={"np-" + question.id}
+        onChange={setNotes}
+        notes={notes}
+        required={question.noteRequired}
+        prompt={question.notePrompt}
+      />
       {p.showPrevious !== false && (
         <Button onClick={goToPreviousQuestion}>{t("Back")}</Button>
       )}

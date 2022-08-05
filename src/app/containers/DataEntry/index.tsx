@@ -110,7 +110,7 @@ const DataEntryInner = (p: IProps) => {
         <Notepad
           onChange={setNotes}
           notes={notes}
-          collapsible={false}
+          prompt={false}
           placeholder={placeholder}
         />
         <Button
