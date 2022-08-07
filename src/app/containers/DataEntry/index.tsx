@@ -16,11 +16,11 @@ import { connect } from "react-redux";
 import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { useTranslation } from "react-i18next";
-import "rc-slider/assets/index.css";
 import { ISODateString } from "components/Moment";
 import { Notepad } from "components/Notepad";
 import { Button, ButtonProps } from "semantic-ui-react";
 import { Error } from "components/Error";
+import "rc-slider/assets/index.css";
 
 interface IProps extends IURLConnector, IMeetingMutation, ISetMeetingNotes {
   data: IMeetingResult;
@@ -33,13 +33,18 @@ interface IProps extends IURLConnector, IMeetingMutation, ISetMeetingNotes {
   answers?: IAnswer[];
 }
 
-function answeredAllQuestions(p: IProps): boolean {
-  return p.questions.reduce((answeredAll, q) => {
-    return (
-      answeredAll && p.answers.find((a) => a.questionID === q.id) !== undefined
-    );
+const completedQuestionnaire = (p: IProps): boolean => {
+  return p.questions.reduce((prev, q) => {
+    const answer = p.answers.find((a) => a.questionID === q.id);
+    if (!answer) {
+      return false;
+    }
+    if ((q as Question).noteRequired && (answer.notes || "").length === 0) {
+      return false;
+    }
+    return prev;
   }, true);
-}
+};
 
 const DataEntryInner = (p: IProps) => {
   const [saving, setSavingInner] = useState(false);
@@ -97,7 +102,7 @@ const DataEntryInner = (p: IProps) => {
       saveProps.loading = true;
       saveProps.disabled = true;
     }
-    if (!answeredAllQuestions(p)) {
+    if (!completedQuestionnaire(p)) {
       saveProps.disabled = true;
     }
     return (

@@ -19,6 +19,18 @@ interface IProps {
   collapsible?: boolean;
 }
 
+const RequiredStar = () => (
+  <span
+    style={{
+      color: "red",
+      fontSize: "1.3em",
+      margin: "-0.05em 0em 0em 0.05em",
+    }}
+  >
+    *
+  </span>
+);
+
 const NotepadInner = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
 
@@ -43,18 +55,7 @@ const NotepadInner = (p: IProps): JSX.Element => {
           }}
         >
           {p.prompt || t("Additional information")}
-          {p.required && (
-            <span
-              style={{
-                color: "red",
-                fontSize: "1.3em",
-                margin: "-0.05em 0em 0em 0.05em",
-              }}
-            >
-              *
-            </span>
-          )}
-          :
+          {p.required && <RequiredStar />}:
         </div>
       )}
       <div>
@@ -95,6 +96,7 @@ const CollapsibleNotepad = (p: IProps) => {
       >
         <Icon name="dropdown" />
         {p.prompt || t("Additional information")}
+        {p.required && <RequiredStar />}
       </Accordion.Title>
       <Accordion.Content active={open}>
         <NotepadInner {...p} prompt={false} />
