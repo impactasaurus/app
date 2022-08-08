@@ -62,7 +62,7 @@ const MeetingNotepadInner = (p: IProps) => {
       <Notepad
         onChange={setNotes}
         notes={notes}
-        collapsible={false}
+        prompt={false}
         placeholder={placeholder}
       />
       <Button onClick={p.onBack}>{t("Back")}</Button>

@@ -199,6 +199,9 @@ class QuestionInlineInner extends React.Component<IProps, IState> {
           notes={this.state.notes}
           onBlur={this.saveNotes}
           disabled={disabled}
+          collapsible={true}
+          required={q.noteRequired}
+          prompt={q.notePrompt}
         />
         {this.state.saveError && (
           <div style={{ marginBottom: "1em" }}>

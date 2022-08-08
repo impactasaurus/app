@@ -1,33 +1,37 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Icon,
-  Form,
   Accordion,
+  Form,
+  Icon,
   TextArea,
   TextAreaProps,
 } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
-import "./style.less";
 
 interface IProps {
   notes: string | undefined | null;
   onChange: (notes: string) => void;
   onBlur?: () => void;
   placeholder?: string;
-  // defaults to true
-  collapsible?: boolean;
   disabled?: boolean;
+  required?: boolean; // defaults to false
+  prompt?: string | boolean; // false = turns off, undefined = default text, string = override text
+  collapsible?: boolean;
 }
 
-const Notepad = (p: IProps): JSX.Element => {
-  const [open, setOpen] = useState(
-    p.notes !== undefined && p.notes !== null && p.notes.length > 0
-  );
-  useEffect(() => {
-    if (!open && p.notes) {
-      setOpen(true);
-    }
-  }, [p.notes]);
+const RequiredStar = () => (
+  <span
+    style={{
+      color: "red",
+      fontSize: "1.3em",
+      margin: "-0.05em 0em 0em 0.05em",
+    }}
+  >
+    *
+  </span>
+);
+
+const NotepadInner = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
 
   const onChange = (
@@ -39,51 +43,68 @@ const Notepad = (p: IProps): JSX.Element => {
     }
   };
 
-  const toggleOpen = () => {
-    setOpen(!open);
-  };
-
-  const renderTextArea = (): JSX.Element => {
-    let placeholder = p.placeholder || t("Record any additional information");
-    placeholder =
-      placeholder +
-      ". " +
-      t(
-        "Please ensure the notes do not contain personally identifiable information."
-      );
-    const notesNotNull: string | undefined = p.notes ? p.notes : undefined;
-    return (
-      <Form>
-        <TextArea
-          disabled={p.disabled === true}
-          autoHeight={true}
-          placeholder={placeholder}
-          rows={2}
-          onChange={onChange}
-          value={notesNotNull}
-          onBlur={p.onBlur}
-        />
-      </Form>
-    );
-  };
-
-  if (p.collapsible === false) {
-    return <div className="notepad">{renderTextArea()}</div>;
-  }
+  const notesNotNull: string | undefined = p.notes ? p.notes : undefined;
   return (
-    <Accordion className="notepad">
+    <div className="notepad">
+      {p.prompt !== false && (
+        <div
+          style={{
+            textAlign: "left",
+            paddingTop: "1em",
+            paddingBottom: "0.5em",
+          }}
+        >
+          {p.prompt || t("Additional information")}
+          {p.required && <RequiredStar />}:
+        </div>
+      )}
+      <div>
+        <Form>
+          <TextArea
+            disabled={p.disabled === true}
+            autoHeight={true}
+            rows={2}
+            onChange={onChange}
+            value={notesNotNull}
+            onBlur={p.onBlur}
+            placeholder={p.placeholder}
+            style={{ minHeight: "5em" }}
+          />
+        </Form>
+      </div>
+    </div>
+  );
+};
+
+const CollapsibleNotepad = (p: IProps) => {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const notesSet = p.notes && p.notes.length > 0;
+    if (!open && (notesSet || p.required)) {
+      setOpen(true);
+    }
+  }, [p.notes, p.required]);
+  const toggleOpen = () => setOpen(!open);
+  return (
+    <Accordion className="accordion">
       <Accordion.Title
-        className="accordion"
         active={open}
         index={0}
         onClick={toggleOpen}
+        style={{ textAlign: "left" }}
       >
         <Icon name="dropdown" />
-        {t("Notes")}
+        {p.prompt || t("Additional information")}
+        {p.required && <RequiredStar />}
       </Accordion.Title>
-      <Accordion.Content active={open}>{renderTextArea()}</Accordion.Content>
+      <Accordion.Content active={open}>
+        <NotepadInner {...p} prompt={false} />
+      </Accordion.Content>
     </Accordion>
   );
 };
 
+const Notepad = (p: IProps): JSX.Element =>
+  p.collapsible ? <CollapsibleNotepad {...p} /> : <NotepadInner {...p} />;
 export { Notepad };

@@ -14,7 +14,12 @@ export interface ILabel {
   label: string;
 }
 
-export interface ILikertScale extends IQuestion {
+export interface IQuestionWithNotes {
+  noteRequired?: boolean;
+  notePrompt?: string;
+}
+
+export interface ILikertScale extends IQuestion, IQuestionWithNotes {
   leftLabel?: string;
   rightLabel?: string;
   leftValue: number;
@@ -57,6 +62,8 @@ export const fragment = gql`
         value
         label
       }
+      noteRequired
+      notePrompt
     }
   }
 `;
