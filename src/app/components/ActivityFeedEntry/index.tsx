@@ -15,55 +15,57 @@ interface IProp {
   meeting: IMeeting;
 }
 
-export class ActivityFeedEntry extends React.Component<IProp, null> {
-  constructor(props: IProp) {
-    super(props);
-  }
+const ActivityFeedEntry = (props: IProp): JSX.Element => {
+  const Radar = MeetingRadarWithImpl(RadarChartStatic);
+  const { meeting } = props;
+  return (
+    <Card className="activity-feed-entry">
+      <Link
+        className="topper"
+        to={journeyURI(meeting.beneficiary, meeting.outcomeSet.id)}
+      >
+        <Radar meetings={[meeting]} aggregation={Aggregation.QUESTION} />
+      </Link>
+      <Card.Content>
+        <Card.Header>
+          <Trans
+            defaults="<bLink>{beneficiaryID}</bLink> completed <qLink>{questionnaireName}</qLink>"
+            values={{
+              beneficiaryID: meeting.beneficiary,
+              questionnaireName: meeting.outcomeSet.name,
+            }}
+            components={{
+              bLink: (
+                <Link
+                  to={journeyURI(meeting.beneficiary, meeting.outcomeSet.id)}
+                />
+              ),
+              qLink: <Link to={questionnaireURI(meeting.outcomeSet.id)} />,
+            }}
+          />
+        </Card.Header>
+        <Card.Meta>
+          <Popup
+            trigger={
+              <span className="date">
+                <ISOTimeSince iso={meeting.conducted} />
+              </span>
+            }
+            content={<ISODateString iso={meeting.conducted} />}
+          />
+        </Card.Meta>
+        <Card.Description as={Link} to={recordURI(meeting.id)}>
+          {meeting.notes &&
+            `${meeting.notes.slice(0, 100)}${
+              meeting.notes.length > 100 ? "..." : ""
+            }`}
+        </Card.Description>
+      </Card.Content>
+      <Card.Content extra={true} className={`tags-${meeting.tags.length}`}>
+        <Tags benTags={meeting.benTags} recordTags={meeting.meetingTags} />
+      </Card.Content>
+    </Card>
+  );
+};
 
-  public render(): JSX.Element {
-    const Radar = MeetingRadarWithImpl(RadarChartStatic);
-    const m = this.props.meeting;
-    return (
-      <Card className="activity-feed-entry">
-        <Link
-          className="topper"
-          to={journeyURI(m.beneficiary, m.outcomeSet.id)}
-        >
-          <Radar meetings={[m]} aggregation={Aggregation.QUESTION} />
-        </Link>
-        <Card.Content>
-          <Card.Header>
-            <Trans
-              defaults="<bLink>{beneficiaryID}</bLink> completed <qLink>{questionnaireName}</qLink>"
-              values={{
-                beneficiaryID: m.beneficiary,
-                questionnaireName: m.outcomeSet.name,
-              }}
-              components={{
-                bLink: <Link to={journeyURI(m.beneficiary, m.outcomeSet.id)} />,
-                qLink: <Link to={questionnaireURI(m.outcomeSet.id)} />,
-              }}
-            />
-          </Card.Header>
-          <Card.Meta>
-            <Popup
-              trigger={
-                <span className="date">
-                  <ISOTimeSince iso={m.conducted} />
-                </span>
-              }
-              content={<ISODateString iso={m.conducted} />}
-            />
-          </Card.Meta>
-          <Card.Description as={Link} to={recordURI(m.id)}>
-            {m.notes &&
-              `${m.notes.slice(0, 100)}${m.notes.length > 100 ? "..." : ""}`}
-          </Card.Description>
-        </Card.Content>
-        <Card.Content extra={true} className={`tags-${m.tags.length}`}>
-          <Tags benTags={m.benTags} recordTags={m.meetingTags} />
-        </Card.Content>
-      </Card>
-    );
-  }
-}
+export { ActivityFeedEntry };
