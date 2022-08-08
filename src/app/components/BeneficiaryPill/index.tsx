@@ -8,18 +8,15 @@ interface IProps {
   questionnaireID?: string;
 }
 
-class BeneficiaryPill extends React.Component<IProps, any> {
-  public render() {
-    const link = journeyURI(
-      this.props.beneficiaryID,
-      this.props.questionnaireID
-    );
-    return (
-      <Label as="a" target="_blank" href={link} key={this.props.beneficiaryID}>
-        {this.props.beneficiaryID}
-      </Label>
-    );
-  }
-}
+const BeneficiaryPill = (props: IProps): JSX.Element => {
+  const { beneficiaryID, questionnaireID } = props;
+  const link = journeyURI(beneficiaryID, questionnaireID);
+
+  return (
+    <Label as="a" target="_blank" href={link} key={beneficiaryID}>
+      {beneficiaryID}
+    </Label>
+  );
+};
 
 export { BeneficiaryPill };
