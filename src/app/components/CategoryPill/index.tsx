@@ -3,11 +3,12 @@ import { ICategoryMutation, setCategory } from "apollo/modules/categories";
 import { ICategory } from "models/category";
 import { Label, Select, Loader } from "semantic-ui-react";
 import { IOutcomeSet } from "models/outcomeSet";
-import { WithTranslation, withTranslation } from "react-i18next";
 import ReactGA from "react-ga";
 import "./style.less";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
-interface IProps extends ICategoryMutation, WithTranslation {
+interface IProps extends ICategoryMutation {
   questionID: string;
   outcomeSetID: string;
   questionnaire: IOutcomeSet;
@@ -15,68 +16,56 @@ interface IProps extends ICategoryMutation, WithTranslation {
   readOnly?: boolean; // defaults to false
 }
 
-interface IState {
-  error?: string;
-  editClicked?: boolean;
-  settingCategory?: string;
-}
+const CategoryPillInner = (props: IProps): JSX.Element => {
+  const { questionID, outcomeSetID, questionnaire, cssClass, readOnly } = props;
+  const { t } = useTranslation();
 
-class CategoryPillInner extends React.Component<IProps, IState> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      editClicked: false,
-      settingCategory: null,
-      error: null,
-    };
-    this.setEditMode = this.setEditMode.bind(this);
-    this.renderPill = this.renderPill.bind(this);
-    this.getCategoryOptions = this.getCategoryOptions.bind(this);
-    this.getCategory = this.getCategory.bind(this);
-    this.setCategory = this.setCategory.bind(this);
-  }
+  const [editClicked, setEditClicked] = useState<boolean>(false);
+  const [settingCategory, setSettingCategory] = useState(null);
+  const [error, setError] = useState<string>(null);
 
-  private setEditMode() {
-    if (this.props.readOnly) {
+  const setEditMode = () => {
+    if (readOnly) {
       return;
     }
-    this.setState({
-      editClicked: true,
-    });
-  }
 
-  private getCategory(id): ICategory {
-    return this.props.questionnaire.categories.find((c) => c.id === id);
-  }
+    setEditClicked(true);
+  };
 
-  private renderPill(
+  const getCategory = (id): ICategory => {
+    return questionnaire.categories.find((c) => c.id === id);
+  };
+
+  const renderPill = (
     className: string,
     text: string,
     saving = false
-  ): JSX.Element {
-    let leftComponent = <span />;
-    if (saving) {
-      leftComponent = <Loader active={true} inline={true} size="mini" />;
-    }
+  ): JSX.Element => {
+    const leftComponent = saving ? (
+      <Loader active={true} inline={true} size="mini" />
+    ) : (
+      <span />
+    );
+
     return (
       <Label
-        className={`category-pill ${className} ${
-          this.props.cssClass || ""
-        } editable-${this.props.readOnly !== true}`}
+        className={`category-pill ${className} ${cssClass || ""} editable-${
+          readOnly !== true
+        }`}
         horizontal={true}
-        onClick={this.setEditMode}
+        onClick={setEditMode}
       >
         {leftComponent} {text}
       </Label>
     );
-  }
+  };
 
-  private renderSavingControl(): JSX.Element {
-    return this.renderPill("set", this.state.settingCategory, true);
-  }
+  const renderSavingControl = (): JSX.Element => {
+    return renderPill("set", settingCategory, true);
+  };
 
-  private getCategoryOptions() {
-    const categories = this.props.questionnaire.categories.map((os) => {
+  const getCategoryOptions = () => {
+    const categories = questionnaire.categories.map((os) => {
       return {
         key: os.id,
         value: os.id,
@@ -86,12 +75,12 @@ class CategoryPillInner extends React.Component<IProps, IState> {
     categories.unshift({
       key: null,
       value: null,
-      text: this.props.t("No Category"),
+      text: t("No Category"),
     });
     return categories;
-  }
+  };
 
-  private logCategoryGAEvent(isCategorySet, newCategoryId) {
+  const logCategoryGAEvent = (isCategorySet, newCategoryId) => {
     let action = "";
 
     if (isCategorySet && newCategoryId !== null) {
@@ -107,102 +96,90 @@ class CategoryPillInner extends React.Component<IProps, IState> {
       action,
       label: "likert",
     });
-  }
+  };
 
-  private isCategorySet() {
-    const os = this.props.questionnaire;
-    const q = os.questions.find((q) => q.id === this.props.questionID);
+  const isCategorySet = () => {
+    const os = questionnaire;
+    const q = os.questions.find((q) => q.id === questionID);
 
     if (
       q !== undefined &&
       q.categoryID !== null &&
       q.categoryID !== undefined
     ) {
-      const cat = this.getCategory(q.categoryID);
+      const cat = getCategory(q.categoryID);
       return cat !== null && cat !== undefined;
     }
 
     return false;
-  }
+  };
 
-  private setCategory(_, data) {
+  const updateCategory = (_, data) => {
     let categoryName = "No Category";
-    const isCategorySet = this.isCategorySet();
+    const categoryIsSet = isCategorySet();
 
     if (data.value !== null) {
-      const cat = this.getCategory(data.value);
+      const cat = getCategory(data.value);
       categoryName = cat.name;
     }
 
-    if (!isCategorySet && data.value === null) {
-      this.setState({
-        editClicked: false,
-        settingCategory: null,
-        error: null,
-      });
+    if (!categoryIsSet && data.value === null) {
+      setEditClicked(false);
+      setSettingCategory(null);
+      setError(null);
       return;
     }
 
-    this.setState({
-      editClicked: false,
-      settingCategory: categoryName,
-      error: null,
-    });
-    this.props
-      .setCategory(this.props.outcomeSetID, this.props.questionID, data.value)
+    setEditClicked(false);
+    setSettingCategory(categoryName);
+    setError(null);
+
+    props
+      .setCategory(outcomeSetID, questionID, data.value)
       .then(() => {
-        this.logCategoryGAEvent(isCategorySet, data.value);
-        this.setState({
-          settingCategory: null,
-          error: null,
-        });
+        logCategoryGAEvent(categoryIsSet, data.value);
+        setSettingCategory(null);
+        setError(null);
       })
-      .catch(() => {
-        this.setState({
-          error: this.props.t("Setting category failed"),
-          settingCategory: null,
-        });
+      .catch((e) => {
+        console.log(e);
+        setError(t("Setting category failed"));
+        setSettingCategory(null);
       });
+  };
+
+  if (!questionnaire) {
+    return renderPill("empty", "Loading...", true);
   }
-
-  public render() {
-    const { t, questionnaire } = this.props;
-    if (!questionnaire) {
-      return this.renderPill("empty", "Loading...", true);
-    }
-    if (this.state.editClicked) {
-      return (
-        <Select
-          placeholder={t("Select new category")}
-          options={this.getCategoryOptions()}
-          onChange={this.setCategory}
-        />
-      );
-    }
-    if (this.state.settingCategory !== null) {
-      return this.renderSavingControl();
-    }
-    if (this.state.error !== null) {
-      return this.renderPill("failure", this.state.error);
-    }
-
-    const q = questionnaire.questions.find(
-      (q) => q.id === this.props.questionID
+  if (editClicked) {
+    return (
+      <Select
+        placeholder={t("Select new category")}
+        options={getCategoryOptions()}
+        onChange={updateCategory}
+      />
     );
-    if (q === undefined) {
-      return this.renderPill("empty", t("Unknown Category"));
-    }
-    if (q.categoryID === null || q.categoryID === undefined) {
-      return this.renderPill("empty", t("No Category"));
-    }
-    const cat = this.getCategory(q.categoryID);
-    if (cat === null || cat === undefined) {
-      return this.renderPill("empty", t("Unknown Category"));
-    }
-    return this.renderPill("set", cat.name);
   }
-}
+  if (settingCategory !== null) {
+    return renderSavingControl();
+  }
+  if (error !== null) {
+    return renderPill("failure", error);
+  }
 
-const CategoryPillConnected = setCategory<IProps>(CategoryPillInner);
-const CategoryPill = withTranslation()(CategoryPillConnected);
+  const q = questionnaire.questions.find((q) => q.id === questionID);
+  if (q === undefined) {
+    return renderPill("empty", t("Unknown Category"));
+  }
+  if (q.categoryID === null || q.categoryID === undefined) {
+    return renderPill("empty", t("No Category"));
+  }
+  const cat = getCategory(q.categoryID);
+  if (cat === null || cat === undefined) {
+    return renderPill("empty", t("Unknown Category"));
+  }
+  return renderPill("set", cat.name);
+};
+
+const CategoryPill = setCategory<IProps>(CategoryPillInner);
 export { CategoryPill };
