@@ -10,21 +10,19 @@ interface IProps {
   data?: IBeneficiaryResult;
 }
 
-class BeneficiaryTagsInner extends React.Component<IProps, any> {
-  public render() {
-    if (
-      this.props.data.loading ||
-      this.props.data.error ||
-      this.props.data.getBeneficiary === undefined ||
-      this.props.data.getBeneficiary.tags.length === 0
-    ) {
-      return <div />;
-    }
-    return (
-      <Tags benTags={this.props.data.getBeneficiary.tags} recordTags={[]} />
-    );
+const BeneficiaryTagsInner = (props: IProps): JSX.Element => {
+  const { data } = props;
+
+  if (
+    data.loading ||
+    data.error ||
+    data.getBeneficiary === undefined ||
+    data.getBeneficiary.tags.length === 0
+  ) {
+    return <div />;
   }
-}
+  return <Tags benTags={data.getBeneficiary.tags} recordTags={[]} />;
+};
 
 const BeneficiaryTags = getBeneficiary((p: IProps) => p.beneficiaryID)(
   BeneficiaryTagsInner
