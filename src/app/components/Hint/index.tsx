@@ -7,20 +7,13 @@ interface IProps {
   icon?: SemanticICONS;
 }
 
-class Hint extends React.Component<IProps, any> {
-  constructor(props) {
-    super(props);
-  }
+const Hint = (props: IProps): JSX.Element => {
+  const { icon, text } = props;
 
-  public render() {
-    const inner = (
-      <Icon
-        className="Hint"
-        name={this.props.icon || "question circle outline"}
-      />
-    );
-    return <Popup trigger={inner} content={this.props.text} />;
-  }
-}
+  const inner = (
+    <Icon className="Hint" name={icon || "question circle outline"} />
+  );
+  return <Popup trigger={inner} content={text} />;
+};
 
 export { Hint };
