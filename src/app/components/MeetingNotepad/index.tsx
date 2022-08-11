@@ -66,7 +66,7 @@ const MeetingNotepadInner = (p: IProps) => {
         onChange={setNotes}
         notes={notes}
         prompt={p.record.outcomeSet?.notePrompt || false}
-        placeholder={placeholder}
+        placeholder={p.record.outcomeSet?.notePrompt ? undefined : placeholder}
         required={p.record.outcomeSet?.noteRequired}
       />
       <Button onClick={p.onBack}>{t("Back")}</Button>

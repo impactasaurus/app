@@ -127,7 +127,7 @@ const DataEntryInner = (p: IProps) => {
           onChange={setNotes}
           notes={notes}
           prompt={meeting.outcomeSet?.notePrompt || false}
-          placeholder={placeholder}
+          placeholder={meeting.outcomeSet?.notePrompt ? undefined : placeholder}
           required={meeting.outcomeSet?.noteRequired}
         />
         <Button
