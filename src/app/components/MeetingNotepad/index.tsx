@@ -52,6 +52,9 @@ const MeetingNotepadInner = (p: IProps) => {
 
   const placeholder = t("Record any additional comments, goals or actions");
   const nextProps: ButtonProps = {};
+  if ((notes || "").length === 0 && p.record.outcomeSet?.noteRequired) {
+    nextProps.disabled = true;
+  }
   if (saving) {
     nextProps.loading = true;
     nextProps.disabled = true;
@@ -62,8 +65,9 @@ const MeetingNotepadInner = (p: IProps) => {
       <Notepad
         onChange={setNotes}
         notes={notes}
-        prompt={false}
+        prompt={p.record.outcomeSet?.notePrompt || false}
         placeholder={placeholder}
+        required={p.record.outcomeSet?.noteRequired}
       />
       <Button onClick={p.onBack}>{t("Back")}</Button>
       <Button {...nextProps} onClick={saveNotes}>
