@@ -11,6 +11,8 @@ export interface IOutcomeSet {
   questions: IQuestion[];
   categories: ICategory[];
   readOnly: boolean;
+  noteRequired: boolean;
+  notePrompt?: string;
 }
 
 export const fragment = gql`
@@ -18,6 +20,8 @@ export const fragment = gql`
     name
     description
     instructions
+    noteRequired
+    notePrompt
     id
     questions {
       ...defaultQuestion

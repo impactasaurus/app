@@ -20,6 +20,7 @@ import { ISODateString } from "components/Moment";
 import { Notepad } from "components/Notepad";
 import { Button, ButtonProps } from "semantic-ui-react";
 import { Error } from "components/Error";
+import { IOutcomeSet } from "models/outcomeSet";
 import "rc-slider/assets/index.css";
 
 interface IProps extends IURLConnector, IMeetingMutation, ISetMeetingNotes {
@@ -33,9 +34,17 @@ interface IProps extends IURLConnector, IMeetingMutation, ISetMeetingNotes {
   answers?: IAnswer[];
 }
 
-const completedQuestionnaire = (p: IProps): boolean => {
-  return p.questions.reduce((prev, q) => {
-    const answer = p.answers.find((a) => a.questionID === q.id);
+const completedQuestionnaire = (
+  questions: IQuestion[],
+  answers: IAnswer[],
+  questionnaire: IOutcomeSet,
+  notes: string
+): boolean => {
+  if (questionnaire?.noteRequired && (notes || "").length === 0) {
+    return false;
+  }
+  return questions.reduce((prev, q) => {
+    const answer = answers.find((a) => a.questionID === q.id);
     if (!answer) {
       return false;
     }
@@ -102,7 +111,9 @@ const DataEntryInner = (p: IProps) => {
       saveProps.loading = true;
       saveProps.disabled = true;
     }
-    if (!completedQuestionnaire(p)) {
+    if (
+      !completedQuestionnaire(p.questions, p.answers, meeting.outcomeSet, notes)
+    ) {
       saveProps.disabled = true;
     }
     return (
@@ -115,8 +126,9 @@ const DataEntryInner = (p: IProps) => {
         <Notepad
           onChange={setNotes}
           notes={notes}
-          prompt={false}
+          prompt={meeting.outcomeSet?.notePrompt || false}
           placeholder={placeholder}
+          required={meeting.outcomeSet?.noteRequired}
         />
         <Button
           {...saveProps}
