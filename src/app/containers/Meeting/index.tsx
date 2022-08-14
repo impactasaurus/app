@@ -116,7 +116,11 @@ const MeetingInner = (p: IProps) => {
   };
 
   const goToNextScreen = () => {
-    const newState = getNextState(state, questions.length);
+    const newState = getNextState(
+      state,
+      questions.length,
+      questionnaire.noteDeactivated
+    );
     setState(newState);
   };
 
