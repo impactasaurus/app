@@ -1,8 +1,8 @@
-import { IQuestion, fragment as qFragment } from "./question";
+import { IQuestion, fragment as qFragment, IWithNotes } from "./question";
 import { ICategory, fragment as cFragment } from "./category";
 import { gql } from "react-apollo";
 
-export interface IOutcomeSet {
+export interface IOutcomeSet extends IWithNotes {
   id: string;
   organisationID: string;
   name: string;
@@ -11,8 +11,6 @@ export interface IOutcomeSet {
   questions: IQuestion[];
   categories: ICategory[];
   readOnly: boolean;
-  noteRequired: boolean;
-  notePrompt?: string;
 }
 
 export const fragment = gql`
@@ -22,6 +20,7 @@ export const fragment = gql`
     instructions
     noteRequired
     notePrompt
+    noteDeactivated
     id
     questions {
       ...defaultQuestion
