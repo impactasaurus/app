@@ -193,16 +193,18 @@ class QuestionInlineInner extends React.Component<IProps, IState> {
           value={this.state.value}
           disabled={disabled}
         />
-        <Notepad
-          key={"np-" + q.id}
-          onChange={this.setNotes}
-          notes={this.state.notes}
-          onBlur={this.saveNotes}
-          disabled={disabled}
-          collapsible={true}
-          required={q.noteRequired}
-          prompt={q.notePrompt}
-        />
+        {q.noteDeactivated !== true && (
+          <Notepad
+            key={"np-" + q.id}
+            onChange={this.setNotes}
+            notes={this.state.notes}
+            onBlur={this.saveNotes}
+            disabled={disabled}
+            collapsible={true}
+            required={q.noteRequired}
+            prompt={q.notePrompt}
+          />
+        )}
         {this.state.saveError && (
           <div style={{ marginBottom: "1em" }}>
             <Icon name="exclamation" color="red" />{" "}

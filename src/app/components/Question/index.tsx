@@ -112,13 +112,15 @@ const QuestionInner = (p: IProps) => {
         onChange={setValue}
         value={value}
       />
-      <Notepad
-        key={"np-" + question.id}
-        onChange={setNotes}
-        notes={notes}
-        required={question.noteRequired}
-        prompt={question.notePrompt}
-      />
+      {question.noteDeactivated !== true && (
+        <Notepad
+          key={"np-" + question.id}
+          onChange={setNotes}
+          notes={notes}
+          required={question.noteRequired}
+          prompt={question.notePrompt}
+        />
+      )}
       {p.showPrevious !== false && (
         <Button onClick={goToPreviousQuestion}>{t("Back")}</Button>
       )}
