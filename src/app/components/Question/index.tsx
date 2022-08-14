@@ -29,7 +29,7 @@ function logGAEvent(action: string) {
 
 const QuestionInner = (p: IProps) => {
   const { t } = useTranslation();
-  const [value, setValue] = useState<number>();
+  const [value, setValue] = useState<number>(undefined);
   const [notes, setNotes] = useState<string>();
   const [saveState, setSaveState] = useState<{ err: boolean; saving: boolean }>(
     { err: false, saving: false }
@@ -55,8 +55,10 @@ const QuestionInner = (p: IProps) => {
   }, [answer]);
 
   const goToPreviousQuestion = () => p.onPrevious();
-  const canProgress =
-    value && (question?.noteRequired !== true || (notes || "").length > 0);
+  const answerGiven = value !== undefined;
+  const noteGivenIfRequired =
+    question?.noteRequired !== true || (notes || "").length > 0;
+  const canProgress = answerGiven && noteGivenIfRequired;
 
   const next = () => {
     if (!canProgress) {
