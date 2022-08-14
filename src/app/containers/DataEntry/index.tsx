@@ -122,14 +122,20 @@ const DataEntryInner = (p: IProps) => {
           {meeting.beneficiary} - <ISODateString iso={meeting.conducted} />
         </h1>
         {renderArray(renderQuestion, p.questions)}
-        <h3>{t("Additional Comments")}</h3>
-        <Notepad
-          onChange={setNotes}
-          notes={notes}
-          prompt={meeting.outcomeSet?.notePrompt || false}
-          placeholder={meeting.outcomeSet?.notePrompt ? undefined : placeholder}
-          required={meeting.outcomeSet?.noteRequired}
-        />
+        {meeting.outcomeSet?.noteDeactivated !== true && (
+          <>
+            <h3>{t("Additional Comments")}</h3>
+            <Notepad
+              onChange={setNotes}
+              notes={notes}
+              prompt={meeting.outcomeSet?.notePrompt || false}
+              placeholder={
+                meeting.outcomeSet?.notePrompt ? undefined : placeholder
+              }
+              required={meeting.outcomeSet?.noteRequired}
+            />
+          </>
+        )}
         <Button
           {...saveProps}
           onClick={completed}

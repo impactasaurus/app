@@ -81,7 +81,8 @@ export function canGoBack(
 
 export function getNextState(
   current: IMeetingState,
-  noQuestions: number
+  noQuestions: number,
+  notesDeactivated: boolean
 ): IMeetingState {
   if (current.screen === Screen.INSTRUCTIONS) {
     return {
@@ -101,8 +102,11 @@ export function getNextState(
       qIdx: current.qIdx + 1,
     };
   }
-  return {
+  const noteState = {
     screen: Screen.NOTES,
     qIdx: current.qIdx,
   };
+  return notesDeactivated === true
+    ? getNextState(noteState, noQuestions, notesDeactivated)
+    : noteState;
 }
