@@ -116,7 +116,9 @@ const ProfileMenuInner = (p: IProps): JSX.Element => {
           <Dropdown.Item key="org-header" className="not-clickable">
             <Icon name="exchange" className="required" /> {t("Change Account:")}
           </Dropdown.Item>,
-          ...orgSelectionUI,
+          <div id="org-options" key="org-options">
+            {...orgSelectionUI}
+          </div>,
         ]}
         <Dropdown.Divider />
         <Dropdown.Item
