@@ -15,7 +15,7 @@ import {
   getNextState,
   initialState,
 } from "./state-machine";
-import { journey } from "helpers/url";
+import { forward, ISearchParam, journey } from "helpers/url";
 import { Thanks } from "./thanks";
 import { EmptyQuestionnaire } from "containers/Meeting/empty";
 import { useTranslation } from "react-i18next";
@@ -26,8 +26,9 @@ import { IOutcomeSet } from "models/outcomeSet";
 import { Finalise } from "./finalise";
 import "rc-slider/assets/index.css";
 import "./style.less";
+import { useNonInitialEffect } from "helpers/hooks/useNonInitialEffect";
 
-interface IProps {
+interface IProps extends ISearchParam {
   data: IMeetingResult;
   match: {
     params: {
@@ -73,6 +74,11 @@ const MeetingInner = (p: IProps) => {
   const questionnaire = p.data?.getMeeting?.outcomeSet;
   const questions = questionnaire ? getQuestions(questionnaire) : undefined;
 
+  useNonInitialEffect(() => {
+    // new questionnaire, reinitialize
+    init.current = false;
+  }, [p.match.params.id]);
+
   useEffect(() => {
     if (!init.current && questions) {
       init.current = true;
@@ -82,7 +88,7 @@ const MeetingInner = (p: IProps) => {
       );
       setState(iState);
     }
-  }, [questions]);
+  }, [questions, init.current]);
 
   const setState = (s: IMeetingState) => {
     let idxx = s.qIdx;
@@ -104,6 +110,9 @@ const MeetingInner = (p: IProps) => {
       category: "assessment",
       action: "completed",
     });
+    if (forward(p, setURL)) {
+      return;
+    }
     if (beneficiaryUser) {
       setScreen(Screen.THANKS);
     } else {
@@ -149,7 +158,7 @@ const MeetingInner = (p: IProps) => {
       </Wrapper>
     );
   }
-  if (data.loading || !data.getMeeting || !questionnaire) {
+  if (data.loading || !data.getMeeting || !questionnaire || !init.current) {
     return (
       <Wrapper>
         <Loader active={true} inline="centered" />

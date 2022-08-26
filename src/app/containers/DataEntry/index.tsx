@@ -22,8 +22,9 @@ import { Error } from "components/Error";
 import { IOutcomeSet } from "models/outcomeSet";
 import { getQuestions } from "helpers/questionnaire";
 import "rc-slider/assets/index.css";
+import { forward, ISearchParam } from "helpers/url";
 
-interface IProps extends IMeetingMutation, ISetMeetingNotes {
+interface IProps extends IMeetingMutation, ISetMeetingNotes, ISearchParam {
   data: IMeetingResult;
   match: {
     params: {
@@ -73,10 +74,12 @@ const DataEntryInner = (p: IProps) => {
       .then(() => {
         setSavingInner(false);
         setSavingError(false);
-        setURL(
-          `/beneficiary/${ben}`,
-          new URLSearchParams({ q: questionnaire.id })
-        );
+        if (!forward(p, setURL)) {
+          setURL(
+            `/beneficiary/${ben}`,
+            new URLSearchParams({ q: questionnaire.id })
+          );
+        }
       })
       .catch((e: string | Error) => {
         console.error(e);

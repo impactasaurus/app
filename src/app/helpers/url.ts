@@ -55,3 +55,26 @@ export const getSearchParam = <T>(
     }
   };
 };
+
+export const forward = (
+  p: ISearchParam,
+  setURL: (url: string, search?: URLSearchParams) => void
+): boolean => {
+  const next = getSearchParam<string | string[]>("next")(p);
+  if (next) {
+    if (Array.isArray(next)) {
+      if (next.length === 1) {
+        setURL(next[0]);
+        return true;
+      } else if (next.length > 1) {
+        const remainingArrayJSON = JSON.stringify(next.splice(1));
+        setURL(next[0], new URLSearchParams({ next: remainingArrayJSON }));
+        return true;
+      }
+    } else {
+      setURL(next);
+      return true;
+    }
+  }
+  return false;
+};
