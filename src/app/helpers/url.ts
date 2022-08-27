@@ -28,6 +28,8 @@ export const questionnaireURI = (questionnaire: string): string =>
   `/questions/${questionnaire}`;
 export const recordURI = (record: string): string => `/meeting/${record}/view`;
 export const meetingURI = (record: string): string => `/meeting/${record}`;
+export const externalLinkURI = (url: string): string =>
+  `/external/${btoa(url)}`;
 
 export interface ISearchParam {
   location: {
@@ -90,13 +92,9 @@ export const forward = (
   if (n === null) {
     return false;
   }
-  if (isUrlAbsolute(n.url)) {
-    window.location.href = n.url;
-  } else {
-    setURL(
-      n.url,
-      n.next && n.next.length > 0 ? forwardURLParam(n.next) : undefined
-    );
-  }
+  setURL(
+    n.url,
+    n.next && n.next.length > 0 ? forwardURLParam(n.next) : undefined
+  );
   return true;
 };

@@ -6,7 +6,12 @@ import { Error } from "components/Error";
 import ReactGA from "react-ga";
 import { useTranslation } from "react-i18next";
 import { useSession, useSetJWT, useUser } from "redux/modules/user";
-import { forwardURLParam, isUrlAbsolute, meetingURI } from "helpers/url";
+import {
+  externalLinkURI,
+  forwardURLParam,
+  isUrlAbsolute,
+  meetingURI,
+} from "helpers/url";
 
 interface IProps {
   jti: string;
@@ -53,7 +58,7 @@ const JTILoaderInner = (p: IProps) => {
       return;
     }
     const urlSequence = beneficiarySequence.map((s) =>
-      isUrlAbsolute(s) ? s : meetingURI(s)
+      isUrlAbsolute(s) ? externalLinkURI(s) : meetingURI(s)
     );
     logSuccessfulBenLogin();
     setURL(
