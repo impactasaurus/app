@@ -14,6 +14,7 @@ interface IProps extends ISetMeetingNotes {
   record: IMeeting;
   onBack: () => void;
   onComplete: () => void;
+  isNext?: boolean; // defaults to false
 }
 
 const MeetingNotepadInner = (p: IProps) => {
@@ -71,7 +72,7 @@ const MeetingNotepadInner = (p: IProps) => {
       />
       <Button onClick={p.onBack}>{t("Back")}</Button>
       <Button {...nextProps} onClick={saveNotes}>
-        {t("Finish")}
+        {p.isNext === true ? t("Next") : t("Finish")}
       </Button>
       {savingError && <Error text={t("Failed to save notes")} />}
     </div>

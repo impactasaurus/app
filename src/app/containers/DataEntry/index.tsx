@@ -22,7 +22,7 @@ import { Error } from "components/Error";
 import { IOutcomeSet } from "models/outcomeSet";
 import { getQuestions } from "helpers/questionnaire";
 import "rc-slider/assets/index.css";
-import { forward, ISearchParam } from "helpers/url";
+import { canBeForwarded, forward, ISearchParam } from "helpers/url";
 
 interface IProps extends IMeetingMutation, ISetMeetingNotes, ISearchParam {
   data: IMeetingResult;
@@ -108,20 +108,12 @@ const DataEntryInner = (p: IProps) => {
     );
   };
 
-  if (p.data.error) {
-    return <Error text={t("Failed to load")} />;
-  }
-
   const questionnaire = p.data?.getMeeting?.outcomeSet;
   const questions = questionnaire ? getQuestions(questionnaire) : undefined;
   const meeting = p.data?.getMeeting;
   const answers = meeting?.answers;
 
-  if (
-    p.data.loading ||
-    meeting === undefined ||
-    meeting.id != p.match.params.id
-  ) {
+  if (meeting.id != p.match.params.id) {
     return <Loader active={true} inline="centered" />;
   }
 
@@ -134,6 +126,7 @@ const DataEntryInner = (p: IProps) => {
   if (!completedQuestionnaire(questions, answers, questionnaire, notes)) {
     saveProps.disabled = true;
   }
+  const isNext = canBeForwarded(p);
   return (
     <div>
       <h1>
@@ -153,7 +146,7 @@ const DataEntryInner = (p: IProps) => {
         </>
       )}
       <Button {...saveProps} onClick={completed} style={{ marginTop: "20px" }}>
-        {t("Save")}
+        {isNext === true ? t("Next") : t("Save")}
       </Button>
       {savingError && <Error text={t("Failed to finalise record")} />}
     </div>

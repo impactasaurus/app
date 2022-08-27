@@ -15,7 +15,7 @@ import {
   getNextState,
   initialState,
 } from "./state-machine";
-import { forward, ISearchParam, journey } from "helpers/url";
+import { canBeForwarded, forward, ISearchParam, journey } from "helpers/url";
 import { Thanks } from "./thanks";
 import { EmptyQuestionnaire } from "containers/Meeting/empty";
 import { useTranslation } from "react-i18next";
@@ -183,6 +183,7 @@ const MeetingInner = (p: IProps) => {
           record={p.data.getMeeting}
           onComplete={goToNextScreen}
           onBack={goToPreviousScreen}
+          isNext={canBeForwarded(p)}
         />
       </Wrapper>
     );
