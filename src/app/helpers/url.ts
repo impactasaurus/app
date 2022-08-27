@@ -24,13 +24,10 @@ export const journey = (
   );
 };
 
-export const questionnaireURI = (questionnaire: string): string => {
-  return `/questions/${questionnaire}`;
-};
-
-export const recordURI = (record: string): string => {
-  return `/meeting/${record}/view`;
-};
+export const questionnaireURI = (questionnaire: string): string =>
+  `/questions/${questionnaire}`;
+export const recordURI = (record: string): string => `/meeting/${record}/view`;
+export const meetingURI = (record: string): string => `/meeting/${record}`;
 
 export interface ISearchParam {
   location: {
@@ -56,7 +53,7 @@ export const getSearchParam = <T>(
   };
 };
 
-const isUrlAbsolute = (url) =>
+export const isUrlAbsolute = (url: string): boolean =>
   url.indexOf("://") > 0 || url.indexOf("//") === 0;
 
 const getNext = (p: ISearchParam): null | { url: string; next?: string[] } => {

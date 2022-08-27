@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { IURLConnector, UrlHOC } from "redux/modules/url";
+import { useNavigator } from "redux/modules/url";
 import { getJWT, IJWTResult } from "apollo/modules/jwt";
 import { Message, Loader } from "semantic-ui-react";
 import { Error } from "components/Error";
 import ReactGA from "react-ga";
 import { useTranslation } from "react-i18next";
 import { useSession, useSetJWT, useUser } from "redux/modules/user";
+import { forwardURLParam, isUrlAbsolute, meetingURI } from "helpers/url";
 
-interface IProps extends IURLConnector {
+interface IProps {
   jti: string;
   data?: IJWTResult;
 }
@@ -25,8 +26,9 @@ const JTILoaderInner = (p: IProps) => {
   const [expired, setExpired] = useState(false);
   const { t } = useTranslation();
   const setJWT = useSetJWT();
-  const { beneficiaryUser, beneficiaryScope } = useUser();
+  const { beneficiaryUser, beneficiarySequence } = useUser();
   const { JWT, expiry } = useSession();
+  const setURL = useNavigator();
 
   useEffect(() => {
     if (!p.data?.getJWT || JWT !== p.data?.getJWT) {
@@ -42,14 +44,25 @@ const JTILoaderInner = (p: IProps) => {
       setExpired(false);
       return;
     }
-    if (!beneficiaryScope) {
+    if (
+      !Array.isArray(beneficiarySequence) ||
+      beneficiarySequence.length === 0
+    ) {
       setError(true);
       setExpired(false);
       return;
     }
+    const urlSequence = beneficiarySequence.map((s) =>
+      isUrlAbsolute(s) ? s : meetingURI(s)
+    );
     logSuccessfulBenLogin();
-    p.setURL(`/meeting/${beneficiaryScope}`);
-  }, [beneficiaryScope, beneficiaryUser]);
+    setURL(
+      urlSequence[0],
+      urlSequence.length > 1
+        ? forwardURLParam(urlSequence.splice(1))
+        : undefined
+    );
+  }, [beneficiarySequence, beneficiaryUser]);
 
   useEffect(() => {
     if (!p.data?.getJWT) {
@@ -72,7 +85,4 @@ const JTILoaderInner = (p: IProps) => {
   return <Error text={t("This link does not seem to be valid")} />;
 };
 
-const JTILoaderConnected = UrlHOC(JTILoaderInner);
-export const JTILoader = getJWT<IProps>((props) => props.jti)(
-  JTILoaderConnected
-);
+export const JTILoader = getJWT<IProps>((props) => props.jti)(JTILoaderInner);
