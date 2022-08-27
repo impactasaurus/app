@@ -62,6 +62,11 @@ const DataEntryInner = (p: IProps) => {
   const { t } = useTranslation();
   const setURL = useNavigator();
 
+  const record = p?.data?.getMeeting;
+  const questionnaire = record?.outcomeSet;
+  const questions = questionnaire ? getQuestions(questionnaire) : undefined;
+  const answers = record?.answers;
+
   // important when chaining data entry forms, need to reset state
   useNonInitialEffect(() => {
     setSavingInner(false);
@@ -69,23 +74,20 @@ const DataEntryInner = (p: IProps) => {
   }, [p.match.params.id]);
 
   useEffect(() => {
-    setNotes(p.data.getMeeting?.notes);
-  }, [p.data.getMeeting?.notes]);
+    setNotes(record?.notes);
+  }, [record?.notes]);
 
   const completed = () => {
-    const ben = p.data.getMeeting.beneficiary;
-    const recordID = p.data.getMeeting.id;
-
     setSavingInner(true);
     setSavingError(false);
-    p.setMeetingNotes(recordID, notes)
+    p.setMeetingNotes(record.id, notes)
       .then(() => {
-        return p.completeMeeting(recordID, ben);
+        return p.completeMeeting(record.id, record.beneficiary);
       })
       .then(() => {
         if (!forward(p, setURL)) {
           setURL(
-            `/beneficiary/${ben}`,
+            `/beneficiary/${record.beneficiary}`,
             new URLSearchParams({ q: questionnaire.id })
           );
         }
@@ -104,7 +106,7 @@ const DataEntryInner = (p: IProps) => {
       <QuestionInline
         key={q.id}
         index={idx + 1}
-        record={p.data.getMeeting}
+        record={record}
         questionID={q.id}
         onSaving={setSaving(true)}
         onSaved={setSaving(false)}
@@ -113,12 +115,7 @@ const DataEntryInner = (p: IProps) => {
     );
   };
 
-  const questionnaire = p.data?.getMeeting?.outcomeSet;
-  const questions = questionnaire ? getQuestions(questionnaire) : undefined;
-  const meeting = p.data?.getMeeting;
-  const answers = meeting?.answers;
-
-  if (meeting.id != p.match.params.id) {
+  if (record === undefined || record.id != p.match.params.id) {
     return <Loader active={true} inline="centered" />;
   }
 
@@ -134,7 +131,7 @@ const DataEntryInner = (p: IProps) => {
   return (
     <div>
       <h1>
-        {meeting.beneficiary} - <ISODateString iso={meeting.conducted} />
+        {record.beneficiary} - <ISODateString iso={record.conducted} />
       </h1>
       {renderArray(renderQuestion, questions)}
       {questionnaire?.noteDeactivated !== true && (
