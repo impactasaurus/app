@@ -55,3 +55,51 @@ export const getSearchParam = <T>(
     }
   };
 };
+
+const isUrlAbsolute = (url) =>
+  url.indexOf("://") > 0 || url.indexOf("//") === 0;
+
+const getNext = (p: ISearchParam): null | { url: string; next?: string[] } => {
+  const raw = getSearchParam<string>("next")(p);
+  if (!raw) {
+    return null;
+  }
+  let next = raw;
+  try {
+    // expect base64 encoded array
+    next = atob(next);
+    next = JSON.parse(next);
+  } catch (e) {
+    return null;
+  }
+  if (!Array.isArray(next) || next.length === 0) {
+    return null;
+  }
+  return { url: next[0], next: next.splice(1) };
+};
+
+export const forwardURLParam = (next: string[] | string): URLSearchParams =>
+  new URLSearchParams({
+    next: btoa(JSON.stringify(Array.isArray(next) ? next : [next])),
+  });
+
+export const canBeForwarded = (p: ISearchParam): boolean => getNext(p) !== null;
+
+export const forward = (
+  p: ISearchParam,
+  setURL: (url: string, search?: URLSearchParams) => void
+): boolean => {
+  const n = getNext(p);
+  if (n === null) {
+    return false;
+  }
+  if (isUrlAbsolute(n.url)) {
+    window.location.href = n.url;
+  } else {
+    setURL(
+      n.url,
+      n.next && n.next.length > 0 ? forwardURLParam(n.next) : undefined
+    );
+  }
+  return true;
+};

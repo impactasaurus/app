@@ -1,50 +1,33 @@
 import React from "react";
 import { Button } from "semantic-ui-react";
-import { IURLConnector, UrlHOC } from "redux/modules/url";
+import { useNavigator } from "redux/modules/url";
 import { getMeeting, IMeetingResult } from "apollo/modules/meetings";
 import { RecordQuestionSummary } from "components/RecordQuestionSummary";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { useTranslation } from "react-i18next";
 import { ISODateString } from "components/Moment";
+import { forward, ISearchParam } from "helpers/url";
 import "./style.less";
 
-interface IProps extends IURLConnector {
+interface IProps extends ISearchParam {
   match: {
     params: {
       id: string;
     };
   };
-  location: {
-    // can provide a ?next=relativeURL which the user will be taken to on cancel or successful save
-    search: string;
-  };
   data: IMeetingResult;
-}
-
-function getNextPageURL(p: IProps): string | undefined {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has("next") === false) {
-    return undefined;
-  }
-  return urlParams.get("next");
 }
 
 const RecordViewInner = (p: IProps) => {
   const { t } = useTranslation();
+  const setURL = useNavigator();
 
   const nextPage = () => {
-    const nextPage = getNextPageURL(p);
-    if (nextPage !== undefined) {
-      p.setURL(nextPage);
-      return;
+    if (!forward(p, setURL)) {
+      const ben = p.data?.getMeeting?.beneficiary;
+      setURL(ben ? `/beneficiary/${ben}` : "/");
     }
-    const record = p.data.getMeeting;
-    if (record !== undefined) {
-      p.setURL(`/beneficiary/${record.beneficiary}`);
-      return;
-    }
-    p.setURL("/");
   };
 
   const noop = (): Promise<void> => {
@@ -105,10 +88,5 @@ const RecordViewData = getMeeting<IProps>((props) => props.match.params.id)(
   RecordViewLoader
 );
 // t("View Record")
-const RecordViewPage = PageWrapperHoC(
-  "View Record",
-  "record-view",
-  RecordViewData
-);
-const RecordView = UrlHOC(RecordViewPage);
+const RecordView = PageWrapperHoC("View Record", "record-view", RecordViewData);
 export { RecordView };

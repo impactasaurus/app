@@ -2,7 +2,7 @@ import React from "react";
 import { Table, Icon, Popup } from "semantic-ui-react";
 import { IMeeting, sortMeetingsByConducted } from "../../models/meeting";
 import { renderArrayForArray } from "../../helpers/react";
-import { IURLConnector, UrlHOC } from "redux/modules/url";
+import { useNavigator } from "redux/modules/url";
 import { deleteMeeting, IDeleteMeetingMutation } from "apollo/modules/meetings";
 import { ConfirmButton } from "components/ConfirmButton";
 import { Link } from "react-router-dom";
@@ -10,30 +10,38 @@ import { Tags } from "../Tag";
 import { useTranslation } from "react-i18next";
 import { ISODateString } from "components/Moment";
 import { TooltipButton } from "components/TooltipButton";
+import { forwardURLParam } from "helpers/url";
 import "./style.less";
 
-interface IProp extends IURLConnector, IDeleteMeetingMutation {
+interface IProp extends IDeleteMeetingMutation {
   meetings: IMeeting[];
 }
 
 const RecordListInner = (p: IProp) => {
   const { t } = useTranslation();
+  const setURL = useNavigator();
 
   const resume = (m: IMeeting): (() => void) => {
     return () => {
-      p.setURL(`/meeting/${m.id}`);
+      setURL(`/meeting/${m.id}`);
     };
   };
 
   const view = (m: IMeeting): (() => void) => {
     return () => {
-      p.setURL(`/meeting/${m.id}/view`, `?next=${window.location.pathname}`);
+      setURL(
+        `/meeting/${m.id}/view`,
+        forwardURLParam(window.location.pathname)
+      );
     };
   };
 
   const edit = (m: IMeeting): (() => void) => {
     return () => {
-      p.setURL(`/meeting/${m.id}/edit`, `?next=${window.location.pathname}`);
+      setURL(
+        `/meeting/${m.id}/edit`,
+        forwardURLParam(window.location.pathname)
+      );
     };
   };
 
@@ -149,6 +157,5 @@ const RecordListInner = (p: IProp) => {
   );
 };
 
-const RecordListConnected = UrlHOC(RecordListInner);
-const RecordList = deleteMeeting<IProp>(RecordListConnected);
+const RecordList = deleteMeeting<IProp>(RecordListInner);
 export { RecordList };
