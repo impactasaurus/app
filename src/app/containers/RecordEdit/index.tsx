@@ -25,6 +25,7 @@ import { Tags } from "components/Tag";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { WithTranslation, withTranslation } from "react-i18next";
+import { forward, ISearchParam } from "helpers/url";
 import "./style.less";
 
 interface IProps
@@ -32,15 +33,12 @@ interface IProps
     IEditMeetingDate,
     IEditMeetingTags,
     IEditMeetingBeneficiary,
+    ISearchParam,
     WithTranslation {
   match: {
     params: {
       id: string;
     };
-  };
-  location: {
-    // can provide a ?next=relativeURL which the user will be taken to on cancel or successful save
-    search: string;
   };
   data: IMeetingResult;
 }
@@ -55,14 +53,6 @@ interface IState {
   dateEditing?: boolean;
   benEditing?: boolean;
   loaded?: boolean;
-}
-
-function getNextPageURL(p: IProps): string | undefined {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has("next") === false) {
-    return undefined;
-  }
-  return urlParams.get("next");
 }
 
 class RecordEditInner extends React.Component<IProps, IState> {
@@ -149,12 +139,9 @@ class RecordEditInner extends React.Component<IProps, IState> {
   }
 
   private nextPage() {
-    const nextPage = getNextPageURL(this.props);
-    if (nextPage !== undefined) {
-      this.props.setURL(nextPage);
-      return;
+    if (!forward(this.props, this.props.setURL)) {
+      this.props.setURL(`/beneficiary/${this.state.beneficiary}`);
     }
-    this.props.setURL(`/beneficiary/${this.state.beneficiary}`);
   }
 
   private setConductedDate(date: moment.Moment) {

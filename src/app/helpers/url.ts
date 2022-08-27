@@ -78,8 +78,10 @@ const getNext = (p: ISearchParam): null | { url: string; next?: string[] } => {
   return { url: next[0], next: next.splice(1) };
 };
 
-export const encodeForwards = (next: string[]): string =>
-  btoa(JSON.stringify(next));
+export const forwardURLParam = (next: string[] | string): URLSearchParams =>
+  new URLSearchParams({
+    next: btoa(JSON.stringify(Array.isArray(next) ? next : [next])),
+  });
 
 export const canBeForwarded = (p: ISearchParam): boolean => getNext(p) !== null;
 
@@ -96,9 +98,7 @@ export const forward = (
   } else {
     setURL(
       n.url,
-      new URLSearchParams({
-        next: encodeForwards(n.next),
-      })
+      n.next && n.next.length > 0 ? forwardURLParam(n.next) : undefined
     );
   }
   return true;
