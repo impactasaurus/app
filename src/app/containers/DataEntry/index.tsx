@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   IMeetingResult,
   getMeeting,
@@ -21,8 +21,9 @@ import { Button, ButtonProps, Loader } from "semantic-ui-react";
 import { Error } from "components/Error";
 import { IOutcomeSet } from "models/outcomeSet";
 import { getQuestions } from "helpers/questionnaire";
-import "rc-slider/assets/index.css";
 import { canBeForwarded, forward, ISearchParam } from "helpers/url";
+import { useNonInitialEffect } from "helpers/hooks/useNonInitialEffect";
+import "rc-slider/assets/index.css";
 
 interface IProps extends IMeetingMutation, ISetMeetingNotes, ISearchParam {
   data: IMeetingResult;
@@ -56,10 +57,20 @@ const completedQuestionnaire = (
 
 const DataEntryInner = (p: IProps) => {
   const [saving, setSavingInner] = useState(false);
-  const [savingError, setSavingError] = useState<boolean>(false);
-  const [notes, setNotes] = useState<string>(p.data.getMeeting.notes);
+  const [savingError, setSavingError] = useState(false);
+  const [notes, setNotes] = useState<string>();
   const { t } = useTranslation();
   const setURL = useNavigator();
+
+  // important when chaining data entry forms, need to reset state
+  useNonInitialEffect(() => {
+    setSavingInner(false);
+    setSavingError(false);
+  }, [p.match.params.id]);
+
+  useEffect(() => {
+    setNotes(p.data.getMeeting?.notes);
+  }, [p.data.getMeeting?.notes]);
 
   const completed = () => {
     const ben = p.data.getMeeting.beneficiary;
@@ -72,8 +83,6 @@ const DataEntryInner = (p: IProps) => {
         return p.completeMeeting(recordID, ben);
       })
       .then(() => {
-        setSavingInner(false);
-        setSavingError(false);
         if (!forward(p, setURL)) {
           setURL(
             `/beneficiary/${ben}`,
@@ -88,11 +97,7 @@ const DataEntryInner = (p: IProps) => {
       });
   };
 
-  const setSaving = (toSet: boolean) => {
-    return () => {
-      setSavingInner(toSet);
-    };
-  };
+  const setSaving = (toSet: boolean) => () => setSavingInner(toSet);
 
   const renderQuestion = (q: Question, idx: number): JSX.Element => {
     return (
@@ -126,7 +131,6 @@ const DataEntryInner = (p: IProps) => {
   if (!completedQuestionnaire(questions, answers, questionnaire, notes)) {
     saveProps.disabled = true;
   }
-  const isNext = canBeForwarded(p);
   return (
     <div>
       <h1>
@@ -146,7 +150,7 @@ const DataEntryInner = (p: IProps) => {
         </>
       )}
       <Button {...saveProps} onClick={completed} style={{ marginTop: "20px" }}>
-        {isNext === true ? t("Next") : t("Save")}
+        {canBeForwarded(p) ? t("Next") : t("Save")}
       </Button>
       {savingError && <Error text={t("Failed to finalise record")} />}
     </div>

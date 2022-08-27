@@ -43,7 +43,8 @@ const NotepadInner = (p: IProps): JSX.Element => {
     }
   };
 
-  const notesNotNull: string | undefined = p.notes ? p.notes : undefined;
+  const notesOrEmpty: string =
+    p.notes === null || p.notes === undefined ? "" : p.notes;
   return (
     <div className="notepad">
       {p.prompt !== false && (
@@ -65,7 +66,7 @@ const NotepadInner = (p: IProps): JSX.Element => {
             autoHeight={true}
             rows={2}
             onChange={onChange}
-            value={notesNotNull}
+            value={notesOrEmpty}
             onBlur={p.onBlur}
             placeholder={p.placeholder}
             style={{ minHeight: "5em" }}
