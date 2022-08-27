@@ -56,25 +56,35 @@ export const getSearchParam = <T>(
   };
 };
 
+const isUrlAbsolute = (url) =>
+  url.indexOf("://") > 0 || url.indexOf("//") === 0;
+
 export const forward = (
   p: ISearchParam,
   setURL: (url: string, search?: URLSearchParams) => void
 ): boolean => {
+  let forwarded = false;
+  const sendForward = (url: string, search?: URLSearchParams) => {
+    forwarded = true;
+    if (isUrlAbsolute(url)) {
+      window.location.href = url;
+    } else {
+      setURL(url, search);
+    }
+  };
+
   const next = getSearchParam<string | string[]>("next")(p);
   if (next) {
     if (Array.isArray(next)) {
       if (next.length === 1) {
-        setURL(next[0]);
-        return true;
+        sendForward(next[0]);
       } else if (next.length > 1) {
         const remainingArrayJSON = JSON.stringify(next.splice(1));
-        setURL(next[0], new URLSearchParams({ next: remainingArrayJSON }));
-        return true;
+        sendForward(next[0], new URLSearchParams({ next: remainingArrayJSON }));
       }
-    } else {
-      setURL(next);
-      return true;
+    } else if (typeof next === "string") {
+      sendForward(next);
     }
   }
-  return false;
+  return forwarded;
 };
