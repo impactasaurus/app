@@ -59,27 +59,27 @@ export const getSearchParam = <T>(
 const isUrlAbsolute = (url) =>
   url.indexOf("://") > 0 || url.indexOf("//") === 0;
 
-const getNext = (
-  p: ISearchParam
-): null | { url: string; search?: URLSearchParams } => {
-  const next = getSearchParam<string | string[]>("next")(p);
-  if (next) {
-    if (Array.isArray(next)) {
-      if (next.length === 1) {
-        return { url: next[0] };
-      } else if (next.length > 1) {
-        const remainingArrayJSON = JSON.stringify(next.splice(1));
-        return {
-          url: next[0],
-          search: new URLSearchParams({ next: remainingArrayJSON }),
-        };
-      }
-    } else if (typeof next === "string") {
-      return { url: next };
-    }
+const getNext = (p: ISearchParam): null | { url: string; next?: string[] } => {
+  const raw = getSearchParam<string>("next")(p);
+  if (!raw) {
+    return null;
   }
-  return null;
+  let next = raw;
+  try {
+    // expect base64 encoded array
+    next = atob(next);
+    next = JSON.parse(next);
+  } catch (e) {
+    return null;
+  }
+  if (!Array.isArray(next) || next.length === 0) {
+    return null;
+  }
+  return { url: next[0], next: next.splice(1) };
 };
+
+export const encodeForwards = (next: string[]): string =>
+  btoa(JSON.stringify(next));
 
 export const canBeForwarded = (p: ISearchParam): boolean => getNext(p) !== null;
 
@@ -88,13 +88,18 @@ export const forward = (
   setURL: (url: string, search?: URLSearchParams) => void
 ): boolean => {
   const n = getNext(p);
-  if (n !== null) {
-    if (isUrlAbsolute(n.url)) {
-      window.location.href = n.url;
-    } else {
-      setURL(n.url, n.search);
-    }
-    return true;
+  if (n === null) {
+    return false;
   }
-  return false;
+  if (isUrlAbsolute(n.url)) {
+    window.location.href = n.url;
+  } else {
+    setURL(
+      n.url,
+      new URLSearchParams({
+        next: encodeForwards(n.next),
+      })
+    );
+  }
+  return true;
 };
