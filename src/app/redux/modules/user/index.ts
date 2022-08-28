@@ -23,7 +23,7 @@ export interface IUser {
   name: string | null;
   loggedIn: boolean;
   beneficiaryUser: boolean;
-  beneficiaryScope: string | null;
+  beneficiarySequence: string[] | null;
   org: string | null;
   created: string | null;
 }
@@ -46,7 +46,7 @@ const initialState: IState = {
     name: null,
     loggedIn: false,
     beneficiaryUser: false,
-    beneficiaryScope: null,
+    beneficiarySequence: null,
     org: null,
     created: null,
   },
@@ -82,6 +82,25 @@ const getOrg = (token: any): string | null => {
   return o === "" ? null : o;
 };
 
+const getSeq = (token: any): string[] | null => {
+  const seq = getKey<string[]>(
+    token,
+    "https://app.impactasaurus.org/sequence",
+    null
+  );
+  const scopes = getKey<string[]>(
+    token,
+    "https://app.impactasaurus.org/scopes",
+    null
+  );
+  const scope = getKey<string>(
+    token,
+    "https://app.impactasaurus.org/scope",
+    null
+  );
+  return seq || scopes || (scope ? [scope] : null);
+};
+
 const hydrateUser = (token: any): IUser => {
   const expiry = getExpiryDate(token);
   return {
@@ -93,11 +112,7 @@ const hydrateUser = (token: any): IUser => {
       "https://app.impactasaurus.org/beneficiary",
       false
     ),
-    beneficiaryScope: getKey(
-      token,
-      "https://app.impactasaurus.org/scope",
-      null
-    ),
+    beneficiarySequence: getSeq(token),
     loggedIn: expiry === null ? false : expiry.getTime() - Date.now() > 0,
     org: getOrg(token),
     created: getStringOrNull(token, "https://app.impactasaurus.org/created_at"),
