@@ -29,7 +29,7 @@ export const questionnaireURI = (questionnaire: string): string =>
 export const recordURI = (record: string): string => `/meeting/${record}/view`;
 export const meetingURI = (record: string): string => `/meeting/${record}`;
 export const externalLinkURI = (url: string): string =>
-  `/external/${btoa(url)}`;
+  `/external/${encodeURIComponent(btoa(url))}`;
 
 export interface ISearchParam {
   location: {
