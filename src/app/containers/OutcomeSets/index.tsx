@@ -3,93 +3,52 @@ import {
   IOutcomeResult,
   IOutcomeMutation,
   allOutcomeSets,
-  deleteQuestionSet,
 } from "apollo/modules/outcomeSets";
-import { IOutcomeSet } from "models/outcomeSet";
-import { IURLConnector, UrlHOC } from "redux/modules/url";
+import { instanceOfIOutcomeSet, IOutcomeSet } from "models/outcomeSet";
+import { useNavigator } from "redux/modules/url";
 import { renderArray } from "helpers/react";
-import { List, Icon, Responsive, Button } from "semantic-ui-react";
-import { ConfirmButton } from "components/ConfirmButton";
-import ReactGA from "react-ga";
+import { List, Responsive, Button } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
-import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
+import { ApolloLoadersHoC } from "components/ApolloLoaderHoC";
 import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
 import RocketIcon from "./../../theme/rocket.inline.svg";
 import {
   IntroduceNewQuestionnaireButton,
   WhatNextAfterQuestionnaireTour,
 } from "components/TourQuestionnaires";
-import "./style.less";
 import { TooltipButton } from "components/TooltipButton";
-import { TooltipIcon } from "components/TooltipIcon";
+import { getSequences, IGetSequences } from "apollo/modules/sequence";
+import "./style.less";
+import { ISequence } from "models/sequence";
+import { QuestionnaireItem } from "./questionnaire";
+import { SequenceItem } from "./sequence";
 
-interface IProps extends IOutcomeMutation, IURLConnector {
+interface IProps extends IOutcomeMutation {
   data: IOutcomeResult;
+  seq: IGetSequences;
 }
-
-const logQuestionSetGAEvent = (action: string) => {
-  ReactGA.event({
-    category: "questionset",
-    action,
-  });
-};
 
 const NewQuestionnaireButtonID = "new-questionnaire-button";
 
 const SettingQuestionsInner = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
+  const setURL = useNavigator();
+  const combined = [...p.data.allOutcomeSets, ...p.seq.sequences];
+  combined.sort((a, b) => {
+    return a.name.localeCompare(b.name);
+  });
 
   const newClicked = () => {
-    p.setURL("/questions/new");
+    setURL("/questions/new");
   };
 
-  const navigateToOutcomeSet = (id: string) => {
-    return () => p.setURL(`/questions/${id}`);
+  const renderItem = (i: IOutcomeSet | ISequence): JSX.Element => {
+    return instanceOfIOutcomeSet(i) ? (
+      <QuestionnaireItem questionnaire={i} />
+    ) : (
+      <SequenceItem sequence={i} />
+    );
   };
-
-  const deleteQS = (id: string): (() => Promise<void>) => {
-    return () =>
-      p.deleteQuestionSet(id).then(() => {
-        logQuestionSetGAEvent("deleted");
-      });
-    // errors and success handled by ConfirmButton
-  };
-
-  const renderOutcomeSet = (os: IOutcomeSet): JSX.Element => (
-    <List.Item className="question-set" key={os.id}>
-      <List.Content floated="right">
-        {!os.readOnly && (
-          <ConfirmButton
-            buttonProps={{ icon: true }}
-            promptText={t(
-              `Are you sure you want to delete the '{questionnaireName}' questionnaire?`,
-              {
-                questionnaireName: os.name,
-              }
-            )}
-            onConfirm={deleteQS(os.id)}
-            tooltip={t("Delete")}
-          >
-            <Icon name="delete" />
-          </ConfirmButton>
-        )}
-      </List.Content>
-      <List.Content onClick={navigateToOutcomeSet(os.id)}>
-        <List.Header as="a">
-          {os.readOnly && (
-            <TooltipIcon
-              i={{ name: "lock", size: "small" }}
-              tooltipContent={t("Read only")}
-            />
-          )}
-          {os.name}
-        </List.Header>
-        {os.description && (
-          <List.Description as="a">{os.description}</List.Description>
-        )}
-      </List.Content>
-    </List.Item>
-  );
 
   return (
     <div>
@@ -124,8 +83,8 @@ const SettingQuestionsInner = (p: IProps): JSX.Element => {
         className="list"
       >
         {renderArray(
-          renderOutcomeSet,
-          p.data.allOutcomeSets,
+          renderItem,
+          combined,
           <div>
             <RocketIcon style={{ marginRight: "0.5em" }} />
             <a onClick={newClicked}>
@@ -139,15 +98,23 @@ const SettingQuestionsInner = (p: IProps): JSX.Element => {
   );
 };
 
-const OutcomeSetsConnected = UrlHOC(SettingQuestionsInner);
 // t("questionnaires")
-const OutcomeSetsLoader = ApolloLoaderHoC(
-  "questionnaires",
-  (p: IProps) => p.data,
-  OutcomeSetsConnected
+// t("sequences")
+const OutcomeSetsLoader = ApolloLoadersHoC(
+  [
+    {
+      entity: "questionnaires",
+      queryProps: (p: IProps) => p.data,
+    },
+    {
+      entity: "sequences",
+      queryProps: (p: IProps) => p.seq,
+    },
+  ],
+  SettingQuestionsInner
 );
 const OutcomeSetsWithData = allOutcomeSets<IProps>(
-  deleteQuestionSet(OutcomeSetsLoader)
+  getSequences(OutcomeSetsLoader, "seq")
 );
 // t("Questionnaires")
 const OutcomeSets = MinimalPageWrapperHoC(
