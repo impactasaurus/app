@@ -1,13 +1,12 @@
 import React, { useEffect } from "react";
 import { IOutcomeResult, allOutcomeSets } from "apollo/modules/outcomeSets";
 import { IOutcomeSet } from "models/outcomeSet";
-import { Select, DropdownItemProps } from "semantic-ui-react";
 import { setPref, SetPrefFunc } from "redux/modules/pref";
 import { IStore } from "redux/IStore";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { QuestionnaireKey, getSelectedQuestionSetID } from "models/pref";
-import { useTranslation } from "react-i18next";
+import { BasicQuestionnaireSelector } from "./basic";
 
 interface IExternalProps {
   allowedQuestionSetIDs?: string[];
@@ -61,10 +60,8 @@ const getAllowedQuestionSets = (ownProps: IProp): IOutcomeSet[] | undefined => {
 };
 
 const QuestionSetSelectInner = (p: IProp) => {
-  const { t } = useTranslation();
-
-  const setQuestionSetID = (_, data) => {
-    p.setPref(QuestionnaireKey, data.value);
+  const setQuestionSetID = (qID: string) => {
+    p.setPref(QuestionnaireKey, qID);
   };
 
   useEffect(() => {
@@ -75,47 +72,20 @@ const QuestionSetSelectInner = (p: IProp) => {
       Array.isArray(allowedQuestionSets) &&
       allowedQuestionSets.length > 0
     ) {
-      setQuestionSetID(
-        {},
-        {
-          value: allowedQuestionSets[0].id,
-        }
-      );
+      setQuestionSetID(allowedQuestionSets[0].id);
     }
     if (p.onQuestionSetSelected !== undefined) {
       p.onQuestionSetSelected(selectedQuestionSetID);
     }
   }, [p.selectedQuestionSetID, p.allowedQuestionSets, p.autoSelectFirst]);
 
-  const getOptions = (oss: IOutcomeSet[]): DropdownItemProps[] => {
-    if (!Array.isArray(oss)) {
-      return [];
-    }
-    return oss.map((os) => {
-      return {
-        key: os.id,
-        value: os.id,
-        text: os.name,
-      };
-    });
-  };
-
-  const selectProps: any = {};
-  if (p.data.loading) {
-    selectProps.loading = true;
-    selectProps.disabled = true;
-  }
-
   return (
-    <Select
-      id={p.inputID}
-      className="qs-selector"
-      {...selectProps}
-      value={p.selectedQuestionSetID}
-      placeholder={t("Questionnaire")}
+    <BasicQuestionnaireSelector
+      inputID={p.inputID}
       onChange={setQuestionSetID}
       onBlur={p.onBlur}
-      options={getOptions(p.allowedQuestionSets)}
+      questionnaireID={p.selectedQuestionSetID}
+      allowedQuestionSetIDs={p.allowedQuestionSetIDs}
     />
   );
 };

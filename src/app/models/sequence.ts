@@ -7,7 +7,7 @@ export interface ISequence {
   questionnaires: {
     id: string;
     name: string;
-  };
+  }[];
   destination?: string;
 }
 
