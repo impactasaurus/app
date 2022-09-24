@@ -8,7 +8,7 @@ interface IProps<T> {
   renderItem: (i: T) => JSX.Element;
   newClicked: () => void;
   text: {
-    title: string;
+    title: string | JSX.Element;
     newButton: string;
   };
   items: T[];
@@ -16,13 +16,14 @@ interface IProps<T> {
   beforeList?: JSX.Element;
   emptyList?: JSX.Element;
   afterList?: JSX.Element;
+  className?: string;
 }
 
 export const GenericQuestionnaireList: <T>(p: IProps<T>) => JSX.Element = (
   p
 ) => {
   return (
-    <div id="generic-questionnaire-list">
+    <div id="generic-questionnaire-list" className={p.className}>
       <span className="title-holder">
         <Responsive
           as={Button}

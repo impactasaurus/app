@@ -11,6 +11,8 @@ interface IProps {
   data: IGetSequences;
 }
 
+const mWidth = "600px";
+
 const Inner = (p: IProps) => {
   const { t } = useTranslation();
   const newClicked = () => {
@@ -21,6 +23,7 @@ const Inner = (p: IProps) => {
 
   return (
     <GenericQuestionnaireList
+      className="sequences"
       items={p.data.sequences}
       newClicked={newClicked}
       renderItem={renderItem}
@@ -28,6 +31,31 @@ const Inner = (p: IProps) => {
         newButton: t("New Sequence"),
         title: t("Sequences"),
       }}
+      emptyList={
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <p style={{ maxWidth: mWidth }}>
+            {t(
+              "Sequences make it easy to ask a beneficiary to complete more than one questionnaire."
+            )}
+          </p>
+          <p style={{ maxWidth: mWidth }}>
+            {t(
+              "Simply create a sequence and select which questionnaires you want completed. You can then generate remote links for the sequence, which will take the beneficiary through all of the specified questionnaires."
+            )}
+          </p>
+          <p style={{ maxWidth: mWidth }}>
+            {t(
+              "When the questionnaires have been answered, you can choose to send the beneficiary to another website. This allows you to use Impactasaurus alongside general purpose questionnaire systems."
+            )}
+          </p>
+        </div>
+      }
     />
   );
 };
