@@ -13,16 +13,16 @@ interface IProps {
   readOnly?: boolean; // defaults to false
 }
 
-export const Item = (p: IProps): JSX.Element => {
+export const GenericQuestionnaireListItem = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
   return (
-    <List.Item className="question-set" key={p.id}>
+    <List.Item className="questionnaire" key={p.id}>
       <List.Content floated="right">
         {p.readOnly !== true && (
           <ConfirmButton
             buttonProps={{ icon: true }}
             promptText={t(
-              `Are you sure you want to delete the '{questionnaireName}' questionnaire?`,
+              `Are you sure you want to delete '{questionnaireName}'?`,
               {
                 questionnaireName: p.name,
               }

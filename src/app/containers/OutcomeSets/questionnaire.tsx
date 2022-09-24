@@ -1,11 +1,11 @@
+import React from "react";
+import { IOutcomeSet } from "models/outcomeSet";
+import { useNavigator } from "redux/modules/url";
 import {
   deleteQuestionSet,
   IOutcomeMutation,
 } from "apollo/modules/outcomeSets";
-import { IOutcomeSet } from "models/outcomeSet";
-import React from "react";
-import { useNavigator } from "redux/modules/url";
-import { Item } from "./item";
+import { GenericQuestionnaireListItem } from "components/QuestionnaireList/item";
 
 interface IProps extends IOutcomeMutation {
   questionnaire: IOutcomeSet;
@@ -15,9 +15,7 @@ const QuestionnaireItemInner = (p: IProps): JSX.Element => {
   const q = p.questionnaire;
   const setURL = useNavigator();
 
-  const navigate = () => {
-    setURL(`/questions/${q.id}`);
-  };
+  const navigate = () => setURL(`/questions/${q.id}`);
 
   const onDelete = (): Promise<void> => {
     return p.deleteQuestionSet(q.id).then();
@@ -25,7 +23,7 @@ const QuestionnaireItemInner = (p: IProps): JSX.Element => {
   };
 
   return (
-    <Item
+    <GenericQuestionnaireListItem
       id={q.id}
       name={q.name}
       description={q.description}

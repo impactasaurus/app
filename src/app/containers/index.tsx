@@ -7,7 +7,7 @@ export { BeneficiarySelector } from "./BeneficiarySelector";
 export { AssessmentTypeSelect } from "./AssessmentTypeSelect";
 export { AssessmentConfig } from "./AssessmentConfig";
 export { Settings } from "./Settings";
-export { OutcomeSets } from "./OutcomeSets";
+export { QuestionnaireRouter } from "./OutcomeSets/router";
 export { OutcomeSet } from "./OutcomeSet";
 export { Meeting } from "./Meeting";
 export { Organisation } from "./Organisation";
