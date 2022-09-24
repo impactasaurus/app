@@ -6,7 +6,7 @@ import { TagInputWithBenSuggestions } from "components/TagInput";
 import { BeneficiaryInput } from "components/BeneficiaryInput";
 import { FormField } from "components/FormField";
 import { IAssessmentConfig } from "models/assessment";
-import { QuestionSetSelect } from "components/QuestionSetSelect";
+import { QuestionnaireSelect } from "components/QuestionnaireSelect";
 import { BeneficiaryTags } from "components/BeneficiaryTags";
 import moment from "moment";
 import {
@@ -139,9 +139,9 @@ const InnerForm = (
           label={t("Questionnaire")}
           id={questionnaireInputID}
         >
-          <QuestionSetSelect
+          <QuestionnaireSelect
             inputID="as-qid"
-            onQuestionSetSelected={qsOnChange}
+            onQuestionnaireSelected={qsOnChange}
             onBlur={qsOnBlur}
             autoSelectFirst={true}
           />

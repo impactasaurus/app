@@ -6,7 +6,6 @@ export interface ISequence {
   description?: string;
   questionnaires: {
     id: string;
-    name: string;
   }[];
   destination?: string;
 }
@@ -18,7 +17,6 @@ export const fragment = gql`
     description
     questionnaires {
       id
-      name
     }
     destination
   }

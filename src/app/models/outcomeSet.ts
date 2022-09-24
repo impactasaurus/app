@@ -50,7 +50,3 @@ export const catalogueFragment = gql`
   }
   ${fragment}
 `;
-
-export const instanceOfIOutcomeSet = (object: any): object is IOutcomeSet => {
-  return "questions" in object && "categories" in object;
-};

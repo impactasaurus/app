@@ -1,5 +1,5 @@
 import React from "react";
-import { BasicQuestionnaireSelector } from "components/QuestionSetSelect/basic";
+import { BasicQuestionnaireSelector } from "components/QuestionnaireSelect/basic";
 import { TooltipButton } from "components/TooltipButton";
 import { useTranslation } from "react-i18next";
 import { Handle } from "components/Handle";

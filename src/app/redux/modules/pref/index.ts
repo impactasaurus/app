@@ -1,4 +1,6 @@
 import { Action } from "redux";
+import { IStore } from "redux/IStore";
+import { useSelector, shallowEqual, useDispatch } from "react-redux";
 
 export const SET_PREF = "SET_PREF";
 
@@ -40,3 +42,15 @@ export function setPref(key: string, value: string) {
 }
 
 export type SetPrefFunc = (key: string, value: string) => void;
+
+export const usePreference = (key: string): string => {
+  return useSelector((store: IStore) => store.pref[key], shallowEqual);
+};
+
+export const useSetPreference = (): ((k: string, v: string) => void) => {
+  const dispatch = useDispatch();
+  const sp = (k: string, v: string): void => {
+    dispatch(setPref(k, v));
+  };
+  return sp;
+};

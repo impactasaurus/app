@@ -9,19 +9,6 @@ interface IOptions {
   wrapInGrid?: boolean; // defaults to false, normally used in page with existing grid
 }
 
-export const ApolloLoadersHoC = <P extends unknown>(
-  entities: {
-    entity: string;
-    queryProps: (p: P) => QueryProps;
-  }[],
-  WrappedComponent: React.ComponentType<P>,
-  opts?: IOptions
-): React.ComponentType<P> => {
-  return entities.reduce((wc, e) => {
-    return ApolloLoaderHoC(e.entity, e.queryProps, wc, opts);
-  }, WrappedComponent);
-};
-
 // entity is a description of what is loading, it is used in a sentence `Failed to load X`
 // queryProps takes the props and should return the QueryProps we are waiting for
 // WrappedComponent should be the react component being wrapped by this HoC
