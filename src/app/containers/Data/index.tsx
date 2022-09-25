@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "semantic-ui-react";
-import { QuestionSetSelect } from "components/QuestionSetSelect";
+import { QuestionnaireSelect } from "components/QuestionnaireSelect";
 import { IURLConnector, UrlHOC } from "../../redux/modules/url";
 import { Trans, useTranslation } from "react-i18next";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
@@ -20,7 +20,7 @@ const DataInner = (p: IURLConnector) => {
       <p>
         {t("Export all the records associated with a questionnaire to Excel:")}
       </p>
-      <QuestionSetSelect onQuestionSetSelected={setSelectedQuestionnaire} />
+      <QuestionnaireSelect onQuestionnaireSelected={setSelectedQuestionnaire} />
       <Button disabled={!selectedQuestionnaire} onClick={goToExport}>
         {t("Export")}
       </Button>

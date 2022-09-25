@@ -111,26 +111,28 @@ export function editQuestionSet<T>(component) {
   )(component);
 }
 
-export const deleteQuestionSet = graphql(
-  gql`
-    mutation ($id: ID!) {
-      deleteQuestionSet: DeleteOutcomeSet(outcomeSetID: $id)
+export const deleteQuestionSet = <T>(component) => {
+  return graphql<any, T>(
+    gql`
+      mutation ($id: ID!) {
+        deleteQuestionSet: DeleteOutcomeSet(outcomeSetID: $id)
+      }
+    `,
+    {
+      options: {
+        refetchQueries: ["allOutcomeSets"],
+      },
+      props: ({ mutate }) => ({
+        deleteQuestionSet: (id: string): Promise<string> =>
+          mutate({
+            variables: {
+              id,
+            },
+          }).then(mutationResultExtractor<string>("deleteQuestionSet")),
+      }),
     }
-  `,
-  {
-    options: {
-      refetchQueries: ["allOutcomeSets"],
-    },
-    props: ({ mutate }) => ({
-      deleteQuestionSet: (id: string): Promise<string> =>
-        mutate({
-          variables: {
-            id,
-          },
-        }).then(mutationResultExtractor<string>("deleteQuestionSet")),
-    }),
-  }
-);
+  )(component);
+};
 
 export interface IOutcomeResult extends QueryProps {
   allOutcomeSets?: IOutcomeSet[];

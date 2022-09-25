@@ -79,7 +79,11 @@ const Header = (): JSX.Element => {
         <Menu.Item
           as={Link}
           to="/questions"
-          active={isActive("/catalogue") || isActive("/questions")}
+          active={
+            isActive("/catalogue") ||
+            isActive("/questions") ||
+            isActive("/sequences")
+          }
           id={QuestionnaireButtonID}
         >
           <Icon name="question" className="replacement" />

@@ -2,7 +2,7 @@ import React from "react";
 import { Icon, Form } from "semantic-ui-react";
 import { FormField } from "components/FormField";
 import { IAssessmentConfig } from "models/assessment";
-import { QuestionSetSelect } from "components/QuestionSetSelect";
+import { QuestionnaireSelect } from "components/QuestionnaireSelect";
 import {
   FormikBag,
   FormikErrors,
@@ -47,9 +47,9 @@ const InnerForm = (props: FormikProps<IAssessmentConfig> & IProps) => {
         required={true}
         label={t("Questionnaire")}
       >
-        <QuestionSetSelect
+        <QuestionnaireSelect
           inputID="as-qid"
-          onQuestionSetSelected={qsOnChange}
+          onQuestionnaireSelected={qsOnChange}
           onBlur={qsOnBlur}
           autoSelectFirst={true}
         />

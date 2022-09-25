@@ -5,9 +5,9 @@ import { ConfirmButton } from "components/ConfirmButton";
 import { CategoryPill } from "components/CategoryPill";
 import { IOutcomeSet } from "models/outcomeSet";
 import { SortableElement } from "react-sortable-hoc";
-import { Handle } from "./Handle";
 import { useTranslation } from "react-i18next";
 import { TooltipButton } from "components/TooltipButton";
+import { Handle } from "components/Handle";
 
 interface IProps {
   questionnaire: IOutcomeSet;

@@ -1,5 +1,5 @@
 import React from "react";
-import { QuestionSetSelect } from "components/QuestionSetSelect";
+import { QuestionnaireSelect } from "components/QuestionnaireSelect";
 import { VizControlPanel } from "components/VizControlPanel";
 import { bindActionCreators } from "redux";
 import { IStore } from "redux/IStore";
@@ -192,8 +192,8 @@ class JourneyInner extends React.Component<IProps, null> {
           export={this.exportBeneficiaryRecords}
           allowCanvasSnapshot={this.props.isCanvasSnapshotPossible}
         />
-        <QuestionSetSelect
-          allowedQuestionSetIDs={getQuestionSetOptions(
+        <QuestionnaireSelect
+          allowedQuestionnaireIDs={getQuestionSetOptions(
             this.props.data.getMeetings
           )}
           autoSelectFirst={true}

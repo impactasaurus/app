@@ -2,7 +2,7 @@ import * as React from "react";
 import { Radio, Form, Button } from "semantic-ui-react";
 import { DateRangePicker } from "components/DateRangePicker";
 import { Hint } from "components/Hint";
-import { QuestionSetSelect } from "components/QuestionSetSelect";
+import { QuestionnaireSelect } from "components/QuestionnaireSelect";
 import { FormField } from "components/FormField";
 import "./style.less";
 import {
@@ -109,9 +109,9 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
         label={t("Questionnaire")}
         id={questionnaireInputID}
       >
-        <QuestionSetSelect
+        <QuestionnaireSelect
           inputID="rf-qid"
-          onQuestionSetSelected={qsOnChange}
+          onQuestionnaireSelected={qsOnChange}
           onBlur={qsOnBlur}
           autoSelectFirst={true}
         />
