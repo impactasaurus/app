@@ -29,6 +29,7 @@ const QuestionnaireItemInner = (p: IProps): JSX.Element => {
       description={q.description}
       onDelete={onDelete}
       onNavigate={navigate}
+      readOnly={q.readOnly}
     />
   );
 };

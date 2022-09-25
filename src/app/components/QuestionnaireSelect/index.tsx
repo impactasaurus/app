@@ -42,6 +42,8 @@ const QuestionSetSelectInner = (p: IProp) => {
   const [allowedQuestionnaires, setAllowedQuestionnaires] =
     useState<IOutcomeSet[]>();
 
+  const setQuestionSetID = (qID: string) => setPref(QuestionnaireKey, qID);
+
   // check questionnaire preference is allowed
   useEffect(() => {
     if (
@@ -92,10 +94,6 @@ const QuestionSetSelectInner = (p: IProp) => {
       p.onQuestionnaireSelected(selectedQuestionnaireID);
     }
   }, [selectedQuestionnaireID]);
-
-  const setQuestionSetID = (qID: string) => {
-    setPref(QuestionnaireKey, qID);
-  };
 
   return (
     <BasicQuestionnaireSelector

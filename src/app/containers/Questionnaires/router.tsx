@@ -22,9 +22,7 @@ export const QuestionnaireRouter = (): JSX.Element => {
   };
 
   const handleClick = (url: string) => {
-    return () => {
-      setURL(url);
-    };
+    return () => setURL(url);
   };
 
   return (

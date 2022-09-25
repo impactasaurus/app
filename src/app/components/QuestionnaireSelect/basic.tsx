@@ -17,6 +17,14 @@ const BasicInner = (p: IProps) => {
   const { t } = useTranslation();
 
   const getOptions = (): DropdownItemProps[] => {
+    if (p.data.error) {
+      return [
+        {
+          key: "failure",
+          text: t("Failed to load questionnaires, please refresh"),
+        },
+      ];
+    }
     const questionnaires = p?.data?.allOutcomeSets || [];
     const filtered = questionnaires.filter(
       (q) =>
