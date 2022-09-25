@@ -2,7 +2,7 @@ import * as React from "react";
 import { Radio, Form, Button } from "semantic-ui-react";
 import { DateRangePicker } from "components/DateRangePicker";
 import { Hint } from "components/Hint";
-import { QuestionnaireSelect } from "components/QuestionnaireSelect";
+import { QuestionnaireSelect } from "components/QuestionnaireSelect/pref";
 import { FormField } from "components/FormField";
 import "./style.less";
 import {

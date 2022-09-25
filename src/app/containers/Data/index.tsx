@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "semantic-ui-react";
-import { QuestionnaireSelect } from "components/QuestionnaireSelect";
+import { QuestionnaireSelect } from "components/QuestionnaireSelect/pref";
 import { IURLConnector, UrlHOC } from "../../redux/modules/url";
 import { Trans, useTranslation } from "react-i18next";
 import { PageWrapperHoC } from "components/PageWrapperHoC";

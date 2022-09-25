@@ -1,5 +1,5 @@
 import React from "react";
-import { QuestionnaireSelect } from "components/QuestionnaireSelect";
+import { QuestionnaireSelect } from "components/QuestionnaireSelect/pref";
 import { VizControlPanel } from "components/VizControlPanel";
 import { bindActionCreators } from "redux";
 import { IStore } from "redux/IStore";

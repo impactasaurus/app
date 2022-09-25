@@ -6,7 +6,7 @@ import { TagInputWithBenSuggestions } from "components/TagInput";
 import { BeneficiaryInput } from "components/BeneficiaryInput";
 import { FormField } from "components/FormField";
 import { IAssessmentConfig } from "models/assessment";
-import { QuestionnaireSelect } from "components/QuestionnaireSelect";
+import { QuestionnaireSelect } from "components/QuestionnaireSelect/pref";
 import { BeneficiaryTags } from "components/BeneficiaryTags";
 import moment from "moment";
 import {

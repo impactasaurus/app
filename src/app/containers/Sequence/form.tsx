@@ -34,6 +34,7 @@ export const Form = (p: IProps): JSX.Element => {
     reset,
     control,
     getValues,
+    setValue,
     formState: {
       errors,
       touchedFields: touched,
@@ -50,7 +51,7 @@ export const Form = (p: IProps): JSX.Element => {
       questionnaires: p.seq.questionnaires.map((q) => ({ id: q })),
     },
   });
-  const { fields, append, update, move, remove } = useFieldArray({
+  const { fields, append, move, remove } = useFieldArray({
     control,
     name: "questionnaires",
     rules: {
@@ -74,7 +75,8 @@ export const Form = (p: IProps): JSX.Element => {
     });
   };
 
-  const qsOnChange = (idx: number) => (id: string) => update(idx, { id: id });
+  const qsOnChange = (idx: number) => (id: string) =>
+    setValue(`questionnaires.${idx}.id`, id);
   const qsOnRemove = (idx: number) => () => remove(idx);
   const addQuestionnaire = () => append({ id: undefined });
   const onSortEnd = ({ oldIndex, newIndex }): void => move(oldIndex, newIndex);

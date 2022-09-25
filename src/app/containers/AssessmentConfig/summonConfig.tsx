@@ -2,7 +2,7 @@ import React from "react";
 import { Icon, Form } from "semantic-ui-react";
 import { FormField } from "components/FormField";
 import { IAssessmentConfig } from "models/assessment";
-import { QuestionnaireSelect } from "components/QuestionnaireSelect";
+import { QuestionnaireSelect } from "components/QuestionnaireSelect/pref";
 import {
   FormikBag,
   FormikErrors,

@@ -2,7 +2,9 @@ import { QuestionnaireKey, getSelectedQuestionSetID } from "models/pref";
 import { IParams } from "redux/querySync";
 import { IStore } from "redux/IStore";
 import { setPref } from "redux/modules/pref";
-import { stateInURLRegex } from "./index";
+
+export const stateInURLRegex =
+  /(\/beneficiary\/[^/]*\/journey|\/beneficiary\/[^/]*$|\/beneficiary\/[^/]*\/$)/;
 
 export const sync: IParams = {
   [QuestionnaireKey]: {
