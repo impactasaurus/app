@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { IOutcomeResult, allOutcomeSets } from "apollo/modules/outcomeSets";
-import { IOutcomeSet } from "models/outcomeSet";
 import { usePreference, useSetPreference } from "redux/modules/pref";
 import { QuestionnaireKey } from "models/pref";
 import { BasicQuestionnaireSelector } from "./basic";
+import {
+  IQuestionnairish,
+  IQuestionnairishProps,
+  QuestionnairishType,
+  QuestionnairesAndSequencesHoC,
+} from "components/QuestionnairesAndSequencesHoC";
 
 interface IExternalProps {
   allowedQuestionnaireIDs?: string[];
   autoSelectFirst?: boolean;
   inputID?: string;
   onBlur?: () => void;
-  onQuestionnaireSelected?: (qsID: string) => void;
+  onQuestionnaireSelected?: (qsID: string, type: QuestionnairishType) => void;
+  includeSequences?: boolean; // defaults to false
 }
 
-interface IProp extends IExternalProps {
-  data?: IOutcomeResult;
-}
+interface IProp extends IExternalProps, IQuestionnairishProps {}
 
 export const stateInURLRegex =
   /(\/beneficiary\/[^/]*\/journey|\/beneficiary\/[^/]*$|\/beneficiary\/[^/]*\/$)/;
@@ -23,13 +26,13 @@ export const stateInURLRegex =
 const isQuestionSetAllowed = (
   qsID: string,
   allowed: string[],
-  discovered: IOutcomeSet[]
+  discovered: IQuestionnairish[]
 ): boolean => {
   const isAllowed =
     Array.isArray(allowed) === false || allowed.indexOf(qsID) !== -1;
   const isKnown =
     Array.isArray(discovered) === false ||
-    discovered.map((q) => q.id).indexOf(qsID) !== -1;
+    discovered.map((i) => i.id).indexOf(qsID) !== -1;
   return isAllowed && isKnown;
 };
 
@@ -40,7 +43,7 @@ const QuestionSetSelectInner = (p: IProp) => {
   const [selectedQuestionnaireID, setQuestionnaireID] =
     useState<string>(questionnairePref);
   const [allowedQuestionnaires, setAllowedQuestionnaires] =
-    useState<IOutcomeSet[]>();
+    useState<string[]>();
 
   const setQuestionSetID = (qID: string) => setPref(QuestionnaireKey, qID);
 
@@ -51,30 +54,30 @@ const QuestionSetSelectInner = (p: IProp) => {
       !isQuestionSetAllowed(
         questionnairePref,
         p.allowedQuestionnaireIDs,
-        p.data.allOutcomeSets
+        p.qAndS.items
       )
     ) {
       setQuestionnaireID(undefined);
       return;
     }
     setQuestionnaireID(questionnairePref);
-  }, [questionnairePref, p.allowedQuestionnaireIDs, p.data.allOutcomeSets]);
+  }, [questionnairePref, p.allowedQuestionnaireIDs, p.qAndS.items]);
 
   // filter questionnaires to only those allowed
   useEffect(() => {
-    if (Array.isArray(p.data.allOutcomeSets) === false) {
+    if (Array.isArray(p.qAndS.items) === false) {
       setAllowedQuestionnaires(undefined);
       return;
     }
-    const allowed = p.data.allOutcomeSets.filter((os): boolean => {
+    const allowed = p.qAndS.items.filter((os): boolean => {
       return isQuestionSetAllowed(
         os.id,
         p.allowedQuestionnaireIDs,
-        p.data.allOutcomeSets
+        p.qAndS.items
       );
     });
-    setAllowedQuestionnaires(allowed);
-  }, [p.allowedQuestionnaireIDs, p.data.allOutcomeSets]);
+    setAllowedQuestionnaires(allowed.map((i) => i.id));
+  }, [p.allowedQuestionnaireIDs, p.qAndS.items]);
 
   // auto select logic
   useEffect(() => {
@@ -84,16 +87,28 @@ const QuestionSetSelectInner = (p: IProp) => {
       Array.isArray(allowedQuestionnaires) &&
       allowedQuestionnaires.length > 0
     ) {
-      setQuestionSetID(allowedQuestionnaires[0].id);
+      setQuestionSetID(allowedQuestionnaires[0]);
     }
   }, [allowedQuestionnaires, selectedQuestionnaireID, p.autoSelectFirst]);
 
   // alert to newly selected questionnaires
   useEffect(() => {
-    if (p.onQuestionnaireSelected !== undefined) {
-      p.onQuestionnaireSelected(selectedQuestionnaireID);
+    if (!p.onQuestionnaireSelected) {
+      return;
     }
-  }, [selectedQuestionnaireID]);
+    if (!selectedQuestionnaireID) {
+      // undefined is a valid selection
+      p.onQuestionnaireSelected(undefined, undefined);
+      return;
+    }
+    const selectedItem = (p.qAndS.items || []).find(
+      (i) => i.id === selectedQuestionnaireID
+    );
+    if (!selectedItem) {
+      return;
+    }
+    p.onQuestionnaireSelected(selectedItem.id, selectedItem.type);
+  }, [selectedQuestionnaireID, p.qAndS.items, p.onQuestionnaireSelected]);
 
   return (
     <BasicQuestionnaireSelector
@@ -102,10 +117,12 @@ const QuestionSetSelectInner = (p: IProp) => {
       onBlur={p.onBlur}
       questionnaireID={selectedQuestionnaireID}
       allowedQuestionSetIDs={p.allowedQuestionnaireIDs}
+      includeSequences={p.includeSequences}
     />
   );
 };
 
-export const QuestionnaireSelect = allOutcomeSets<IProp>(
-  QuestionSetSelectInner
+export const QuestionnaireSelect = QuestionnairesAndSequencesHoC<IProp>(
+  QuestionSetSelectInner,
+  (p: IProp) => p.includeSequences
 );

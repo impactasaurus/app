@@ -144,6 +144,7 @@ const InnerForm = (
             onQuestionnaireSelected={qsOnChange}
             onBlur={qsOnBlur}
             autoSelectFirst={true}
+            includeSequences={true}
           />
         </FormField>
         <FormField

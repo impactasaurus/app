@@ -1,23 +1,26 @@
 import React from "react";
-import { allOutcomeSets, IOutcomeResult } from "apollo/modules/outcomeSets";
 import { DropdownItemProps, Select } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
+import {
+  IQuestionnairishProps,
+  QuestionnairishType,
+  QuestionnairesAndSequencesHoC,
+} from "components/QuestionnairesAndSequencesHoC";
 
-interface IProps {
+interface IProps extends IQuestionnairishProps {
   inputID?: string;
   questionnaireID?: string;
-  onChange: (id: string) => void;
+  onChange: (id: string, type: QuestionnairishType) => void;
   onBlur: () => void;
   allowedQuestionSetIDs?: string[];
-
-  data?: IOutcomeResult;
+  includeSequences?: boolean; // defaults to false
 }
 
 const BasicInner = (p: IProps) => {
   const { t } = useTranslation();
 
   const getOptions = (): DropdownItemProps[] => {
-    if (p.data.error) {
+    if (p.qAndS.error) {
       return [
         {
           key: "failure",
@@ -25,7 +28,7 @@ const BasicInner = (p: IProps) => {
         },
       ];
     }
-    const questionnaires = p?.data?.allOutcomeSets || [];
+    const questionnaires = p?.qAndS?.items || [];
     const filtered = questionnaires.filter(
       (q) =>
         !Array.isArray(p.allowedQuestionSetIDs) ||
@@ -40,8 +43,19 @@ const BasicInner = (p: IProps) => {
     });
   };
 
+  const onSelect = (_, data) => {
+    const selectedItem = p.qAndS.items.find((i) => i.id === data.value);
+    if (!selectedItem) {
+      console.error(
+        "Questionnaire selector: selected an unknown questionnaire!"
+      );
+      return;
+    }
+    p.onChange(selectedItem.id, selectedItem.type);
+  };
+
   const selectProps: any = {};
-  if (p.data.loading) {
+  if (p.qAndS.loading) {
     selectProps.loading = true;
     selectProps.disabled = true;
   }
@@ -53,11 +67,14 @@ const BasicInner = (p: IProps) => {
       {...selectProps}
       value={p.questionnaireID}
       placeholder={t("Questionnaire")}
-      onChange={(_, data) => p.onChange(data.value as string)}
+      onChange={onSelect}
       onBlur={p.onBlur}
       options={getOptions()}
     />
   );
 };
 
-export const BasicQuestionnaireSelector = allOutcomeSets<IProps>(BasicInner);
+export const BasicQuestionnaireSelector = QuestionnairesAndSequencesHoC<IProps>(
+  BasicInner,
+  (p: IProps) => p.includeSequences === true
+);
