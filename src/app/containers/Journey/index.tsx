@@ -9,7 +9,6 @@ import {
   getAggregation,
   getSelectedQuestionSetID,
   getVisualisation,
-  QuestionnaireKey,
   Visualisation,
 } from "models/pref";
 import { getMeetings, IMeetingResult } from "apollo/modules/meetings";
@@ -18,7 +17,6 @@ import { MeetingRadar } from "components/MeetingRadar";
 import { MeetingTable } from "components/MeetingTable";
 import { isBeneficiaryUser } from "redux/modules/user";
 import { MeetingGraph } from "components/MeetingGraph";
-import { setPref, SetPrefFunc } from "redux/modules/pref";
 import { connect } from "react-redux";
 import { WithTranslation, withTranslation } from "react-i18next";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
@@ -40,25 +38,12 @@ interface IProps extends IURLConnector, WithTranslation {
       id: string;
     };
   };
-  location: {
-    // can provide a ?q=GUID, this will set the questionnaire being viewed to the provided GUID if valid
-    search: string;
-  };
   vis?: Visualisation;
   agg?: Aggregation;
   selectedQuestionSetID?: string;
   data?: IMeetingResult;
   isCategoryAgPossible?: boolean;
   isCanvasSnapshotPossible?: boolean;
-  setPref?: SetPrefFunc;
-}
-
-function getURLQuestionnaire(p: IProps): string | undefined {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has("q") === false) {
-    return undefined;
-  }
-  return urlParams.get("q");
 }
 
 function isCategoryAggregationAvailable(
@@ -84,16 +69,11 @@ function isCanvasSnapshotPossible(v: Visualisation): boolean {
   return v === Visualisation.GRAPH || v === Visualisation.RADAR;
 }
 
-function getQuestionSetOptions(ms: IMeeting[]): string[] {
-  if (!Array.isArray(ms)) {
-    return [];
-  }
-  return ms.map((m) => m.outcomeSetID);
-}
-
 function getUniqueQuestionSetOptions(ms: IMeeting[]): string[] {
-  const options = getQuestionSetOptions(ms);
-  return options.filter((v, i, a) => a.indexOf(v) === i).sort();
+  return (ms || [])
+    .map((m) => m.outcomeSetID)
+    .filter((v, i, a) => a.indexOf(v) === i)
+    .sort();
 }
 
 function filterMeetings(m: IMeeting[], questionSetID: string): IMeeting[] {
@@ -105,40 +85,7 @@ class JourneyInner extends React.Component<IProps, null> {
     super(props);
     this.renderVis = this.renderVis.bind(this);
     this.renderJourney = this.renderJourney.bind(this);
-    this.selectedURLQuestionnaire = this.selectedURLQuestionnaire.bind(this);
     this.exportBeneficiaryRecords = this.exportBeneficiaryRecords.bind(this);
-  }
-
-  public componentDidMount() {
-    this.selectedURLQuestionnaire();
-  }
-
-  public componentWillReceiveProps(nextProps: IProps) {
-    const prevMeetings = this.props.data.getMeetings;
-    const nextMeetings = nextProps.data.getMeetings;
-    // If a beneficiary has been viewed, then a new questionnaire completed, the new questionnaire will not be auto
-    // selected based on the URL, as the beneficiary's meetings do not contain the provided questionnaire ID based on
-    // the data in the cache.
-    // After the new data has been fetched, we can then auto select.
-    const noPreviousRecords =
-      Array.isArray(prevMeetings) === false &&
-      Array.isArray(nextMeetings) === true;
-    const recordQuestionnairesHaveChanged =
-      Array.isArray(prevMeetings) === true &&
-      Array.isArray(nextMeetings) === true &&
-      getUniqueQuestionSetOptions(prevMeetings).length !==
-        getUniqueQuestionSetOptions(nextMeetings).length;
-    if (noPreviousRecords || recordQuestionnairesHaveChanged) {
-      this.selectedURLQuestionnaire();
-    }
-  }
-
-  private selectedURLQuestionnaire() {
-    const urlQS = getURLQuestionnaire(this.props);
-    if (urlQS === undefined) {
-      return;
-    }
-    this.props.setPref(QuestionnaireKey, urlQS);
   }
 
   private renderVis(): JSX.Element {
@@ -183,6 +130,9 @@ class JourneyInner extends React.Component<IProps, null> {
       );
     }
     const JourneyVisContainerID = "journey-vis-container";
+    const distinctQuestionnaires = getUniqueQuestionSetOptions(
+      this.props.data.getMeetings
+    );
     return (
       <div>
         <WhatNextAfterNewRecordTour />
@@ -193,9 +143,13 @@ class JourneyInner extends React.Component<IProps, null> {
           allowCanvasSnapshot={this.props.isCanvasSnapshotPossible}
         />
         <QuestionnaireSelect
-          allowedQuestionnaireIDs={getQuestionSetOptions(
-            this.props.data.getMeetings
-          )}
+          // this key forces a refresh of the questionnaire selector
+          // when the number of distinct questionnaires change.
+          // This is needed when a ben is viewed, then a new questionnaire
+          // is completed. This ensures we show the new questionnaire after
+          // completion
+          key={`q-s-${distinctQuestionnaires.length}`}
+          allowedQuestionnaireIDs={distinctQuestionnaires}
           autoSelectFirst={true}
         />
         <div id={JourneyVisContainerID}>{this.renderVis()}</div>
@@ -236,7 +190,6 @@ const storeToProps = (state: IStore, ownProps: IProps) => {
 
 const dispatchToProps = (dispatch) => ({
   setURL: bindActionCreators(setURL, dispatch),
-  setPref: bindActionCreators(setPref, dispatch),
 });
 
 const JourneyI18n = withTranslation()(JourneyInner);

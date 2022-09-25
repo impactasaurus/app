@@ -3,6 +3,7 @@ import { BasicQuestionnaireSelector } from "./basic";
 import { QuestionnairishType } from "components/QuestionnairesAndSequencesHoC";
 import { usePreference, useSetPreference } from "redux/modules/pref";
 import { QuestionnaireKey } from "models/pref";
+import { useLocation } from "react-router";
 
 interface IProp {
   allowedQuestionnaireIDs?: string[];
@@ -13,11 +14,24 @@ interface IProp {
   includeSequences?: boolean; // defaults to false
 }
 
+const getURLOverride = (search: string): string | undefined => {
+  try {
+    const urlParams = new URLSearchParams(search);
+    if (urlParams.has("q")) {
+      return urlParams.get("q");
+    }
+  } catch {}
+  return undefined;
+};
+
 export const QuestionnaireSelect = (p: IProp): JSX.Element => {
   const questionnairePref = usePreference(QuestionnaireKey);
   const setPref = useSetPreference();
+  const { search } = useLocation();
 
-  const [selected, setSelected] = useState<string>(questionnairePref);
+  const [selected, setSelected] = useState<string>(
+    getURLOverride(search) || questionnairePref
+  );
   const onSelect = (id: string, type: QuestionnairishType) => {
     setSelected(id);
     setPref(QuestionnaireKey, id);
