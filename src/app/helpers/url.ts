@@ -77,10 +77,15 @@ const getNext = (p: ISearchParam): null | { url: string; next?: string[] } => {
   return { url: next[0], next: next.splice(1) };
 };
 
-export const forwardURLParam = (next: string[] | string): URLSearchParams =>
-  new URLSearchParams({
-    next: btoa(JSON.stringify(Array.isArray(next) ? next : [next])),
+export const forwardURLParam = (next: string[] | string): URLSearchParams => {
+  const arr = Array.isArray(next) ? next : [next];
+  if (arr.length === 0) {
+    return new URLSearchParams();
+  }
+  return new URLSearchParams({
+    next: btoa(JSON.stringify(arr)),
   });
+};
 
 export const canBeForwarded = (p: ISearchParam): boolean => getNext(p) !== null;
 

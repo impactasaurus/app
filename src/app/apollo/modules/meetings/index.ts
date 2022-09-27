@@ -45,7 +45,7 @@ export const getMeeting = <T>(idExtractor: IDExtractor<T>) => {
   );
 };
 
-const getMeetingsGQL = gql`
+export const getMeetingsGQL = gql`
   query ($beneficiaryID: String!) {
     getMeetings: meetings(beneficiary: $beneficiaryID) {
       ...meetingWithOutcomeSetAndAggregates
@@ -79,7 +79,7 @@ interface IGetRecentMeetingsData {
   };
 }
 
-const getRecentMeetingsGQL = gql`
+export const getRecentMeetingsGQL = gql`
   query (
     $page: Int!
     $limit: Int!
@@ -174,7 +174,7 @@ export const getMoreRecentMeetings = (page: number): any => ({
   },
 });
 
-const getAllMeetingsGQL = gql`
+export const getAllMeetingsGQL = gql`
   query getAllMeetings($beneficiaryID: String!) {
     getIncompleteMeetings: incompleteMeetings(beneficiary: $beneficiaryID) {
       ...meetingWithOutcomeSetAndAggregates
@@ -300,7 +300,7 @@ export function newMeeting<T>(component) {
           mutate({
             variables: {
               beneficiaryID: config.beneficiaryID,
-              outcomeSetID: config.outcomeSetID,
+              outcomeSetID: config.qishID,
               conducted: config.date
                 ? config.date.toISOString()
                 : new Date().toISOString(),
@@ -354,7 +354,7 @@ export function newRemoteMeeting<T>(component) {
           mutate({
             variables: {
               beneficiaryID: config.beneficiaryID,
-              outcomeSetID: config.outcomeSetID,
+              outcomeSetID: config.qishID,
               daysToComplete: Math.ceil(daysToComplete),
               tags: config.tags || [],
             },
