@@ -33,7 +33,7 @@ const InnerForm = (props: FormikProps<IAssessmentConfig> & IProps) => {
 
   const qsOnBlur = () => setFieldTouched("outcomeSetID");
   const qsOnChange = (qsID: string) => {
-    if (qsID !== values.outcomeSetID) {
+    if (qsID !== values.qishID) {
       setFieldValue("outcomeSetID", qsID);
     }
   };
@@ -41,8 +41,8 @@ const InnerForm = (props: FormikProps<IAssessmentConfig> & IProps) => {
   return (
     <Form className="screen assessment-config" onSubmit={submitForm}>
       <FormField
-        error={errors.outcomeSetID as string}
-        touched={touched.outcomeSetID}
+        error={errors.qishID as string}
+        touched={touched.qishID}
         inputID="as-qid"
         required={true}
         label={t("Questionnaire")}
@@ -81,8 +81,8 @@ const InnerForm = (props: FormikProps<IAssessmentConfig> & IProps) => {
 const SummonConfigInner = withFormik<IProps, IAssessmentConfig>({
   validate: (values: IAssessmentConfig, p: IProps) => {
     const errors: FormikErrors<IAssessmentConfig> = {};
-    if (!values.outcomeSetID || values.outcomeSetID === "") {
-      errors.outcomeSetID = p.t("Please select a questionnaire");
+    if (!values.qishID || values.qishID === "") {
+      errors.qishID = p.t("Please select a questionnaire");
     }
     return errors;
   },

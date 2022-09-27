@@ -1,3 +1,5 @@
+import { QuestionnairishType } from "components/QuestionnairesAndSequencesHoC";
+
 export enum AssessmentType {
   live,
   remote,
@@ -7,7 +9,8 @@ export enum AssessmentType {
 
 export interface IAssessmentConfig {
   beneficiaryID: string;
-  outcomeSetID: string;
+  qishID: string;
+  qishType: QuestionnairishType;
   date?: Date;
   tags?: string[];
 }

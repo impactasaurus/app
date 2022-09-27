@@ -22,6 +22,7 @@ import {
   IntroduceNewRecordForm,
 } from "components/TourRecordCreation";
 import "./style.less";
+import { QuestionnairishType } from "components/QuestionnairesAndSequencesHoC";
 
 interface IProps extends WithTranslation {
   showDatePicker: boolean;
@@ -52,9 +53,10 @@ const InnerForm = (
   } = props;
 
   const qsOnBlur = () => setFieldTouched("outcomeSetID");
-  const qsOnChange = (qsID: string) => {
-    if (qsID !== values.outcomeSetID) {
-      setFieldValue("outcomeSetID", qsID);
+  const qsOnChange = (qsID: string, type: QuestionnairishType) => {
+    if (qsID !== values.qishID) {
+      setFieldValue("qishID", qsID);
+      setFieldValue("qishType", type);
     }
   };
   const setConductedDate = (date: moment.Moment) => {
@@ -132,8 +134,8 @@ const InnerForm = (
       <Form className="screen assessment-config" onSubmit={submitForm}>
         {!values.defaultBen && benField}
         <FormField
-          error={errors.outcomeSetID as string}
-          touched={touched.outcomeSetID}
+          error={errors.qishID as string}
+          touched={touched.qishID}
           inputID="as-qid"
           required={true}
           label={t("Questionnaire")}
@@ -209,7 +211,7 @@ const InnerForm = (
         questionnaireInputID={questionnaireInputID}
         submitButtonID={submitButtonID}
         isBenComplete={!errors.beneficiaryID}
-        isQuestionnaireSelected={!errors.outcomeSetID}
+        isQuestionnaireSelected={!errors.qishID}
       />
       <IntroduceDataEntryForm
         dateSelectID={dateSelectID}
@@ -231,8 +233,8 @@ const AssessmentConfigInner = withFormik<IProps, IAssessmentConfigAndDebounce>({
     if (!values.beneficiaryID || values.beneficiaryID === "") {
       errors.beneficiaryID = t("Please enter a beneficiary ID");
     }
-    if (!values.outcomeSetID || values.outcomeSetID === "") {
-      errors.outcomeSetID = t("Please select a questionnaire");
+    if (!values.qishID || values.qishID === "") {
+      errors.qishID = t("Please select a questionnaire");
     }
     if (!values.date || values.date.getTime() > Date.now()) {
       errors.date = t("Please select a date in the past");
@@ -247,10 +249,11 @@ const AssessmentConfigInner = withFormik<IProps, IAssessmentConfigAndDebounce>({
     formikBag.setSubmitting(true);
     formikBag.props
       .onSubmit({
-        outcomeSetID: v.outcomeSetID,
+        qishID: v.qishID,
         beneficiaryID: v.beneficiaryID,
         tags: v.tags,
         date: v.date,
+        qishType: v.qishType,
       })
       .then(() => {
         // will move on from this component so no need to do anything
@@ -265,7 +268,8 @@ const AssessmentConfigInner = withFormik<IProps, IAssessmentConfigAndDebounce>({
       beneficiaryID: p.defaultBen ? p.defaultBen : "",
       debouncedBenID: p.defaultBen,
       defaultBen: p.defaultBen,
-      outcomeSetID: "",
+      qishID: "",
+      qishType: QuestionnairishType.QUESTIONNAIRE,
       tags: [],
       date: new Date(),
     };

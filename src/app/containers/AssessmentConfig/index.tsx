@@ -17,8 +17,11 @@ import { useTranslation } from "react-i18next";
 import { PageWrapper } from "components/PageWrapperHoC";
 import { QuestionnaireLink } from "./link";
 import { AssessmentConfigForm } from "./form";
+import { IStartSequence, startSequence } from "apollo/modules/sequence";
+import { QuestionnairishType } from "components/QuestionnairesAndSequencesHoC";
+import { externalLinkURI, forwardURLParam, isUrlAbsolute } from "helpers/url";
 
-interface IProps extends IMeetingMutation, IGenerateSummon {
+interface IProps extends IMeetingMutation, IGenerateSummon, IStartSequence {
   match: {
     params: {
       type: string;
@@ -80,13 +83,28 @@ const AssessmentConfigInner = (p: IProps) => {
     if (typ !== AssessmentType.historic) {
       c.date = new Date();
     }
-    return p.newMeeting(c).then((meeting) => {
-      if (typ === AssessmentType.historic) {
-        setURL(`/dataentry/${meeting.id}`);
-      } else {
-        setURL(`/meeting/${meeting.id}`);
-      }
-    });
+    let promise: Promise<string[]>;
+    if (c.qishType === QuestionnairishType.QUESTIONNAIRE) {
+      promise = p.newMeeting(c).then((meeting) => [meeting.id]);
+    } else {
+      promise = p.startSequence(c).then((seqRes) => {
+        const mm = seqRes.meetings.map((m) => m.id);
+        return seqRes.destination ? mm.concat(seqRes.destination) : mm;
+      });
+    }
+    return promise
+      .then((mm) => {
+        const meetingTemplate = (id: string) =>
+          typ === AssessmentType.historic
+            ? `/dataentry/${id}`
+            : `/meeting/${id}`;
+        return mm.map((s) =>
+          isUrlAbsolute(s) ? externalLinkURI(s) : meetingTemplate(s)
+        );
+      })
+      .then(([initial, ...rest]) => {
+        setURL(initial, forwardURLParam(rest));
+      });
   };
 
   const start = (inp: IAssessmentConfig | string): Promise<void> => {
@@ -122,5 +140,5 @@ const AssessmentConfigInner = (p: IProps) => {
 };
 
 export const AssessmentConfig = newRemoteMeeting<IProps>(
-  newMeeting(generateSummon(AssessmentConfigInner))
+  newMeeting(generateSummon(startSequence(AssessmentConfigInner)))
 );
