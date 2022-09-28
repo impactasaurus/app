@@ -17,11 +17,20 @@ import { useTranslation } from "react-i18next";
 import { PageWrapper } from "components/PageWrapperHoC";
 import { QuestionnaireLink } from "./link";
 import { AssessmentConfigForm } from "./form";
-import { IStartSequence, startSequence } from "apollo/modules/sequence";
+import {
+  IStartRemoteSequence,
+  IStartSequence,
+  startRemoteSequence,
+  startSequence,
+} from "apollo/modules/sequence";
 import { QuestionnairishType } from "components/QuestionnairesAndSequencesHoC";
 import { externalLinkURI, forwardURLParam, isUrlAbsolute } from "helpers/url";
 
-interface IProps extends IMeetingMutation, IGenerateSummon, IStartSequence {
+interface IProps
+  extends IMeetingMutation,
+    IGenerateSummon,
+    IStartSequence,
+    IStartRemoteSequence {
   match: {
     params: {
       type: string;
@@ -74,7 +83,11 @@ const AssessmentConfigInner = (p: IProps) => {
   };
 
   const startRemote = (c: IAssessmentConfig): Promise<void> => {
-    return p.newRemoteMeeting(c, defaultRemoteMeetingLimit).then((jti) => {
+    const promFn =
+      c.qishType === QuestionnairishType.QUESTIONNAIRE
+        ? p.newRemoteMeeting
+        : p.startRemoteSequence;
+    return promFn(c, defaultRemoteMeetingLimit).then((jti) => {
       setLink(`jti/${jti}`);
     });
   };
@@ -140,5 +153,7 @@ const AssessmentConfigInner = (p: IProps) => {
 };
 
 export const AssessmentConfig = newRemoteMeeting<IProps>(
-  newMeeting(generateSummon(startSequence(AssessmentConfigInner)))
+  newMeeting(
+    generateSummon(startSequence(startRemoteSequence(AssessmentConfigInner)))
+  )
 );
