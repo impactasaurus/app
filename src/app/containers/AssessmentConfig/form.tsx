@@ -2,7 +2,7 @@ import React from "react";
 import { AssessmentType, IAssessmentConfig } from "models/assessment";
 import { useTranslation } from "react-i18next";
 import { Button, Message } from "semantic-ui-react";
-import { SummonConfig as RawSummonConfig } from "./summonConfig";
+import { ISummonConfig, SummonConfig as RawSummonConfig } from "./summonConfig";
 import { AssessmentConfig as AssessmentConfigComponent } from "components/AssessmentConfig";
 import { QuestionnaireRequired } from "components/QuestionnaireRequired";
 import { useLocation } from "react-router";
@@ -12,7 +12,7 @@ const SummonConfig = QuestionnaireRequired(RawSummonConfig);
 interface IProps {
   type: AssessmentType;
   onChangeType: (next: AssessmentType) => void;
-  start: (config: IAssessmentConfig | string) => Promise<void>;
+  start: (config: IAssessmentConfig | ISummonConfig) => Promise<void>;
 }
 
 const getBen = (search: string): string | undefined => {
