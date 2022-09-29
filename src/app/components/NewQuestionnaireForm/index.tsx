@@ -17,7 +17,7 @@ export interface INewQuestionnaire {
 }
 
 interface IProps extends WithTranslation {
-  submit: (INewQuestionnaire) => Promise<void>;
+  submit: (q: INewQuestionnaire) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -57,7 +57,7 @@ const InnerForm = (props: IProps & FormikProps<INewQuestionnaire>) => {
   };
 
   return (
-    <Form className="new-questionnaire-form" onSubmit={submitForm}>
+    <Form className="new-questionnaire-form screen" onSubmit={submitForm}>
       <FormField
         error={errors.name as string}
         touched={touched.name}
@@ -128,14 +128,19 @@ const NewQuestionnaireFormInner = withFormik<IProps, INewQuestionnaire>({
   ): void => {
     formikBag.setSubmitting(true);
     formikBag.setStatus(undefined);
-    formikBag.props.submit(v).catch((e: Error) => {
-      let status = ErrorStatus.GENERIC_ERROR;
-      if (e?.message?.includes("name already in use")) {
-        status = ErrorStatus.NAME_ALREADY_USED;
-      }
-      formikBag.setSubmitting(false);
-      formikBag.setStatus(status);
-    });
+    formikBag.props
+      .submit({
+        name: v.name,
+        description: v.description,
+      })
+      .catch((e: Error) => {
+        let status = ErrorStatus.GENERIC_ERROR;
+        if (e?.message?.includes("name already in use")) {
+          status = ErrorStatus.NAME_ALREADY_USED;
+        }
+        formikBag.setSubmitting(false);
+        formikBag.setStatus(status);
+      });
   },
   validateOnMount: true,
 })(InnerForm);

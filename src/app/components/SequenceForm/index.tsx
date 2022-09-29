@@ -8,7 +8,9 @@ import "./style.less";
 
 interface IProps {
   onSubmit: (s: ISequenceCRUD) => Promise<void>;
+  onCancel?: () => void; // defaults to reverting form
   seq: ISequenceCRUD;
+  errorText?: string; // overrides the default text shown when errors occur
 }
 
 export interface ISequenceCRUD {
@@ -25,7 +27,7 @@ interface ISequenceCRUDInternal {
   destination?: string;
 }
 
-export const Form = (p: IProps): JSX.Element => {
+export const SequenceForm = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
 
   const {
@@ -167,7 +169,11 @@ export const Form = (p: IProps): JSX.Element => {
       </FormField>
 
       <F.Group>
-        <F.Button type="reset" disabled={!isDirty} onClick={() => reset()}>
+        <F.Button
+          type="reset"
+          disabled={p.onCancel ? false : !isDirty}
+          onClick={() => (p.onCancel ? p.onCancel() : reset())}
+        >
           {t("Cancel")}
         </F.Button>
         <F.Button
@@ -182,7 +188,7 @@ export const Form = (p: IProps): JSX.Element => {
       {err && (
         <div className="submit-error">
           <Icon name="exclamation" />
-          {t("Editing the questionnaire failed.")}{" "}
+          {p.errorText || t("Editing the sequence failed.")}{" "}
           {t(
             "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org"
           )}

@@ -103,6 +103,7 @@ export const App = (): JSX.Element[] => {
           path="/questions/new"
           component={containers.NewQuestionnaireTypeSelector}
         />
+        <Route path="/sequences/new" component={containers.NewSequence} />
         <Route path="/questions/:id" component={containers.OutcomeSet} />
         <Route path="/sequences/:id" component={containers.Sequence} />
         <Route path="/questions" component={containers.QuestionnaireRouter} />

@@ -42,3 +42,4 @@ export { Users } from "./Users";
 export { SVE } from "./SVEPlugin";
 export { ExternalLink } from "./ExternalLink";
 export { Sequence } from "./Sequence";
+export { NewSequence } from "./NewSequence";

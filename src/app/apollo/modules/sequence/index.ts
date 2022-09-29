@@ -1,3 +1,4 @@
+import { ISequenceCRUD } from "components/SequenceForm";
 import { IDExtractor, mutationResultExtractor } from "helpers/apollo";
 import { IAssessmentConfig } from "models/assessment";
 import { fragment, ISequence } from "models/sequence";
@@ -5,7 +6,7 @@ import { gql, graphql, QueryProps } from "react-apollo";
 import { getAllMeetingsGQL, getMeetingsGQL } from "../meetings";
 
 const getSequencesGQL = gql`
-  query {
+  query allSequences {
     sequences {
       ...defaultSequence
     }
@@ -52,6 +53,44 @@ export const getSequence = <T>(idExtractor: IDExtractor<T>) => {
 
 export interface IGetSequence extends QueryProps {
   sequence?: ISequence;
+}
+
+export function newSequence<T>(component) {
+  return graphql<any, T>(
+    gql`
+      mutation (
+        $name: String!
+        $description: String
+        $destination: String
+        $questionnaires: [String]!
+      ) {
+        newSequence: NewSequence(
+          name: $name
+          description: $description
+          destination: $destination
+          questionnaires: $questionnaires
+        ) {
+          ...defaultSequence
+        }
+      }
+      ${fragment}
+    `,
+    {
+      options: {
+        refetchQueries: ["allSequences"],
+      },
+      props: ({ mutate }) => ({
+        newSequence: (p: ISequenceCRUD): Promise<ISequence> =>
+          mutate({
+            variables: p,
+          }).then(mutationResultExtractor<ISequence>("newSequence")),
+      }),
+    }
+  )(component);
+}
+
+export interface INewSequence {
+  newSequence: (p: ISequenceCRUD) => Promise<ISequence>;
 }
 
 export interface IStartSequenceResult {
