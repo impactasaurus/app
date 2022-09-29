@@ -122,3 +122,60 @@ export function startSequence<T>(component) {
 export interface IStartSequence {
   startSequence: (config: IAssessmentConfig) => Promise<IStartSequenceResult>;
 }
+
+export function startRemoteSequence<T>(component) {
+  return graphql<any, T>(
+    gql`
+      mutation (
+        $beneficiaryID: String!
+        $sequenceID: String!
+        $daysToComplete: Int!
+        $tags: [String]
+      ) {
+        startRemoteSequence: StartRemoteSequence(
+          beneficiaryID: $beneficiaryID
+          sequenceID: $sequenceID
+          daysToComplete: $daysToComplete
+          tags: $tags
+        )
+      }
+    `,
+    {
+      props: ({ mutate }) => ({
+        startRemoteSequence: (
+          config: IAssessmentConfig,
+          daysToComplete: number
+        ): Promise<string> =>
+          mutate({
+            variables: {
+              beneficiaryID: config.beneficiaryID,
+              sequenceID: config.qishID,
+              daysToComplete: Math.ceil(daysToComplete),
+              tags: config.tags || [],
+            },
+            refetchQueries: [
+              {
+                query: getMeetingsGQL,
+                variables: {
+                  beneficiaryID: config.beneficiaryID,
+                },
+              },
+              {
+                query: getAllMeetingsGQL,
+                variables: {
+                  beneficiaryID: config.beneficiaryID,
+                },
+              },
+            ],
+          }).then(mutationResultExtractor<string>("startRemoteSequence")),
+      }),
+    }
+  )(component);
+}
+
+export interface IStartRemoteSequence {
+  startRemoteSequence: (
+    config: IAssessmentConfig,
+    daysToComplete: number
+  ) => Promise<string>;
+}

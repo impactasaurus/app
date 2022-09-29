@@ -12,16 +12,32 @@ import {
   defaultRemoteMeetingLimit,
 } from "models/assessment";
 import { Message } from "semantic-ui-react";
-import { generateSummon, IGenerateSummon } from "../../apollo/modules/summon";
+import {
+  generateSequenceSummon,
+  generateSummon,
+  IGenerateSequenceSummon,
+  IGenerateSummon,
+} from "../../apollo/modules/summon";
 import { useTranslation } from "react-i18next";
 import { PageWrapper } from "components/PageWrapperHoC";
 import { QuestionnaireLink } from "./link";
 import { AssessmentConfigForm } from "./form";
-import { IStartSequence, startSequence } from "apollo/modules/sequence";
+import {
+  IStartRemoteSequence,
+  IStartSequence,
+  startRemoteSequence,
+  startSequence,
+} from "apollo/modules/sequence";
 import { QuestionnairishType } from "components/QuestionnairesAndSequencesHoC";
 import { externalLinkURI, forwardURLParam, isUrlAbsolute } from "helpers/url";
+import { ISummonConfig } from "./summonConfig";
 
-interface IProps extends IMeetingMutation, IGenerateSummon, IStartSequence {
+interface IProps
+  extends IMeetingMutation,
+    IGenerateSummon,
+    IStartSequence,
+    IStartRemoteSequence,
+    IGenerateSequenceSummon {
   match: {
     params: {
       type: string;
@@ -57,6 +73,12 @@ const UnknownType = (): JSX.Element => {
   );
 };
 
+function isAssessmentConfig(
+  c: IAssessmentConfig | ISummonConfig
+): c is IAssessmentConfig {
+  return "beneficiary" in c;
+}
+
 const AssessmentConfigInner = (p: IProps) => {
   const setURL = useNavigator();
   const [typ, setType] = useState<AssessmentType>(
@@ -64,17 +86,25 @@ const AssessmentConfigInner = (p: IProps) => {
   );
   const [link, setLink] = useState<string>();
 
-  const startSummon = (qID: string): Promise<void> => {
+  const startSummon = (c: ISummonConfig): Promise<void> => {
     if (typ !== AssessmentType.summon) {
       return Promise.reject("unexpected error");
     }
-    return p.generateSummon(qID).then((smn) => {
+    const promFn =
+      c.qishType === QuestionnairishType.QUESTIONNAIRE
+        ? p.generateSummon
+        : p.generateSequenceSummon;
+    return promFn(c.qishID).then((smn) => {
       setLink(`smn/${smn}`);
     });
   };
 
   const startRemote = (c: IAssessmentConfig): Promise<void> => {
-    return p.newRemoteMeeting(c, defaultRemoteMeetingLimit).then((jti) => {
+    const promFn =
+      c.qishType === QuestionnairishType.QUESTIONNAIRE
+        ? p.newRemoteMeeting
+        : p.startRemoteSequence;
+    return promFn(c, defaultRemoteMeetingLimit).then((jti) => {
       setLink(`jti/${jti}`);
     });
   };
@@ -107,8 +137,8 @@ const AssessmentConfigInner = (p: IProps) => {
       });
   };
 
-  const start = (inp: IAssessmentConfig | string): Promise<void> => {
-    if (typeof inp === "string") {
+  const start = (inp: IAssessmentConfig | ISummonConfig): Promise<void> => {
+    if (!isAssessmentConfig(inp)) {
       return startSummon(inp);
     } else if (typ === AssessmentType.remote) {
       return startRemote(inp);
@@ -140,5 +170,11 @@ const AssessmentConfigInner = (p: IProps) => {
 };
 
 export const AssessmentConfig = newRemoteMeeting<IProps>(
-  newMeeting(generateSummon(startSequence(AssessmentConfigInner)))
+  newMeeting(
+    generateSummon(
+      startSequence(
+        startRemoteSequence(generateSequenceSummon(AssessmentConfigInner))
+      )
+    )
+  )
 );

@@ -1,7 +1,6 @@
 import React from "react";
 import { Icon, Form } from "semantic-ui-react";
 import { FormField } from "components/FormField";
-import { IAssessmentConfig } from "models/assessment";
 import { QuestionnaireSelect } from "components/QuestionnaireSelect/pref";
 import {
   FormikBag,
@@ -11,13 +10,19 @@ import {
   withFormik,
 } from "formik";
 import { WithTranslation, withTranslation } from "react-i18next";
+import { QuestionnairishType } from "components/QuestionnairesAndSequencesHoC";
 
 interface IProps extends WithTranslation {
-  onSubmit: (qsID: string) => Promise<void>;
+  onSubmit: (c: ISummonConfig) => Promise<void>;
   buttonText: string;
 }
 
-const InnerForm = (props: FormikProps<IAssessmentConfig> & IProps) => {
+export interface ISummonConfig {
+  qishID: string;
+  qishType: QuestionnairishType;
+}
+
+const InnerForm = (props: FormikProps<ISummonConfig> & IProps) => {
   const {
     touched,
     status,
@@ -32,9 +37,10 @@ const InnerForm = (props: FormikProps<IAssessmentConfig> & IProps) => {
   } = props;
 
   const qsOnBlur = () => setFieldTouched("outcomeSetID");
-  const qsOnChange = (qsID: string) => {
+  const qsOnChange = (qsID: string, type: QuestionnairishType) => {
     if (qsID !== values.qishID) {
-      setFieldValue("outcomeSetID", qsID);
+      setFieldValue("qishID", qsID);
+      setFieldValue("qishType", type);
     }
   };
 
@@ -78,9 +84,9 @@ const InnerForm = (props: FormikProps<IAssessmentConfig> & IProps) => {
   );
 };
 
-const SummonConfigInner = withFormik<IProps, IAssessmentConfig>({
-  validate: (values: IAssessmentConfig, p: IProps) => {
-    const errors: FormikErrors<IAssessmentConfig> = {};
+const SummonConfigInner = withFormik<IProps, ISummonConfig>({
+  validate: (values: ISummonConfig, p: IProps) => {
+    const errors: FormikErrors<ISummonConfig> = {};
     if (!values.qishID || values.qishID === "") {
       errors.qishID = p.t("Please select a questionnaire");
     }
@@ -88,12 +94,15 @@ const SummonConfigInner = withFormik<IProps, IAssessmentConfig>({
   },
   handleSubmit: (
     v: FormikValues,
-    formikBag: FormikBag<IProps, IAssessmentConfig>
+    formikBag: FormikBag<IProps, ISummonConfig>
   ): void => {
     formikBag.setStatus(undefined);
     formikBag.setSubmitting(true);
     formikBag.props
-      .onSubmit(v.outcomeSetID)
+      .onSubmit({
+        qishID: v.qishID,
+        qishType: v.qishType,
+      })
       .then(() => {
         // will move on from this component so no need to do anything
       })

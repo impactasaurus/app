@@ -126,7 +126,11 @@ export const App = (): JSX.Element[] => {
           path="/unsubscribe/:uid"
           component={containers.Unsubscribe}
         />
-        <Route path="/external/:b64url" component={containers.ExternalLink} />
+        <Route
+          path="/external/:b64url"
+          component={containers.ExternalLink}
+          beneficiary={true}
+        />
         <Route path="/plugin/sve" component={containers.SVE} />
       </Switch>
     </>

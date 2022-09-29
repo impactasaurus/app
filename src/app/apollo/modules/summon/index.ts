@@ -59,3 +59,27 @@ export function generateSummon<T>(component) {
 export interface IGenerateSummon {
   generateSummon: (outcomeSetID: string) => Promise<string>;
 }
+
+export function generateSequenceSummon<T>(component) {
+  return graphql<any, T>(
+    gql`
+  mutation($sequenceID: String!) {
+    summon: NewSequenceSummon(sequenceID:$sequenceID, daysToComplete: ${defaultRemoteMeetingLimit})
+  }
+`,
+    {
+      props: ({ mutate }) => ({
+        generateSequenceSummon: (sequenceID: string): Promise<string> =>
+          mutate({
+            variables: {
+              sequenceID,
+            },
+          }).then(mutationResultExtractor<string>("summon")),
+      }),
+    }
+  )(component);
+}
+
+export interface IGenerateSequenceSummon {
+  generateSequenceSummon: (sequenceID: string) => Promise<string>;
+}
