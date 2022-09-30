@@ -73,12 +73,6 @@ const UnknownType = (): JSX.Element => {
   );
 };
 
-function isAssessmentConfig(
-  c: IAssessmentConfig | ISummonConfig
-): c is IAssessmentConfig {
-  return "beneficiary" in c;
-}
-
 const AssessmentConfigInner = (p: IProps) => {
   const setURL = useNavigator();
   const [typ, setType] = useState<AssessmentType>(
@@ -138,12 +132,12 @@ const AssessmentConfigInner = (p: IProps) => {
   };
 
   const start = (inp: IAssessmentConfig | ISummonConfig): Promise<void> => {
-    if (!isAssessmentConfig(inp)) {
-      return startSummon(inp);
+    if (typ === AssessmentType.summon) {
+      return startSummon(inp as ISummonConfig);
     } else if (typ === AssessmentType.remote) {
-      return startRemote(inp);
+      return startRemote(inp as IAssessmentConfig);
     } else {
-      return startMeeting(inp);
+      return startMeeting(inp as IAssessmentConfig);
     }
   };
 
