@@ -6,6 +6,7 @@ import { SequenceItem } from "./sequence";
 import { ISequence } from "models/sequence";
 import { GenericQuestionnaireList } from "components/QuestionnaireList";
 import { useTranslation } from "react-i18next";
+import { useNavigator } from "redux/modules/url";
 
 interface IProps {
   data: IGetSequences;
@@ -15,8 +16,10 @@ const mWidth = "600px";
 
 const Inner = (p: IProps) => {
   const { t } = useTranslation();
+  const setURL = useNavigator();
+
   const newClicked = () => {
-    alert("new");
+    setURL("/sequences/new");
   };
 
   const renderItem = (i: ISequence) => <SequenceItem sequence={i} key={i.id} />;

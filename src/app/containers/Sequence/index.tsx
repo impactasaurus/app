@@ -3,7 +3,7 @@ import Helmet from "react-helmet";
 import { getSequence, IGetSequence } from "apollo/modules/sequence";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { PageWrapper } from "components/PageWrapperHoC";
-import { Form, ISequenceCRUD } from "./form";
+import { SequenceForm, ISequenceCRUD } from "../../components/SequenceForm";
 
 interface IProps {
   data: IGetSequence;
@@ -27,7 +27,7 @@ const SequenceInner = (p: IProps): JSX.Element => {
         <title>{seq.name}</title>
       </Helmet>
       <h1>{seq.name}</h1>
-      <Form
+      <SequenceForm
         seq={{
           ...seq,
           questionnaires: seq.questionnaires.map((q) => q.id),

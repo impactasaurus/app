@@ -8,7 +8,9 @@ import "./style.less";
 
 interface IProps {
   onSubmit: (s: ISequenceCRUD) => Promise<void>;
+  onCancel?: () => void; // defaults to reverting form
   seq: ISequenceCRUD;
+  errorText?: string; // overrides the default text shown when errors occur
 }
 
 export interface ISequenceCRUD {
@@ -25,7 +27,12 @@ interface ISequenceCRUDInternal {
   destination?: string;
 }
 
-export const Form = (p: IProps): JSX.Element => {
+enum ErrorStatus {
+  GENERIC_ERROR = 1,
+  NAME_ALREADY_USED = 2,
+}
+
+export const SequenceForm = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
 
   const {
@@ -59,8 +66,8 @@ export const Form = (p: IProps): JSX.Element => {
     },
   });
 
-  const [err, setErr] = useState<boolean>(false);
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [err, setErr] = useState<ErrorStatus>();
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     const submitDecorator = (s: ISequenceCRUDInternal): Promise<void> => {
       return p.onSubmit({
         ...s,
@@ -70,8 +77,13 @@ export const Form = (p: IProps): JSX.Element => {
         questionnaires: s.questionnaires.map((q) => q.id),
       });
     };
-    handleSubmit(submitDecorator)(e).catch(() => {
-      setErr(true);
+    setErr(undefined);
+    handleSubmit(submitDecorator)(event).catch((err: Error) => {
+      let status = ErrorStatus.GENERIC_ERROR;
+      if (err?.message?.includes("name already in use")) {
+        status = ErrorStatus.NAME_ALREADY_USED;
+      }
+      setErr(status);
     });
   };
 
@@ -80,6 +92,14 @@ export const Form = (p: IProps): JSX.Element => {
   const qsOnRemove = (idx: number) => () => remove(idx);
   const addQuestionnaire = () => append({ id: undefined });
   const onSortEnd = ({ oldIndex, newIndex }): void => move(oldIndex, newIndex);
+
+  const defErrText = `${p.errorText || t("Editing the sequence failed.")} ${t(
+    "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org"
+  )}`;
+  const errText =
+    err == ErrorStatus.NAME_ALREADY_USED
+      ? t("Sequence name already in use, please pick another")
+      : defErrText;
 
   return (
     <F className="screen" id="seq-form" onSubmit={onSubmit}>
@@ -167,7 +187,11 @@ export const Form = (p: IProps): JSX.Element => {
       </FormField>
 
       <F.Group>
-        <F.Button type="reset" disabled={!isDirty} onClick={() => reset()}>
+        <F.Button
+          type="reset"
+          disabled={p.onCancel ? false : !isDirty}
+          onClick={() => (p.onCancel ? p.onCancel() : reset())}
+        >
           {t("Cancel")}
         </F.Button>
         <F.Button
@@ -182,10 +206,7 @@ export const Form = (p: IProps): JSX.Element => {
       {err && (
         <div className="submit-error">
           <Icon name="exclamation" />
-          {t("Editing the questionnaire failed.")}{" "}
-          {t(
-            "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org"
-          )}
+          {errText}
         </div>
       )}
     </F>
