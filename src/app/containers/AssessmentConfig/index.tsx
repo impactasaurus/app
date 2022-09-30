@@ -73,12 +73,6 @@ const UnknownType = (): JSX.Element => {
   );
 };
 
-function isAssessmentConfig(
-  c: IAssessmentConfig | ISummonConfig
-): c is IAssessmentConfig {
-  return "beneficiary" in c;
-}
-
 const AssessmentConfigInner = (p: IProps) => {
   const setURL = useNavigator();
   const [typ, setType] = useState<AssessmentType>(
