@@ -27,6 +27,11 @@ interface ISequenceCRUDInternal {
   destination?: string;
 }
 
+enum ErrorStatus {
+  GENERIC_ERROR = 1,
+  NAME_ALREADY_USED = 2,
+}
+
 export const SequenceForm = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
 
@@ -61,8 +66,8 @@ export const SequenceForm = (p: IProps): JSX.Element => {
     },
   });
 
-  const [err, setErr] = useState<boolean>(false);
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [err, setErr] = useState<ErrorStatus>();
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     const submitDecorator = (s: ISequenceCRUDInternal): Promise<void> => {
       return p.onSubmit({
         ...s,
@@ -72,8 +77,13 @@ export const SequenceForm = (p: IProps): JSX.Element => {
         questionnaires: s.questionnaires.map((q) => q.id),
       });
     };
-    handleSubmit(submitDecorator)(e).catch(() => {
-      setErr(true);
+    setErr(undefined);
+    handleSubmit(submitDecorator)(event).catch((err: Error) => {
+      let status = ErrorStatus.GENERIC_ERROR;
+      if (err?.message?.includes("name already in use")) {
+        status = ErrorStatus.NAME_ALREADY_USED;
+      }
+      setErr(status);
     });
   };
 
@@ -82,6 +92,14 @@ export const SequenceForm = (p: IProps): JSX.Element => {
   const qsOnRemove = (idx: number) => () => remove(idx);
   const addQuestionnaire = () => append({ id: undefined });
   const onSortEnd = ({ oldIndex, newIndex }): void => move(oldIndex, newIndex);
+
+  const defErrText = `${p.errorText || t("Editing the sequence failed.")} ${t(
+    "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org"
+  )}`;
+  const errText =
+    err == ErrorStatus.NAME_ALREADY_USED
+      ? t("Sequence name already in use, please pick another")
+      : defErrText;
 
   return (
     <F className="screen" id="seq-form" onSubmit={onSubmit}>
@@ -188,10 +206,7 @@ export const SequenceForm = (p: IProps): JSX.Element => {
       {err && (
         <div className="submit-error">
           <Icon name="exclamation" />
-          {p.errorText || t("Editing the sequence failed.")}{" "}
-          {t(
-            "Please refresh and try again, if that doesn't work, please drop us an email at support@impactasaurus.org"
-          )}
+          {errText}
         </div>
       )}
     </F>
