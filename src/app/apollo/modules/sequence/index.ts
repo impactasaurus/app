@@ -218,3 +218,30 @@ export interface IStartRemoteSequence {
     daysToComplete: number
   ) => Promise<string>;
 }
+
+export const deleteSequence = <T>(component) => {
+  return graphql<any, T>(
+    gql`
+      mutation ($id: String!) {
+        deleteSequence: DeleteSequence(id: $id)
+      }
+    `,
+    {
+      options: {
+        refetchQueries: ["allSequences"],
+      },
+      props: ({ mutate }) => ({
+        deleteSequence: (id: string): Promise<void> =>
+          mutate({
+            variables: {
+              id,
+            },
+          }).then(),
+      }),
+    }
+  )(component);
+};
+
+export interface IDeleteSequence {
+  deleteSequence: (id: string) => Promise<void>;
+}

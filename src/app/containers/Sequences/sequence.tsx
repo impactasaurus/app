@@ -2,19 +2,20 @@ import React from "react";
 import { ISequence } from "models/sequence";
 import { useNavigator } from "redux/modules/url";
 import { GenericQuestionnaireListItem } from "components/QuestionnaireList/item";
+import { deleteSequence, IDeleteSequence } from "apollo/modules/sequence";
 
 interface IProps {
   sequence: ISequence;
 }
 
-const SequenceItemInner = (p: IProps): JSX.Element => {
+const SequenceItemInner = (p: IProps & IDeleteSequence): JSX.Element => {
   const s = p.sequence;
   const setURL = useNavigator();
 
   const navigate = () => setURL(`/sequences/${s.id}`);
 
   const onDelete = (): Promise<void> => {
-    return Promise.reject(new Error("not implemented"));
+    return p.deleteSequence(p.sequence.id);
   };
 
   return (
@@ -28,4 +29,4 @@ const SequenceItemInner = (p: IProps): JSX.Element => {
   );
 };
 
-export const SequenceItem = SequenceItemInner;
+export const SequenceItem = deleteSequence<IProps>(SequenceItemInner);
