@@ -1,6 +1,11 @@
 import React from "react";
 import Helmet from "react-helmet";
-import { getSequence, IGetSequence } from "apollo/modules/sequence";
+import {
+  editSequence,
+  getSequence,
+  IEditSequence,
+  IGetSequence,
+} from "apollo/modules/sequence";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { PageWrapper } from "components/PageWrapperHoC";
 import { SequenceForm, ISequenceCRUD } from "../../components/SequenceForm";
@@ -14,12 +19,10 @@ interface IProps {
   };
 }
 
-const SequenceInner = (p: IProps): JSX.Element => {
+const SequenceInner = (p: IProps & IEditSequence): JSX.Element => {
   const seq = p.data.sequence;
   const onSubmit = (s: ISequenceCRUD): Promise<void> => {
-    return Promise.resolve()
-      .then(() => console.log(s))
-      .then(() => Promise.reject("not implemented"));
+    return p.editSequence(seq.id, s).then();
   };
   return (
     <PageWrapper>
@@ -40,13 +43,10 @@ const SequenceInner = (p: IProps): JSX.Element => {
 
 // t("sequence")
 const SequenceWithLoader = ApolloLoaderHoC<IProps>(
-  "questionnaire",
+  "sequence",
   (p) => p.data,
-  SequenceInner,
-  {
-    wrapInGrid: true,
-  }
+  SequenceInner
 );
 export const Sequence = getSequence<IProps>((props) => props.match.params.id)(
-  SequenceWithLoader
+  editSequence(SequenceWithLoader)
 );
