@@ -50,6 +50,7 @@ export const SequenceForm = (p: IProps): JSX.Element => {
       isValid,
     },
   } = useForm<ISequenceCRUDInternal>({
+    mode: "onBlur",
     defaultValues: {
       ...p.seq,
       destination: p.seq.destination
@@ -69,13 +70,17 @@ export const SequenceForm = (p: IProps): JSX.Element => {
   const [err, setErr] = useState<ErrorStatus>();
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     const submitDecorator = (s: ISequenceCRUDInternal): Promise<void> => {
-      return p.onSubmit({
-        ...s,
-        destination: s.destination
-          ? `https://${s.destination}`.trim()
-          : undefined,
-        questionnaires: s.questionnaires.map((q) => q.id),
-      });
+      return p
+        .onSubmit({
+          ...s,
+          destination: s.destination
+            ? `https://${s.destination}`.trim()
+            : undefined,
+          questionnaires: s.questionnaires.map((q) => q.id),
+        })
+        .then(() => {
+          reset(s);
+        });
     };
     setErr(undefined);
     handleSubmit(submitDecorator)(event).catch((err: Error) => {
@@ -114,7 +119,9 @@ export const SequenceForm = (p: IProps): JSX.Element => {
           id="sq-name"
           type="text"
           placeholder={t("Name")}
-          input={register("name", { required: true })}
+          input={register("name", {
+            required: t("Please enter a name for the new sequence") as string,
+          })}
         />
       </FormField>
       <FormField
