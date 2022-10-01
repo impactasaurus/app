@@ -32,6 +32,9 @@ enum ErrorStatus {
   NAME_ALREADY_USED = 2,
 }
 
+const filterNullQuestionnaires = ({ id }: { id: string }) =>
+  id && id.length > 0;
+
 export const SequenceForm = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
 
@@ -42,6 +45,7 @@ export const SequenceForm = (p: IProps): JSX.Element => {
     control,
     getValues,
     setValue,
+    trigger,
     formState: {
       errors,
       touchedFields: touched,
@@ -50,7 +54,7 @@ export const SequenceForm = (p: IProps): JSX.Element => {
       isValid,
     },
   } = useForm<ISequenceCRUDInternal>({
-    mode: "onBlur",
+    mode: "onChange",
     defaultValues: {
       ...p.seq,
       destination: p.seq.destination
@@ -63,7 +67,7 @@ export const SequenceForm = (p: IProps): JSX.Element => {
     control,
     name: "questionnaires",
     rules: {
-      required: t("At least one questionnaire is required") as string,
+      validate: (arr) => arr.filter(filterNullQuestionnaires).length > 0,
     },
   });
 
@@ -76,7 +80,9 @@ export const SequenceForm = (p: IProps): JSX.Element => {
           destination: s.destination
             ? `https://${s.destination}`.trim()
             : undefined,
-          questionnaires: s.questionnaires.map((q) => q.id),
+          questionnaires: s.questionnaires
+            .filter(filterNullQuestionnaires)
+            .map((q) => q.id),
         })
         .then(() => {
           reset(s);
@@ -92,8 +98,10 @@ export const SequenceForm = (p: IProps): JSX.Element => {
     });
   };
 
-  const qsOnChange = (idx: number) => (id: string) =>
+  const qsOnChange = (idx: number) => (id: string) => {
     setValue(`questionnaires.${idx}.id`, id);
+    trigger();
+  };
   const qsOnRemove = (idx: number) => () => remove(idx);
   const addQuestionnaire = () => append({ id: undefined });
   const onSortEnd = ({ oldIndex, newIndex }): void => move(oldIndex, newIndex);
@@ -138,7 +146,11 @@ export const SequenceForm = (p: IProps): JSX.Element => {
         />
       </FormField>
       <FormField
-        error={errors?.questionnaires?.root?.message as string}
+        error={
+          errors?.questionnaires
+            ? t("At least one questionnaire is required")
+            : undefined
+        }
         touched={true}
         inputID="sq-questionnaires"
         required={true}
