@@ -23,43 +23,48 @@ const Inner = (p: IProps) => {
   };
 
   const renderItem = (i: ISequence) => <SequenceItem sequence={i} key={i.id} />;
+  const descriptionHolder: React.CSSProperties = {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  };
 
   return (
-    <GenericQuestionnaireList
-      className="sequences"
-      items={p.data.sequences}
-      newClicked={newClicked}
-      renderItem={renderItem}
-      text={{
-        newButton: t("New Sequence"),
-        title: t("Sequences"),
-      }}
-      emptyList={
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <p style={{ maxWidth: mWidth }}>
-            {t(
-              "Sequences make it easy to ask a beneficiary to complete more than one questionnaire."
-            )}
-          </p>
-          <p style={{ maxWidth: mWidth }}>
-            {t(
-              "Simply create a sequence and select which questionnaires you want completed. You can then generate remote links for the sequence, which will take the beneficiary through all of the specified questionnaires."
-            )}
-          </p>
-          <p style={{ maxWidth: mWidth }}>
-            {t(
-              "When the questionnaires have been answered, you can choose to send the beneficiary to another website. This allows you to use Impactasaurus alongside general purpose questionnaire systems."
-            )}
-          </p>
-        </div>
-      }
-    />
+    <>
+      <GenericQuestionnaireList
+        className="sequences"
+        items={p.data.sequences}
+        newClicked={newClicked}
+        renderItem={renderItem}
+        text={{
+          newButton: t("New Sequence"),
+          title: t("Sequences"),
+        }}
+        beforeList={
+          <div style={descriptionHolder}>
+            <p style={{ maxWidth: mWidth }}>
+              {t(
+                "Sequences make it easy to ask a beneficiary to complete more than one questionnaire."
+              )}
+            </p>
+          </div>
+        }
+        emptyList={
+          <div style={descriptionHolder}>
+            <p style={{ maxWidth: mWidth }}>
+              {t(
+                "Simply create a sequence and select which questionnaires you want completed. You can then generate remote links for the sequence, which will take the beneficiary through all of the specified questionnaires."
+              )}
+            </p>
+            <p style={{ maxWidth: mWidth }}>
+              {t(
+                "When the questionnaires have been answered, you can choose to send the beneficiary to another website. This allows you to use Impactasaurus alongside general purpose questionnaire systems."
+              )}
+            </p>
+          </div>
+        }
+      />
+    </>
   );
 };
 // t("sequences")

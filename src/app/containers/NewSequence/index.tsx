@@ -21,7 +21,7 @@ const Inner = (p: INewSequence): JSX.Element => {
     <SequenceForm
       onSubmit={onSubmit}
       onCancel={onCancel}
-      seq={{ name: "", questionnaires: [] }}
+      seq={{ name: "", questionnaires: [undefined] }}
       errorText={t("Creating the sequence failed.")}
     />
   );

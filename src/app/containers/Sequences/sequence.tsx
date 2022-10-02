@@ -18,11 +18,23 @@ const SequenceItemInner = (p: IProps & IDeleteSequence): JSX.Element => {
     return p.deleteSequence(p.sequence.id);
   };
 
+  let desc = "";
+  if (s.description) {
+    desc = s.description + ". ";
+  }
+  desc += `Questionnaires: ${s.questionnaires.map((q) => q.name).join(", ")}`;
+  if (s.destination) {
+    try {
+      const u = new URL(s.destination);
+      desc += `. Destination: ${u.host}`;
+    } catch {}
+  }
+
   return (
     <GenericQuestionnaireListItem
       id={s.id}
       name={s.name}
-      description={s.description}
+      description={desc}
       onDelete={onDelete}
       onNavigate={navigate}
     />

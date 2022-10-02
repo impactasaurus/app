@@ -57,9 +57,6 @@ export const SequenceForm = (p: IProps): JSX.Element => {
     mode: "onChange",
     defaultValues: {
       ...p.seq,
-      destination: p.seq.destination
-        ? p.seq.destination.replace(/(^\w+:|^)\/\//, "")
-        : undefined,
       questionnaires: p.seq.questionnaires.map((q) => ({ id: q })),
     },
   });
@@ -77,9 +74,6 @@ export const SequenceForm = (p: IProps): JSX.Element => {
       return p
         .onSubmit({
           ...s,
-          destination: s.destination
-            ? `https://${s.destination}`.trim()
-            : undefined,
           questionnaires: s.questionnaires
             .filter(filterNullQuestionnaires)
             .map((q) => q.id),
@@ -100,7 +94,7 @@ export const SequenceForm = (p: IProps): JSX.Element => {
 
   const qsOnChange = (idx: number) => (id: string) => {
     setValue(`questionnaires.${idx}.id`, id);
-    trigger();
+    trigger("questionnaires");
   };
   const qsOnRemove = (idx: number) => () => remove(idx);
   const addQuestionnaire = () => append({ id: undefined });
@@ -180,22 +174,17 @@ export const SequenceForm = (p: IProps): JSX.Element => {
         <Input
           id="sq-destination"
           type="text"
+          icon={"linkify"}
+          iconPosition={"left"}
           // eslint-disable-next-line i18next/no-literal-string
-          label="https://"
-          // eslint-disable-next-line i18next/no-literal-string
-          placeholder="example.com"
+          placeholder="https://example.com"
           input={register("destination", {
             validate: (v): string | undefined => {
               if (!v) {
                 return undefined;
               }
-              if (v.indexOf("://") != -1) {
-                return t(
-                  "The protocol (e.g. 'https://') does not need to be included in the text provided. For security, we only support 'https://'"
-                );
-              }
               try {
-                new URL("https://" + v);
+                new URL(v);
                 return undefined;
               } catch (_) {
                 return t("Destination should be a valid web address");

@@ -45,7 +45,8 @@ const SequenceInner = (p: IProps & IEditSequence): JSX.Element => {
 const SequenceWithLoader = ApolloLoaderHoC<IProps>(
   "sequence",
   (p) => p.data,
-  SequenceInner
+  SequenceInner,
+  { wrapInGrid: true }
 );
 export const Sequence = getSequence<IProps>((props) => props.match.params.id)(
   editSequence(SequenceWithLoader)

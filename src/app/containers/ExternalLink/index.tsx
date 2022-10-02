@@ -54,7 +54,7 @@ const inner = (p: IProps): JSX.Element => {
     <>
       <p>
         {t(
-          "The remaining questions are hosted at {host}, would you like to continue?",
+          "You will now be redirected to {host}, would you like to continue?",
           { host: url.host }
         )}
       </p>
