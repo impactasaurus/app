@@ -245,3 +245,43 @@ export const deleteSequence = <T>(component) => {
 export interface IDeleteSequence {
   deleteSequence: (id: string) => Promise<void>;
 }
+
+export function editSequence<T>(component) {
+  return graphql<any, T>(
+    gql`
+      mutation (
+        $id: String!
+        $name: String!
+        $description: String
+        $destination: String
+        $questionnaires: [String]!
+      ) {
+        editSequence: EditSequence(
+          id: $id
+          name: $name
+          description: $description
+          destination: $destination
+          questionnaires: $questionnaires
+        ) {
+          ...defaultSequence
+        }
+      }
+      ${fragment}
+    `,
+    {
+      props: ({ mutate }) => ({
+        editSequence: (id: string, p: ISequenceCRUD): Promise<ISequence> =>
+          mutate({
+            variables: {
+              ...p,
+              id,
+            },
+          }).then(mutationResultExtractor<ISequence>("editSequence")),
+      }),
+    }
+  )(component);
+}
+
+export interface IEditSequence {
+  editSequence: (id: string, p: ISequenceCRUD) => Promise<ISequence>;
+}

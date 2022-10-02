@@ -32,6 +32,9 @@ enum ErrorStatus {
   NAME_ALREADY_USED = 2,
 }
 
+const filterNullQuestionnaires = ({ id }: { id: string }) =>
+  id && id.length > 0;
+
 export const SequenceForm = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
 
@@ -42,6 +45,7 @@ export const SequenceForm = (p: IProps): JSX.Element => {
     control,
     getValues,
     setValue,
+    trigger,
     formState: {
       errors,
       touchedFields: touched,
@@ -50,11 +54,9 @@ export const SequenceForm = (p: IProps): JSX.Element => {
       isValid,
     },
   } = useForm<ISequenceCRUDInternal>({
+    mode: "onChange",
     defaultValues: {
       ...p.seq,
-      destination: p.seq.destination
-        ? p.seq.destination.replace(/(^\w+:|^)\/\//, "")
-        : undefined,
       questionnaires: p.seq.questionnaires.map((q) => ({ id: q })),
     },
   });
@@ -62,20 +64,23 @@ export const SequenceForm = (p: IProps): JSX.Element => {
     control,
     name: "questionnaires",
     rules: {
-      required: t("At least one questionnaire is required") as string,
+      validate: (arr) => arr.filter(filterNullQuestionnaires).length > 0,
     },
   });
 
   const [err, setErr] = useState<ErrorStatus>();
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     const submitDecorator = (s: ISequenceCRUDInternal): Promise<void> => {
-      return p.onSubmit({
-        ...s,
-        destination: s.destination
-          ? `https://${s.destination}`.trim()
-          : undefined,
-        questionnaires: s.questionnaires.map((q) => q.id),
-      });
+      return p
+        .onSubmit({
+          ...s,
+          questionnaires: s.questionnaires
+            .filter(filterNullQuestionnaires)
+            .map((q) => q.id),
+        })
+        .then(() => {
+          reset(s);
+        });
     };
     setErr(undefined);
     handleSubmit(submitDecorator)(event).catch((err: Error) => {
@@ -87,8 +92,10 @@ export const SequenceForm = (p: IProps): JSX.Element => {
     });
   };
 
-  const qsOnChange = (idx: number) => (id: string) =>
+  const qsOnChange = (idx: number) => (id: string) => {
     setValue(`questionnaires.${idx}.id`, id);
+    trigger("questionnaires");
+  };
   const qsOnRemove = (idx: number) => () => remove(idx);
   const addQuestionnaire = () => append({ id: undefined });
   const onSortEnd = ({ oldIndex, newIndex }): void => move(oldIndex, newIndex);
@@ -114,7 +121,9 @@ export const SequenceForm = (p: IProps): JSX.Element => {
           id="sq-name"
           type="text"
           placeholder={t("Name")}
-          input={register("name", { required: true })}
+          input={register("name", {
+            required: t("Please enter a name for the new sequence") as string,
+          })}
         />
       </FormField>
       <FormField
@@ -131,7 +140,11 @@ export const SequenceForm = (p: IProps): JSX.Element => {
         />
       </FormField>
       <FormField
-        error={errors?.questionnaires?.root?.message as string}
+        error={
+          errors?.questionnaires
+            ? t("At least one questionnaire is required")
+            : undefined
+        }
         touched={true}
         inputID="sq-questionnaires"
         required={true}
@@ -161,22 +174,17 @@ export const SequenceForm = (p: IProps): JSX.Element => {
         <Input
           id="sq-destination"
           type="text"
+          icon={"linkify"}
+          iconPosition={"left"}
           // eslint-disable-next-line i18next/no-literal-string
-          label="https://"
-          // eslint-disable-next-line i18next/no-literal-string
-          placeholder="example.com"
+          placeholder="https://example.com"
           input={register("destination", {
             validate: (v): string | undefined => {
               if (!v) {
                 return undefined;
               }
-              if (v.indexOf("://") != -1) {
-                return t(
-                  "The protocol (e.g. 'https://') does not need to be included in the text provided. For security, we only support 'https://'"
-                );
-              }
               try {
-                new URL("https://" + v);
+                new URL(v);
                 return undefined;
               } catch (_) {
                 return t("Destination should be a valid web address");

@@ -32,7 +32,7 @@ const Inner = (p: IProps): JSX.Element => {
           buttonProps={{
             icon: "plus",
             onClick: p.addQuestionnaire,
-            role: "button",
+            type: "button",
           }}
           tooltipContent={t("Add Questionnaire")}
         />
