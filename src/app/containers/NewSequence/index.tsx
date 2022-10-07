@@ -4,6 +4,7 @@ import { PageWrapperHoC } from "components/PageWrapperHoC";
 import { ISequenceCRUD, SequenceForm } from "components/SequenceForm";
 import { useTranslation } from "react-i18next";
 import { useNavigator } from "redux/modules/url";
+import { QuestionnaireRequired } from "components/QuestionnaireRequired";
 
 const Inner = (p: INewSequence): JSX.Element => {
   const setURL = useNavigator();
@@ -28,8 +29,9 @@ const Inner = (p: INewSequence): JSX.Element => {
 };
 
 const WithData = newSequence<INewSequence>(Inner);
+const WithBlocker = QuestionnaireRequired(WithData);
 export const NewSequence = PageWrapperHoC(
   "New Sequence",
   "new-sequence",
-  WithData
+  WithBlocker
 );
