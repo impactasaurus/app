@@ -33,6 +33,7 @@ jobs:
         with:
           name: build-debug
           path: build
+          retention-days: 1
   build-prod:
     name: Build Production App
     if: github.ref == 'refs/heads/master'
@@ -68,6 +69,7 @@ jobs:
         with:
           name: build-prod
           path: build
+          retention-days: 30
   deploy:
     name: Deploy App
     if: github.ref == 'refs/heads/master'
