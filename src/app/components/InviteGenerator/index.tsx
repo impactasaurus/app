@@ -47,7 +47,7 @@ const InviteGeneratorInner = (p: IProps) => {
           </span>
         </p>
         <p>
-          <CopyBox text={url} />
+          <CopyBox text={url} qrcode={false} />
         </p>
       </div>
     );
