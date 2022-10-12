@@ -5,8 +5,7 @@ import {
   RouteProps,
   useLocation,
 } from "react-router-dom";
-import { useUser } from "redux/modules/user";
-import { BeneficiaryBlocker } from "./benBlocker";
+import { useLogout, useUser } from "redux/modules/user";
 import { NoOrgBlocker } from "./noOrgBlocker";
 
 interface IProps {
@@ -24,6 +23,7 @@ const Route = (p: IProps & RouteProps): React.ReactElement => {
     ...rest
   } = p;
   const user = useUser();
+  const logout = useLogout();
   const { pathname, search } = useLocation();
 
   const render = (props) => {
@@ -32,7 +32,8 @@ const Route = (p: IProps & RouteProps): React.ReactElement => {
         return userComponent;
       }
       if (user.beneficiaryUser && !beneficiaryAllowed) {
-        return <BeneficiaryBlocker />;
+        logout();
+        return <div />;
       }
       if (!user.org && !user.beneficiaryUser && !publicAccess) {
         return <NoOrgBlocker />;
