@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Menu, Icon } from "semantic-ui-react";
-import { requestLogOut, useUser } from "redux/modules/user";
+import { useLogout, useUser } from "redux/modules/user";
 import "./style.less";
 import Logo from "../Logo";
 import { Link, useLocation } from "react-router-dom";
@@ -10,7 +10,6 @@ import { HeaderPlugins } from "./plugins";
 import { IntroduceQuestionnairePage } from "components/TourQuestionnaires";
 import { IntroduceNewRecordButton } from "components/TourRecordCreation";
 import { IntroduceReportPage } from "components/TourReports";
-import { useDispatch } from "react-redux";
 const config = require("../../../../config/main").app.auth;
 
 const QuestionnaireButtonID = "questionnaire-menu-item";
@@ -25,7 +24,7 @@ const Header = (): JSX.Element => {
     beneficiaryUser: isBeneficiary,
   } = useUser();
   const { pathname: currentURL } = useLocation();
-  const dispatch = useDispatch();
+  const logout = useLogout();
 
   const isActive = (url: string, exact = false): boolean => {
     if (exact) {
@@ -35,7 +34,7 @@ const Header = (): JSX.Element => {
   };
 
   const logOut = () => {
-    dispatch(requestLogOut("/login"));
+    logout("/login");
   };
 
   const shouldShowLoginPrompt = () => {
