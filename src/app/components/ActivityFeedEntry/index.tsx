@@ -5,7 +5,7 @@ import { IMeeting } from "models/meeting";
 import { MeetingRadarWithImpl } from "components/MeetingRadar";
 import { Aggregation } from "models/pref";
 import "./style.less";
-import { journeyURI, questionnaireURI, recordURI } from "helpers/url";
+import { journeyURI, recordURI } from "helpers/url";
 import { Tags } from "../Tag";
 import { Link } from "react-router-dom";
 import { Trans } from "react-i18next";
@@ -27,7 +27,10 @@ const ActivityFeedEntry = (props: IProp): JSX.Element => {
         <Radar meetings={[meeting]} aggregation={Aggregation.QUESTION} />
       </Link>
       <Card.Content>
-        <Card.Header>
+        <Card.Header
+          as={Link}
+          to={journeyURI(meeting.beneficiary, meeting.outcomeSet.id)}
+        >
           <Trans
             defaults="<bLink>{beneficiaryID}</bLink> completed <qLink>{questionnaireName}</qLink>"
             values={{
@@ -35,12 +38,8 @@ const ActivityFeedEntry = (props: IProp): JSX.Element => {
               questionnaireName: meeting.outcomeSet.name,
             }}
             components={{
-              bLink: (
-                <Link
-                  to={journeyURI(meeting.beneficiary, meeting.outcomeSet.id)}
-                />
-              ),
-              qLink: <Link to={questionnaireURI(meeting.outcomeSet.id)} />,
+              bLink: <span />,
+              qLink: <span />,
             }}
           />
         </Card.Header>
