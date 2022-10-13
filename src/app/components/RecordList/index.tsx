@@ -5,7 +5,6 @@ import { renderArrayForArray } from "../../helpers/react";
 import { useNavigator } from "redux/modules/url";
 import { deleteMeeting, IDeleteMeetingMutation } from "apollo/modules/meetings";
 import { ConfirmButton } from "components/ConfirmButton";
-import { Link } from "react-router-dom";
 import { Tags } from "../Tag";
 import { useTranslation } from "react-i18next";
 import { ISODateString } from "components/Moment";
@@ -120,9 +119,7 @@ const RecordListInner = (p: IProp) => {
           <ISODateString iso={r.conducted} />
           {incomplete}
         </Table.Cell>
-        <Table.Cell>
-          <Link to={`/questions/${r.outcomeSet.id}`}>{r.outcomeSet.name}</Link>
-        </Table.Cell>
+        <Table.Cell>{r.outcomeSet.name}</Table.Cell>
         <Table.Cell>
           <Tags recordTags={r.meetingTags} benTags={r.benTags} />
         </Table.Cell>
