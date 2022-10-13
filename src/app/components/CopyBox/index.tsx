@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import useInterval from "helpers/hooks/useInterval";
 import { useTranslation } from "react-i18next";
-import { ButtonProps, Input } from "semantic-ui-react";
+import { Button, ButtonProps, Icon, Input } from "semantic-ui-react";
+import { QRCodeCanvas } from "qrcode.react";
+import { TooltipButton } from "components/TooltipButton";
+import { saveAs } from "file-saver";
 
 interface IProps {
   text: string;
+  qrcode?: boolean; // defaults to true
 }
 
 const showCopiedLabelDuration = 4000;
@@ -20,6 +24,13 @@ export const CopyBox = (p: IProps): JSX.Element => {
       setCopiedTime(0);
     }
   }, 200);
+
+  const downloadQR = () => {
+    const canvas = document.querySelector<HTMLCanvasElement>(
+      ".cb-qrcode > canvas"
+    );
+    saveAs(canvas.toDataURL(), "Impactasaurus-QR.png");
+  };
 
   const copyLink = () => {
     const node: Input = linkInput.current;
@@ -38,11 +49,35 @@ export const CopyBox = (p: IProps): JSX.Element => {
   };
 
   return (
-    <Input
-      className="copy-box"
-      action={action}
-      defaultValue={p.text}
-      ref={linkInput}
-    />
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <div style={{ maxWidth: "600px", flexGrow: 1 }}>
+        <Input
+          className="copy-box"
+          defaultValue={p.text}
+          ref={linkInput}
+          iconPosition="left"
+          fluid={true}
+          action={true}
+        >
+          <Icon name="linkify" />
+          <input />
+          <Button {...action} />
+          {p.qrcode !== false && (
+            <TooltipButton
+              buttonProps={{ icon: "qrcode", onClick: downloadQR }}
+              tooltipContent={t("QR Code")}
+            />
+          )}
+        </Input>
+      </div>
+      <div style={{ display: "none" }} className="cb-qrcode">
+        <QRCodeCanvas
+          value={p.text}
+          size={1024}
+          includeMargin={true}
+          level="L"
+        />
+      </div>
+    </div>
   );
 };
