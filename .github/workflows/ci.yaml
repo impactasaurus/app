@@ -15,11 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Use Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: 11.10.0
+          node-version: 16.18.0
       - name: Install dependencies
         run: npm ci
       - name: Run Linter
@@ -29,7 +29,7 @@ jobs:
       - name: Build project
         run: npm run build
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: build-debug
           path: build
@@ -43,19 +43,19 @@ jobs:
       CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Remove previous branding folder
         run: rm -rf ./src/branding
       - name: Checkout branding repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: impactasaurus/branding
           token: ${{ secrets.BRANDING_PERSONAL_ACCESS_TOKEN }}
           path: ./src/branding
       - name: Use Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: 11.10.0
+          node-version: 16.18.0
       - name: Install dependencies
         run: npm ci
       - name: Extract source text
@@ -65,7 +65,7 @@ jobs:
       - name: Generate Production Files
         run: npm run build:prod
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: build-prod
           path: build
@@ -80,7 +80,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build-prod
           path: dist
