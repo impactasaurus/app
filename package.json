@@ -10,7 +10,7 @@
     "build:prod": "cross-env NODE_ENV=production npm run build",
     "start": "webpack-dev-server --inline --config config/webpack/index.js --host 0.0.0.0",
     "start:prod": "npm run build:prod && http-server ./build/  --proxy http://localhost:8080?",
-    "test": "karma start config/test/karma.conf.js",
+    "test": "echo 'TODO :('",
     "lint": "eslint --fix --quiet \"src/**/**.ts*\"",
     "postinstall": "chmod +x ./src/app/theme/fixBranding.sh && ./src/app/theme/fixBranding.sh",
     "i18n-extract": "i18next 'src/**/*.tsx' -c 'src/i18n/parser.config.js'",
