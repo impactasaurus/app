@@ -47,10 +47,10 @@ const ActivityFeedEntry = (props: IProp): JSX.Element => {
           <Popup
             trigger={
               <span className="date">
-                <ISOTimeSince iso={meeting.conducted} />
+                <ISOTimeSince iso={meeting.completed} />
               </span>
             }
-            content={<ISODateString iso={meeting.conducted} />}
+            content={<ISODateString iso={meeting.completed} />}
           />
         </Card.Meta>
         <Card.Description as={Link} to={recordURI(meeting.id)}>

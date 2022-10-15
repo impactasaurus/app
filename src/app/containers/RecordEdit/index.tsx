@@ -18,14 +18,14 @@ import {
 } from "apollo/modules/meetings";
 import { TagInputWithBenSuggestions } from "components/TagInput";
 import { Error } from "components/Error";
-import { DateTimePicker } from "components/DateTimePicker";
 import { Hint } from "components/Hint";
-import moment from "moment";
 import { Tags } from "components/Tag";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { WithTranslation, withTranslation } from "react-i18next";
 import { forward, ISearchParam } from "helpers/url";
+import { ISODateString } from "components/Moment";
+import { DateFormats } from "helpers/moment";
 import "./style.less";
 
 interface IProps
@@ -45,12 +45,10 @@ interface IProps
 
 interface IState {
   saveError?: string;
-  conducted?: moment.Moment;
   recordTags?: string[];
   beneficiary?: string;
   saving?: boolean;
   tagEditing?: boolean;
-  dateEditing?: boolean;
   benEditing?: boolean;
   loaded?: boolean;
 }
@@ -62,7 +60,6 @@ class RecordEditInner extends React.Component<IProps, IState> {
     this.saveRecord = this.saveRecord.bind(this);
     this.setTags = this.setTags.bind(this);
     this.setBen = this.setBen.bind(this);
-    this.setConductedDate = this.setConductedDate.bind(this);
     this.nextPage = this.nextPage.bind(this);
     this.loadState = this.loadState.bind(this);
     this.renderTagSection = this.renderTagSection.bind(this);
@@ -88,7 +85,6 @@ class RecordEditInner extends React.Component<IProps, IState> {
 
   private loadState(p: IProps) {
     this.setState({
-      conducted: moment(p.data.getMeeting.conducted),
       recordTags: p.data.getMeeting.meetingTags,
       beneficiary: p.data.getMeeting.beneficiary,
       loaded: true,
@@ -97,19 +93,13 @@ class RecordEditInner extends React.Component<IProps, IState> {
 
   private saveRecord() {
     const record = this.props.data.getMeeting;
-    const { conducted, recordTags, beneficiary } = this.state;
+    const { recordTags, beneficiary } = this.state;
     this.setState({
       saving: true,
       saveError: undefined,
     });
 
     let p = Promise.resolve(record);
-
-    if (!this.state.conducted.isSame(record.conducted)) {
-      p = p.then(() => {
-        return this.props.editMeetingDate(record.id, conducted.toDate());
-      });
-    }
 
     const newTags = JSON.stringify(Array.from(recordTags).sort());
     const oldTags = JSON.stringify(Array.from(record.meetingTags).sort());
@@ -142,12 +132,6 @@ class RecordEditInner extends React.Component<IProps, IState> {
     if (!forward(this.props, this.props.setURL)) {
       this.props.setURL(`/beneficiary/${this.state.beneficiary}`);
     }
-  }
-
-  private setConductedDate(date: moment.Moment) {
-    this.setState({
-      conducted: date,
-    });
   }
 
   private setTags(tags: string[]): void {
@@ -211,29 +195,24 @@ class RecordEditInner extends React.Component<IProps, IState> {
     );
   }
 
-  private renderDateSection(dateEditing: boolean): JSX.Element {
-    let control = <div />;
-    if (dateEditing) {
-      control = (
-        <DateTimePicker
-          moment={this.state.conducted}
-          onChange={this.setConductedDate}
-          allowFutureDates={false}
-        />
-      );
-    } else {
-      const dateEdit = () => {
-        this.setState({ dateEditing: true });
-      };
-      control = this.renderEditButton(dateEdit);
-    }
+  private renderDateSection(): JSX.Element {
+    const m = this.props.data.getMeeting;
     return (
       <div>
-        <h4 className="label inline">{this.props.t("Date Conducted")}</h4>
-        <span className="conductedDate">
-          {this.state.conducted.format("llll")}
-        </span>
-        {control}
+        <div>
+          <h4 className="label inline">{this.props.t("Started")}</h4>
+          <span className="conductedDate">
+            <ISODateString iso={m.conducted} format={DateFormats.LONG} />
+          </span>
+        </div>
+        {m.completed && (
+          <div>
+            <h4 className="label inline">{this.props.t("Completed")}</h4>
+            <span className="completedDate">
+              <ISODateString iso={m.completed} format={DateFormats.LONG} />
+            </span>
+          </div>
+        )}
       </div>
     );
   }
@@ -322,7 +301,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
           <span>{record.user}</span>
         </div>
         {this.renderTagSection(record.beneficiary, this.state.tagEditing)}
-        {this.renderDateSection(this.state.dateEditing)}
+        {this.renderDateSection()}
         <Button
           primary={true}
           onClick={this.editAnswers}
