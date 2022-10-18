@@ -8,6 +8,7 @@ import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { useTranslation } from "react-i18next";
 import { ISODateString } from "components/Moment";
 import { forward, ISearchParam } from "helpers/url";
+import { DateFormats } from "helpers/moment";
 import "./style.less";
 
 interface IProps extends ISearchParam {
@@ -53,14 +54,14 @@ const RecordViewInner = (p: IProps) => {
         <div>
           <h4 className="label inline">{t("Started")}</h4>
           <span className="conductedDate">
-            <ISODateString iso={record.conducted} />
+            <ISODateString iso={record.conducted} format={DateFormats.LONG} />
           </span>
         </div>
         {!record.incomplete && (
           <div>
             <h4 className="label inline">{t("Completed")}</h4>
             <span className="completedDate">
-              <ISODateString iso={record.completed} />
+              <ISODateString iso={record.completed} format={DateFormats.LONG} />
             </span>
           </div>
         )}

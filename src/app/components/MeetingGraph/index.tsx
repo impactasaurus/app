@@ -58,7 +58,7 @@ const getQuestionLevelData = (meetings: IMeeting[]): GraphData => {
             label: q.short || q.question,
             data: [
               {
-                x: new Date(meeting.conducted),
+                x: new Date(meeting.completed),
                 y: answer.answer,
               },
             ],
@@ -93,7 +93,7 @@ const getCategoryLevelData = (meetings: IMeeting[]): GraphData => {
             label: category,
             data: [
               {
-                x: new Date(meeting.conducted),
+                x: new Date(meeting.completed),
                 y: categoryAg.value,
               },
             ],
