@@ -11,7 +11,6 @@ import { ISODateString } from "components/Moment";
 import { TooltipButton } from "components/TooltipButton";
 import { forwardURLParam } from "helpers/url";
 import "./style.less";
-import { DateFormats } from "helpers/moment";
 
 interface IProp extends IDeleteMeetingMutation {
   meetings: IMeeting[];
@@ -105,20 +104,20 @@ const RecordListInner = (p: IProp) => {
   };
 
   const renderRecord = (r: IMeeting): JSX.Element[] => {
+    let incomplete = <span />;
+    if (r.incomplete) {
+      incomplete = (
+        <Popup
+          trigger={<Icon name="hourglass half" />}
+          content={t("Incomplete")}
+        />
+      );
+    }
     return [
       <Table.Row key={r.id}>
         <Table.Cell>
-          <ISODateString iso={r.conducted} format={DateFormats.SHORT} />
-        </Table.Cell>
-        <Table.Cell>
-          {r.completed ? (
-            <ISODateString iso={r.completed} format={DateFormats.SHORT} />
-          ) : (
-            <Popup
-              trigger={<Icon name="hourglass half" />}
-              content={t("Incomplete")}
-            />
-          )}
+          <ISODateString iso={r.conducted} />
+          {incomplete}
         </Table.Cell>
         <Table.Cell>{r.outcomeSet.name}</Table.Cell>
         <Table.Cell>
@@ -135,8 +134,7 @@ const RecordListInner = (p: IProp) => {
       <Table celled={true} striped={true} className="record-list-table">
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell>{t("Started")}</Table.HeaderCell>
-            <Table.HeaderCell>{t("Completed")}</Table.HeaderCell>
+            <Table.HeaderCell>{t("Date")}</Table.HeaderCell>
             <Table.HeaderCell>{t("Questionnaire")}</Table.HeaderCell>
             <Table.HeaderCell>{t("Tags")}</Table.HeaderCell>
             <Table.HeaderCell>{t("Facilitator")}</Table.HeaderCell>

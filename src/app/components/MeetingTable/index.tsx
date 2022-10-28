@@ -23,8 +23,8 @@ const findMeeting = (
       if (last === undefined) {
         return m;
       }
-      const mConducted = Date.parse(m.completed);
-      const lConducted = Date.parse(last.completed);
+      const mConducted = Date.parse(m.conducted);
+      const lConducted = Date.parse(last.conducted);
       return comp(m, mConducted, last, lConducted);
     },
     undefined
@@ -115,7 +115,7 @@ const MeetingTable = (p: IProp): JSX.Element => {
   };
 
   const getColumnTitle = (prefix: string, meeting: IMeeting): string => {
-    return `${prefix} (${getHumanisedDate(new Date(meeting.completed))})`;
+    return `${prefix} (${getHumanisedDate(new Date(meeting.conducted))})`;
   };
 
   const onFirstMeetingSelectChange = (_, { value }): void => {
@@ -133,13 +133,13 @@ const MeetingTable = (p: IProp): JSX.Element => {
 
     return Array.from(meetings)
       .sort((a, b) => {
-        return Date.parse(a.completed) - Date.parse(b.completed);
+        return Date.parse(a.conducted) - Date.parse(b.conducted);
       })
       .map((meeting) => {
         return {
           value: meeting.id,
           key: meeting.id,
-          text: getHumanisedDate(new Date(meeting.completed)),
+          text: getHumanisedDate(new Date(meeting.conducted)),
         };
       });
   };
