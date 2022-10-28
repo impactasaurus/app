@@ -1,11 +1,5 @@
 import moment from "moment";
 
-export enum DateFormats {
-  LONG = "llll",
-  MID = "MMMM Do YYYY",
-  SHORT = "MMM Do YYYY",
-}
-
 export function isBeforeDay(a: moment.Moment, b: moment.Moment): boolean {
   const aYear = a.year();
   const aMonth = a.month();
@@ -77,22 +71,14 @@ export function getHumanisedTimeSinceDate(d: Date, locale?: string): string {
   return duration.humanize(true);
 }
 
-export function getHumanisedDate(
-  d: Date,
-  f = DateFormats.MID,
-  locale?: string
-): string {
+export function getHumanisedDate(d: Date, locale?: string): string {
   let m = moment(d);
   if (locale) {
     m = m.locale(locale);
   }
-  return m.format(f);
+  return m.format("MMMM Do YYYY");
 }
 
-export function getHumanisedDateFromISO(
-  s: string,
-  f = DateFormats.MID,
-  locale?: string
-): string {
-  return getHumanisedDate(new Date(s), f, locale);
+export function getHumanisedDateFromISO(s: string, locale?: string): string {
+  return getHumanisedDate(new Date(s), locale);
 }
