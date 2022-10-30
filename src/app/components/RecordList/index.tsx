@@ -1,6 +1,6 @@
 import React from "react";
 import { Table, Icon, Popup } from "semantic-ui-react";
-import { IMeeting, sortMeetingsByConducted } from "../../models/meeting";
+import { IMeeting, sortMeetingsByDateThenCreated } from "../../models/meeting";
 import { renderArrayForArray } from "../../helpers/react";
 import { useNavigator } from "redux/modules/url";
 import { deleteMeeting, IDeleteMeetingMutation } from "apollo/modules/meetings";
@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { ISODateString } from "components/Moment";
 import { TooltipButton } from "components/TooltipButton";
 import { forwardURLParam } from "helpers/url";
+import { DateFormats } from "helpers/moment";
 import "./style.less";
 
 interface IProp extends IDeleteMeetingMutation {
@@ -104,21 +105,26 @@ const RecordListInner = (p: IProp) => {
   };
 
   const renderRecord = (r: IMeeting): JSX.Element[] => {
-    let incomplete = <span />;
+    let date = <ISODateString iso={r.date} format={DateFormats.SHORT} />;
     if (r.incomplete) {
-      incomplete = (
+      date = (
         <Popup
           trigger={<Icon name="hourglass half" />}
-          content={t("Incomplete")}
+          content={
+            <div>
+              <div>{t("Incomplete")}</div>
+              <div>
+                {t("Created")}:{" "}
+                <ISODateString iso={r.created} format={DateFormats.SHORT} />
+              </div>
+            </div>
+          }
         />
       );
     }
     return [
       <Table.Row key={r.id}>
-        <Table.Cell>
-          <ISODateString iso={r.conducted} />
-          {incomplete}
-        </Table.Cell>
+        <Table.Cell>{date}</Table.Cell>
         <Table.Cell>{r.outcomeSet.name}</Table.Cell>
         <Table.Cell>
           <Tags recordTags={r.meetingTags} benTags={r.benTags} />
@@ -146,7 +152,7 @@ const RecordListInner = (p: IProp) => {
         <Table.Body>
           {renderArrayForArray(
             renderRecord,
-            sortMeetingsByConducted(p.meetings, false)
+            sortMeetingsByDateThenCreated(p.meetings, false)
           )}
         </Table.Body>
       </Table>

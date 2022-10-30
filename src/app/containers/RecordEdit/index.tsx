@@ -88,7 +88,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
 
   private loadState(p: IProps) {
     this.setState({
-      conducted: moment(p.data.getMeeting.conducted),
+      conducted: moment(p.data.getMeeting.date),
       recordTags: p.data.getMeeting.meetingTags,
       beneficiary: p.data.getMeeting.beneficiary,
       loaded: true,
@@ -105,7 +105,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
 
     let p = Promise.resolve(record);
 
-    if (!this.state.conducted.isSame(record.conducted)) {
+    if (!this.state.conducted.isSame(record.date)) {
       p = p.then(() => {
         return this.props.editMeetingDate(record.id, conducted.toDate());
       });
@@ -212,6 +212,9 @@ class RecordEditInner extends React.Component<IProps, IState> {
   }
 
   private renderDateSection(dateEditing: boolean): JSX.Element {
+    if (this.props.data.getMeeting.incomplete) {
+      return <div />;
+    }
     let control = <div />;
     if (dateEditing) {
       control = (
@@ -229,7 +232,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
     }
     return (
       <div>
-        <h4 className="label inline">{this.props.t("Date Conducted")}</h4>
+        <h4 className="label inline">{this.props.t("Date")}</h4>
         <span className="conductedDate">
           {this.state.conducted.format("llll")}
         </span>
