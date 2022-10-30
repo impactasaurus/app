@@ -18,6 +18,8 @@ interface IProp {
   serviceReport: IAnswerAggregationReport;
   questionSet: IOutcomeSet;
   category?: boolean;
+  onSuccess?: () => void;
+  onError?: () => void;
 }
 
 function getRadarSeries(
@@ -111,7 +113,14 @@ function renderRadar(t: (text: string) => string, p: IProp): JSX.Element {
   }
   const data = getRadarData(t, p);
   const agg = p.category ? Aggregation.CATEGORY : Aggregation.QUESTION;
-  return <RadarChart data={data} aggregation={agg} />;
+  return (
+    <RadarChart
+      data={data}
+      aggregation={agg}
+      onError={p.onError}
+      onSuccess={p.onSuccess}
+    />
+  );
 }
 
 export const ServiceReportRadar = (p: IProp): JSX.Element => {

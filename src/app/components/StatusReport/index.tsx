@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { getStatusReport, IStatusReport } from "apollo/modules/reports";
 import { getOutcomeSet, IOutcomeResult } from "apollo/modules/outcomeSets";
 import { StatusReportRadar } from "./radar";
@@ -50,6 +50,9 @@ const exportReportData = (urlConn: IURLConnector, p: IReportOptions): void => {
 };
 
 const StatusReportInner = (p: IProp) => {
+  const [showCanvasDownloadButton, setShowCanvasDownloadButton] =
+    useState<boolean>(true);
+
   const renderVis = (): JSX.Element => {
     if (p.vis === Visualisation.RADAR) {
       return (
@@ -57,6 +60,12 @@ const StatusReportInner = (p: IProp) => {
           statusReport={p.statusReport.getStatusReport}
           questionSet={p.data.getOutcomeSet}
           category={p.agg === Aggregation.CATEGORY}
+          onError={() => {
+            setShowCanvasDownloadButton(false);
+          }}
+          onSuccess={() => {
+            setShowCanvasDownloadButton(true);
+          }}
         />
       );
     }
@@ -97,7 +106,9 @@ const StatusReportInner = (p: IProp) => {
       <VizControlPanel
         canCategoryAg={p.isCategoryAgPossible}
         visualisations={allowedVisualisations}
-        allowCanvasSnapshot={p.isCanvasSnapshotPossible}
+        allowCanvasSnapshot={
+          p.isCanvasSnapshotPossible && showCanvasDownloadButton
+        }
         export={exportReport}
       />
       {renderVis()}

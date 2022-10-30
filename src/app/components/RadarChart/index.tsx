@@ -10,6 +10,8 @@ import "./style.less";
 interface IProp {
   data?: RadarData;
   aggregation?: Aggregation;
+  onSuccess?: () => void;
+  onError?: () => void;
 }
 
 export interface IOutcomeGraphPoint {
@@ -98,9 +100,11 @@ const RadarChart = (p: IProp): JSX.Element => {
 
   const noAxis = getNumberOfAxis(p.data.series);
   if (noAxis < 3) {
+    p.onError?.();
     return wrapper(renderError());
   }
 
+  p.onSuccess?.();
   return wrapper(
     <Chart
       config={getConfig(
