@@ -10,7 +10,6 @@ export interface IMeeting {
   outcomeSetID: string;
   outcomeSet?: IOutcomeSet;
   answers: IAnswer[];
-  conducted: string;
   created: string;
   date?: string;
   aggregates?: IAggregates;
@@ -30,7 +29,6 @@ export const fragment = gql`
     answers {
       ...defaultAnswer
     }
-    conducted
     created
     date
     incomplete
