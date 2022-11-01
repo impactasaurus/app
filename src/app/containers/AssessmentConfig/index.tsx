@@ -104,9 +104,6 @@ const AssessmentConfigInner = (p: IProps) => {
   };
 
   const startMeeting = (c: IAssessmentConfig): Promise<void> => {
-    if (typ !== AssessmentType.historic) {
-      c.date = new Date();
-    }
     let promise: Promise<string[]>;
     if (c.qishType === QuestionnairishType.QUESTIONNAIRE) {
       promise = p.newMeeting(c).then((meeting) => [meeting.id]);

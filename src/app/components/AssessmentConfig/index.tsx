@@ -236,8 +236,10 @@ const AssessmentConfigInner = withFormik<IProps, IAssessmentConfigAndDebounce>({
     if (!values.qishID || values.qishID === "") {
       errors.qishID = t("Please select a questionnaire");
     }
-    if (!values.date || values.date.getTime() > Date.now()) {
-      errors.date = t("Please select a date in the past");
+    if (p.showDatePicker) {
+      if (!values.date || values.date.getTime() > Date.now()) {
+        errors.date = t("Please select a date in the past");
+      }
     }
     return errors;
   },
@@ -271,7 +273,7 @@ const AssessmentConfigInner = withFormik<IProps, IAssessmentConfigAndDebounce>({
       qishID: "",
       qishType: QuestionnairishType.QUESTIONNAIRE,
       tags: [],
-      date: new Date(),
+      date: p.showDatePicker ? new Date() : undefined,
     };
   },
   validateOnMount: true,

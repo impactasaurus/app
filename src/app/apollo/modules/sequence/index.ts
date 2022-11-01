@@ -106,7 +106,7 @@ export function startSequence<T>(component) {
       mutation (
         $beneficiaryID: String!
         $sequenceID: String!
-        $conducted: String!
+        $conducted: String
         $tags: [String]
       ) {
         startSequence: StartSequence(
@@ -131,9 +131,7 @@ export function startSequence<T>(component) {
             variables: {
               beneficiaryID: config.beneficiaryID,
               sequenceID: config.qishID,
-              conducted: config.date
-                ? config.date.toISOString()
-                : new Date().toISOString(),
+              conducted: config?.date?.toISOString(),
               tags: config.tags || [],
             },
             refetchQueries: [

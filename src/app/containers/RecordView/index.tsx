@@ -50,12 +50,14 @@ const RecordViewInner = (p: IProps) => {
           <h4 className="label inline">{t("Questionnaire")}</h4>
           <span>{record.outcomeSet.name}</span>
         </div>
-        <div>
-          <h4 className="label inline">{t("Created")}</h4>
-          <span className="conductedDate">
-            <ISODateString iso={record.created} />
-          </span>
-        </div>
+        {record.incomplete && (
+          <div>
+            <h4 className="label inline">{t("Created")}</h4>
+            <span className="conductedDate">
+              <ISODateString iso={record.created} />
+            </span>
+          </div>
+        )}
         {!record.incomplete && (
           <div>
             <h4 className="label inline">{t("Completed")}</h4>
