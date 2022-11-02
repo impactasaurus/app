@@ -190,6 +190,7 @@ export const SequenceForm = (p: IProps): JSX.Element => {
                 return t("Destination should be a valid web address");
               }
             },
+            setValueAs: (v: string) => (v.length === 0 ? undefined : v),
           })}
         />
       </FormField>
