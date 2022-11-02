@@ -131,7 +131,8 @@ const DataEntryInner = (p: IProps) => {
   return (
     <div>
       <h1>
-        {record.beneficiary} - <ISODateString iso={record.conducted} />
+        {record.beneficiary} -{" "}
+        <ISODateString iso={record.date ?? record.created} />
       </h1>
       {renderArray(renderQuestion, questions)}
       {questionnaire?.noteDeactivated !== true && (

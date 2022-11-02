@@ -280,7 +280,7 @@ export function newMeeting<T>(component) {
       mutation (
         $beneficiaryID: String!
         $outcomeSetID: String!
-        $conducted: String!
+        $conducted: String
         $tags: [String]
       ) {
         newMeeting: AddMeeting(
@@ -301,9 +301,7 @@ export function newMeeting<T>(component) {
             variables: {
               beneficiaryID: config.beneficiaryID,
               outcomeSetID: config.qishID,
-              conducted: config.date
-                ? config.date.toISOString()
-                : new Date().toISOString(),
+              conducted: config?.date?.toISOString(),
               tags: config.tags || [],
             },
             refetchQueries: [

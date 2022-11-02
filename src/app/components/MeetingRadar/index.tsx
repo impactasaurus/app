@@ -54,7 +54,7 @@ export function MeetingRadarWithImpl<P extends ImplementationIProp>(
           []
         );
         return {
-          name: new Date(meeting.conducted),
+          name: new Date(meeting.date),
           datapoints: answers,
         };
       });
@@ -87,7 +87,7 @@ export function MeetingRadarWithImpl<P extends ImplementationIProp>(
           }
         );
         return {
-          name: new Date(meeting.conducted),
+          name: new Date(meeting.date),
           datapoints: answers,
         };
       });

@@ -10,16 +10,14 @@ export interface IMeeting {
   outcomeSetID: string;
   outcomeSet?: IOutcomeSet;
   answers: IAnswer[];
-  conducted: string;
   created: string;
-  modified: string;
+  date?: string;
   aggregates?: IAggregates;
   tags?: string[];
   benTags?: string[];
   meetingTags?: string[];
   incomplete: boolean;
   notes?: string;
-  completed?: string;
 }
 
 export const fragment = gql`
@@ -31,15 +29,13 @@ export const fragment = gql`
     answers {
       ...defaultAnswer
     }
-    conducted
     created
-    modified
+    date
     incomplete
     tags
     benTags
     meetingTags
     notes
-    completed
   }
   ${aFragment}
 `;
@@ -66,14 +62,16 @@ export const fragmentWithOutcomeSetAndAggregates = gql`
   ${agFragment}
 `;
 
-export function sortMeetingsByConducted(
+export function sortMeetingsByDateThenCreated(
   meetings: IMeeting[],
   asc = true
 ): IMeeting[] {
   return meetings.concat().sort((a, b): number => {
+    const aDate = Date.parse(a.date ?? a.created);
+    const bDate = Date.parse(b.date ?? b.created);
     if (asc) {
-      return Date.parse(a.conducted) - Date.parse(b.conducted);
+      return aDate - bDate;
     }
-    return Date.parse(b.conducted) - Date.parse(a.conducted);
+    return bDate - aDate;
   });
 }
