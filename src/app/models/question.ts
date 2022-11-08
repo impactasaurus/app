@@ -30,7 +30,7 @@ export interface ILikertScale extends IQuestion, IWithNotes {
 
 export type Question = ILikertScale;
 
-export interface ILikertQuestionForm {
+export interface ILikertQuestionForm extends IWithNotes {
   question: string;
   categoryID?: string;
   description?: string;

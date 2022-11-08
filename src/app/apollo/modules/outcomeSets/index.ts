@@ -1,6 +1,7 @@
 import { gql, graphql, QueryProps } from "react-apollo";
 import { IOutcomeSet, fragment } from "models/outcomeSet";
 import { IDExtractor, mutationResultExtractor } from "helpers/apollo";
+import { IWithNotes } from "models/question";
 
 export const getOutcomeSet = <T>(idExtractor: IDExtractor<T>) => {
   return graphql<any, T>(
@@ -78,12 +79,18 @@ export function editQuestionSet<T>(component) {
         $name: String!
         $description: String
         $instructions: String
+        $noteRequired: String
+        $notePrompt: String
+        $noteDeactivated: String
       ) {
         editQuestionSet: EditOutcomeSet(
           outcomeSetID: $id
           name: $name
           description: $description
           instructions: $instructions
+          noteRequired: $noteRequired
+          notePrompt: $notePrompt
+          noteDeactivated: $noteDeactivated
         ) {
           ...defaultOutcomeSet
         }
@@ -96,7 +103,8 @@ export function editQuestionSet<T>(component) {
           id: string,
           name: string,
           description: string,
-          instructions: string
+          instructions: string,
+          noteOptions?: IWithNotes
         ): Promise<IOutcomeSet> =>
           mutate({
             variables: {
@@ -104,6 +112,7 @@ export function editQuestionSet<T>(component) {
               name,
               description,
               instructions,
+              ...noteOptions,
             },
           }).then(mutationResultExtractor<IOutcomeSet>("editQuestionSet")),
       }),
@@ -146,6 +155,7 @@ export interface IOutcomeMutation {
     id: string,
     name: string,
     description: string,
-    instructions: string
+    instructions: string,
+    noteOptions?: IWithNotes
   ): Promise<IOutcomeSet>;
 }
