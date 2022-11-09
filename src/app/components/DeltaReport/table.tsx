@@ -1,11 +1,12 @@
 import * as React from "react";
 import { IBeneficiaryDeltaReport } from "models/report";
-import { Table } from "semantic-ui-react";
+import { Header, Table } from "semantic-ui-react";
 import { renderArray } from "helpers/react";
 import { Direction, directionSpec } from "helpers/table";
 import { extractDeltas } from "components/DeltaReport/data";
 import { IOutcomeSet } from "models/outcomeSet";
 import { withTranslation, WithTranslation } from "react-i18next";
+import { average, sum } from "helpers/numbers";
 
 interface IProp extends WithTranslation {
   report: IBeneficiaryDeltaReport;
@@ -127,6 +128,9 @@ class DeltaTableInner extends React.Component<IProp, IState> {
     const { t, category } = this.props;
     const rows = this.state.data;
     const nameCol = category ? t("Category") : t("Question");
+    if (!rows) {
+      return <div />;
+    }
     return (
       <Table striped={true} celled={true} sortable={true}>
         <Table.Header>
@@ -174,7 +178,39 @@ class DeltaTableInner extends React.Component<IProp, IState> {
           </Table.Row>
         </Table.Header>
 
-        <Table.Body>{renderArray(renderRow, rows)}</Table.Body>
+        <Table.Body>
+          {renderArray(renderRow, rows)}
+          <Table.Row>
+            <Table.Cell>
+              <Header as="h5" textAlign="left">
+                {t("Total")}
+              </Header>
+            </Table.Cell>
+            <Table.Cell>
+              {sum(rows.map((r) => r.decreased)).toFixed(2)}
+            </Table.Cell>
+            <Table.Cell>{sum(rows.map((r) => r.same)).toFixed(2)}</Table.Cell>
+            <Table.Cell>
+              {sum(rows.map((r) => r.increased)).toFixed(2)}
+            </Table.Cell>
+          </Table.Row>
+          <Table.Row>
+            <Table.Cell>
+              <Header as="h5" textAlign="left">
+                {t("Average")}
+              </Header>
+            </Table.Cell>
+            <Table.Cell>
+              {average(rows.map((r) => r.decreased)).toFixed(2)}
+            </Table.Cell>
+            <Table.Cell>
+              {average(rows.map((r) => r.same)).toFixed(2)}
+            </Table.Cell>
+            <Table.Cell>
+              {average(rows.map((r) => r.increased)).toFixed(2)}
+            </Table.Cell>
+          </Table.Row>
+        </Table.Body>
       </Table>
     );
   }
