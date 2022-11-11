@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ILatestAggregationReport } from "models/report";
-import { Table } from "semantic-ui-react";
+import { Header, Table } from "semantic-ui-react";
 import { renderArray } from "helpers/react";
 import { Direction, directionSpec } from "helpers/table";
 import {
@@ -9,6 +9,7 @@ import {
 } from "helpers/questionnaire";
 import { IOutcomeSet } from "models/outcomeSet";
 import { useTranslation } from "react-i18next";
+import { average, sum } from "helpers/numbers";
 
 interface IProps {
   report: ILatestAggregationReport;
@@ -94,6 +95,10 @@ export const StatusReportTable = (p: IProps): JSX.Element => {
     };
   };
 
+  if (!data) {
+    return <div />;
+  }
+
   const nameCol = p.category ? t("Category") : t("Question");
   return (
     <Table striped={true} celled={true} sortable={true}>
@@ -114,7 +119,27 @@ export const StatusReportTable = (p: IProps): JSX.Element => {
         </Table.Row>
       </Table.Header>
 
-      <Table.Body>{renderArray(renderRow, data)}</Table.Body>
+      <Table.Body>
+        {renderArray(renderRow, data)}
+        <Table.Row>
+          <Table.Cell>
+            <Header as="h5" textAlign="left">
+              {t("Total")}
+            </Header>
+          </Table.Cell>
+          <Table.Cell>{sum(data.map((d) => d.value)).toFixed(2)}</Table.Cell>
+        </Table.Row>
+        <Table.Row>
+          <Table.Cell>
+            <Header as="h5" textAlign="left">
+              {t("Average")}
+            </Header>
+          </Table.Cell>
+          <Table.Cell>
+            {average(data.map((d) => d.value)).toFixed(2)}
+          </Table.Cell>
+        </Table.Row>
+      </Table.Body>
     </Table>
   );
 };
