@@ -55,7 +55,10 @@ export const FormSection = ({
           {section}
         </Divider>
       </Accordion.Title>
-      <Accordion.Content style={{ padding: 0 }} active={open}>
+      <Accordion.Content
+        style={{ padding: 0, paddingBottom: "1em" }}
+        active={open}
+      >
         {explanation && <Explanation text={explanation} />}
         {children}
       </Accordion.Content>

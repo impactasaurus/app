@@ -79,9 +79,9 @@ export function editQuestionSet<T>(component) {
         $name: String!
         $description: String
         $instructions: String
-        $noteRequired: String
+        $noteRequired: Boolean
         $notePrompt: String
-        $noteDeactivated: String
+        $noteDeactivated: Boolean
       ) {
         editQuestionSet: EditOutcomeSet(
           outcomeSetID: $id

@@ -93,6 +93,28 @@ const InnerForm = (p: IProps & FormikProps<ILikertQuestionForm>) => {
           {...standardActions}
         />
       </FormField>
+      <FormField
+        error={p.errors.description as string}
+        touched={p.touched.description}
+        inputID="lqf-desc"
+        label={
+          <LabelAndHint
+            hint={p.t(
+              "Shown under the question, used to provide additional clarification or context"
+            )}
+            label={p.t("Description")}
+          />
+        }
+      >
+        <Input
+          id="lqf-desc"
+          name="description"
+          type="text"
+          placeholder={p.t("Description")}
+          value={p.values.description}
+          {...standardActions}
+        />
+      </FormField>
       <FormSection
         section={p.t("Scale")}
         collapsible={false}
@@ -119,36 +141,11 @@ const InnerForm = (p: IProps & FormikProps<ILikertQuestionForm>) => {
         />
       </FormSection>
 
-      <FormSection section={p.t("Additional Information")} collapsible={true}>
-        <FormField
-          error={p.errors.description as string}
-          touched={p.touched.description}
-          inputID="lqf-desc"
-          label={
-            <LabelAndHint
-              hint={p.t(
-                "Shown to the user under the question, used to provide additional clarification or context"
-              )}
-              label={p.t("Description")}
-            />
-          }
-        >
-          <Input
-            id="lqf-desc"
-            name="description"
-            type="text"
-            placeholder={p.t("Description")}
-            value={p.values.description}
-            {...standardActions}
-          />
-        </FormField>
-      </FormSection>
-
       <FormSection
         section={p.t("Comments")}
         collapsible={true}
         explanation={p.t(
-          "A text box can be provided under the question scale to gather comments from the beneficiary or facilitator"
+          "A text box can be provided to gather comments from the beneficiary or facilitator"
         )}
       >
         <Form.Checkbox
@@ -175,9 +172,7 @@ const InnerForm = (p: IProps & FormikProps<ILikertQuestionForm>) => {
               inputID="lqf-noteprompt"
               label={
                 <LabelAndHint
-                  hint={p.t(
-                    "The text shown to the user to explain what they should write in the text box"
-                  )}
+                  hint={p.t("Explains what should be written in the text box")}
                   label={p.t("Comment prompt")}
                 />
               }
@@ -186,7 +181,7 @@ const InnerForm = (p: IProps & FormikProps<ILikertQuestionForm>) => {
                 id="lqf-noteprompt"
                 name="notePrompt"
                 type="text"
-                placeholder={p.t("Prompt")}
+                placeholder={p.t("Defaults to 'Additional information'")}
                 value={p.values.notePrompt}
                 {...standardActions}
               />
@@ -196,10 +191,10 @@ const InnerForm = (p: IProps & FormikProps<ILikertQuestionForm>) => {
       </FormSection>
 
       <FormSection
-        section={p.t("Visualisation")}
+        section={p.t("Results")}
         collapsible={p.values.question.length <= QuestionLengthRequiresShort}
         explanation={p.t(
-          "The following options adjust the visualisation of the results and aren't exposed to beneficiaries"
+          "The following options adjust the visualisation of the results and aren't shown to beneficiaries"
         )}
       >
         <Form.Group widths="equal">
@@ -207,7 +202,14 @@ const InnerForm = (p: IProps & FormikProps<ILikertQuestionForm>) => {
             error={p.errors.categoryID as string}
             touched={p.touched.categoryID}
             inputID="lqf-cat"
-            label={p.t("Category")}
+            label={
+              <LabelAndHint
+                hint={p.t(
+                  "Group related questions into categories. This allows aggregation of multiple questions into a single value."
+                )}
+                label={p.t("Category")}
+              />
+            }
           >
             <Select
               id="lqf-cat"
@@ -327,7 +329,7 @@ const LikertQuestionFormInner = withFormik<IProps, ILikertQuestionForm>({
   mapPropsToValues: (p: IProps) => {
     return {
       ...p.values,
-      notePrompt: p.values.notePrompt ?? p.t("Additional information"),
+      notePrompt: p.values.notePrompt,
       // get category options to the inner form
       // passing in values object, would be nicer in the props
       categoryOptions: getCategoryOptions(p),
@@ -380,7 +382,10 @@ function getCategoryOptions(p: IProps): DropdownItemProps[] {
   categories.unshift({
     key: null,
     value: null,
-    text: p.t("No Category"),
+    text:
+      categories.length === 0
+        ? p.t("No Categories defined")
+        : p.t("No Category"),
   });
   return categories;
 }

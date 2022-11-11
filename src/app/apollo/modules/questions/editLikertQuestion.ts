@@ -1,12 +1,12 @@
 import { IOutcomeSet, fragment } from "models/outcomeSet";
-import { ILabel } from "models/question";
+import { ILabel, IWithNotes } from "models/question";
 import { ComponentClass } from "react";
 import { CompositeComponent } from "react-apollo/types";
 import { gql, graphql } from "react-apollo";
 import { cleanLabelArray } from ".";
 import { mutationResultExtractor } from "helpers/apollo";
 
-export interface IEditLikertQuestionInput {
+export interface IEditLikertQuestionInput extends IWithNotes {
   question?: string;
   description?: string;
   short?: string;
@@ -37,6 +37,9 @@ export const editLikertQuestion = <T>(
         $short: String
         $leftValue: Int
         $rightValue: Int
+        $noteRequired: Boolean
+        $notePrompt: String
+        $noteDeactivated: Boolean
       ) {
         editLikertQuestion: EditLikertQuestion(
           outcomeSetID: $questionnaireID
@@ -47,6 +50,9 @@ export const editLikertQuestion = <T>(
           short: $short
           minValue: $leftValue
           maxValue: $rightValue
+          noteRequired: $noteRequired
+          notePrompt: $notePrompt
+          noteDeactivated: $noteDeactivated
         ) {
           ...defaultOutcomeSet
         }
