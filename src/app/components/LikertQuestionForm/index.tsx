@@ -329,7 +329,6 @@ const LikertQuestionFormInner = withFormik<IProps, ILikertQuestionForm>({
   mapPropsToValues: (p: IProps) => {
     return {
       ...p.values,
-      notePrompt: p.values.notePrompt,
       // get category options to the inner form
       // passing in values object, would be nicer in the props
       categoryOptions: getCategoryOptions(p),
