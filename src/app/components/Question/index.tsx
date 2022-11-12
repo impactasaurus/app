@@ -57,7 +57,9 @@ const QuestionInner = (p: IProps) => {
   const goToPreviousQuestion = () => p.onPrevious();
   const answerGiven = value !== undefined;
   const noteGivenIfRequired =
-    question?.noteRequired !== true || (notes || "").length > 0;
+    question?.noteRequired !== true ||
+    question?.noteDeactivated === true ||
+    (notes || "").length > 0;
   const canProgress = answerGiven && noteGivenIfRequired;
 
   const next = () => {

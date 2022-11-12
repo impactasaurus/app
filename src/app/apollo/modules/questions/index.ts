@@ -1,7 +1,7 @@
 import { gql, graphql } from "react-apollo";
 import { IOutcomeSet, fragment as osFragment } from "models/outcomeSet";
 import { mutationResultExtractor } from "helpers/apollo";
-import { ILabel } from "models/question";
+import { ILabel, IWithNotes } from "models/question";
 
 // cleanLabelArray defends against __typename attributes
 export const cleanLabelArray = (labels: ILabel[]): ILabel[] => {
@@ -25,6 +25,9 @@ export function addLikertQuestion<T>(component) {
         $labels: [LabelInput]
         $categoryID: String
         $short: String
+        $noteRequired: Boolean
+        $notePrompt: String
+        $noteDeactivated: Boolean
       ) {
         addLikertQuestion: AddLikertQuestion(
           outcomeSetID: $outcomeSetID
@@ -35,6 +38,9 @@ export function addLikertQuestion<T>(component) {
           labels: $labels
           categoryID: $categoryID
           short: $short
+          noteRequired: $noteRequired
+          notePrompt: $notePrompt
+          noteDeactivated: $noteDeactivated
         ) {
           ...defaultOutcomeSet
         }
@@ -51,7 +57,8 @@ export function addLikertQuestion<T>(component) {
           description?: string,
           short?: string,
           categoryID?: string,
-          labels?: ILabel[]
+          labels?: ILabel[],
+          noteOptions?: IWithNotes
         ): Promise<IOutcomeSet> =>
           mutate({
             variables: {
@@ -63,6 +70,7 @@ export function addLikertQuestion<T>(component) {
               short,
               labels: cleanLabelArray(labels),
               categoryID,
+              ...noteOptions,
             },
           }).then(mutationResultExtractor<IOutcomeSet>("addLikertQuestion")),
       }),
@@ -167,7 +175,8 @@ export interface IQuestionMutation {
     description?: string,
     short?: string,
     categoryID?: string,
-    labels?: ILabel[]
+    labels?: ILabel[],
+    noteOptions?: IWithNotes
   ): Promise<IOutcomeSet>;
   deleteQuestion?(
     outcomeSetID: string,

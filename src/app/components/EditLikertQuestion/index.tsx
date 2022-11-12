@@ -41,6 +41,9 @@ const EditLikertQuestionInner = (p: IProps) => {
       description: q.description,
       short: q.short,
       labels: q.labels,
+      noteDeactivated: q.noteDeactivated,
+      notePrompt: q.notePrompt,
+      noteRequired: q.noteRequired,
     };
     const scaleScoringChanged =
       q.leftValue !== p.question.leftValue ||
@@ -58,21 +61,11 @@ const EditLikertQuestionInner = (p: IProps) => {
     return prom;
   };
 
-  const q = p.question;
-
   return (
     <LikertQuestionForm
       editing={true}
       inUse={inUse}
-      values={{
-        question: q.question,
-        categoryID: q.categoryID,
-        description: q.description,
-        short: q.short,
-        labels: q.labels,
-        leftValue: q.leftValue,
-        rightValue: q.rightValue,
-      }}
+      values={p.question}
       submitButtonText={t("Save changes")}
       onSubmitButtonClick={editQuestion}
       onCancel={p.OnCancel}

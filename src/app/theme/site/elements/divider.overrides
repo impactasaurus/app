@@ -1,0 +1,9 @@
+.ui.form:not(.screen) .ui.horizontal.divider {
+  text-transform: capitalize;
+  &::before {
+    width: 0;
+  }
+  &::after {
+    width: 100%;
+  }
+}

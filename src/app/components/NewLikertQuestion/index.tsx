@@ -24,7 +24,12 @@ const NewLikertQuestionInner = (p: IProps) => {
       q.description,
       q.short,
       q.categoryID,
-      q.labels
+      q.labels,
+      {
+        noteDeactivated: q.noteDeactivated,
+        notePrompt: q.notePrompt,
+        noteRequired: q.noteRequired,
+      }
     );
   };
 
