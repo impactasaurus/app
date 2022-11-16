@@ -6,6 +6,8 @@ import {
   IOutcomeMutation,
 } from "apollo/modules/outcomeSets";
 import { GenericQuestionnaireListItem } from "components/QuestionnaireList/item";
+import { QuestionnaireKey } from "models/pref";
+import { useSetPreference } from "redux/modules/pref";
 
 interface IProps extends IOutcomeMutation {
   questionnaire: IOutcomeSet;
@@ -14,12 +16,21 @@ interface IProps extends IOutcomeMutation {
 const QuestionnaireItemInner = (p: IProps): JSX.Element => {
   const q = p.questionnaire;
   const setURL = useNavigator();
+  const setPref = useSetPreference();
 
-  const navigate = () => setURL(`/questions/${q.id}`);
+  const navigate = () => {
+    setPref(QuestionnaireKey, q.id);
+    setURL(`/questions/${q.id}`);
+  };
 
   const onDelete = (): Promise<void> => {
     return p.deleteQuestionSet(q.id).then();
     // errors and success handled by ConfirmButton
+  };
+
+  const onGenLink = () => {
+    setPref(QuestionnaireKey, q.id);
+    setURL("/record/remote");
   };
 
   return (
@@ -30,6 +41,7 @@ const QuestionnaireItemInner = (p: IProps): JSX.Element => {
       onDelete={onDelete}
       onNavigate={navigate}
       readOnly={q.readOnly}
+      onGenLink={onGenLink}
     />
   );
 };
