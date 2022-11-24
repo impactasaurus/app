@@ -137,12 +137,11 @@ const DataEntryInner = (p: IProps) => {
       {renderArray(renderQuestion, questions)}
       {questionnaire?.noteDeactivated !== true && (
         <>
-          <h3>{t("Additional Comments")}</h3>
+          <h3 style={{ marginBottom: 0 }}>{t("Additional Comments")}</h3>
           <Notepad
             onChange={setNotes}
             notes={notes}
-            prompt={questionnaire?.notePrompt || false}
-            placeholder={questionnaire?.notePrompt ? undefined : placeholder}
+            prompt={questionnaire?.notePrompt || placeholder}
             required={questionnaire?.noteRequired}
           />
         </>

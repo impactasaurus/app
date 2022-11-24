@@ -17,6 +17,7 @@ import {
 } from "formik";
 import { WithTranslation, withTranslation } from "react-i18next";
 import { QuestionnaireGeneral } from "components/QuestionnaireGeneral";
+import { IWithNotes } from "models/question";
 
 interface IProps extends IOutcomeMutation, Partial<WithTranslation> {
   data?: IOutcomeResult;
@@ -27,11 +28,22 @@ interface IProps extends IOutcomeMutation, Partial<WithTranslation> {
   };
 }
 
-interface IFormOutput {
+interface IFormOutput extends IWithNotes {
   name: string;
   description?: string;
   instructions?: string;
 }
+
+const LabelAndHint = (p: {
+  label: string;
+  hint: string;
+  style?: React.CSSProperties;
+}) => (
+  <span style={p.style}>
+    <Hint text={p.hint} />
+    {p.label}
+  </span>
+);
 
 const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
   const {
@@ -46,22 +58,13 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
     handleBlur,
     handleReset,
     dirty,
+    setFieldValue,
     t,
   } = props;
   const standardProps = {
     onChange: handleChange,
     onBlur: handleBlur,
   };
-  const instructionLabel = (
-    <span>
-      <Hint
-        text={t(
-          "Instructions are shown to beneficiaries before they begin a questionnaire"
-        )}
-      />
-      {t("Instructions")}
-    </span>
-  );
   return (
     <Form className="screen" onSubmit={submitForm}>
       <FormField
@@ -99,7 +102,14 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
         error={errors.instructions as string}
         touched={touched.instructions}
         inputID="qg-instructions"
-        label={instructionLabel}
+        label={
+          <LabelAndHint
+            label={t("Instructions")}
+            hint={t(
+              "Instructions are shown to beneficiaries before they begin a questionnaire"
+            )}
+          />
+        }
       >
         <TextArea
           id="qg-instructions"
@@ -110,6 +120,56 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
           autoHeight={true}
           {...standardProps}
         />
+      </FormField>
+      <FormField
+        error={undefined}
+        touched={false}
+        inputID="qg-comments"
+        label={
+          <LabelAndHint
+            label={t("Comments")}
+            hint={t(
+              "A text box can be provided at the end of the questionnaire to gather comments from the beneficiary or facilitator"
+            )}
+          />
+        }
+      >
+        <Form.Checkbox
+          id="note-active"
+          name="noteDeactivated"
+          label={t("Include comment box")}
+          checked={!values.noteDeactivated}
+          onChange={() =>
+            setFieldValue("noteDeactivated", !values.noteDeactivated)
+          }
+        />
+        {!values.noteDeactivated && (
+          <>
+            <Form.Checkbox
+              id="note-required"
+              name="noteRequired"
+              label={t("Require a comment to be entered")}
+              checked={values.noteRequired}
+              {...standardProps}
+            />
+            <div style={{ marginBottom: "0.5em" }}>
+              <LabelAndHint
+                hint={t("Explains what should be written in the text box")}
+                label={t("Comment prompt") + ":"}
+              />
+            </div>
+            <TextArea
+              id="lqf-noteprompt"
+              name="notePrompt"
+              type="text"
+              placeholder={t(
+                "Defaults to 'Record any additional comments, goals or actions'"
+              )}
+              value={values.notePrompt}
+              {...standardProps}
+            />
+          </>
+        )}
       </FormField>
       <Form.Group>
         <Form.Button type="reset" disabled={!dirty} onClick={handleReset}>
@@ -156,7 +216,12 @@ const Editable = withFormik<IProps, IFormOutput>({
         formikBag.props.match.params.id,
         v.name,
         v.description,
-        v.instructions
+        v.instructions,
+        {
+          noteDeactivated: v.noteDeactivated,
+          notePrompt: v.notePrompt,
+          noteRequired: v.noteRequired,
+        }
       )
       .then(() => {
         formikBag.setSubmitting(false);
@@ -178,6 +243,9 @@ const Editable = withFormik<IProps, IFormOutput>({
       name: os.name,
       description: os.description || "",
       instructions: os.instructions || "",
+      noteDeactivated: os.noteDeactivated,
+      notePrompt: os.notePrompt || "",
+      noteRequired: os.noteRequired,
     };
   },
   validateOnMount: true,
