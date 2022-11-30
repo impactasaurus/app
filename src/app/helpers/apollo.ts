@@ -16,3 +16,10 @@ export function mutationResultExtractor<T>(
     return Promise.reject(`Unexpected result, no ${mutationName} attribute`);
   };
 }
+
+export const sanitiseGraphQLError = (err: string): string => {
+  const filtered = err.replace("GraphQL error: ", "");
+  return filtered.length > 0
+    ? filtered[0].toUpperCase() + filtered.substring(1)
+    : filtered;
+};

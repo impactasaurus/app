@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useState } from "react";
 import { Button, Confirm, ButtonProps, Popup } from "semantic-ui-react";
 
@@ -92,7 +92,7 @@ const ConfirmButton = (props: IProps): JSX.Element => {
   );
 
   if (tooltip !== null) {
-    return <Popup trigger={inner} content={tooltip} />;
+    return <Popup trigger={inner} content={tooltip} on={["hover"]} />;
   } else {
     return inner;
   }

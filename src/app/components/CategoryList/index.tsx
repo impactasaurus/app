@@ -8,6 +8,7 @@ import { NewQuestionCategory } from "components/NewQuestionCategory";
 import { EditQuestionCategory } from "components/EditQuestionCategory";
 import { ConfirmButton } from "components/ConfirmButton";
 import { useTranslation } from "react-i18next";
+import { sanitiseGraphQLError } from "helpers/apollo";
 
 interface IProps extends ICategoryMutation {
   outcomeSetID: string;
@@ -35,10 +36,11 @@ const CategoryListInner = (p: IProps) => {
   const deleteCategory = (categoryID: string) => {
     return (): Promise<IOutcomeSet> => {
       return p.deleteCategory(p.outcomeSetID, categoryID).catch((e: Error) => {
-        if (e.message.indexOf("being used") !== -1) {
-          throw Error("Cannot delete a category which is in use");
+        const message = sanitiseGraphQLError(e.message);
+        if (message.indexOf("being used") !== -1) {
+          throw Error(t("Cannot delete a category which is in use"));
         }
-        throw e;
+        throw Error(message);
       });
     };
   };
