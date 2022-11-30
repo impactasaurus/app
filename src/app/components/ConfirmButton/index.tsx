@@ -1,3 +1,4 @@
+import { sanitiseGraphQLError } from "helpers/apollo";
 import React from "react";
 import { useState } from "react";
 import { Button, Confirm, ButtonProps, Popup } from "semantic-ui-react";
@@ -50,7 +51,7 @@ const ConfirmButton = (props: IProps): JSX.Element => {
       })
       .catch((e: Error) => {
         setDoing(false);
-        setError(e.message);
+        setError(sanitiseGraphQLError(e.message));
       });
   };
 
