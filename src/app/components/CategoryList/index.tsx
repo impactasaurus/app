@@ -36,7 +36,7 @@ const CategoryListInner = (p: IProps) => {
     return (): Promise<IOutcomeSet> => {
       return p.deleteCategory(p.outcomeSetID, categoryID).catch((e: Error) => {
         if (e.message.indexOf("being used") !== -1) {
-          throw Error("Cannot delete a category which is in use");
+          throw Error(t("Cannot delete a category which is in use"));
         }
         throw e;
       });
