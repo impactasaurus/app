@@ -6,6 +6,7 @@ import { useNavigator } from "redux/modules/url";
 import { Hint } from "components/Hint";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
 import { useTranslation } from "react-i18next";
+import { BeneficiaryTable } from "components/BeneficiaryTable";
 
 const Inner = () => {
   const setURL = useNavigator();
@@ -58,32 +59,35 @@ const Inner = () => {
   );
 
   return (
-    <Form className="screen" onSubmit={onSubmit}>
-      <FormField
-        error={!ben ? t("Please select a beneficiary") : undefined}
-        touched={touched}
-        inputID="rsf-ben"
-        required={true}
-        label={label}
-      >
-        <BeneficiaryInput
+    <>
+      <Form className="screen" onSubmit={onSubmit}>
+        <FormField
+          error={!ben ? t("Please select a beneficiary") : undefined}
+          touched={touched}
           inputID="rsf-ben"
-          onChange={onChange}
-          onBlur={() => setTouched(true)}
-        />
-      </FormField>
-      <Form.Group>
-        <Form.Button type="submit" primary={true} disabled={!ben}>
-          {submitText}
-        </Form.Button>
-      </Form.Group>
-    </Form>
+          required={true}
+          label={label}
+        >
+          <BeneficiaryInput
+            inputID="rsf-ben"
+            onChange={onChange}
+            onBlur={() => setTouched(true)}
+          />
+        </FormField>
+        <Form.Group>
+          <Form.Button type="submit" primary={true} disabled={!ben}>
+            {submitText}
+          </Form.Button>
+        </Form.Group>
+      </Form>
+      <BeneficiaryTable />
+    </>
   );
 };
 
-// t('Beneficiary')
+// t('Beneficiaries')
 export const BeneficiarySelector = PageWrapperHoC(
-  "Beneficiary",
+  "Beneficiaries",
   "reviewselector",
   Inner
 );

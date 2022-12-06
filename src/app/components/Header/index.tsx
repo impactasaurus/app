@@ -64,7 +64,7 @@ const Header = (): JSX.Element => {
           active={isActive("/beneficiary")}
         >
           <Icon name="user" className="replacement" />
-          <span className="title">{t("Beneficiary")}</span>
+          <span className="title">{t("Beneficiaries")}</span>
         </Menu.Item>
         <Menu.Item
           as={Link}
