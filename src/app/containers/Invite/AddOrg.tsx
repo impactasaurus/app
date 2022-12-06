@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Redirect } from "react-router-dom";
+import { useNavigator } from "redux/modules/url";
 import { useUser } from "redux/modules/user";
 import { Button, Message } from "semantic-ui-react";
 
@@ -13,6 +13,7 @@ interface IProps {
 export const AddOrg = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
   const { org: currentOrg } = useUser();
+  const setURL = useNavigator();
   const [state, setState] = useState<{
     loading: boolean;
     error: boolean;
@@ -30,7 +31,7 @@ export const AddOrg = (p: IProps): JSX.Element => {
   };
 
   if (state.success) {
-    let body: JSX.Element = (
+    let body = (
       <span>
         {t(
           "Switch accounts from your user dropdown in the top right of the screen. You may need to log out and back in again to see your new account."
@@ -39,8 +40,15 @@ export const AddOrg = (p: IProps): JSX.Element => {
     );
     // this happens when a user doesn't belong to an org before accepting the invite
     if (currentOrg === p.orgID) {
-      // send straight to the home page
-      body = <Redirect to={"/"} />;
+      body = (
+        <Button
+          onClick={() => setURL("/")}
+          primary={true}
+          style={{ marginTop: "1em" }}
+        >
+          {t("Continue")}
+        </Button>
+      );
     }
     return (
       <Message success={true}>
@@ -51,7 +59,8 @@ export const AddOrg = (p: IProps): JSX.Element => {
     );
   }
 
-  if (currentOrg === p.orgID) {
+  // !state.loading to avoid accepting the invite then getting the warning message
+  if (currentOrg === p.orgID && !state.loading) {
     return (
       <Message warning={true}>
         <Message.Header>
