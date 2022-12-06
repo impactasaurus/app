@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Redirect } from "react-router-dom";
 import { useUser } from "redux/modules/user";
 import { Button, Message } from "semantic-ui-react";
 
@@ -28,6 +29,28 @@ export const AddOrg = (p: IProps): JSX.Element => {
     });
   };
 
+  if (state.success) {
+    let body: JSX.Element = (
+      <span>
+        {t(
+          "Switch accounts from your user dropdown in the top right of the screen. You may need to log out and back in again to see your new account."
+        )}
+      </span>
+    );
+    // this happens when a user doesn't belong to an org before accepting the invite
+    if (currentOrg === p.orgID) {
+      // send straight to the home page
+      body = <Redirect to={"/"} />;
+    }
+    return (
+      <Message success={true}>
+        <Message.Header>{t("Success")}</Message.Header>
+        <div>{t("You have successfully accepted the invitation.")}</div>
+        <div>{body}</div>
+      </Message>
+    );
+  }
+
   if (currentOrg === p.orgID) {
     return (
       <Message warning={true}>
@@ -37,20 +60,6 @@ export const AddOrg = (p: IProps): JSX.Element => {
         <div>
           {t(
             "It seems you already belong to the account associated with this invitation"
-          )}
-        </div>
-      </Message>
-    );
-  }
-
-  if (state.success) {
-    return (
-      <Message success={true}>
-        <Message.Header>{t("Success")}</Message.Header>
-        <div>{t("You have successfully accepted the invitation.")}</div>
-        <div>
-          {t(
-            "Switch accounts from your user dropdown in the top right of the screen. You may need to log out and back in again to see your new account."
           )}
         </div>
       </Message>
