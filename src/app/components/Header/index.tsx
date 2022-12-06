@@ -139,7 +139,10 @@ const Header = (): JSX.Element => {
         </Menu.Item>
         {shouldShowLoginPrompt() && (
           <Menu.Menu position="right">
-            <Menu.Item as={Link} to="/login">
+            <Menu.Item
+              as={Link}
+              to={`/login?redirect=${encodeURIComponent(currentURL)}`}
+            >
               {t("Log In")}
             </Menu.Item>
           </Menu.Menu>
