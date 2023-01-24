@@ -34,7 +34,7 @@ const RecordsInner = (p: IProps) => {
       return (
         <p>
           {t("No meetings found for beneficiary {name}", {
-            name: p.match.params.id,
+            name: decodeURIComponent(p.match.params.id),
           })}
         </p>
       );
@@ -56,5 +56,7 @@ const RecordsInner = (p: IProps) => {
   return <div id="records">{renderRecords()}</div>;
 };
 
-const Records = getAllMeetings<IProps>((p) => p.match.params.id)(RecordsInner);
+const Records = getAllMeetings<IProps>((p) =>
+  decodeURIComponent(p.match.params.id)
+)(RecordsInner);
 export { Records };

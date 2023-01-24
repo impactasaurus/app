@@ -14,7 +14,7 @@ const Inner = () => {
   const [touched, setTouched] = useState<boolean>(false);
 
   const review = (benID: string, existingBen: boolean) => {
-    let url = `/beneficiary/${benID}`;
+    let url = `/beneficiary/${encodeURIComponent(benID)}`;
     if (!existingBen) {
       url = url + "/record";
     }

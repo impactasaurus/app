@@ -21,7 +21,7 @@ import { Button, ButtonProps, Loader } from "semantic-ui-react";
 import { Error } from "components/Error";
 import { IOutcomeSet } from "models/outcomeSet";
 import { getQuestions } from "helpers/questionnaire";
-import { canBeForwarded, forward, ISearchParam } from "helpers/url";
+import { canBeForwarded, forward, ISearchParam, journey } from "helpers/url";
 import { useNonInitialEffect } from "helpers/hooks/useNonInitialEffect";
 import "rc-slider/assets/index.css";
 
@@ -86,10 +86,7 @@ const DataEntryInner = (p: IProps) => {
       })
       .then(() => {
         if (!forward(p, setURL)) {
-          setURL(
-            `/beneficiary/${record.beneficiary}`,
-            new URLSearchParams({ q: questionnaire.id })
-          );
+          journey(setURL, record.beneficiary, questionnaire.id);
         }
       })
       .catch((e: string | Error) => {

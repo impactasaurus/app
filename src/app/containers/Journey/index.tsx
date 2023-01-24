@@ -44,6 +44,7 @@ interface IProps extends IURLConnector, WithTranslation {
   data?: IMeetingResult;
   isCategoryAgPossible?: boolean;
   isCanvasSnapshotPossible?: boolean;
+  benID: string;
 }
 
 function isCategoryAggregationAvailable(
@@ -124,7 +125,7 @@ class JourneyInner extends React.Component<IProps, null> {
       return (
         <p>
           {t("No complete meetings found for beneficiary {name}", {
-            name: this.props.match.params.id,
+            name: this.props.benID,
           })}
         </p>
       );
@@ -154,7 +155,7 @@ class JourneyInner extends React.Component<IProps, null> {
         />
         <div id={JourneyVisContainerID}>{this.renderVis()}</div>
         <IntroduceBenPage
-          benID={this.props.match.params.id}
+          benID={this.props.benID}
           visContainerID={JourneyVisContainerID}
           newRecordButtonID={BeneficiaryNewRecordButtonID}
         />
@@ -185,6 +186,7 @@ const storeToProps = (state: IStore, ownProps: IProps) => {
     selectedQuestionSetID,
     isBeneficiary: isBeneficiaryUser(state.user),
     isCanvasSnapshotPossible: isCanvasSnapshotPossible(viz),
+    benID: decodeURIComponent(ownProps.match.params.id),
   };
 };
 
@@ -200,5 +202,7 @@ const JourneyLoader = ApolloLoaderHoC(
   (p: IProps) => p.data,
   JourneyConnected
 );
-const Journey = getMeetings<IProps>((p) => p.match.params.id)(JourneyLoader);
+const Journey = getMeetings<IProps>((p) =>
+  decodeURIComponent(p.match.params.id)
+)(JourneyLoader);
 export { Journey };

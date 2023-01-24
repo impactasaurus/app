@@ -25,7 +25,7 @@ import { Tags } from "components/Tag";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { WithTranslation, withTranslation } from "react-i18next";
-import { forward, ISearchParam } from "helpers/url";
+import { forward, ISearchParam, journey } from "helpers/url";
 import "./style.less";
 
 interface IProps
@@ -140,7 +140,7 @@ class RecordEditInner extends React.Component<IProps, IState> {
 
   private nextPage() {
     if (!forward(this.props, this.props.setURL)) {
-      this.props.setURL(`/beneficiary/${this.state.beneficiary}`);
+      journey(this.props.setURL, this.state.beneficiary);
     }
   }
 

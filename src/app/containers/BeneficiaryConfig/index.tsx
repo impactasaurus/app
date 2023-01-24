@@ -22,7 +22,7 @@ interface IState {
   formVersion: number;
 }
 
-const getBen = (p: IProps): string => p.match.params.id;
+const getBen = (p: IProps): string => decodeURIComponent(p.match.params.id);
 
 class BeneficiaryConfigInner extends React.Component<IProps, IState> {
   constructor(props) {
