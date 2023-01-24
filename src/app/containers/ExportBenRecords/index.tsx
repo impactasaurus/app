@@ -38,7 +38,7 @@ const ExportBenRecordsInner = (p: IProps) => {
 
 const ExportBenRecordsData = exportBenMeetings(
   (p: IProps) => p.match.params.qid,
-  (p: IProps) => p.match.params.id
+  (p: IProps) => decodeURIComponent(p.match.params.id)
 )(ExportBenRecordsInner);
 // t("Beneficiary Record Export")
 const ExportBenRecords = MinimalPageWrapperHoC(

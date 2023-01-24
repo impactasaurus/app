@@ -2,7 +2,7 @@ export const journeyURI = (
   beneficiary: string,
   questionnaire?: string
 ): string => {
-  let uri = `/beneficiary/${beneficiary}`;
+  let uri = `/beneficiary/${encodeURIComponent(beneficiary)}`;
   const search = new URLSearchParams();
   if (questionnaire !== undefined && questionnaire !== null) {
     search.append("q", questionnaire);
@@ -19,7 +19,7 @@ export const journey = (
   questionnaire?: string
 ): void => {
   setURL(
-    `/beneficiary/${beneficiary}`,
+    `/beneficiary/${encodeURIComponent(beneficiary)}`,
     questionnaire ? new URLSearchParams({ q: questionnaire }) : undefined
   );
 };

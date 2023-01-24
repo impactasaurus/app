@@ -7,7 +7,7 @@ import { PageWrapperHoC } from "components/PageWrapperHoC";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { useTranslation } from "react-i18next";
 import { ISODateString } from "components/Moment";
-import { forward, ISearchParam } from "helpers/url";
+import { forward, ISearchParam, journey } from "helpers/url";
 import "./style.less";
 
 interface IProps extends ISearchParam {
@@ -26,7 +26,7 @@ const RecordViewInner = (p: IProps) => {
   const nextPage = () => {
     if (!forward(p, setURL)) {
       const ben = p.data?.getMeeting?.beneficiary;
-      setURL(ben ? `/beneficiary/${ben}` : "/");
+      journey(setURL, ben ?? "");
     }
   };
 

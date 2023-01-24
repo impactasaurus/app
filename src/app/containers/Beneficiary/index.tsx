@@ -72,7 +72,7 @@ const BeneficiaryInner = (p: IProps) => {
     };
   };
 
-  const ben = p.match.params.id;
+  const ben = decodeURIComponent(p.match.params.id);
   if (ben === undefined) {
     return <div />;
   }
@@ -98,7 +98,10 @@ const BeneficiaryInner = (p: IProps) => {
         </Menu.Item>
         <Menu.Item
           active={p.child === ReviewPage.NEW_RECORD}
-          onClick={innerPageSetter(ReviewPage.NEW_RECORD, `?ben=${ben}`)}
+          onClick={innerPageSetter(
+            ReviewPage.NEW_RECORD,
+            `?ben=${p.match.params.id}`
+          )}
           id={BeneficiaryNewRecordButtonID}
         >
           <Icon name="plus" />
