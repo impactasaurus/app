@@ -88,7 +88,7 @@ const AssessmentConfigInner = (p: IProps) => {
       c.qishType === QuestionnairishType.QUESTIONNAIRE
         ? p.generateSummon
         : p.generateSequenceSummon;
-    return promFn(c.qishID).then((smn) => {
+    return promFn(c.qishID, c.tags).then((smn) => {
       setLink(`smn/${smn}`);
     });
   };

@@ -11,6 +11,8 @@ import {
 } from "formik";
 import { WithTranslation, withTranslation } from "react-i18next";
 import { QuestionnairishType } from "components/QuestionnairesAndSequencesHoC";
+import { Hint } from "components/Hint";
+import { TagInputWithQuestionnaireSuggestions } from "components/TagInput";
 
 interface IProps extends WithTranslation {
   onSubmit: (c: ISummonConfig) => Promise<void>;
@@ -20,6 +22,7 @@ interface IProps extends WithTranslation {
 export interface ISummonConfig {
   qishID: string;
   qishType: QuestionnairishType;
+  tags: string[];
 }
 
 const InnerForm = (props: FormikProps<ISummonConfig> & IProps) => {
@@ -43,6 +46,21 @@ const InnerForm = (props: FormikProps<ISummonConfig> & IProps) => {
       setFieldValue("qishType", type);
     }
   };
+  const setTags = (tags: string[]) => {
+    setFieldValue("tags", tags);
+    setFieldTouched("tags");
+  };
+
+  const tagLabel = (
+    <span>
+      <Hint
+        text={t(
+          "Tags are words which can be saved against records. They can be used to filter your records when reporting. Common uses of tags include demographic or intervention information."
+        )}
+      />
+      {t("Tags")}
+    </span>
+  );
 
   return (
     <Form className="screen assessment-config" onSubmit={submitForm}>
@@ -59,6 +77,20 @@ const InnerForm = (props: FormikProps<ISummonConfig> & IProps) => {
           onBlur={qsOnBlur}
           autoSelectFirst={true}
           includeSequences={true}
+        />
+      </FormField>
+      <FormField
+        inputID="sc-tags"
+        label={tagLabel}
+        touched={touched.tags}
+        error={errors.tags as string}
+      >
+        <TagInputWithQuestionnaireSuggestions
+          inputID="sc-tags"
+          onChange={setTags}
+          tags={values.tags || []}
+          allowNewTags={true}
+          id={values.qishID}
         />
       </FormField>
       <Form.Group>
@@ -102,6 +134,7 @@ const SummonConfigInner = withFormik<IProps, ISummonConfig>({
       .onSubmit({
         qishID: v.qishID,
         qishType: v.qishType,
+        tags: v.tags || [],
       })
       .then(() => {
         // will move on from this component so no need to do anything

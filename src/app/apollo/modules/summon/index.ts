@@ -39,16 +39,20 @@ export interface ISummonAcceptanceMutation {
 export function generateSummon<T>(component) {
   return graphql<any, T>(
     gql`
-  mutation($outcomeSetID: String!) {
-    generateSummon: NewMeetingSummon(outcomeSetID:$outcomeSetID, daysToComplete: ${defaultRemoteMeetingLimit})
+  mutation($outcomeSetID: String!, $tags: [String]) {
+    generateSummon: NewMeetingSummon(outcomeSetID:$outcomeSetID, daysToComplete: ${defaultRemoteMeetingLimit}, tags: $tags)
   }
 `,
     {
       props: ({ mutate }) => ({
-        generateSummon: (outcomeSetID: string): Promise<string> =>
+        generateSummon: (
+          outcomeSetID: string,
+          tags?: string[]
+        ): Promise<string> =>
           mutate({
             variables: {
               outcomeSetID,
+              tags,
             },
           }).then(mutationResultExtractor<string>("generateSummon")),
       }),
@@ -57,22 +61,26 @@ export function generateSummon<T>(component) {
 }
 
 export interface IGenerateSummon {
-  generateSummon: (outcomeSetID: string) => Promise<string>;
+  generateSummon: (outcomeSetID: string, tags?: string[]) => Promise<string>;
 }
 
 export function generateSequenceSummon<T>(component) {
   return graphql<any, T>(
     gql`
-  mutation($sequenceID: String!) {
-    summon: NewSequenceSummon(sequenceID:$sequenceID, daysToComplete: ${defaultRemoteMeetingLimit})
+  mutation($sequenceID: String!, $tags: [String]) {
+    summon: NewSequenceSummon(sequenceID:$sequenceID, daysToComplete: ${defaultRemoteMeetingLimit}, tags: $tags)
   }
 `,
     {
       props: ({ mutate }) => ({
-        generateSequenceSummon: (sequenceID: string): Promise<string> =>
+        generateSequenceSummon: (
+          sequenceID: string,
+          tags?: string[]
+        ): Promise<string> =>
           mutate({
             variables: {
               sequenceID,
+              tags,
             },
           }).then(mutationResultExtractor<string>("summon")),
       }),
@@ -81,5 +89,8 @@ export function generateSequenceSummon<T>(component) {
 }
 
 export interface IGenerateSequenceSummon {
-  generateSequenceSummon: (sequenceID: string) => Promise<string>;
+  generateSequenceSummon: (
+    sequenceID: string,
+    tags?: string[]
+  ) => Promise<string>;
 }
