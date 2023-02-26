@@ -13,7 +13,7 @@ import {
   getVisualisation,
 } from "models/pref";
 import { isNullOrUndefined } from "util";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { TooltipButton } from "components/TooltipButton";

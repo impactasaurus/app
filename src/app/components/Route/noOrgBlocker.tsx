@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { CustomError } from "components/Error";
 import { useTranslation } from "react-i18next";
 import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 
 const NoOrgBlockerInner = (): JSX.Element => {
   const { t } = useTranslation();

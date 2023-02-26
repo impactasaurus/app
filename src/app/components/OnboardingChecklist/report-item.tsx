@@ -7,7 +7,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { TourStage, tourStageAction } from "redux/modules/tour";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 
 interface IProps {
   data?: IHasOrgGeneratedReport;

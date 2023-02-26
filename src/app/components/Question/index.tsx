@@ -6,7 +6,7 @@ import { Notepad } from "components/Notepad";
 import { Button, ButtonProps } from "semantic-ui-react";
 import { IIntAnswer } from "models/answer";
 import { IMeeting } from "models/meeting";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import "rc-slider/assets/index.css";
 

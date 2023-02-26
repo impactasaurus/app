@@ -25,7 +25,7 @@ var config = {
     },
     analytics: {
       debug: process.env.NODE_ENV !== "production",
-      trackingID: "UA-61133305-4"
+      trackingID: "G-QLE6KY42PH"
     },
     errorTracking: {
       url: 'https://71e3420a645d4212988b4346d101c24d@sentry.io/214668',

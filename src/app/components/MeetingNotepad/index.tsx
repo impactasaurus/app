@@ -5,7 +5,7 @@ import { Notepad } from "components/Notepad";
 import { IMeeting } from "models/meeting";
 import { Error } from "components/Error";
 import { isNullOrUndefined } from "util";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import "rc-slider/assets/index.css";
 import "./style.less";

@@ -19,7 +19,7 @@ import { canBeForwarded, forward, ISearchParam, journey } from "helpers/url";
 import { Thanks } from "./thanks";
 import { EmptyQuestionnaire } from "containers/Meeting/empty";
 import { useTranslation } from "react-i18next";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import { useUser } from "redux/modules/user";
 import { getQuestions } from "helpers/questionnaire";
 import { IOutcomeSet } from "models/outcomeSet";

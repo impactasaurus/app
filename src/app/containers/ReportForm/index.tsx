@@ -4,7 +4,7 @@ import { constructReportQueryParams, constructReportURL } from "helpers/report";
 import { IFormOutput, ReportForm as RFComponent } from "components/ReportForm";
 import { QuestionnaireRequired } from "components/QuestionnaireRequired";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 
 const RFWrapped = QuestionnaireRequired(RFComponent);

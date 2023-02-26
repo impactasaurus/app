@@ -3,7 +3,7 @@ import { ICategoryMutation, setCategory } from "apollo/modules/categories";
 import { ICategory } from "models/category";
 import { Label, Select, Loader } from "semantic-ui-react";
 import { IOutcomeSet } from "models/outcomeSet";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import "./style.less";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

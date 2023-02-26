@@ -19,7 +19,7 @@ import {
   FormikValues,
   withFormik,
 } from "formik";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import { WithTranslation, withTranslation } from "react-i18next";
 import { FormSection } from "components/FormSection";
 import "./style.less";

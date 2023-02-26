@@ -22,19 +22,21 @@ import "./../../theme/typo.less";
 import "semantic-ui-less/semantic.less";
 import "theme/form.less";
 
-const wrapper = (child: JSX.Element): JSX.Element[] => {
-  return [
-    <Helmet key="helm" {...appConfig.app} {...appConfig.app.head} />,
-    <Header key="header" />,
-    <div key="content" id="main-app-content">
-      {child}
-    </div>,
-    <Toaster key="toast" />,
-    <Footer key="footer" />,
-  ];
+const wrapper = (child: JSX.Element): JSX.Element => {
+  return (
+    <>
+      <Helmet key="helm" {...appConfig.app} {...appConfig.app.head} />
+      <Header key="header" />
+      <div key="content" id="main-app-content">
+        {child}
+      </div>
+      <Toaster key="toast" />
+      <Footer key="footer" />
+    </>
+  );
 };
 
-export const App = (): JSX.Element[] => {
+export const App = (): JSX.Element => {
   const storeLoaded = useSelector((s: IStore) => s.storage.loaded);
   if (storeLoaded !== true) {
     return wrapper(

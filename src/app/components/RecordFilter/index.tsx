@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { useNonInitialEffect } from "helpers/hooks/useNonInitialEffect";
 import { useTranslation } from "react-i18next";
 import { Button } from "semantic-ui-react";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import {
   BenFilter,
   QuestionnaireFilter,

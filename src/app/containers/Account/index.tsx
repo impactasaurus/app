@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Message } from "semantic-ui-react";
 import { getWebAuth } from "../../helpers/auth";
 import { UserSettings } from "components/UserSettings";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
 import * as config from "../../../../config/main";
 import { useTranslation } from "react-i18next";
