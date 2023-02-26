@@ -6,7 +6,7 @@ import { TourContainer } from "components/TourContainer";
 import { Button, Segment } from "semantic-ui-react";
 import RocketIcon from "./../../theme/rocket.inline.svg";
 import { useDispatch } from "react-redux";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 
 interface IProps {
   id: string;

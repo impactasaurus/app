@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Auth0Error, WebAuth } from "auth0-js";
 import { getWebAuth } from "helpers/auth";
 import { Message } from "semantic-ui-react";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import "./style.less";
 import { useSetJWT } from "redux/modules/user";

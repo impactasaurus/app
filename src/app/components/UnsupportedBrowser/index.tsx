@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Message } from "semantic-ui-react";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 
 const isIE = (): boolean => {
   // documentMode is an IE specific attribute

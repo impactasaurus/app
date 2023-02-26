@@ -12,7 +12,7 @@ import { NewLikertQuestion } from "components/NewLikertQuestion";
 import { EditLikertQuestion } from "components/EditLikertQuestion";
 import { List as QList } from "./List";
 import { getQuestions } from "helpers/questionnaire";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import "./style.less";
 

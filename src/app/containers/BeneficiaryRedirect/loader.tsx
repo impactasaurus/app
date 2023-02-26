@@ -3,7 +3,7 @@ import { useNavigator } from "redux/modules/url";
 import { getJWT, IJWTResult } from "apollo/modules/jwt";
 import { Message, Loader } from "semantic-ui-react";
 import { Error } from "components/Error";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import { useSession, useSetJWT, useUser } from "redux/modules/user";
 import {

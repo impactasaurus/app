@@ -157,7 +157,7 @@
     "react-css-modules": "4.7.11",
     "react-date-range": "1.0.3",
     "react-dom": "16.13.1",
-    "react-ga": "2.5.3",
+    "react-ga4": "^2.0.0",
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.36.0",
     "react-hot-toast": "2.2.0",

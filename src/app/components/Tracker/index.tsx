@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { IRecordUsage, recordUsage } from "apollo/modules/user";
 import { useUser } from "redux/modules/user";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 
 const Inner = (p: IRecordUsage) => {
   const user = useUser();

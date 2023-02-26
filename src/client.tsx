@@ -11,7 +11,6 @@ import {
   IntrospectionFragmentMatcher,
 } from "react-apollo";
 import * as containers from "./app/containers";
-import withTracker from "./app/containers/withTracking";
 import { Route } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { ConnectedRouter } from "connected-react-router";
@@ -22,6 +21,7 @@ import {
   UnsupportedBrowser,
   unsupportedBrowser,
 } from "components/UnsupportedBrowser";
+import ReactGA from "react-ga4";
 const appConfig = require("../config/main");
 const introspectionQueryResultData = require("./app/apollo/fragmentTypes.json");
 
@@ -29,6 +29,10 @@ const rootElement = document.getElementById("impactasaurus");
 rootElement.classList.add(window.self == window.top ? "top" : "framed");
 
 const initApp = () => {
+  ReactGA.initialize(appConfig.app.analytics.trackingID, {
+    testMode: appConfig.app.analytics.debug,
+  });
+
   if (appConfig.env === "production") {
     Raven.config(appConfig.app.errorTracking.url, {
       release: appConfig.build,
@@ -76,7 +80,7 @@ const initApp = () => {
     <ReactReduxProvider store={store}>
       <ApolloProvider client={client} store={store}>
         <ConnectedRouter history={history}>
-          <Route path="/" component={withTracker(containers.App)} />
+          <Route path="/" component={containers.App} />
         </ConnectedRouter>
       </ApolloProvider>
     </ReactReduxProvider>,

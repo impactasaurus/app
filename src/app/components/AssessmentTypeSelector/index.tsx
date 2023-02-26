@@ -1,7 +1,7 @@
 import * as React from "react";
 import { AssessmentType, defaultRemoteMeetingLimit } from "models/assessment";
 import { Item, MultiChoice } from "../MultiChoice";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import "./style.less";
 import {

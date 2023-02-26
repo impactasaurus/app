@@ -4,7 +4,7 @@ import { useNavigator } from "redux/modules/url";
 import { ISummonAcceptanceMutation } from "apollo/modules/summon";
 import { newMeetingFromSummon } from "../../apollo/modules/summon";
 import { PageWrapperHoC } from "../../components/PageWrapperHoC";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 
 interface IProps extends ISummonAcceptanceMutation {

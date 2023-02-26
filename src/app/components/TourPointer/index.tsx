@@ -4,7 +4,7 @@ import { TourStage, tourStageAction, useTourActive } from "redux/modules/tour";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { TourTooltip } from "./tooltip";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 
 export interface POI {
   target: string;

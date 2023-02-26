@@ -8,7 +8,7 @@ import { Icon, Loader } from "semantic-ui-react";
 import { LikertDebounced } from "../LikertDebounced";
 import { isNullOrUndefined } from "util";
 import { withTranslation, WithTranslation } from "react-i18next";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import "./style.less";
 
 interface IProps extends IMeetingMutation, Partial<WithTranslation> {
