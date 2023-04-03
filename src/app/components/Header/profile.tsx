@@ -130,6 +130,12 @@ const ProfileMenuInner = (p: IProps): JSX.Element => {
         <Dropdown.Item href="mailto:feedback@impactasaurus.org?subject=Feedback">
           <Icon name="comment" className="required" /> {t("Send Feedback")}
         </Dropdown.Item>
+        <Dropdown.Item
+          href="https://donate.stripe.com/aEUeXLd2y5kW1LqcMN"
+          target="_blank"
+        >
+          <Icon name="heart" className="required" /> {t("Donate")}
+        </Dropdown.Item>
         <Dropdown.Divider />
         <Dropdown.Item onClick={p.logOut}>
           <Icon name="log out" className="required" /> {t("Log Out")}
