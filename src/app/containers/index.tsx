@@ -10,7 +10,6 @@ export { Settings } from "./Settings";
 export { QuestionnaireRouter } from "./Questionnaires/router";
 export { OutcomeSet } from "./OutcomeSet";
 export { Meeting } from "./Meeting";
-export { Organisation } from "./Organisation";
 export { Account } from "./Account";
 export { ReportForm } from "./ReportForm";
 export { Report } from "./Report";
