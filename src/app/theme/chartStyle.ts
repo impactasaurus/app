@@ -27,7 +27,7 @@ export type ColorSchemeGetter = (
 export const getColorScheme = (
   noSeries: number,
   seriesType: SeriesType
-): string | string[] => {
+): string[] => {
   if (noSeries === 1) {
     return ["#935D8C"];
   }
