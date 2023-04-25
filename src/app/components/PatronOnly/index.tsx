@@ -1,8 +1,9 @@
-import { IGetOrgResult, getOrganisation } from "apollo/modules/organisation";
 import React from "react";
-import { Icon } from "semantic-ui-react";
-import "./style.less";
+import { IGetOrgResult, getOrganisation } from "apollo/modules/organisation";
+import { Icon, Loader } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
+import { useNavigator } from "redux/modules/url";
+import "./style.less";
 
 interface IProps {
   org?: IGetOrgResult;
@@ -10,11 +11,17 @@ interface IProps {
   style?: React.CSSProperties;
 }
 
-export const PatronLogo = (): JSX.Element => <Icon name="heart" />;
+export const PatronLogo = (p: { style?: React.CSSProperties }): JSX.Element => (
+  <Icon name="heart" style={p.style} />
+);
 
 const Inner = (p: IProps) => {
   const { t } = useTranslation();
-  if (false && p?.org?.getOrganisation?.don) {
+  const setURL = useNavigator();
+  if (p.org.loading) {
+    return <Loader active={true} inline="centered" />;
+  }
+  if (p?.org?.getOrganisation?.don) {
     return p.children;
   }
   return (
@@ -26,12 +33,15 @@ const Inner = (p: IProps) => {
           display: "inline-block",
           padding: "5px 10px 0px 10px",
           borderRadius: "5px 5px 0px 0px",
+          cursor: "pointer",
         }}
+        onClick={() => setURL("/settings/patron")}
       >
         <PatronLogo />
         {t("Patrons Only")}
       </div>
       <div
+        className="patron-body"
         style={{ border: "5px solid #935D8C", borderRadius: "5px", ...p.style }}
       >
         {p.children}

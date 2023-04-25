@@ -11,6 +11,8 @@ export { QuestionnaireRouter } from "./Questionnaires/router";
 export { OutcomeSet } from "./OutcomeSet";
 export { Meeting } from "./Meeting";
 export { Account } from "./Account";
+export { Branding } from "./Branding";
+export { Patron } from "./Patron";
 export { ReportForm } from "./ReportForm";
 export { Report } from "./Report";
 export { ServiceReport } from "../components/ServiceReport";

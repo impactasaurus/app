@@ -67,6 +67,8 @@ const SettingsInner = (p: IProps) => {
         />
         <Route path={`${match}/data`} component={containers.Data} />
         <Route path={`${match}/users`} component={containers.Users} />
+        <Route path={`${match}/branding`} component={containers.Branding} />
+        <Route path={`${match}/patron`} component={containers.Patron} />
       </Switch>
     </div>
   );
