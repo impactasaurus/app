@@ -1,0 +1,32 @@
+#charity-size-selector .ui.card {
+  * {
+    user-select: none;
+  }
+  &.size-selected {
+    background-color: var(--impactasaurus-purple);
+    * {
+      color: white;
+    }
+  }
+}
+
+#price-selector .ui.card {
+  .content {
+    padding: 0px;
+    padding-bottom: 1em;
+  }
+  .price {
+    .price-header {
+      height: 30px;
+      &.discount {
+        background-color: red;
+      }
+    }
+    .price-price {
+      size: 2em;
+    }
+    .price-billing {
+      color: lightgray;
+    }
+  }
+}

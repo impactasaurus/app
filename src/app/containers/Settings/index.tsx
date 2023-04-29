@@ -8,6 +8,7 @@ import * as containers from "containers";
 import { SecondaryMenu } from "components/SecondaryMenu";
 import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { PatronSuccess } from "containers/Patron/success";
 import Route from "components/Route";
 
 interface IProps extends IURLConnector {
@@ -68,6 +69,7 @@ const SettingsInner = (p: IProps) => {
         <Route path={`${match}/data`} component={containers.Data} />
         <Route path={`${match}/users`} component={containers.Users} />
         <Route path={`${match}/branding`} component={containers.Branding} />
+        <Route path={`${match}/patron/success`} component={PatronSuccess} />
         <Route path={`${match}/patron`} component={containers.Patron} />
       </Switch>
     </div>
