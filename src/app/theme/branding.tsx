@@ -34,7 +34,7 @@ export function loadBrandLogo(): Promise<React.ComponentClass> {
 }
 
 export function loadBrandChartColorScheme(): Promise<
-  (noSeries: number, seriesType: SeriesType) => string | string[]
+  (noSeries: number, seriesType: SeriesType) => string[]
 > {
   return import(
     /* webpackChunkName: "chart-[request]" */ `./../../branding/${subdomain()}/chart.ts`

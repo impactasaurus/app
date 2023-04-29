@@ -22,7 +22,7 @@ export enum SeriesType {
 export type ColorSchemeGetter = (
   noSeries: number,
   seriesType: SeriesType
-) => string | string[];
+) => string[];
 
 export const getColorScheme = (
   noSeries: number,
