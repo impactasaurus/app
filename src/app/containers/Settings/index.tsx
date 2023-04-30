@@ -58,6 +58,21 @@ const SettingsInner = (p: IProps) => {
         >
           {t("Users")}
         </Menu.Item>
+        <Menu.Item
+          active={isSelected("/settings/branding")}
+          onClick={handleClick("/settings/branding")}
+        >
+          {t("Branding")}
+        </Menu.Item>
+        <Menu.Item
+          active={
+            isSelected("/settings/patron") ||
+            isSelected("/settings/patron/success")
+          }
+          onClick={handleClick("/settings/patron")}
+        >
+          {t("Patron")}
+        </Menu.Item>
       </SecondaryMenu>
 
       <Switch>
