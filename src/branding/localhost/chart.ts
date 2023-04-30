@@ -1,3 +1,4 @@
+import distinctColors from "distinct-colors";
 import { SeriesType } from "theme/chartStyle";
 
 const getColorScheme = (
@@ -5,11 +6,10 @@ const getColorScheme = (
   seriesType: SeriesType
 ): string | string[] => {
   if (noSeries === 3 && seriesType === SeriesType.SCALE) {
-    return "brewer.PRGn3";
+    return ["#333", "#999", "#bbb"];
   }
-  if (noSeries > 10) {
-    return "tableau.Tableau20";
-  }
-  return "tableau.Tableau10";
+  return distinctColors({
+    count: noSeries,
+  }).map((c) => c.hex());
 };
 export default getColorScheme;
