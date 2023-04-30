@@ -99,7 +99,7 @@ const DonationForm = (): JSX.Element => {
       <div id="charity-size-selector">
         <p>
           {t(
-            "Patron pricing is based on charity size (using NVCO's classification), please select the box which best fits your charity"
+            "Patron pricing is based on your income (using NVCO's classification), please select the box which best fits your charity"
           )}
           :
         </p>

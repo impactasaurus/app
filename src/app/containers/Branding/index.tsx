@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
 import { useTranslation } from "react-i18next";
 import { Form } from "semantic-ui-react";
 import Logo from "components/Logo";
 import { FormField } from "components/FormField";
 import { Swatch } from "components/Swatch";
-import { SeriesType, getColorScheme } from "theme/chartStyle";
+import {
+  ColorSchemeGetter,
+  SeriesType,
+  getColorScheme,
+} from "theme/chartStyle";
 import { PatronOnly } from "components/PatronOnly";
+import { loadBrandChartColorScheme, shouldLoadBranding } from "theme/branding";
 
 const Spacer = () => (
   <span
@@ -43,10 +48,25 @@ const SwatchHolder = ({
 
 const BrandingInner = (): JSX.Element => {
   const { t } = useTranslation();
+  const [colorScheme, setColorScheme] = useState<ColorSchemeGetter>(
+    () => getColorScheme
+  );
+
+  useEffect(() => {
+    if (shouldLoadBranding()) {
+      loadBrandChartColorScheme()
+        .then((fn) => {
+          setColorScheme(() => fn);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }, []);
 
   const graphColours = new Set<string>();
   for (let ct = 1; ct < 4; ct++) {
-    const cc = getColorScheme(ct, SeriesType.INDEPENDENT);
+    const cc = colorScheme(ct, SeriesType.INDEPENDENT);
     cc.forEach((c) => graphColours.add(c));
   }
 
@@ -96,7 +116,7 @@ const BrandingInner = (): JSX.Element => {
             ))}
           </SwatchHolder>
           <SwatchHolder label={t("Stacked")}>
-            {getColorScheme(3, SeriesType.SCALE).map((c) => (
+            {colorScheme(3, SeriesType.SCALE).map((c) => (
               <Swatch key={c} color={c} />
             ))}
           </SwatchHolder>
