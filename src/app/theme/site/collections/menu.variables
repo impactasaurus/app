@@ -1,11 +1,11 @@
-@import (reference) './../../variables.less';
+@import (reference) "./../../variables.less";
 
 @margin: 0em 0em;
 @background: @primary;
+@verticalBackground: @primary;
 @borderRadius: 0em;
 @border: 0em;
 @boxShadow: none;
-
 
 @menuSelectedTextColor: darken(@primaryTextColor, 5%);
 

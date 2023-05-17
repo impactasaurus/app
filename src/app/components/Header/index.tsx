@@ -10,6 +10,7 @@ import { HeaderPlugins } from "./plugins";
 import { IntroduceQuestionnairePage } from "components/TourQuestionnaires";
 import { IntroduceNewRecordButton } from "components/TourRecordCreation";
 import { IntroduceReportPage } from "components/TourReports";
+import { MenuItem } from "./item";
 const config = require("../../../../config/main").app.auth;
 
 const QuestionnaireButtonID = "questionnaire-menu-item";
@@ -48,71 +49,66 @@ const Header = (): JSX.Element => {
 
   if (isLoggedIn && isBeneficiary !== true && org) {
     return (
-      <Menu size="massive">
-        <Menu.Item
-          as={Link}
-          to="/"
-          active={isActive("/", true)}
-          id="home-link"
-          className="icon-menu-item"
-        >
-          <Logo />
-        </Menu.Item>
-        <Menu.Item
-          as={Link}
-          to="/beneficiary"
-          active={isActive("/beneficiary")}
-        >
-          <Icon name="user" className="replacement" />
-          <span className="title">{t("Beneficiary")}</span>
-        </Menu.Item>
-        <Menu.Item
-          as={Link}
-          to="/report"
-          active={isActive("/report")}
-          id={ReportButtonID}
-        >
-          <Icon name="line graph" className="replacement" />
-          <span className="title">{t("Report")}</span>
-        </Menu.Item>
-        <Menu.Item
-          as={Link}
-          to="/questions"
-          active={
-            isActive("/catalogue") ||
-            isActive("/questions") ||
-            isActive("/sequences")
-          }
-          id={QuestionnaireButtonID}
-        >
-          <Icon name="question" className="replacement" />
-          <span className="title">{t("Questionnaires")}</span>
-        </Menu.Item>
-        <HeaderPlugins isActive={isActive} />
-        <Menu.Item
-          as={Link}
-          to="/record"
-          active={
-            isActive("/record") ||
-            isActive("/meeting") ||
-            isActive("/dataentry")
-          }
-          id={NewRecordButtonID}
-        >
-          <Icon name="plus" className="required" />
-        </Menu.Item>
+      <>
+        <div className="root menu">
+          <div className="top sub-menu">
+            <MenuItem active={false} icon={<Logo />} link="/" />
+            <MenuItem
+              active={isActive("/", true)}
+              icon={<Icon name="home" className="replacement" />}
+              link="/"
+              title={t("Home")}
+            />
+            <MenuItem
+              active={isActive("/beneficiary")}
+              icon={<Icon name="user" className="replacement" />}
+              link="/beneficiary"
+              title={t("Beneficiary")}
+            />
+            <MenuItem
+              active={isActive("/report")}
+              icon={<Icon name="line graph" className="replacement" />}
+              link="/report"
+              title={t("Report")}
+            />
+            <MenuItem
+              active={
+                isActive("/catalogue") ||
+                isActive("/questions") ||
+                isActive("/sequences")
+              }
+              icon={<Icon name="question" className="replacement" />}
+              link="/questions"
+              title={t("Questionnaires")}
+              id={QuestionnaireButtonID}
+            />
+            <MenuItem
+              active={
+                isActive("/record") ||
+                isActive("/meeting") ||
+                isActive("/dataentry")
+              }
+              icon={<Icon name="plus" className="replacement" />}
+              link="/record"
+              title={t("New Record")}
+              id={NewRecordButtonID}
+            />
+          </div>
 
-        <Menu.Menu className="right" position="right">
-          <Menu.Item as={Link} to="/settings" active={isActive("/settings")}>
-            <Icon name="cog" className="replacement" />
-            <span className="title">{t("Settings")}</span>
-          </Menu.Item>
-          <ProfileMenu logOut={logOut} />
-        </Menu.Menu>
+          <div className="bottom sub-menu">
+            <MenuItem
+              active={isActive("/settings")}
+              icon={<Icon name="cog" className="replacement" />}
+              link="/settings"
+              title={t("Settings")}
+            />
+            <ProfileMenu logOut={logOut} />
+          </div>
+        </div>
         <IntroduceQuestionnairePage id={QuestionnaireButtonID} />
         <IntroduceNewRecordButton id={NewRecordButtonID} />
         <IntroduceReportPage id={ReportButtonID} />
-      </Menu>
+      </>
     );
   } else if (isLoggedIn) {
     return (

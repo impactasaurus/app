@@ -1,117 +1,40 @@
 @smallScreenIcon: ~"i.icon.replacement";
+@itemMargin: 0.4em;
 
 #impactasaurus {
   &.framed {
-    .menu.massive {
+    .menu.root {
       display: none;
     }
   }
 
-  .menu.massive {
+  .menu.root {
+    background-color: var(--brand-color-darker);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    max-height: 100vh;
+    padding: 0 0.2em;
+
     @media print {
       display: none;
     }
 
-    .item i {
-      font-size: 0.7em !important;
-    }
+    .sub-menu {
+      display: flex;
+      flex-direction: column;
 
-    .item.icon-menu-item {
-      padding: 0.5em 1em;
-    }
-
-    #user-menu {
-      padding: 0 0.9em;
-
-      .item {
-        padding: 0.6em 0.8em !important;
+      &.top .item {
+        margin-bottom: @itemMargin;
       }
 
-      .divider {
-        margin: 0.1em 0em;
-      }
-
-      .not-clickable:hover {
-        background-color: white !important;
-        cursor: default;
-      }
-
-      &.error .user-image {
-        background-color: red;
-        color: white;
-      }
-
-      #user-profile-dd-item {
-        .user-image {
-          color: white;
-          background-color: var(--brand-color);
-          display: inline-block;
-          margin-right: 0.6em;
-          height: 35px;
-          width: 35px;
-          line-height: 35px;
-        }
-        .active-org {
-          font-size: 0.8em;
-        }
-        .elipsis-overflow {
-          display: inline-block;
-          max-width: 180px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-      }
-
-      #org-options {
-        max-height: 50vh;
-        overflow-y: auto;
-      }
-
-      .org-option {
-        font-size: 0.85em !important;
-        padding: 0.4em 0.8em !important;
-        margin: 0 0 0 2em;
-        color: rgba(0, 0, 0, 0.8) !important;
-        cursor: pointer;
+      &.bottom .item {
+        margin-top: @itemMargin;
       }
     }
 
-    @media only screen and (max-width: 950px) {
-      .right .title {
-        display: none;
-      }
-      .right @{smallScreenIcon} {
-        margin: 0px;
-        font-size: 1em !important;
-      }
-    }
-
-    @media only screen and (max-width: 900px) {
-      #home-link .title {
-        display: none;
-      }
-    }
-
-    @media only screen and (max-width: 750px) {
+    .item {
       .title {
-        display: none;
-      }
-      @{smallScreenIcon} {
-        margin: 0px;
-        font-size: 1em !important;
-      }
-    }
-
-    @media only screen and (max-width: 520px) {
-      .item {
-        padding-left: 0.8em;
-        padding-right: 0.8em;
-      }
-    }
-
-    @media only screen and (max-width: 445px) {
-      .right .item {
         display: none;
       }
     }

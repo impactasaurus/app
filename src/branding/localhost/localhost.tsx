@@ -7,9 +7,7 @@ const Logo = (): JSX.Element => {
     <span className="localhost-logo">
       <SVG />
       {/* eslint-disable-next-line i18next/no-literal-string */}
-      <span className="title">Impactasaurus</span>
-      {/* eslint-disable-next-line i18next/no-literal-string */}
-      <span className="little">LH</span>
+      <span className="title">Impactasaurus LH</span>
     </span>
   );
 };

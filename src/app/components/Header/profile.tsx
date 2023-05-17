@@ -12,6 +12,7 @@ import {
   ISetOrganisation,
 } from "apollo/modules/organisation";
 import { useSetJWT, useUser } from "redux/modules/user";
+import "./profile.less";
 
 interface IProps extends ISetOrganisation {
   logOut: () => void;
@@ -97,6 +98,7 @@ const ProfileMenuInner = (p: IProps): JSX.Element => {
         )
       }
       id="user-menu"
+      pointing="left"
       className={changingOrgErr ? "error" : ""}
     >
       <Dropdown.Menu>

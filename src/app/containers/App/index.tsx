@@ -4,7 +4,6 @@ import { IStore } from "redux/IStore";
 import { Redirect, Switch } from "react-router-dom";
 import * as containers from "containers";
 import { Loader } from "semantic-ui-react";
-import { Footer } from "components/Footer";
 import { Tracker } from "components/Tracker";
 import { TokenRefresher } from "components/TokenRefresher";
 import { useSelector } from "react-redux";
@@ -21,6 +20,7 @@ import "./style.less";
 import "./../../theme/typo.less";
 import "semantic-ui-less/semantic.less";
 import "theme/form.less";
+import { BeneficiaryList } from "containers/BeneficiaryList";
 
 const wrapper = (child: JSX.Element): JSX.Element => {
   return (
@@ -31,7 +31,6 @@ const wrapper = (child: JSX.Element): JSX.Element => {
         {child}
       </div>
       <Toaster key="toast" />
-      <Footer key="footer" />
     </>
   );
 };
@@ -62,8 +61,8 @@ export const App = (): JSX.Element => {
           path="/beneficiary/:id/export/:qid"
           component={containers.ExportBenRecords}
         />
-        <Route path="/beneficiary/:id" component={containers.Beneficiary} />
-        <Route path="/beneficiary" component={containers.BeneficiarySelector} />
+        <Route path="/beneficiary/:id" component={BeneficiaryList} />
+        <Route path="/beneficiary" component={BeneficiaryList} />
         <Route path="/profile" component={containers.Account} />
         <Route path="/settings" component={containers.Settings} />
         <Route public={true} path="/login" component={containers.Login} />

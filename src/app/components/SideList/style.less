@@ -1,0 +1,14 @@
+.split-pane-container {
+  display: flex;
+  flex-direction: row;
+  .left {
+    flex-shrink: 1;
+    overflow-y: scroll;
+    max-height: 100vh;
+  }
+  .right {
+    flex-grow: 1;
+    overflow-y: scroll;
+    max-height: 100vh;
+  }
+}

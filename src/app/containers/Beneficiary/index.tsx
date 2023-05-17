@@ -1,17 +1,15 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import { Grid, Icon, Menu } from "semantic-ui-react";
-import { IURLConnector, UrlConnector } from "redux/modules/url";
-import { IStore } from "redux/IStore";
-import { Switch } from "react-router-dom";
+import { useNavigator } from "redux/modules/url";
+import { Switch, useLocation } from "react-router-dom";
 import * as containers from "containers";
 import { SecondaryMenu } from "components/SecondaryMenu";
-import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
-import "./style.less";
 import Route from "components/Route";
+import "./style.less";
 
-interface IProps extends IURLConnector {
+interface IProps {
   match: {
     params: {
       id: string;
@@ -19,7 +17,6 @@ interface IProps extends IURLConnector {
     path: string;
     url: string;
   };
-  child: ReviewPage;
 }
 
 export enum ReviewPage {
@@ -31,18 +28,20 @@ export enum ReviewPage {
 
 export const BeneficiaryNewRecordButtonID = "new-ben-record-button";
 
-const BeneficiaryInner = (p: IProps) => {
+export const Beneficiary = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
+  const setURL = useNavigator();
+  const location = useLocation();
 
-  const handleClick = (url: string, search?: string) => {
+  const handleClick = (url: string, search?: URLSearchParams) => {
     return () => {
-      p.setURL(url, search);
+      setURL(url, search);
     };
   };
 
   const innerPageSetter = (
     toSet: ReviewPage,
-    search?: string
+    search?: URLSearchParams
   ): (() => void) => {
     return () => {
       let subPage: string;
@@ -78,29 +77,40 @@ const BeneficiaryInner = (p: IProps) => {
   }
 
   const match = p.match.path;
+  let child = ReviewPage.NEW_RECORD;
+  if (
+    location.pathname.endsWith("journey") ||
+    p.match.url === location.pathname
+  ) {
+    child = ReviewPage.JOURNEY;
+  } else if (location.pathname.endsWith("records")) {
+    child = ReviewPage.RECORDS;
+  } else if (location.pathname.endsWith("config")) {
+    child = ReviewPage.CONFIG;
+  }
 
   return (
     <div id="ben-page">
       <SecondaryMenu signpost={ben}>
         <Menu.Item
-          active={p.child === ReviewPage.JOURNEY}
+          active={child === ReviewPage.JOURNEY}
           onClick={innerPageSetter(ReviewPage.JOURNEY)}
         >
           <Icon name="chart line" />
           {t("Journey")}
         </Menu.Item>
         <Menu.Item
-          active={p.child === ReviewPage.RECORDS}
+          active={child === ReviewPage.RECORDS}
           onClick={innerPageSetter(ReviewPage.RECORDS)}
         >
           <Icon name="file outline" />
           {t("Records")}
         </Menu.Item>
         <Menu.Item
-          active={p.child === ReviewPage.NEW_RECORD}
+          active={child === ReviewPage.NEW_RECORD}
           onClick={innerPageSetter(
             ReviewPage.NEW_RECORD,
-            `?ben=${p.match.params.id}`
+            new URLSearchParams({ ben: p.match.params.id })
           )}
           id={BeneficiaryNewRecordButtonID}
         >
@@ -108,7 +118,7 @@ const BeneficiaryInner = (p: IProps) => {
           {t("New Record")}
         </Menu.Item>
         <Menu.Item
-          active={p.child === ReviewPage.CONFIG}
+          active={child === ReviewPage.CONFIG}
           onClick={innerPageSetter(ReviewPage.CONFIG)}
         >
           <Icon name="cog" />
@@ -148,23 +158,3 @@ const BeneficiaryInner = (p: IProps) => {
     </div>
   );
 };
-
-const stateToProps = (state: IStore, p: IProps) => {
-  let child = ReviewPage.NEW_RECORD;
-  if (
-    state.router.location.pathname.endsWith("journey") ||
-    p.match.url === state.router.location.pathname
-  ) {
-    child = ReviewPage.JOURNEY;
-  } else if (state.router.location.pathname.endsWith("records")) {
-    child = ReviewPage.RECORDS;
-  } else if (state.router.location.pathname.endsWith("config")) {
-    child = ReviewPage.CONFIG;
-  }
-  return {
-    child,
-  };
-};
-
-const Beneficiary = connect(stateToProps, UrlConnector)(BeneficiaryInner);
-export { Beneficiary };

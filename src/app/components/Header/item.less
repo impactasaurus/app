@@ -1,0 +1,27 @@
+.menu.root > .sub-menu > .item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  cursor: pointer;
+  border-radius: 5px;
+  color: white;
+  font-size: 1.2em;
+  padding: 0.5em;
+
+  width: 50px;
+  height: 50px;
+
+  &:hover {
+    background-color: var(--brand-color);
+  }
+
+  &.active {
+    background-color: var(--brand-color-light);
+  }
+
+  i {
+    margin: 0;
+    padding: 0;
+  }
+}
