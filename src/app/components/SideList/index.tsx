@@ -1,35 +1,42 @@
 import React from "react";
-import { QueryProps } from "react-apollo";
-import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
-import { Menu } from "semantic-ui-react";
 import "./style.less";
+import { Split } from "@geoffcox/react-splitter";
+import { Button } from "semantic-ui-react";
 
 interface IProps {
-  entity: string;
-  data: QueryProps;
   children: JSX.Element | JSX.Element[];
   selected: string;
-  menuItems: JSX.Element[];
+  left: JSX.Element;
+  minPrimarySize?: string;
+  deselect: () => void;
 }
 
 export const SideList = (p: IProps): JSX.Element => {
-  const SideList = (): JSX.Element => {
-    return <Menu vertical>{p.menuItems}</Menu>;
-  };
-  const SideListWithLoader = ApolloLoaderHoC(p.entity, () => p.data, SideList, {
-    wrapInGrid: false,
-  });
-
+  let minPrimarySize = p.minPrimarySize || "200px";
+  let minSecondarySize = "60%";
   if (!p.selected) {
-    return <SideListWithLoader />;
+    minPrimarySize = "100%";
+    minSecondarySize = "0";
   }
-
   return (
-    <div className="split-pane-container">
-      <div className="left">
-        <SideListWithLoader />
-      </div>
-      <div className="right">{p.children}</div>
-    </div>
+    <Split
+      initialPrimarySize="30%"
+      minPrimarySize={minPrimarySize}
+      minSecondarySize={minSecondarySize}
+    >
+      <div className={`left ${p.selected ? "split" : "full"}`}>{p.left}</div>
+      {p.selected && (
+        <div className="right">
+          <Button
+            icon="close"
+            id="right-close"
+            basic={true}
+            circular
+            onClick={p.deselect}
+          />
+          {p.children}
+        </div>
+      )}
+    </Split>
   );
 };

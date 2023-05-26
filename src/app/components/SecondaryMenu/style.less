@@ -7,6 +7,13 @@
 
   background: @primaryl;
 
+  .right & {
+    background: white;
+    h1 {
+      color: @text;
+    }
+  }
+
   h1 {
     padding-top: 0.5em;
     color: @primaryTextColor;
@@ -17,6 +24,22 @@
 
   .ui.menu.secondary.pointing {
     border-color: transparent;
+
+    .right & {
+      border-color: lightgray;
+      .item {
+        color: @text;
+        &.active,
+        &.active:hover {
+          border-color: @primary;
+          color: @primary;
+        }
+        &:hover {
+          border-color: darken(lightgray, 20%);
+          color: @text;
+        }
+      }
+    }
 
     .active.item,
     .active.item:hover {

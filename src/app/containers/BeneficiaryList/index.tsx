@@ -7,6 +7,7 @@ import { SideList } from "components/SideList";
 import { Beneficiary } from "containers/Beneficiary";
 import { Menu } from "semantic-ui-react";
 import { Link } from "react-router-dom";
+import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 
 interface IProps {
   match: {
@@ -16,30 +17,38 @@ interface IProps {
     path: string;
     url: string;
   };
-  data: IBeneficiariesResult;
 }
 
-const Inner = (p: IProps) => {
+const MenuItemsInner = (p: {
+  data?: IBeneficiariesResult;
+  activeID: string;
+}) => {
   const menuItems = (p.data?.getBeneficiaries || []).map((b) => (
     <Menu.Item
       as={Link}
       to={`/beneficiary/${b}`}
-      active={b == p.match.params.id}
+      active={b == p.activeID}
       key={b}
     >
       <span>{b}</span>
     </Menu.Item>
   ));
+  return <Menu vertical>{menuItems}</Menu>;
+};
+export const MenuItems = ApolloLoaderHoC<{
+  data?: IBeneficiariesResult;
+  activeID: string;
+}>("beneficiaries", (p) => p.data, getBeneficiaries(MenuItemsInner), {
+  wrapInGrid: false,
+});
+
+export const BeneficiaryList = (p: IProps) => {
   return (
     <SideList
-      data={p.data}
-      entity="beneficiaries"
+      left={<MenuItems activeID={p?.match?.params?.id} />}
       selected={p?.match?.params?.id}
-      menuItems={menuItems}
     >
       <Beneficiary match={p.match} />
     </SideList>
   );
 };
-
-export const BeneficiaryList = getBeneficiaries(Inner);

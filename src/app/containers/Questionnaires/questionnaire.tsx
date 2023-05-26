@@ -10,6 +10,7 @@ import { QuestionnaireKey } from "models/pref";
 import { useSetPreference } from "redux/modules/pref";
 import { useTranslation } from "react-i18next";
 import { sanitiseGraphQLError } from "helpers/apollo";
+import { useLocation } from "react-router";
 
 interface IProps extends IOutcomeMutation {
   questionnaire: IOutcomeSet;
@@ -18,12 +19,27 @@ interface IProps extends IOutcomeMutation {
 const QuestionnaireItemInner = (p: IProps): JSX.Element => {
   const q = p.questionnaire;
   const setURL = useNavigator();
+  const location = useLocation();
   const setPref = useSetPreference();
   const { t } = useTranslation();
 
   const navigate = () => {
     setPref(QuestionnaireKey, q.id);
-    setURL(`/questions/${q.id}`);
+
+    let url = `/questions/${q.id}`;
+    const shouldMaintainQuestionnaireTab =
+      location.pathname.match(/\/questions\/.*\/.*/);
+    if (shouldMaintainQuestionnaireTab) {
+      url = location.pathname.replace(
+        /(\/questions\/)(.*)(\/.*)/,
+        `$1${q.id}$3`
+      );
+    }
+    setURL(url);
+  };
+
+  const isSelected = (): boolean => {
+    return location.pathname.includes(q.id);
   };
 
   const onDelete = (): Promise<void> => {
@@ -60,6 +76,7 @@ const QuestionnaireItemInner = (p: IProps): JSX.Element => {
       onNavigate={navigate}
       readOnly={q.readOnly}
       onGenLink={onGenLink}
+      className={isSelected() ? "selected" : ""}
     />
   );
 };

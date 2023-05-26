@@ -124,6 +124,7 @@
     "webpack-manifest-plugin": "2.0.3"
   },
   "dependencies": {
+    "@geoffcox/react-splitter": "^2.1.2",
     "apollo-cache-invalidation": "0.0.3",
     "auth0-js": "9.19.0",
     "chart.js": "2.9.4",

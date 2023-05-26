@@ -3,7 +3,6 @@ export { App } from "./App";
 export { Home } from "./Home";
 export { Login } from "./Login";
 export { Beneficiary } from "./Beneficiary";
-export { BeneficiarySelector } from "./BeneficiarySelector";
 export { AssessmentTypeSelect } from "./AssessmentTypeSelect";
 export { AssessmentConfig } from "./AssessmentConfig";
 export { Settings } from "./Settings";

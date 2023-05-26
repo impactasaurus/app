@@ -13,13 +13,14 @@ interface IProps {
   onNavigate: () => void;
   onGenLink: () => void;
   readOnly?: boolean; // defaults to false
+  className?: string;
 }
 
 export const GenericQuestionnaireListItem = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
 
   return (
-    <List.Item className="questionnaire" key={p.id}>
+    <List.Item className={`questionnaire ${p.className}`} key={p.id}>
       <List.Content floated="right">
         <TooltipButton
           tooltipContent={t("Generate beneficiary link")}

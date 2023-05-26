@@ -32,7 +32,7 @@ module.exports = {
     "react/display-name": "warn",
     "i18next/no-literal-string": ["error", {
       markupOnly: true,
-      ignoreAttribute: ["pointing", "color", "widths", "icon", "iconPosition", "inline", "name", "inputID", "to", "path", "size", "as", "floated", "verticalAlign", "textAlign", "position", "href", "target", "axis", "lockAxis", "link"]
+      ignoreAttribute: ["split", "pointing", "color", "widths", "icon", "iconPosition", "inline", "name", "inputID", "to", "path", "size", "as", "floated", "verticalAlign", "textAlign", "position", "href", "target", "axis", "lockAxis", "link"]
     }]
   }
 };

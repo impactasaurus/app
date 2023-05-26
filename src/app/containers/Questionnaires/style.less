@@ -1,0 +1,41 @@
+#questionnaire-router {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  .simple-switcher {
+    text-align: left;
+    display: none;
+    margin-top: 1em;
+    margin-bottom: 0.6em;
+    a {
+      font-size: 1.2em;
+      margin-left: 1em;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    a.active {
+      color: white;
+      cursor: default;
+    }
+  }
+  .split & {
+    .menu {
+      display: none;
+    }
+    .simple-switcher {
+      display: block;
+    }
+    .ui.container .column {
+      padding-bottom: 0;
+      padding-top: 0;
+      .list {
+        margin-bottom: 0.6em;
+        margin-top: 0;
+      }
+    }
+    #question-sets {
+      overflow-y: auto;
+      max-height: 100%;
+    }
+  }
+}

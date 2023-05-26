@@ -8,7 +8,7 @@
   }
 
   .questionnaire {
-    text-align: justify;
+    text-align: left;
     padding-top: 1rem;
     padding-bottom: 1rem;
 
@@ -27,6 +27,36 @@
     input {
       margin-right: 0.5em;
       margin-left: 0.5em;
+    }
+  }
+
+  .split & {
+    .item {
+      cursor: pointer;
+      margin-left: 0.8em;
+      border-top: none;
+      padding: 0;
+      .right.floated {
+        display: none;
+      }
+      .content {
+        .header {
+          display: inline-block;
+          padding: 0.3em 0.4em;
+          color: rgba(255, 255, 255, 0.8) !important;
+          font-size: 1.2rem;
+          border-radius: 6px;
+          margin: 0.1em 0;
+        }
+        .description {
+          display: none;
+        }
+      }
+      &.selected {
+        .content .header {
+          background-color: var(--brand-color-lighter);
+        }
+      }
     }
   }
 }
