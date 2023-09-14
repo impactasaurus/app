@@ -32,6 +32,7 @@ interface IProp extends IURLConnector, IReportOptions {
   isCategoryAgPossible?: boolean;
   isCanvasSnapshotPossible?: boolean;
   statusReport?: IStatusReport;
+  baseline?: boolean; // undefined = false
 }
 
 const isCategoryAggregationAvailable = (props: IProp): boolean => {

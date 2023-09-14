@@ -17,6 +17,7 @@ export enum SubPage {
   DIST,
   CHANGE,
   STATUS,
+  BASELINE,
 }
 
 interface IProps extends IURLConnector, WithTranslation {
@@ -116,6 +117,9 @@ class ReportInner extends React.Component<IProps, null> {
     if (child === SubPage.STATUS) {
       inner = <StatusReport {...options} />;
     }
+    if (child === SubPage.BASELINE) {
+      inner = <StatusReport {...options} baseline={true} />;
+    }
     return (
       <div>
         <SecondaryMenu signpost={t("Impact Report")}>
@@ -132,6 +136,13 @@ class ReportInner extends React.Component<IProps, null> {
           >
             <Icon name="exchange" />
             {t("Beneficiary Change")}
+          </Menu.Item>
+          <Menu.Item
+            active={child === SubPage.BASELINE}
+            onClick={this.innerPageSetter(SubPage.BASELINE)}
+          >
+            <Icon name="map signs" />
+            {t("Baseline")}
           </Menu.Item>
           <Menu.Item
             active={child === SubPage.STATUS}
