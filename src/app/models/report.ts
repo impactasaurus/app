@@ -102,30 +102,52 @@ export interface IExcluded {
   beneficiaryIDs: string[];
 }
 
-export const latestAggregationFragment = gql`
-  fragment latestAggregationFragment on Report {
+export const reportFragment = gql`
+  fragment reportFragment on Report {
     beneficiaries {
       id
-      categories {
-        aID: id
+      questions {
+        id
+        initial {
+          value
+        }
         latest {
           value
         }
+        noRecords
+        stats {
+          delta
+        }
       }
-      questions {
-        aID: id
+      categories {
+        id
+        initial {
+          value
+        }
         latest {
           value
+        }
+        noRecords
+        stats {
+          delta
         }
       }
     }
     questions {
       id
+      initial
       latest
+      stats {
+        delta
+      }
     }
     categories {
       id
+      initial
       latest
+      stats {
+        delta
+      }
     }
     excluded {
       beneficiary
@@ -136,28 +158,35 @@ export const latestAggregationFragment = gql`
   }
 `;
 
-export interface value {
+export interface IReportStats {
+  delta: number;
+}
+
+export interface IValue {
   value: number;
 }
 
-export interface IAnswerTimestampedDistance {
-  aID: string;
-  initial: value;
-  latest: value;
+export interface IAnswerSummary extends IID {
+  initial: IValue;
+  latest: IValue;
+  noRecords: number;
+  stats: IReportStats;
 }
 
-export interface IBenDistance extends IID {
-  questions: IAnswerTimestampedDistance[];
-  categories: IAnswerTimestampedDistance[];
+export interface IBenReport extends IID {
+  questions: IAnswerSummary[];
+  categories: IAnswerSummary[];
 }
 
-export interface ILatestAggregation extends IID {
+export interface IAnswerAggregation extends IID {
+  initial: number;
   latest: number;
+  stats: IReportStats;
 }
 
-export interface ILatestAggregationReport {
-  beneficiaries: IBenDistance[];
-  questions: ILatestAggregation[];
-  categories: ILatestAggregation[];
+export interface IReport {
+  beneficiaries: IBenReport[];
+  questions: IAnswerAggregation[];
+  categories: IAnswerAggregation[];
   excluded: IExclusion[];
 }

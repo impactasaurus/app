@@ -1,28 +1,24 @@
 import React from "react";
-import { ILatestAggregationReport } from "models/report";
 import { IOutcomeSet } from "models/outcomeSet";
 import { ReportDetails } from "components/ReportDetails";
 import { getExcluded, getWarnings } from "../../helpers/report";
-import { useTranslation } from "react-i18next";
+import { ISnapshotReport } from ".";
 
 interface IProps {
-  statusReport: ILatestAggregationReport;
+  snapshotReport: ISnapshotReport;
   questionSet: IOutcomeSet;
+  introText: string;
 }
 
 export const StatusReportDetails = (p: IProps): JSX.Element => {
-  const { t } = useTranslation();
-
-  const { statusReport, questionSet } = p;
+  const { snapshotReport: statusReport, questionSet } = p;
   const warnings = getWarnings(statusReport.excluded, questionSet);
   const includedBens = statusReport.beneficiaries.map((b) => b.id);
   const exclusions = getExcluded(statusReport.excluded);
   exclusions.beneficiaryIDs = [];
   return (
     <ReportDetails
-      introduction={t(
-        "This report shows the most recent response from each beneficiary"
-      )}
+      introduction={p.introText}
       includedBeneficiaries={includedBens}
       excluded={exclusions}
       warnings={warnings}

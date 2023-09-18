@@ -1,9 +1,4 @@
 import * as React from "react";
-import {
-  IAnswerDistance,
-  ILatestAggregation,
-  ILatestAggregationReport,
-} from "models/report";
 import { IOutcomeSet } from "models/outcomeSet";
 import { RadarChart } from "components/RadarChart";
 import { RadarData, IRadarSeries, IRadarPoint } from "models/radar";
@@ -16,57 +11,55 @@ import {
   getQuestionFriendlyName,
   getCategoryFriendlyName,
 } from "helpers/questionnaire";
-import { useTranslation } from "react-i18next";
+import { IAggregation, ISnapshotReport } from ".";
 
 interface IProp {
-  statusReport: ILatestAggregationReport;
+  snapshotReport: ISnapshotReport;
   questionSet: IOutcomeSet;
   category?: boolean;
+  seriesLabel: string;
 }
 
 function getRadarSeries(
-  t: (text: string) => string,
-  aa: ILatestAggregation[],
-  labeller: (IAnswerAggregation) => string,
-  indexer: (IAnswerAggregation) => number
+  seriesLabel: string,
+  aa: IAggregation[],
+  labeller: (IAggregation) => string,
+  indexer: (IAggregation) => number
 ): IRadarSeries[] {
   const pre = aa.reduce(
     (pre, a) => {
       const label = labeller(a);
       const idx = indexer(a);
-      pre.latest.push({
+      pre.values.push({
         axis: label,
         axisIndex: idx,
-        value: a.latest,
+        value: a.value,
       });
       return pre;
     },
     {
-      latest: [] as IRadarPoint[],
+      values: [] as IRadarPoint[],
     }
   );
   return [
     {
-      name: t("Latest"),
-      datapoints: pre.latest,
+      name: seriesLabel,
+      datapoints: pre.values,
     },
   ];
 }
 
-function getCategoryRadarData(
-  t: (text: string) => string,
-  p: IProp
-): RadarData {
-  const getCatLabel = (aa: IAnswerDistance): string => {
+function getCategoryRadarData(p: IProp): RadarData {
+  const getCatLabel = (aa: IAggregation): string => {
     return getCategoryFriendlyName(aa.id, p.questionSet);
   };
-  const getCatIdx = (aa: IAnswerDistance): number => {
+  const getCatIdx = (aa: IAggregation): number => {
     return p.questionSet.categories.findIndex((c) => c.id === aa.id);
   };
   return {
     series: getRadarSeries(
-      t,
-      p.statusReport.categories,
+      p.seriesLabel,
+      p.snapshotReport.categories,
       getCatLabel,
       getCatIdx
     ),
@@ -75,40 +68,41 @@ function getCategoryRadarData(
   };
 }
 
-function getQuestionRadarData(
-  t: (text: string) => string,
-  p: IProp
-): RadarData {
-  const getQLabel = (aa: IAnswerDistance): string => {
+function getQuestionRadarData(p: IProp): RadarData {
+  const getQLabel = (aa: IAggregation): string => {
     return getQuestionFriendlyName(aa.id, p.questionSet);
   };
-  const getQIdx = (aa: IAnswerDistance): number => {
+  const getQIdx = (aa: IAggregation): number => {
     return p.questionSet.questions.findIndex((q) => q.id === aa.id);
   };
   return {
-    series: getRadarSeries(t, p.statusReport.questions, getQLabel, getQIdx),
+    series: getRadarSeries(
+      p.seriesLabel,
+      p.snapshotReport.questions,
+      getQLabel,
+      getQIdx
+    ),
     scaleMin: getMinQuestionValue(p.questionSet),
     scaleMax: getMaxQuestionValue(p.questionSet),
   };
 }
 
-function getRadarData(t: (text: string) => string, p: IProp): RadarData {
+function getRadarData(p: IProp): RadarData {
   if (p.category) {
-    return getCategoryRadarData(t, p);
+    return getCategoryRadarData(p);
   }
-  return getQuestionRadarData(t, p);
+  return getQuestionRadarData(p);
 }
 
-function renderRadar(t: (text: string) => string, p: IProp): JSX.Element {
-  if (p.statusReport.beneficiaries.length === 0) {
+function renderRadar(p: IProp): JSX.Element {
+  if (p.snapshotReport.beneficiaries.length === 0) {
     return <div />;
   }
-  const data = getRadarData(t, p);
+  const data = getRadarData(p);
   const agg = p.category ? Aggregation.CATEGORY : Aggregation.QUESTION;
   return <RadarChart data={data} aggregation={agg} />;
 }
 
 export const StatusReportRadar = (p: IProp): JSX.Element => {
-  const { t } = useTranslation();
-  return <div className="status-report-radar">{renderRadar(t, p)}</div>;
+  return <div className="status-report-radar">{renderRadar(p)}</div>;
 };

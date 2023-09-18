@@ -4,8 +4,8 @@ import {
   beneficiaryDeltaFragment,
   IAnswerAggregationReport,
   IBeneficiaryDeltaReport,
-  latestAggregationFragment,
-  ILatestAggregationReport,
+  reportFragment,
+  IReport,
 } from "models/report";
 import { Extractor, IDExtractor } from "helpers/apollo";
 import { isNullOrUndefined } from "util";
@@ -187,12 +187,13 @@ export interface IExportReportResult extends QueryProps {
   exportReport?: string;
 }
 
-export const getStatusReport = <T>(
+export const getReport = <T>(
   qid: IDExtractor<T>,
   start: IDExtractor<T>,
   end: IDExtractor<T>,
   tags: Extractor<T, string[]>,
   orTags?: Extractor<T, boolean>,
+  minRecords?: Extractor<T, number>,
   name?: string
 ) => {
   return graphql<any, T>(
@@ -203,19 +204,20 @@ export const getStatusReport = <T>(
         $questionSetID: String!
         $tags: [String]
         $orTags: Boolean
+        $minRecords: Int
       ) {
-        getStatusReport: report(
-          minRequiredRecords: 1
+        getReport: report(
           start: $start
           end: $end
           questionnaire: $questionSetID
           tags: $tags
           orTags: $orTags
+          minRequiredRecords: $minRecords
         ) {
-          ...latestAggregationFragment
+          ...reportFragment
         }
       }
-      ${latestAggregationFragment}
+      ${reportFragment}
     `,
     {
       name,
@@ -227,6 +229,7 @@ export const getStatusReport = <T>(
             end: end(props),
             tags: tags(props),
             orTags: orTags ? orTags(props) : false,
+            minRecords: minRecords ? minRecords(props) : 2,
           },
           notifyOnNetworkStatusChange: true,
           fetchPolicy: "network-only",
@@ -236,6 +239,6 @@ export const getStatusReport = <T>(
   );
 };
 
-export interface IStatusReport extends QueryProps {
-  getStatusReport?: ILatestAggregationReport;
+export interface IReportResponse extends QueryProps {
+  getReport?: IReport;
 }

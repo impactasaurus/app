@@ -11,6 +11,7 @@ import { ServiceReport } from "components/ServiceReport";
 import { StatusReport } from "components/StatusReport";
 import { WithTranslation, withTranslation } from "react-i18next";
 import { EndOfReportTour } from "components/TourReports";
+import { BaselineReport } from "components/BaselineReport";
 const { connect } = require("react-redux");
 
 export enum SubPage {
@@ -118,7 +119,7 @@ class ReportInner extends React.Component<IProps, null> {
       inner = <StatusReport {...options} />;
     }
     if (child === SubPage.BASELINE) {
-      inner = <StatusReport {...options} baseline={true} />;
+      inner = <BaselineReport {...options} />;
     }
     return (
       <div>

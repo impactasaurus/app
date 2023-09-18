@@ -22,31 +22,31 @@ export interface IProp extends IExternalProps {
   report: IReportResponse;
 }
 
-const StatusReportInner = (p: IProp) => {
-  const setURL = useNavigator();
+const BaselineReportInner = (p: IProp) => {
   const { t } = useTranslation();
+  const setURL = useNavigator();
 
-  const latestSnapshotReport = useMemo<ISnapshotReport>(() => {
+  const initialSnapshotReport = useMemo<ISnapshotReport>(() => {
     const r = p.report.getReport;
     return {
       beneficiaries: r.beneficiaries.map<IBenAggregation>((b) => ({
         id: b.id,
         questions: b.questions.map<IAggregation>((q) => ({
           id: q.id,
-          value: q.latest.value,
+          value: q.initial.value,
         })),
         categories: b.categories.map<IAggregation>((c) => ({
           id: c.id,
-          value: c.latest.value,
+          value: c.initial.value,
         })),
       })),
       questions: r.questions.map<IAggregation>((q) => ({
         id: q.id,
-        value: q.latest,
+        value: q.initial,
       })),
       categories: r.categories.map<IAggregation>((c) => ({
         id: c.id,
-        value: c.latest,
+        value: c.initial,
       })),
       excluded: r.excluded,
     };
@@ -61,30 +61,30 @@ const StatusReportInner = (p: IProp) => {
   return (
     <SnapshotReport
       questionnaire={p.data.getOutcomeSet}
-      snapshot={latestSnapshotReport}
+      snapshot={initialSnapshotReport}
       exportData={exportData}
       introText={t(
-        "This report shows the most recent response from each beneficiary"
+        "This report shows the initial response from each beneficiary"
       )}
-      seriesLabel={t("Latest")}
+      seriesLabel={t("Initial")}
     />
   );
 };
 
 // t("report")
-const StatusInnerWithSpinner = ApolloLoaderHoC<IProp>(
+const BaselineInnerWithSpinner = ApolloLoaderHoC<IProp>(
   "report",
   (p: IProp) => p.report,
-  StatusReportInner
+  BaselineReportInner
 );
 // t("questionnaire")
-const StatusInnerWithSpinners = ApolloLoaderHoC(
+const BaselineInnerWithSpinners = ApolloLoaderHoC(
   "questionnaire",
   (p: IProp) => p.data,
-  StatusInnerWithSpinner
+  BaselineInnerWithSpinner
 );
 
-const StatusInnerWithReport = getReport<IProp>(
+const BaselineInnerWithReport = getReport<IProp>(
   (p) => p.questionnaire,
   (p) => p.start.toISOString(),
   (p) => p.end.toISOString(),
@@ -92,10 +92,10 @@ const StatusInnerWithReport = getReport<IProp>(
   (p) => p.orTags,
   () => 1,
   "report"
-)(StatusInnerWithSpinners);
+)(BaselineInnerWithSpinners);
 
-const StatusReport = getOutcomeSet<IExternalProps>((p) => p.questionnaire)(
-  StatusInnerWithReport
+const BaselineReport = getOutcomeSet<IExternalProps>((p) => p.questionnaire)(
+  BaselineInnerWithReport
 );
 
-export { StatusReport };
+export { BaselineReport };

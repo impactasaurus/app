@@ -1,16 +1,10 @@
 import * as React from "react";
 import { IOutcomeSet } from "models/outcomeSet";
 import {
-  IAnswerTimestampedDistance,
-  IBenDistance,
-  ILatestAggregationReport,
-} from "models/report";
-import {
   AnswerDistributionChart,
   IAnswerDistribution,
   IAnswerDistributionSeries,
 } from "components/AnswerDistributionChart";
-import { useTranslation } from "react-i18next";
 import {
   getCategoryFriendlyName,
   getCategoryMaxValue,
@@ -21,30 +15,25 @@ import {
   getQuestions,
 } from "helpers/questionnaire";
 import { Question } from "models/question";
+import { IAggregation, IBenAggregation, ISnapshotReport } from ".";
 
 interface IProps {
-  statusReport: ILatestAggregationReport;
+  snapshotReport: ISnapshotReport;
   questionnaire: IOutcomeSet;
   category: boolean;
+  seriesLabel: string;
 }
 
 export const StatusReportDistribution = (p: IProps): JSX.Element => {
-  const { t } = useTranslation();
-
-  const answerDistributions = (
-    id: string,
-    valueExtractor: (a: IAnswerTimestampedDistance) => number
-  ): number[] => {
-    return p.statusReport.beneficiaries.reduce(
-      (values: number[], ben: IBenDistance): number[] => {
+  const answerDistributions = (id: string): number[] => {
+    return p.snapshotReport.beneficiaries.reduce(
+      (values: number[], ben: IBenAggregation): number[] => {
         const answers = p.category ? ben.categories : ben.questions;
-        const answer = answers.find(
-          (a: IAnswerTimestampedDistance) => a.aID === id
-        );
+        const answer = answers.find((a: IAggregation) => a.id === id);
         if (answer === undefined) {
           return values;
         }
-        return values.concat(valueExtractor(answer));
+        return values.concat(answer.value);
       },
       []
     );
@@ -55,11 +44,8 @@ export const StatusReportDistribution = (p: IProps): JSX.Element => {
   ): IAnswerDistributionSeries[] => {
     return [
       {
-        name: t("Latest"),
-        values: answerDistributions(
-          id,
-          (a: IAnswerTimestampedDistance) => a.latest.value
-        ),
+        name: p.seriesLabel,
+        values: answerDistributions(id),
       },
     ];
   };
