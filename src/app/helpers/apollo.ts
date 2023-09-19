@@ -23,3 +23,18 @@ export const sanitiseGraphQLError = (err: string): string => {
     ? filtered[0].toUpperCase() + filtered.substring(1)
     : filtered;
 };
+
+// taken from apollo-client library as it wasn't exposed
+export const defaultDataIdFromObject = (
+  result: Record<string, unknown>
+): string | null => {
+  if (result.__typename) {
+    if (result.id !== undefined) {
+      return result.__typename + ":" + result.id;
+    }
+    if (result._id !== undefined) {
+      return result.__typename + ":" + result._id;
+    }
+  }
+  return null;
+};
