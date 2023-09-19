@@ -85,12 +85,15 @@ const StatusInnerWithSpinners = ApolloLoaderHoC(
 );
 
 const StatusInnerWithReport = getReport<IProp>(
-  (p) => p.questionnaire,
-  (p) => p.start.toISOString(),
-  (p) => p.end.toISOString(),
-  (p) => p.tags,
-  (p) => p.orTags,
-  () => 1,
+  (p) => ({
+    questionnaire: p.questionnaire,
+    start: p.start,
+    end: p.end,
+    tags: p.tags,
+    orTags: p.orTags,
+    openStart: true,
+    minRecords: 1,
+  }),
   "report"
 )(StatusInnerWithSpinners);
 

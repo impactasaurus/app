@@ -13,6 +13,7 @@ export interface IReportOptions {
   tags: string[];
   openStart: boolean;
   orTags: boolean;
+  minRecords: number;
 }
 
 export const exportReportData = (

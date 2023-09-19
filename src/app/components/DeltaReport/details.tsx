@@ -1,4 +1,4 @@
-import { IBeneficiaryDeltaReport } from "models/report";
+import { IReport } from "models/report";
 import { IOutcomeSet } from "models/outcomeSet";
 import { getExcluded, getWarnings } from "helpers/report";
 import { ReportDetails } from "components/ReportDetails";
@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 interface IProps {
-  report: IBeneficiaryDeltaReport;
+  report: IReport;
   questionnaire: IOutcomeSet;
 }
 

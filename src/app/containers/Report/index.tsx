@@ -63,6 +63,13 @@ const getOrFromProps = (p: IProps): boolean => {
   }
   return JSON.parse(urlParams.get("or"));
 };
+const getMinRecordsFromProps = (p: IProps): number => {
+  const urlParams = new URLSearchParams(p.location.search);
+  if (urlParams.has("min") === false) {
+    return 2;
+  }
+  return JSON.parse(urlParams.get("min"));
+};
 const getReportOptionsFromProps = (p: IProps): IReportOptions => {
   return {
     start: getStartDateFromProps(p),
@@ -71,6 +78,7 @@ const getReportOptionsFromProps = (p: IProps): IReportOptions => {
     openStart: getOpenStartFromProps(p),
     orTags: getOrFromProps(p),
     tags: getTagsFromProps(p),
+    minRecords: getMinRecordsFromProps(p),
   };
 };
 

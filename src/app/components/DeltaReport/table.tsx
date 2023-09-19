@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IBeneficiaryDeltaReport } from "models/report";
+import { IReport } from "models/report";
 import { Header, Table } from "semantic-ui-react";
 import { renderArray } from "helpers/react";
 import { Direction, directionSpec } from "helpers/table";
@@ -9,7 +9,7 @@ import { withTranslation, WithTranslation } from "react-i18next";
 import { average, sum } from "helpers/numbers";
 
 interface IProp extends WithTranslation {
-  report: IBeneficiaryDeltaReport;
+  report: IReport;
   questionSet: IOutcomeSet;
   category?: boolean;
 }
