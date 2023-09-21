@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { ILatestAggregationReport } from "models/report";
 import { Header, Table } from "semantic-ui-react";
 import { renderArray } from "helpers/react";
 import { Direction, directionSpec } from "helpers/table";
@@ -10,11 +9,13 @@ import {
 import { IOutcomeSet } from "models/outcomeSet";
 import { useTranslation } from "react-i18next";
 import { average, sum } from "helpers/numbers";
+import { ISnapshotReport } from ".";
 
 interface IProps {
-  report: ILatestAggregationReport;
+  report: ISnapshotReport;
   questionSet: IOutcomeSet;
   category?: boolean;
+  seriesLabel: string;
 }
 
 interface IRow {
@@ -65,7 +66,7 @@ const getRows = (p: IProps): IRow[] => {
       : getQuestionFriendlyName(d.id, p.questionSet);
     return {
       name: label,
-      value: d.latest,
+      value: d.value,
     };
   });
 };
@@ -114,7 +115,7 @@ export const StatusReportTable = (p: IProps): JSX.Element => {
             sorted={column === Column.VALUE ? directionSpec(direction) : null}
             onClick={handleSort(Column.VALUE)}
           >
-            {t("Value")}
+            {p.seriesLabel}
           </Table.HeaderCell>
         </Table.Row>
       </Table.Header>

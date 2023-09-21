@@ -1,8 +1,4 @@
-import {
-  IAnswerDelta,
-  IBenDeltaSummary,
-  IBeneficiaryDeltaReport,
-} from "models/report";
+import { IBenReport, IReport } from "models/report";
 import { IOutcomeSet } from "models/outcomeSet";
 import {
   getCategoryFriendlyName,
@@ -22,11 +18,11 @@ export interface IDelta {
 const answerDifferences = (
   id: string,
   category: boolean,
-  bens: IBenDeltaSummary[]
+  bens: IBenReport[]
 ): number[] => {
-  return bens.reduce((deltas: number[], ben: IBenDeltaSummary): number[] => {
+  return bens.reduce<number[]>((deltas, ben): number[] => {
     const answers = category ? ben.categories : ben.questions;
-    const answer = answers.find((a: IAnswerDelta) => a.aID === id);
+    const answer = answers.find((a) => a.id === id);
     if (answer === undefined) {
       return deltas;
     }
@@ -37,7 +33,7 @@ const answerDifferences = (
 const categorisedDeltas = (
   id: string,
   category: boolean,
-  bens: IBenDeltaSummary[],
+  bens: IBenReport[],
   questionnaire: IOutcomeSet
 ): IDelta => {
   const label = category
@@ -68,7 +64,7 @@ const categorisedDeltas = (
 
 export const extractDeltas = (
   category: boolean,
-  report: IBeneficiaryDeltaReport,
+  report: IReport,
   questionnaire: IOutcomeSet
 ): IDelta[] => {
   const ids = category

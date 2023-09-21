@@ -1,10 +1,11 @@
 import { IOutcomeSet } from "../models/outcomeSet";
-import { IExcluded, IExclusion } from "../models/report";
+import { IExclusion } from "../models/report";
 import { isNullOrUndefined } from "util";
 import {
   getCategoryFriendlyName,
   getQuestionFriendlyName,
 } from "./questionnaire";
+import { IExcluded } from "components/ReportDetails";
 
 function getCategoryWarnings(
   exclusions: IExclusion[],
@@ -67,37 +68,4 @@ export function getExcluded(excluded: IExclusion[]): IExcluded {
       beneficiaryIDs: [],
     }
   );
-}
-
-export function constructReportQueryParams(
-  tags: string[],
-  open?: boolean,
-  orTags?: boolean
-): URLSearchParams {
-  const params = new URLSearchParams();
-  if (Array.isArray(tags) && tags.length > 0) {
-    params.set("tags", JSON.stringify(tags));
-  }
-  if (!isNullOrUndefined(open)) {
-    params.set("open", JSON.stringify(open));
-  }
-  if (!isNullOrUndefined(orTags)) {
-    params.set("or", JSON.stringify(orTags));
-  }
-  return params;
-}
-
-export function constructReportURL(
-  reportType: string,
-  start: Date,
-  end: Date,
-  questionnaire: string
-): string {
-  const encodeDatePathParam = (d: Date): string => {
-    // had lots of issues with full stops being present in path parameters...
-    return d.toISOString().replace(/\.[0-9]{3}/, "");
-  };
-  const s = encodeDatePathParam(start);
-  const e = encodeDatePathParam(end);
-  return `/report/${reportType}/${questionnaire}/${s}/${e}`;
 }

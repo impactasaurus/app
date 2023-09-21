@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IBeneficiaryDeltaReport } from "models/report";
+import { IReport } from "models/report";
 import { IOutcomeSet } from "models/outcomeSet";
 import { StackedBarChart } from "components/BarChartStacked";
 import { IBarChartData } from "models/bar";
@@ -11,7 +11,7 @@ import { extractDeltas, IDelta } from "components/DeltaReport/data";
 import { useTranslation } from "react-i18next";
 
 interface IProp {
-  report: IBeneficiaryDeltaReport;
+  report: IReport;
   questionSet: IOutcomeSet;
   category?: boolean;
 }
@@ -19,7 +19,7 @@ interface IProp {
 const getBarChartData = (
   t: (text: string) => string,
   category: boolean,
-  report: IBeneficiaryDeltaReport,
+  report: IReport,
   questionnaire: IOutcomeSet
 ): IBarChartData => {
   const data = extractDeltas(category, report, questionnaire);

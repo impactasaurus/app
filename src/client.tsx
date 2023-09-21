@@ -22,6 +22,7 @@ import {
   unsupportedBrowser,
 } from "components/UnsupportedBrowser";
 import ReactGA from "react-ga4";
+import { defaultDataIdFromObject } from "helpers/apollo";
 const appConfig = require("../config/main");
 const introspectionQueryResultData = require("./app/apollo/fragmentTypes.json");
 
@@ -48,6 +49,16 @@ const initApp = () => {
   const client = new ApolloClient({
     networkInterface,
     fragmentMatcher,
+    dataIdFromObject: (
+      obj: Record<string, unknown>
+    ): string | null | undefined => {
+      switch (obj.__typename) {
+        case "AnswerSummary":
+          return undefined; // doesn't cache this properly, should be cached with the beneficiary above
+        default:
+          return defaultDataIdFromObject(obj); // default handling
+      }
+    },
   });
 
   const history = createBrowserHistory();

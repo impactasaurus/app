@@ -1,5 +1,4 @@
 import React from "react";
-import { getDeltaReport, IDeltaReportResult } from "apollo/modules/reports";
 import { getOutcomeSet, IOutcomeResult } from "apollo/modules/outcomeSets";
 import { IStore } from "redux/IStore";
 import {
@@ -12,6 +11,7 @@ import {
   exportReportData,
   IReportOptions,
   EmptyReportMessage,
+  IUserReportOptions,
 } from "containers/Report/helpers";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { VizControlPanel } from "components/VizControlPanel";
@@ -20,13 +20,15 @@ import { DeltaReportDetails } from "./details";
 import { DeltaTable } from "./table";
 import { IURLConnector, setURL } from "redux/modules/url";
 import { bindActionCreators } from "redux";
+import { getReport, IReportResponse } from "apollo/modules/reports";
 
 const { connect } = require("react-redux");
 
 const allowedVisualisations = [Visualisation.BAR, Visualisation.TABLE];
 
-interface IProp extends IDeltaReportResult, IURLConnector, IReportOptions {
+interface IProp extends IURLConnector, IUserReportOptions {
   data?: IOutcomeResult;
+  report?: IReportResponse;
   vis?: Visualisation;
   agg?: Aggregation;
 
@@ -34,11 +36,13 @@ interface IProp extends IDeltaReportResult, IURLConnector, IReportOptions {
   isCanvasSnapshotPossible?: boolean;
 }
 
+const reportOpts = (p: IProp): IReportOptions => ({ minRecords: 2, ...p });
+
 const isCategoryAggregationAvailable = (props: IProp): boolean => {
-  if (props.DeltaReport.error || props.DeltaReport.loading) {
+  if (props.report.error || props.report.loading) {
     return false;
   }
-  return props.DeltaReport.getDeltaReport.categories.length > 0;
+  return props.report.getReport.categories.length > 0;
 };
 
 @connect(
@@ -68,7 +72,7 @@ class DeltaReportInner extends React.Component<IProp, any> {
     if (p.vis === Visualisation.BAR) {
       return (
         <DeltaReportStackedBarGraph
-          report={p.DeltaReport.getDeltaReport}
+          report={p.report.getReport}
           questionSet={p.data.getOutcomeSet}
           category={p.agg === Aggregation.CATEGORY}
         />
@@ -76,7 +80,7 @@ class DeltaReportInner extends React.Component<IProp, any> {
     } else {
       return (
         <DeltaTable
-          report={p.DeltaReport.getDeltaReport}
+          report={p.report.getReport}
           questionSet={p.data.getOutcomeSet}
           category={p.agg === Aggregation.CATEGORY}
         />
@@ -85,24 +89,20 @@ class DeltaReportInner extends React.Component<IProp, any> {
   }
 
   private export() {
-    exportReportData(this.props, this.props);
+    exportReportData(this.props.setURL, reportOpts(this.props));
   }
 
   public render() {
     if (
-      this.props.DeltaReport.getDeltaReport &&
-      this.props.DeltaReport.getDeltaReport.beneficiaries.length === 0
+      this.props.report.getReport &&
+      this.props.report.getReport.beneficiaries.length === 0
     ) {
-      return (
-        <EmptyReportMessage
-          ie={this.props.DeltaReport.getDeltaReport.excluded}
-        />
-      );
+      return <EmptyReportMessage ie={this.props.report.getReport.excluded} />;
     }
     return (
       <div>
         <DeltaReportDetails
-          report={this.props.DeltaReport.getDeltaReport}
+          report={this.props.report.getReport}
           questionnaire={this.props.data.getOutcomeSet}
         />
         <VizControlPanel
@@ -120,7 +120,7 @@ class DeltaReportInner extends React.Component<IProp, any> {
 // t("report")
 const DeltaInnerWithSpinner = ApolloLoaderHoC<IProp>(
   "report",
-  (p: IProp) => p.DeltaReport,
+  (p: IProp) => p.report,
   DeltaReportInner
 );
 // t("questionnaire")
@@ -130,15 +130,11 @@ const DeltaInnerWithSpinners = ApolloLoaderHoC(
   DeltaInnerWithSpinner
 );
 
-const DeltaInnerWithReport = getDeltaReport<IProp>(
-  (p) => p.questionnaire,
-  (p) => p.start.toISOString(),
-  (p) => p.end.toISOString(),
-  (p) => p.tags,
-  (p) => p.openStart,
-  (p) => p.orTags
+const DeltaInnerWithReport = getReport<IProp>(
+  (p) => reportOpts(p),
+  "report"
 )(DeltaInnerWithSpinners);
-const DeltaReport = getOutcomeSet<IProp>((p) => p.questionnaire)(
+const DeltaReport = getOutcomeSet<IUserReportOptions>((p) => p.questionnaire)(
   DeltaInnerWithReport
 );
 

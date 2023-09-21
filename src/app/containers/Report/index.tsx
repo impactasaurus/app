@@ -3,20 +3,25 @@ import { Helmet } from "react-helmet";
 import { IURLConnector, setURL } from "redux/modules/url";
 import { Grid, Icon, Menu } from "semantic-ui-react";
 import { bindActionCreators } from "redux";
-import { constructReportQueryParams, constructReportURL } from "helpers/report";
 import { SecondaryMenu } from "components/SecondaryMenu";
-import { IReportOptions } from "containers/Report/helpers";
+import {
+  IUserReportOptions,
+  getURLUserReportOptions,
+  reportURL,
+} from "containers/Report/helpers";
 import { DeltaReport } from "components/DeltaReport";
 import { ServiceReport } from "components/ServiceReport";
 import { StatusReport } from "components/StatusReport";
 import { WithTranslation, withTranslation } from "react-i18next";
 import { EndOfReportTour } from "components/TourReports";
+import { BaselineReport } from "components/BaselineReport";
 const { connect } = require("react-redux");
 
 export enum SubPage {
   DIST,
   CHANGE,
   STATUS,
+  BASELINE,
 }
 
 interface IProps extends IURLConnector, WithTranslation {
@@ -34,42 +39,11 @@ interface IProps extends IURLConnector, WithTranslation {
   child: SubPage;
 }
 
-const getQuestionSetIDFromProps = (p: IProps): string =>
-  p.match.params.questionSetID;
-const getStartDateFromProps = (p: IProps): Date =>
-  new Date(p.match.params.start);
-const getEndDateFromProps = (p: IProps): Date => new Date(p.match.params.end);
-const getTagsFromProps = (p: IProps): string[] => {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has("tags") === false) {
-    return [];
-  }
-  const tags = urlParams.get("tags");
-  return JSON.parse(tags);
-};
-const getOpenStartFromProps = (p: IProps): boolean => {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has("open") === false) {
-    return true;
-  }
-  return JSON.parse(urlParams.get("open"));
-};
-const getOrFromProps = (p: IProps): boolean => {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has("or") === false) {
-    return false;
-  }
-  return JSON.parse(urlParams.get("or"));
-};
-const getReportOptionsFromProps = (p: IProps): IReportOptions => {
-  return {
-    start: getStartDateFromProps(p),
-    end: getEndDateFromProps(p),
-    questionnaire: getQuestionSetIDFromProps(p),
-    openStart: getOpenStartFromProps(p),
-    orTags: getOrFromProps(p),
-    tags: getTagsFromProps(p),
-  };
+const getReportOptionsFromProps = (p: IProps): IUserReportOptions => {
+  return getURLUserReportOptions(
+    p.match.params,
+    new URLSearchParams(p.location.search)
+  );
 };
 
 @connect(
@@ -91,18 +65,8 @@ class ReportInner extends React.Component<IProps, null> {
   private innerPageSetter(toSet: SubPage): () => void {
     return () => {
       const options = getReportOptionsFromProps(this.props);
-      const url = constructReportURL(
-        SubPage[toSet].toLowerCase(),
-        options.start,
-        options.end,
-        options.questionnaire
-      );
-      const qs = constructReportQueryParams(
-        options.tags,
-        options.openStart,
-        options.orTags
-      );
-      this.props.setURL(url, qs);
+      const { url, params } = reportURL(SubPage[toSet].toLowerCase(), options);
+      this.props.setURL(url, params);
     };
   }
 
@@ -115,6 +79,9 @@ class ReportInner extends React.Component<IProps, null> {
     }
     if (child === SubPage.STATUS) {
       inner = <StatusReport {...options} />;
+    }
+    if (child === SubPage.BASELINE) {
+      inner = <BaselineReport {...options} />;
     }
     return (
       <div>
@@ -132,6 +99,13 @@ class ReportInner extends React.Component<IProps, null> {
           >
             <Icon name="exchange" />
             {t("Beneficiary Change")}
+          </Menu.Item>
+          <Menu.Item
+            active={child === SubPage.BASELINE}
+            onClick={this.innerPageSetter(SubPage.BASELINE)}
+          >
+            <Icon name="map pin" />
+            {t("Baseline")}
           </Menu.Item>
           <Menu.Item
             active={child === SubPage.STATUS}
