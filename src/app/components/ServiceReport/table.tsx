@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IAnswerDistance, IAnswerAggregationReport } from "models/report";
+import { IAnswerAggregation, IReport } from "models/report";
 import { IOutcomeSet } from "models/outcomeSet";
 import { ImpactTable, IRow } from "components/ImpactTable";
 import { useTranslation } from "react-i18next";
@@ -9,14 +9,14 @@ import {
 } from "helpers/questionnaire";
 
 interface IProp {
-  serviceReport: IAnswerAggregationReport;
+  report: IReport;
   questionSet: IOutcomeSet;
   category?: boolean;
 }
 
 function getRowData(
-  aa: IAnswerDistance[],
-  labeller: (IAnswerAggregation) => string
+  aa: IAnswerAggregation[],
+  labeller: (a: IAnswerAggregation) => string
 ): IRow[] {
   return aa.map((a): IRow => {
     return {
@@ -28,17 +28,17 @@ function getRowData(
 }
 
 function getCategoryRows(p: IProp): IRow[] {
-  const categoryLabeller = (aa: IAnswerDistance): string => {
+  const categoryLabeller = (aa: IAnswerAggregation): string => {
     return getCategoryFriendlyName(aa.id, p.questionSet);
   };
-  return getRowData(p.serviceReport.categories, categoryLabeller);
+  return getRowData(p.report.categories, categoryLabeller);
 }
 
 function getQuestionRows(p: IProp): IRow[] {
-  const qLabeller = (aa: IAnswerDistance): string => {
+  const qLabeller = (aa: IAnswerAggregation): string => {
     return getQuestionFriendlyName(aa.id, p.questionSet);
   };
-  return getRowData(p.serviceReport.questions, qLabeller);
+  return getRowData(p.report.questions, qLabeller);
 }
 
 function renderTable(t: (text: string) => string, p: IProp): JSX.Element {

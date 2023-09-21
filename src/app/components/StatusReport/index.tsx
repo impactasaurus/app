@@ -1,7 +1,11 @@
 import React, { useMemo } from "react";
 import { getReport, IReportResponse } from "apollo/modules/reports";
 import { getOutcomeSet, IOutcomeResult } from "apollo/modules/outcomeSets";
-import { IReportOptions } from "containers/Report/helpers";
+import {
+  exportReportData,
+  IReportOptions,
+  IUserReportOptions,
+} from "containers/Report/helpers";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import {
   IAggregation,
@@ -10,17 +14,14 @@ import {
   SnapshotReport,
 } from "components/SnapshotReport";
 import { useNavigator } from "redux/modules/url";
-import { constructReportQueryParams, constructReportURL } from "helpers/report";
 import { useTranslation } from "react-i18next";
 
-export interface IExternalProps extends IReportOptions {
-  questionnaire: string;
-}
-
-export interface IProp extends IExternalProps {
+export interface IProp extends IUserReportOptions {
   data: IOutcomeResult;
   report: IReportResponse;
 }
+
+const reportOpts = (p: IProp): IReportOptions => ({ minRecords: 1, ...p });
 
 const StatusReportInner = (p: IProp) => {
   const setURL = useNavigator();
@@ -53,9 +54,7 @@ const StatusReportInner = (p: IProp) => {
   }, [p.report.getReport]);
 
   const exportData = () => {
-    const url = constructReportURL("export", p.start, p.end, p.questionnaire);
-    const qp = constructReportQueryParams(p.tags, p.openStart, p.orTags);
-    setURL(url, qp);
+    exportReportData(setURL, reportOpts(p));
   };
 
   return (
@@ -85,19 +84,11 @@ const StatusInnerWithSpinners = ApolloLoaderHoC(
 );
 
 const StatusInnerWithReport = getReport<IProp>(
-  (p) => ({
-    questionnaire: p.questionnaire,
-    start: p.start,
-    end: p.end,
-    tags: p.tags,
-    orTags: p.orTags,
-    openStart: true,
-    minRecords: 1,
-  }),
+  (p) => reportOpts(p),
   "report"
 )(StatusInnerWithSpinners);
 
-const StatusReport = getOutcomeSet<IExternalProps>((p) => p.questionnaire)(
+const StatusReport = getOutcomeSet<IUserReportOptions>((p) => p.questionnaire)(
   StatusInnerWithReport
 );
 

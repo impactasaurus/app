@@ -1,5 +1,5 @@
 import * as React from "react";
-import { getJOCServiceReport, IJOCReportResult } from "apollo/modules/reports";
+import { getReport, IReportResponse } from "apollo/modules/reports";
 import { getOutcomeSet, IOutcomeResult } from "apollo/modules/outcomeSets";
 import { ServiceReportDetails } from "./details";
 import { ServiceReportRadar } from "./radar";
@@ -17,25 +17,29 @@ import {
   exportReportData,
   IReportOptions,
   EmptyReportMessage,
+  IUserReportOptions,
 } from "containers/Report/helpers";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { connect } from "react-redux";
 
 const allowedVisualisations = [Visualisation.RADAR, Visualisation.TABLE];
 
-interface IProp extends IJOCReportResult, IURLConnector, IReportOptions {
+interface IProp extends IUserReportOptions, IURLConnector, IReportOptions {
   data?: IOutcomeResult;
+  report: IReportResponse;
   vis?: Visualisation;
   agg?: Aggregation;
   isCategoryAgPossible?: boolean;
   isCanvasSnapshotPossible?: boolean;
 }
 
+const reportOpts = (p: IProp): IReportOptions => ({ minRecords: 2, ...p });
+
 const isCategoryAggregationAvailable = (props: IProp): boolean => {
-  if (props.JOCServiceReport.error || props.JOCServiceReport.loading) {
+  if (props.report.error || props.report.loading) {
     return false;
   }
-  return props.JOCServiceReport.getJOCServiceReport.categories.length > 0;
+  return props.report.getReport.categories.length > 0;
 };
 
 const ServiceReportInner = (p: IProp) => {
@@ -43,7 +47,7 @@ const ServiceReportInner = (p: IProp) => {
     if (p.vis === Visualisation.RADAR) {
       return (
         <ServiceReportRadar
-          serviceReport={p.JOCServiceReport.getJOCServiceReport}
+          report={p.report.getReport}
           questionSet={p.data.getOutcomeSet}
           category={p.agg === Aggregation.CATEGORY}
         />
@@ -51,7 +55,7 @@ const ServiceReportInner = (p: IProp) => {
     }
     return (
       <ServiceReportTable
-        serviceReport={p.JOCServiceReport.getJOCServiceReport}
+        report={p.report.getReport}
         questionSet={p.data.getOutcomeSet}
         category={p.agg === Aggregation.CATEGORY}
       />
@@ -59,23 +63,16 @@ const ServiceReportInner = (p: IProp) => {
   };
 
   const exportReport = () => {
-    exportReportData(p, p);
+    exportReportData(p.setURL, reportOpts(p));
   };
 
-  if (
-    p.JOCServiceReport.getJOCServiceReport &&
-    p.JOCServiceReport.getJOCServiceReport.beneficiaries.length === 0
-  ) {
-    return (
-      <EmptyReportMessage
-        ie={p.JOCServiceReport.getJOCServiceReport.excluded}
-      />
-    );
+  if (p.report.getReport && p.report.getReport.beneficiaries.length === 0) {
+    return <EmptyReportMessage ie={p.report.getReport.excluded} />;
   }
   return (
     <div>
       <ServiceReportDetails
-        serviceReport={p.JOCServiceReport.getJOCServiceReport}
+        report={p.report.getReport}
         questionSet={p.data.getOutcomeSet}
       />
       <VizControlPanel
@@ -103,7 +100,7 @@ const storeToProps = (state: IStore, ownProps: IProp) => {
 // t("report")
 const ServiceInnerWithSpinner = ApolloLoaderHoC<IProp>(
   "report",
-  (p: IProp) => p.JOCServiceReport,
+  (p: IProp) => p.report,
   ServiceReportInner
 );
 // t("questionnaire")
@@ -118,16 +115,12 @@ const ServiceInnerConnected = connect(
   UrlConnector
 )(ServiceInnerWithSpinners);
 
-const ServiceInnerWithReport = getJOCServiceReport<IProp>(
-  (p) => p.questionnaire,
-  (p) => p.start.toISOString(),
-  (p) => p.end.toISOString(),
-  (p) => p.tags,
-  (p) => p.openStart,
-  (p) => p.orTags
+const ServiceInnerWithReport = getReport<IProp>(
+  (p) => reportOpts(p),
+  "report"
 )(ServiceInnerConnected);
 
-const ServiceReport = getOutcomeSet<IProp>((p) => p.questionnaire)(
+const ServiceReport = getOutcomeSet<IUserReportOptions>((p) => p.questionnaire)(
   ServiceInnerWithReport
 );
 

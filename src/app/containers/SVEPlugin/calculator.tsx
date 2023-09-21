@@ -4,13 +4,13 @@ import { IFormOutput as ReportForm } from "components/ReportForm";
 import { Form } from "semantic-ui-react";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { getOutcomeSet, IOutcomeResult } from "apollo/modules/outcomeSets";
-import { getJOCServiceReport, IJOCReportResult } from "apollo/modules/reports";
 import { QuestionSelect } from "components/QuestionSelect";
 import { useTranslation } from "react-i18next";
 import { FormField } from "components/FormField";
-import { IAnswerDistance, IAnswerAggregationReport } from "models/report";
 import { convertQuestionValueToPercentage } from "helpers/questionnaire";
 import { IOutcomeSet } from "models/outcomeSet";
+import { IReportResponse, getReport } from "apollo/modules/reports";
+import { IAnswerAggregation, IReport } from "models/report";
 
 export interface IDeflators {
   deadWeight?: number;
@@ -18,18 +18,21 @@ export interface IDeflators {
   dropOff?: number;
 }
 
-interface IProps extends IJOCReportResult {
-  data?: IOutcomeResult;
-
+interface IExternalProps {
   config: ReportForm;
   onFormSubmit(v: IDeflators): void;
   back(): void;
 }
 
+interface IProps extends IExternalProps {
+  data?: IOutcomeResult;
+  report: IReportResponse;
+}
+
 const extractFraction = (
   qID: string | undefined,
-  extractor: (aa: IAnswerDistance) => number,
-  report: IAnswerAggregationReport,
+  extractor: (aa: IAnswerAggregation) => number,
+  report: IReport,
   questionnaire: IOutcomeSet
 ): number | undefined => {
   if (!qID) {
@@ -54,7 +57,7 @@ const extractFraction = (
 // take the first response as this represents the likelihood of them achieving the outcome without support.
 const calcDeadWeight = (
   qID: string | undefined,
-  report: IAnswerAggregationReport,
+  report: IReport,
   questionnaire: IOutcomeSet
 ): number | undefined =>
   extractFraction(qID, (aa) => aa.initial, report, questionnaire);
@@ -63,7 +66,7 @@ const calcDeadWeight = (
 // doesn't really need to be longitudinal, take the most recent response.
 const calcDropOff = (
   qID: string | undefined,
-  report: IAnswerAggregationReport,
+  report: IReport,
   questionnaire: IOutcomeSet
 ): number | undefined =>
   extractFraction(qID, (aa) => aa.latest, report, questionnaire);
@@ -72,7 +75,7 @@ const calcDropOff = (
 // doesn't really need to be longitudinal, take the most recent response.
 const calcAttribution = (
   qID: string | undefined,
-  report: IAnswerAggregationReport,
+  report: IReport,
   questionnaire: IOutcomeSet
 ): number | undefined =>
   extractFraction(qID, (aa) => aa.latest, report, questionnaire);
@@ -89,19 +92,15 @@ const SVECalculatorInner = (p: IProps): JSX.Element => {
     setDeflators({
       attribution: calcAttribution(
         attributionQ,
-        p.JOCServiceReport.getJOCServiceReport,
+        p.report.getReport,
         p.data.getOutcomeSet
       ),
       deadWeight: calcDeadWeight(
         deadWeightQ,
-        p.JOCServiceReport.getJOCServiceReport,
+        p.report.getReport,
         p.data.getOutcomeSet
       ),
-      dropOff: calcDropOff(
-        dropOffQ,
-        p.JOCServiceReport.getJOCServiceReport,
-        p.data.getOutcomeSet
-      ),
+      dropOff: calcDropOff(dropOffQ, p.report.getReport, p.data.getOutcomeSet),
     });
   }, [dropOffQ, attributionQ, deadWeightQ]);
 
@@ -147,7 +146,7 @@ const SVECalculatorInner = (p: IProps): JSX.Element => {
 // t("data")
 const SVEWithSpinner = ApolloLoaderHoC<IProps>(
   "data",
-  (p: IProps) => p.JOCServiceReport,
+  (p: IProps) => p.report,
   SVECalculatorInner
 );
 
@@ -158,16 +157,20 @@ const SVEWithSpinners = ApolloLoaderHoC<IProps>(
   SVEWithSpinner
 );
 
-const SVEWithReport = getJOCServiceReport<IProps>(
-  (p) => p.config.questionSetID,
-  (p) => p.config?.start?.toISOString() ?? new Date(0).toISOString(),
-  (p) => p.config?.end?.toISOString() ?? new Date().toISOString(),
-  (p) => p.config.tags,
-  () => false,
-  (p) => p.config.orTags
+const SVEWithReport = getReport<IProps>(
+  (p) => ({
+    questionnaire: p.config.questionSetID,
+    start: p.config?.start ?? new Date(0),
+    end: p.config?.end ?? new Date(),
+    tags: p.config.tags,
+    orTags: p.config.orTags,
+    minRecords: 2,
+    openStart: false,
+  }),
+  "report"
 )(SVEWithSpinners);
 
-const SVEWithQuestionnaire = getOutcomeSet<IProps>(
+const SVEWithQuestionnaire = getOutcomeSet<IExternalProps>(
   (p: IProps) => p.config.questionSetID
 )(SVEWithReport);
 

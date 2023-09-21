@@ -1,5 +1,4 @@
 import * as React from "react";
-import { IExcluded } from "models/report";
 import { IOutcomeSet } from "models/outcomeSet";
 import {
   Message,
@@ -12,6 +11,12 @@ import { renderArray } from "helpers/react";
 import "./style.less";
 import { BeneficiaryPill } from "components/BeneficiaryPill";
 import { WithTranslation, withTranslation } from "react-i18next";
+
+export interface IExcluded {
+  categoryIDs: string[];
+  questionIDs: string[];
+  beneficiaryIDs: string[];
+}
 
 interface IProp extends WithTranslation {
   introduction?: string;

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IAnswerAggregationReport, IAnswerDistance } from "models/report";
+import { IAnswerAggregation, IReport } from "models/report";
 import { IOutcomeSet } from "models/outcomeSet";
 import { RadarChart } from "components/RadarChart";
 import { RadarData, IRadarSeries, IRadarPoint } from "models/radar";
@@ -15,16 +15,16 @@ import {
 import { useTranslation } from "react-i18next";
 
 interface IProp {
-  serviceReport: IAnswerAggregationReport;
+  report: IReport;
   questionSet: IOutcomeSet;
   category?: boolean;
 }
 
 function getRadarSeries(
   t: (text: string) => string,
-  aa: IAnswerDistance[],
-  labeller: (IAnswerAggregation) => string,
-  indexer: (IAnswerAggregation) => number
+  aa: IAnswerAggregation[],
+  labeller: (a: IAnswerAggregation) => string,
+  indexer: (a: IAnswerAggregation) => number
 ): IRadarSeries[] {
   const pre = aa.reduce(
     (pre, a) => {
@@ -63,19 +63,14 @@ function getCategoryRadarData(
   t: (text: string) => string,
   p: IProp
 ): RadarData {
-  const getCatLabel = (aa: IAnswerDistance): string => {
+  const getCatLabel = (aa: IAnswerAggregation): string => {
     return getCategoryFriendlyName(aa.id, p.questionSet);
   };
-  const getCatIdx = (aa: IAnswerDistance): number => {
+  const getCatIdx = (aa: IAnswerAggregation): number => {
     return p.questionSet.categories.findIndex((c) => c.id === aa.id);
   };
   return {
-    series: getRadarSeries(
-      t,
-      p.serviceReport.categories,
-      getCatLabel,
-      getCatIdx
-    ),
+    series: getRadarSeries(t, p.report.categories, getCatLabel, getCatIdx),
     scaleMin: getMinCategoryValue(p.questionSet),
     scaleMax: getMaxCategoryValue(p.questionSet),
   };
@@ -85,14 +80,14 @@ function getQuestionRadarData(
   t: (text: string) => string,
   p: IProp
 ): RadarData {
-  const getQLabel = (aa: IAnswerDistance): string => {
+  const getQLabel = (aa: IAnswerAggregation): string => {
     return getQuestionFriendlyName(aa.id, p.questionSet);
   };
-  const getQIdx = (aa: IAnswerDistance): number => {
+  const getQIdx = (aa: IAnswerAggregation): number => {
     return p.questionSet.questions.findIndex((q) => q.id === aa.id);
   };
   return {
-    series: getRadarSeries(t, p.serviceReport.questions, getQLabel, getQIdx),
+    series: getRadarSeries(t, p.report.questions, getQLabel, getQIdx),
     scaleMin: getMinQuestionValue(p.questionSet),
     scaleMax: getMaxQuestionValue(p.questionSet),
   };
@@ -106,7 +101,7 @@ function getRadarData(t: (text: string) => string, p: IProp): RadarData {
 }
 
 function renderRadar(t: (text: string) => string, p: IProp): JSX.Element {
-  if (p.serviceReport.beneficiaries.length === 0) {
+  if (p.report.beneficiaries.length === 0) {
     return <div />;
   }
   const data = getRadarData(t, p);

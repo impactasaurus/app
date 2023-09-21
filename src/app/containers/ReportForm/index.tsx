@@ -1,11 +1,11 @@
 import * as React from "react";
 import { IURLConnector, UrlHOC } from "redux/modules/url";
-import { constructReportQueryParams, constructReportURL } from "helpers/report";
 import { IFormOutput, ReportForm as RFComponent } from "components/ReportForm";
 import { QuestionnaireRequired } from "components/QuestionnaireRequired";
 import { PageWrapperHoC } from "components/PageWrapperHoC";
 import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
+import { reportURL } from "containers/Report/helpers";
 
 const RFWrapped = QuestionnaireRequired(RFComponent);
 
@@ -47,9 +47,15 @@ const ReportFormInner = (p: IURLConnector) => {
       end = new Date();
     }
     logGAEvent(v);
-    const url = constructReportURL("service", start, end, v.questionSetID);
-    const qp = constructReportQueryParams(v.tags, false, v.orTags);
-    p.setURL(url, qp);
+    const { url, params } = reportURL("service", {
+      questionnaire: v.questionSetID,
+      start,
+      end,
+      tags: v.tags,
+      orTags: v.orTags,
+      openStart: true,
+    });
+    p.setURL(url, params);
   };
 
   return <RFWrapped t={t} onFormSubmit={navigateToReport} />;

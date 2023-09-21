@@ -55,6 +55,18 @@ export const getSearchParam = <T>(
   };
 };
 
+export function getJSONFromURL<T>(
+  p: URLSearchParams,
+  key: string,
+  fallback: T
+): T {
+  if (p.has(key) === false) {
+    return fallback;
+  }
+  const raw = p.get(key);
+  return JSON.parse(raw);
+}
+
 export const isUrlAbsolute = (url: string): boolean =>
   url.indexOf("://") > 0 || url.indexOf("//") === 0;
 

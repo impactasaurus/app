@@ -1,52 +1,5 @@
 import { gql } from "react-apollo";
 
-export interface IID {
-  id: string;
-}
-
-export interface IExclusion {
-  beneficiary?: string;
-  question?: string;
-  category?: string;
-  reason: string;
-}
-
-export interface IAnswerDistance extends IID {
-  initial: number;
-  latest: number;
-}
-
-export interface IAnswerAggregationReport {
-  beneficiaries: IID[];
-  questions: IAnswerDistance[];
-  categories: IAnswerDistance[];
-  excluded: IExclusion[];
-}
-
-export const answerAggregationFragment = gql`
-  fragment answerAggregationFragment on Report {
-    beneficiaries {
-      id
-    }
-    questions {
-      id
-      initial
-      latest
-    }
-    categories {
-      id
-      initial
-      latest
-    }
-    excluded {
-      beneficiary
-      question
-      category
-      reason
-    }
-  }
-`;
-
 export const reportFragment = gql`
   fragment reportFragment on Report {
     beneficiaries {
@@ -103,10 +56,15 @@ export const reportFragment = gql`
   }
 `;
 
-export interface IExcluded {
-  categoryIDs: string[];
-  questionIDs: string[];
-  beneficiaryIDs: string[];
+export interface IID {
+  id: string;
+}
+
+export interface IExclusion {
+  beneficiary?: string;
+  question?: string;
+  category?: string;
+  reason: string;
 }
 
 export interface IReportStats {

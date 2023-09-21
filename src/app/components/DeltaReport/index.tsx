@@ -11,6 +11,7 @@ import {
   exportReportData,
   IReportOptions,
   EmptyReportMessage,
+  IUserReportOptions,
 } from "containers/Report/helpers";
 import { ApolloLoaderHoC } from "components/ApolloLoaderHoC";
 import { VizControlPanel } from "components/VizControlPanel";
@@ -25,7 +26,7 @@ const { connect } = require("react-redux");
 
 const allowedVisualisations = [Visualisation.BAR, Visualisation.TABLE];
 
-interface IProp extends IURLConnector, IReportOptions {
+interface IProp extends IURLConnector, IUserReportOptions {
   data?: IOutcomeResult;
   report?: IReportResponse;
   vis?: Visualisation;
@@ -34,6 +35,8 @@ interface IProp extends IURLConnector, IReportOptions {
   isCategoryAgPossible?: boolean;
   isCanvasSnapshotPossible?: boolean;
 }
+
+const reportOpts = (p: IProp): IReportOptions => ({ minRecords: 2, ...p });
 
 const isCategoryAggregationAvailable = (props: IProp): boolean => {
   if (props.report.error || props.report.loading) {
@@ -86,7 +89,7 @@ class DeltaReportInner extends React.Component<IProp, any> {
   }
 
   private export() {
-    exportReportData(this.props, this.props);
+    exportReportData(this.props.setURL, reportOpts(this.props));
   }
 
   public render() {
@@ -128,18 +131,10 @@ const DeltaInnerWithSpinners = ApolloLoaderHoC(
 );
 
 const DeltaInnerWithReport = getReport<IProp>(
-  (p) => ({
-    questionnaire: p.questionnaire,
-    start: p.start,
-    end: p.end,
-    tags: p.tags,
-    openStart: p.openStart,
-    orTags: p.orTags,
-    minRecords: 2,
-  }),
+  (p) => reportOpts(p),
   "report"
 )(DeltaInnerWithSpinners);
-const DeltaReport = getOutcomeSet<IProp>((p) => p.questionnaire)(
+const DeltaReport = getOutcomeSet<IUserReportOptions>((p) => p.questionnaire)(
   DeltaInnerWithReport
 );
 

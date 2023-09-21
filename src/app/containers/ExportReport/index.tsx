@@ -4,6 +4,7 @@ import { exportReport, IExportReportResult } from "apollo/modules/reports";
 import { Error } from "components/Error";
 import { MinimalPageWrapperHoC } from "components/PageWrapperHoC";
 import { useTranslation } from "react-i18next";
+import { getURLReportOptions } from "containers/Report/helpers";
 import * as config from "../../../../config/main";
 
 interface IProp {
@@ -38,52 +39,8 @@ const ExportReportInner = (p: IProp) => {
   return <span>{t("Download started")}</span>;
 };
 
-function getQuestionSetIDFromProps(p: IProp): string {
-  return p.match.params.questionSetID;
-}
-
-function getStartDateFromProps(p: IProp): string {
-  return p.match.params.start;
-}
-
-function getEndDateFromProps(p: IProp): string {
-  return p.match.params.end;
-}
-
-function getTagsFromProps(p: IProp): string[] {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has("tags") === false) {
-    return [];
-  }
-  const tags = urlParams.get("tags");
-  const parsedTags = JSON.parse(tags);
-  return parsedTags;
-}
-
-function getOpenFromProps(p: IProp): boolean {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has("open") === false) {
-    return false;
-  }
-  const open = urlParams.get("open");
-  return JSON.parse(open);
-}
-
-function getOrFromProps(p: IProp): boolean {
-  const urlParams = new URLSearchParams(p.location.search);
-  if (urlParams.has("or") === false) {
-    return false;
-  }
-  return JSON.parse(urlParams.get("or"));
-}
-
-const ExportReportData = exportReport(
-  getQuestionSetIDFromProps,
-  getStartDateFromProps,
-  getEndDateFromProps,
-  getTagsFromProps,
-  getOpenFromProps,
-  getOrFromProps
+const ExportReportData = exportReport<IProp>((p) =>
+  getURLReportOptions(p.match.params, new URLSearchParams(p.location.search))
 )(ExportReportInner);
 // t("Report Export")
 const ExportReport = MinimalPageWrapperHoC(
