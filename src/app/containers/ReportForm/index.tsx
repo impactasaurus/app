@@ -53,7 +53,7 @@ const ReportFormInner = (p: IURLConnector) => {
       end,
       tags: v.tags,
       orTags: v.orTags,
-      openStart: true,
+      openStart: false,
     });
     p.setURL(url, params);
   };

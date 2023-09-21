@@ -87,7 +87,7 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
     <span>
       <Hint
         text={t(
-          "Beneficiaries must have at least two included records, to be considered in the report"
+          "Only records within the specified time range will be included in the report"
         )}
       />
       {t("Included Records")}
