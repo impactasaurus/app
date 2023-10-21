@@ -2,6 +2,7 @@ import React from "react";
 import { Menu, Icon } from "semantic-ui-react";
 import { getOrganisation, IGetOrgResult } from "apollo/modules/organisation";
 import { Link } from "react-router-dom";
+import { pluginActive } from "helpers/organisation";
 
 interface IProps {
   org?: IGetOrgResult;
@@ -11,12 +12,8 @@ interface IProps {
 const buttonTitle = "SVE"; // name of product, so not translating
 
 const HeaderPluginsInner = (p: IProps): JSX.Element[] => {
-  const plugins = p.org?.getOrganisation?.plugins;
-  const pluginActive = (pluginID: string): boolean => {
-    return plugins && plugins.findIndex((p) => p.id === pluginID) != -1;
-  };
   const items: JSX.Element[] = [];
-  if (pluginActive("sve")) {
+  if (pluginActive(p.org?.getOrganisation, "sve")) {
     items.push(
       <Menu.Item
         as={Link}

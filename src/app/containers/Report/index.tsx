@@ -10,11 +10,13 @@ import {
   reportURL,
 } from "containers/Report/helpers";
 import { DeltaReport } from "components/DeltaReport";
-import { ServiceReport } from "components/ServiceReport";
+import { DilutedServiceReport, ServiceReport } from "components/ServiceReport";
 import { StatusReport } from "components/StatusReport";
 import { WithTranslation, withTranslation } from "react-i18next";
 import { EndOfReportTour } from "components/TourReports";
 import { BaselineReport } from "components/BaselineReport";
+import { IGetOrgResult, getOrganisation } from "apollo/modules/organisation";
+import { pluginActive } from "helpers/organisation";
 const { connect } = require("react-redux");
 
 export enum SubPage {
@@ -22,6 +24,7 @@ export enum SubPage {
   CHANGE,
   STATUS,
   BASELINE,
+  DILUTED_DIST, // distance travelled, including beneficiaries with only 1 record
 }
 
 interface IProps extends IURLConnector, WithTranslation {
@@ -37,6 +40,7 @@ interface IProps extends IURLConnector, WithTranslation {
     search: string;
   };
   child: SubPage;
+  org?: IGetOrgResult;
 }
 
 const getReportOptionsFromProps = (p: IProps): IUserReportOptions => {
@@ -71,7 +75,7 @@ class ReportInner extends React.Component<IProps, null> {
   }
 
   public render(): JSX.Element {
-    const { t, child } = this.props;
+    const { t, child, org } = this.props;
     const options = getReportOptionsFromProps(this.props);
     let inner: JSX.Element = <ServiceReport {...options} />;
     if (child === SubPage.CHANGE) {
@@ -83,6 +87,9 @@ class ReportInner extends React.Component<IProps, null> {
     if (child === SubPage.BASELINE) {
       inner = <BaselineReport {...options} />;
     }
+    if (child == SubPage.DILUTED_DIST) {
+      inner = <DilutedServiceReport {...options} />;
+    }
     return (
       <div>
         <SecondaryMenu signpost={t("Impact Report")}>
@@ -93,6 +100,15 @@ class ReportInner extends React.Component<IProps, null> {
             <Icon name="road" />
             {t("Distance Travelled")}
           </Menu.Item>
+          {pluginActive(org?.getOrganisation, "diluted_report") && (
+            <Menu.Item
+              active={child === SubPage.DILUTED_DIST}
+              onClick={this.innerPageSetter(SubPage.DILUTED_DIST)}
+            >
+              <Icon name="road" />
+              {"~ " + t("Distance Travelled")}
+            </Menu.Item>
+          )}
           <Menu.Item
             active={child === SubPage.CHANGE}
             onClick={this.innerPageSetter(SubPage.CHANGE)}
@@ -129,4 +145,5 @@ class ReportInner extends React.Component<IProps, null> {
   }
 }
 
-export const Report = withTranslation()(ReportInner);
+const ReportWithOrg = getOrganisation(ReportInner, "org");
+export const Report = withTranslation()(ReportWithOrg);
