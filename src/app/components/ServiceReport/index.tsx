@@ -33,7 +33,13 @@ interface IProp extends IUserReportOptions, IURLConnector, IReportOptions {
   isCanvasSnapshotPossible?: boolean;
 }
 
-const reportOpts = (p: IProp): IReportOptions => ({ minRecords: 2, ...p });
+const reportOpts = (
+  p: IUserReportOptions,
+  minRecords?: number
+): IReportOptions => ({
+  minRecords: minRecords ?? 2,
+  ...p,
+});
 
 const isCategoryAggregationAvailable = (props: IProp): boolean => {
   if (props.report.error || props.report.loading) {
@@ -115,13 +121,16 @@ const ServiceInnerConnected = connect(
   UrlConnector
 )(ServiceInnerWithSpinners);
 
-const ServiceInnerWithReport = getReport<IProp>(
-  (p) => reportOpts(p),
-  "report"
+const ServiceInnerWithQuestionnaire = getOutcomeSet<IProp>(
+  (p) => p.questionnaire
 )(ServiceInnerConnected);
 
-const ServiceReport = getOutcomeSet<IUserReportOptions>((p) => p.questionnaire)(
-  ServiceInnerWithReport
-);
+export const ServiceReport = getReport<IUserReportOptions>(
+  (p) => reportOpts(p),
+  "report"
+)(ServiceInnerWithQuestionnaire);
 
-export { ServiceReport };
+export const DilutedServiceReport = getReport<IUserReportOptions>(
+  (p) => reportOpts(p, 1),
+  "report"
+)(ServiceInnerWithQuestionnaire);
