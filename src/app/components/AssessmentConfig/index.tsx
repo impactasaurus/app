@@ -23,6 +23,7 @@ import {
 } from "components/TourRecordCreation";
 import "./style.less";
 import { QuestionnairishType } from "components/QuestionnairesAndSequencesHoC";
+import { RequiredTagInput } from "components/TagInput/required";
 
 interface IProps extends WithTranslation {
   showDatePicker: boolean;
@@ -34,6 +35,7 @@ interface IProps extends WithTranslation {
 interface IAssessmentConfigAndDebounce extends IAssessmentConfig {
   debouncedBenID?: string;
   defaultBen?: string;
+  requiredTags?: string[];
 }
 
 const InnerForm = (
@@ -149,6 +151,13 @@ const InnerForm = (
             includeSequences={true}
           />
         </FormField>
+        <RequiredTagInput
+          questionnaireID={values.qishID}
+          onChange={(tags: string[]): void => {
+            setFieldValue("requiredTags", tags);
+            setFieldTouched("requiredTags", true);
+          }}
+        />
         <FormField
           inputID="as-tags"
           label={tagLabel}
@@ -241,6 +250,9 @@ const AssessmentConfigInner = withFormik<IProps, IAssessmentConfigAndDebounce>({
         errors.date = t("Please select a date in the past");
       }
     }
+    if (values.requiredTags.filter((v) => v === undefined).length > 0) {
+      errors.requiredTags = t("Required tags not provided");
+    }
     return errors;
   },
   handleSubmit: (
@@ -253,7 +265,9 @@ const AssessmentConfigInner = withFormik<IProps, IAssessmentConfigAndDebounce>({
       .onSubmit({
         qishID: v.qishID,
         beneficiaryID: v.beneficiaryID,
-        tags: v.tags,
+        tags: Array.from(
+          new Set([...(v.tags || []), ...(v.requiredTags || [])])
+        ),
         date: v.date,
         qishType: v.qishType,
       })
