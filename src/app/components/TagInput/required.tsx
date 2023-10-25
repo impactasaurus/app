@@ -27,13 +27,12 @@ const RTFormField = (p: {
     p.onChange(selected);
   }, [selected]);
 
-  const inputID = p.baseID + "--" + atob(p.tag.label);
+  const inputID = p.baseID + "--" + btoa(p.tag.label);
   const [touched, setTouched] = useState(false);
   const { t } = useTranslation();
 
   const onSelect = (_, data) => {
-    const selectedItem = (p.tag.options || []).find((i) => i === data.value);
-    setSelected(selectedItem);
+    setSelected(data.value);
   };
 
   return (
@@ -61,7 +60,7 @@ const RTFormField = (p: {
 
 const RTInput = (p: IProps): JSX.Element => {
   const [tags, setTags] = useState<Record<string, string>>({});
-  const key = (label: string) => `${p.qishID}::${atob(label)}`;
+  const key = (label: string) => `${p.qishID}::${btoa(label)}`;
 
   useEffect(() => {
     const values = Object.keys(tags)
@@ -72,9 +71,10 @@ const RTInput = (p: IProps): JSX.Element => {
 
   const onChange = (rt: IRequiredTag): ((tag: string) => void) => {
     return (tag: string) => {
+      const cachedKey = key(rt.label);
       setTags((tags) => ({
         ...tags,
-        [key(rt.label)]: tag,
+        [cachedKey]: tag,
       }));
     };
   };
@@ -105,7 +105,9 @@ interface IExtProps {
 const RTIQuestionnaireInner = (
   p: IExtProps & { data: IOutcomeResult }
 ): JSX.Element => {
-  return <RTInput {...p} requiredTags={p?.data?.getOutcomeSet?.requiredTags} />;
+  const loaded = p?.data?.getOutcomeSet?.id === p.qishID;
+  const reqTags = loaded ? p?.data?.getOutcomeSet?.requiredTags : undefined;
+  return <RTInput {...p} requiredTags={reqTags} />;
 };
 const RTIQuestionnaire = getOutcomeSet((p: IExtProps) => p.qishID)(
   RTIQuestionnaireInner
@@ -114,7 +116,9 @@ const RTIQuestionnaire = getOutcomeSet((p: IExtProps) => p.qishID)(
 const RTISequenceInner = (
   p: IExtProps & { data: IGetSequence }
 ): JSX.Element => {
-  return <RTInput {...p} requiredTags={p?.data?.sequence?.requiredTags} />;
+  const loaded = p?.data?.sequence?.id === p.qishID;
+  const reqTags = loaded ? p?.data?.sequence?.requiredTags : undefined;
+  return <RTInput {...p} requiredTags={reqTags} />;
 };
 const RTISequence = getSequence((p: IExtProps) => p.qishID)(RTISequenceInner);
 
