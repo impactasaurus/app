@@ -82,7 +82,8 @@ const InnerForm = (props: FormikProps<ISummonConfig> & IProps) => {
         />
       </FormField>
       <RequiredTagInput
-        questionnaireID={values.qishID}
+        qishID={values.qishID}
+        qishType={values.qishType}
         onChange={(tags: string[]): void => {
           setFieldValue("requiredTags", tags);
           setFieldTouched("requiredTags", true);
