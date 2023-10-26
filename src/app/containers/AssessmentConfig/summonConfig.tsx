@@ -13,6 +13,7 @@ import { WithTranslation, withTranslation } from "react-i18next";
 import { QuestionnairishType } from "components/QuestionnairesAndSequencesHoC";
 import { Hint } from "components/Hint";
 import { TagInputWithQuestionnaireSuggestions } from "components/TagInput";
+import { RequiredTagInput } from "components/TagInput/required";
 
 interface IProps extends WithTranslation {
   onSubmit: (c: ISummonConfig) => Promise<void>;
@@ -23,6 +24,7 @@ export interface ISummonConfig {
   qishID: string;
   qishType: QuestionnairishType;
   tags: string[];
+  requiredTags?: string[];
 }
 
 const InnerForm = (props: FormikProps<ISummonConfig> & IProps) => {
@@ -79,6 +81,14 @@ const InnerForm = (props: FormikProps<ISummonConfig> & IProps) => {
           includeSequences={true}
         />
       </FormField>
+      <RequiredTagInput
+        qishID={values.qishID}
+        qishType={values.qishType}
+        onChange={(tags: string[]): void => {
+          setFieldValue("requiredTags", tags);
+          setFieldTouched("requiredTags", true);
+        }}
+      />
       <FormField
         inputID="sc-tags"
         label={tagLabel}
@@ -122,6 +132,9 @@ const SummonConfigInner = withFormik<IProps, ISummonConfig>({
     if (!values.qishID || values.qishID === "") {
       errors.qishID = p.t("Please select a questionnaire");
     }
+    if (values.requiredTags.filter((v) => v === undefined).length > 0) {
+      errors.requiredTags = p.t("Required tags not provided");
+    }
     return errors;
   },
   handleSubmit: (
@@ -134,7 +147,9 @@ const SummonConfigInner = withFormik<IProps, ISummonConfig>({
       .onSubmit({
         qishID: v.qishID,
         qishType: v.qishType,
-        tags: v.tags || [],
+        tags: Array.from(
+          new Set([...(v.tags || []), ...(v.requiredTags || [])])
+        ),
       })
       .then(() => {
         // will move on from this component so no need to do anything

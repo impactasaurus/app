@@ -11,6 +11,12 @@ export interface IOutcomeSet extends IWithNotes {
   questions: IQuestion[];
   categories: ICategory[];
   readOnly: boolean;
+  requiredTags: IRequiredTag[];
+}
+
+export interface IRequiredTag {
+  label: string;
+  options?: string[];
 }
 
 export const fragment = gql`
@@ -29,6 +35,10 @@ export const fragment = gql`
       ...defaultCategory
     }
     readOnly
+    requiredTags {
+      label
+      options
+    }
   }
   ${qFragment}
   ${cFragment}

@@ -1,4 +1,5 @@
 import { gql } from "react-apollo";
+import { IRequiredTag } from "./outcomeSet";
 
 export interface ISequence {
   id: string;
@@ -9,6 +10,7 @@ export interface ISequence {
     name: string;
   }[];
   destination?: string;
+  requiredTags: IRequiredTag[];
 }
 
 export const fragment = gql`
@@ -21,5 +23,9 @@ export const fragment = gql`
       name
     }
     destination
+    requiredTags {
+      label
+      options
+    }
   }
 `;
