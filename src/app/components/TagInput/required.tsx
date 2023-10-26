@@ -122,9 +122,13 @@ const RTISequenceInner = (
 };
 const RTISequence = getSequence((p: IExtProps) => p.qishID)(RTISequenceInner);
 
-export const RequiredTagInput = (p: IExtProps): JSX.Element =>
-  p.qishType === QuestionnairishType.QUESTIONNAIRE ? (
+export const RequiredTagInput = (p: IExtProps): JSX.Element => {
+  if (!p.qishID) {
+    return <div />;
+  }
+  return p.qishType === QuestionnairishType.QUESTIONNAIRE ? (
     <RTIQuestionnaire {...p} />
   ) : (
     <RTISequence {...p} />
   );
+};
