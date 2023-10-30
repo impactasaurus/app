@@ -18,6 +18,8 @@ import {
 import { WithTranslation, withTranslation } from "react-i18next";
 import { QuestionnaireGeneral } from "components/QuestionnaireGeneral";
 import { IWithNotes } from "models/question";
+import { IRequiredTag } from "models/outcomeSet";
+import { RequiredTagSpecification } from "./required-tag";
 
 interface IProps extends IOutcomeMutation, Partial<WithTranslation> {
   data?: IOutcomeResult;
@@ -32,6 +34,7 @@ interface IFormOutput extends IWithNotes {
   name: string;
   description?: string;
   instructions?: string;
+  requiredTags?: IRequiredTag[];
 }
 
 const LabelAndHint = (p: {
@@ -122,6 +125,26 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
         />
       </FormField>
       <FormField
+        error={errors.requiredTags as string}
+        touched={true}
+        inputID="qg-reqtags"
+        label={
+          <LabelAndHint
+            label={t("Required Tags")}
+            hint={t(
+              "Require the facilitator to provide certain tags. For instance, you may require the programme or location to be specified on all records"
+            )}
+          />
+        }
+      >
+        <RequiredTagSpecification
+          id="qg-reqtags"
+          name="requiredTags"
+          value={values.requiredTags}
+          onChange={(t: IRequiredTag[]) => setFieldValue("requiredTags", t)}
+        />
+      </FormField>
+      <FormField
         error={undefined}
         touched={false}
         inputID="qg-comments"
@@ -198,10 +221,16 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
 };
 
 const Editable = withFormik<IProps, IFormOutput>({
-  validate: (values: IFormOutput) => {
+  validate: (values: IFormOutput, p: IProps) => {
     const errors: FormikErrors<IFormOutput> = {};
     if (!values.name || values.name === "") {
-      errors.name = "Please give the questionnaire a name";
+      errors.name = p.t("Please give the questionnaire a name");
+    }
+    if (!values.requiredTags.every((rt) => rt.label.length > 0)) {
+      errors.requiredTags = p.t("Classifications need a label");
+    }
+    if (!values.requiredTags.every((rt) => rt.options.length > 0)) {
+      errors.requiredTags = p.t("Classifications need tags defined");
     }
     return errors;
   },
@@ -221,7 +250,8 @@ const Editable = withFormik<IProps, IFormOutput>({
           noteDeactivated: v.noteDeactivated,
           notePrompt: v.notePrompt,
           noteRequired: v.noteRequired,
-        }
+        },
+        v.requiredTags
       )
       .then(() => {
         formikBag.setSubmitting(false);
@@ -246,6 +276,7 @@ const Editable = withFormik<IProps, IFormOutput>({
       noteDeactivated: os.noteDeactivated,
       notePrompt: os.notePrompt || "",
       noteRequired: os.noteRequired,
+      requiredTags: os.requiredTags || [],
     };
   },
   validateOnMount: true,

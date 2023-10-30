@@ -1,7 +1,15 @@
 import { gql, graphql, QueryProps } from "react-apollo";
-import { IOutcomeSet, fragment } from "models/outcomeSet";
+import { IOutcomeSet, IRequiredTag, fragment } from "models/outcomeSet";
 import { IDExtractor, mutationResultExtractor } from "helpers/apollo";
 import { IWithNotes } from "models/question";
+
+// cleanRequiredTagArray defends against __typename attributes
+export const cleanRequiredTagArray = (rts: IRequiredTag[]): IRequiredTag[] => {
+  return rts.map<IRequiredTag>((rt) => ({
+    label: rt.label,
+    options: rt.options,
+  }));
+};
 
 export const getOutcomeSet = <T>(idExtractor: IDExtractor<T>) => {
   return graphql<any, T>(
@@ -82,6 +90,7 @@ export function editQuestionSet<T>(component) {
         $noteRequired: Boolean
         $notePrompt: String
         $noteDeactivated: Boolean
+        $requiredTags: [RequiredTagInput]
       ) {
         editQuestionSet: EditOutcomeSet(
           outcomeSetID: $id
@@ -91,6 +100,7 @@ export function editQuestionSet<T>(component) {
           noteRequired: $noteRequired
           notePrompt: $notePrompt
           noteDeactivated: $noteDeactivated
+          requiredTags: $requiredTags
         ) {
           ...defaultOutcomeSet
         }
@@ -104,7 +114,8 @@ export function editQuestionSet<T>(component) {
           name: string,
           description: string,
           instructions: string,
-          noteOptions?: IWithNotes
+          noteOptions?: IWithNotes,
+          requiredTags?: IRequiredTag[]
         ): Promise<IOutcomeSet> =>
           mutate({
             variables: {
@@ -113,6 +124,7 @@ export function editQuestionSet<T>(component) {
               description,
               instructions,
               ...noteOptions,
+              requiredTags: cleanRequiredTagArray(requiredTags),
             },
           }).then(mutationResultExtractor<IOutcomeSet>("editQuestionSet")),
       }),
@@ -156,6 +168,7 @@ export interface IOutcomeMutation {
     name: string,
     description: string,
     instructions: string,
-    noteOptions?: IWithNotes
+    noteOptions?: IWithNotes,
+    requiredTags?: IRequiredTag[]
   ): Promise<IOutcomeSet>;
 }
