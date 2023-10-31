@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { IRequiredTag } from "models/outcomeSet";
-import { Button, Input, InputOnChangeData } from "semantic-ui-react";
+import { Button, Icon, Input, InputOnChangeData } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
 import { TagInput } from "components/TagInput/base";
 import { TooltipButton } from "components/TooltipButton";
+import cx from "classnames";
+import { Hint } from "components/Hint";
 
 interface IProps {
   id?: string;
@@ -12,9 +14,36 @@ interface IProps {
   onChange: (t: IRequiredTag[]) => void;
 }
 
+export const ValidateRequiredTags = (
+  rts: IRequiredTag[],
+  t: (s: string) => string,
+  labelErrors = true,
+  optionErrors = true
+): string[] | undefined[] => {
+  return rts.map((rt) => {
+    if (labelErrors && rt.label.length === 0) {
+      return t("Label must be provided");
+    }
+    if (labelErrors && rts.filter((v) => v.label == rt.label).length !== 1) {
+      return t("This label has already been used");
+    }
+    if (
+      optionErrors &&
+      (!Array.isArray(rt.options) || rt.options.length === 0)
+    ) {
+      return t("Options must be provided");
+    }
+    return undefined;
+  });
+};
+
 export const RequiredTagSpecification = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
   const [rts, setRTs] = useState<IRequiredTag[]>(p.value);
+
+  useEffect(() => {
+    setRTs(p.value);
+  }, [p.value]);
 
   useEffect(() => {
     p.onChange(rts);
@@ -58,13 +87,14 @@ export const RequiredTagSpecification = (p: IProps): JSX.Element => {
   };
 
   const renderRT = (rt: IRequiredTag, i: number): JSX.Element => {
+    const labelError = ValidateRequiredTags(rts, t, true, false)[i];
+    const tagError = ValidateRequiredTags(rts, t, false, true)[i];
     return (
       <div
         style={{
           border: "1px solid var(--outline )",
           borderRadius: "5px",
           marginBottom: "1em",
-          textAlign: "left",
           display: "flex",
           justifyContent: "space-between",
         }}
@@ -75,8 +105,14 @@ export const RequiredTagSpecification = (p: IProps): JSX.Element => {
             flexGrow: 1,
           }}
         >
-          <div style={{ marginBottom: "0.5em" }}>
-            <span>{`${t("Label")}:`}</span>
+          <div
+            style={{ marginBottom: "0.5em", textAlign: "left" }}
+            className={cx({ "field error": labelError })}
+          >
+            <span>
+              <Hint text={t("Used as a field in the new record form")} />
+              {`${t("Label")}:`}
+            </span>
             <Input
               key={`qg-rt-${i}`}
               id={`qg-rt-${btoa(rt.label)}`}
@@ -85,9 +121,21 @@ export const RequiredTagSpecification = (p: IProps): JSX.Element => {
               value={rt.label}
               onChange={labelOnChange(i)}
             />
+            {labelError && (
+              <span className="error validation">
+                <Icon name="exclamation" />
+                {labelError}
+              </span>
+            )}
           </div>
-          <div>
-            <span>{`${t("Available tags")}:`}</span>
+          <div
+            style={{ textAlign: "left" }}
+            className={cx({ "field error": tagError })}
+          >
+            <span style={{ textAlign: "left" }}>
+              <Hint text={t("Which tags can the facilitator select from")} />
+              {`${t("Available tags")}:`}
+            </span>
             <TagInput
               id={`qg-rt-tags-${btoa(rt.label)}`}
               allowNewTags={true}
@@ -95,6 +143,12 @@ export const RequiredTagSpecification = (p: IProps): JSX.Element => {
               key={`qg-rt-tags-${i}`}
               onChange={tagsOnChange(i)}
             />
+            {tagError && (
+              <span className="error validation">
+                <Icon name="exclamation" />
+                {tagError}
+              </span>
+            )}
           </div>
         </div>
 
@@ -105,6 +159,7 @@ export const RequiredTagSpecification = (p: IProps): JSX.Element => {
               basic: true,
               compact: true,
               onClick: remove(i),
+              type: "button",
             }}
             tooltipContent={t("Delete")}
           />
@@ -123,6 +178,7 @@ export const RequiredTagSpecification = (p: IProps): JSX.Element => {
         size="tiny"
         icon="plus"
         content={t("Add")}
+        type="button"
       />
     </div>
   );

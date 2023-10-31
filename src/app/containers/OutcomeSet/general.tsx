@@ -19,7 +19,7 @@ import { WithTranslation, withTranslation } from "react-i18next";
 import { QuestionnaireGeneral } from "components/QuestionnaireGeneral";
 import { IWithNotes } from "models/question";
 import { IRequiredTag } from "models/outcomeSet";
-import { RequiredTagSpecification } from "./required-tag";
+import { RequiredTagSpecification, ValidateRequiredTags } from "./required-tag";
 
 interface IProps extends IOutcomeMutation, Partial<WithTranslation> {
   data?: IOutcomeResult;
@@ -125,14 +125,14 @@ const InnerForm = (props: IProps & FormikProps<IFormOutput>) => {
         />
       </FormField>
       <FormField
-        error={errors.requiredTags as string}
+        error={undefined}
         touched={true}
         inputID="qg-reqtags"
         label={
           <LabelAndHint
             label={t("Required Tags")}
             hint={t(
-              "Require the facilitator to provide certain tags. For instance, you may require the programme or location to be specified on all records"
+              "Require the facilitator to provide certain tags when creating a record. For instance, you may require the programme or location to be specified on all records"
             )}
           />
         }
@@ -226,11 +226,9 @@ const Editable = withFormik<IProps, IFormOutput>({
     if (!values.name || values.name === "") {
       errors.name = p.t("Please give the questionnaire a name");
     }
-    if (!values.requiredTags.every((rt) => rt.label.length > 0)) {
-      errors.requiredTags = p.t("Classifications need a label");
-    }
-    if (!values.requiredTags.every((rt) => rt.options.length > 0)) {
-      errors.requiredTags = p.t("Classifications need tags defined");
+    const rtErrors = ValidateRequiredTags(values.requiredTags, p.t);
+    if (!rtErrors.every((e) => e === undefined)) {
+      errors.requiredTags = rtErrors.find((e) => e !== undefined);
     }
     return errors;
   },
