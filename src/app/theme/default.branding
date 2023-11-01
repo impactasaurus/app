@@ -1,7 +1,7 @@
-:root{
-    --brand-color: #935D8C;
-    --brand-color-dark: #7B3C73;
-    --brand-color-light: #AD85A9;
-    --brand-color-darker: #65245D;
-    --brand-color-lighter: #D0B8CD;
+:root {
+  --brand-color: #935d8c;
+  --brand-color-dark: #7b3c73;
+  --brand-color-light: #ad85a9;
+  --brand-color-darker: #65245d;
+  --brand-color-lighter: #d0b8cd;
 }
