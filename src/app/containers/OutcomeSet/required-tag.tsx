@@ -6,6 +6,7 @@ import { TagInput } from "components/TagInput/base";
 import { TooltipButton } from "components/TooltipButton";
 import cx from "classnames";
 import { Hint } from "components/Hint";
+import structuredClone from "core-js-pure/actual/structured-clone";
 
 interface IProps {
   id?: string;

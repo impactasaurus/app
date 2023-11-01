@@ -4,7 +4,12 @@ import { IDExtractor, mutationResultExtractor } from "helpers/apollo";
 import { IWithNotes } from "models/question";
 
 // cleanRequiredTagArray defends against __typename attributes
-export const cleanRequiredTagArray = (rts: IRequiredTag[]): IRequiredTag[] => {
+export const cleanRequiredTagArray = (
+  rts: IRequiredTag[]
+): IRequiredTag[] | undefined => {
+  if (!Array.isArray(rts)) {
+    return undefined;
+  }
   return rts.map<IRequiredTag>((rt) => ({
     label: rt.label,
     options: rt.options,
