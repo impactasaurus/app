@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { SummonForm } from "./form";
 import { useNavigator } from "redux/modules/url";
 import { ISummonAcceptanceMutation } from "apollo/modules/summon";
@@ -6,6 +6,8 @@ import { newMeetingFromSummon } from "../../apollo/modules/summon";
 import { PageWrapperHoC } from "../../components/PageWrapperHoC";
 import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
+import { Loader } from "semantic-ui-react";
+import { CustomError } from "components/Error";
 
 interface IProps extends ISummonAcceptanceMutation {
   match: {
@@ -18,6 +20,38 @@ interface IProps extends ISummonAcceptanceMutation {
 const SummonAcceptanceInner = (p: IProps) => {
   const { t } = useTranslation();
   const setURL = useNavigator();
+  const [idNeeded, setIDNeeded] = useState(false);
+  const [error, setError] = useState<Error>(undefined);
+
+  useEffect(() => {
+    // For single beneficiary summons, the first component of the ID
+    // is a base 64 encoded beneficiary ID. The remaining components
+    // are the Summon ID
+    const guidParts = p.match.params.id.split("-");
+    const idIncludesBen = guidParts.length === 6;
+    if (!idIncludesBen) {
+      setIDNeeded(true);
+    } else {
+      let decoded = true;
+      let benID = undefined;
+      try {
+        benID = atob(guidParts[0]);
+      } catch (error) {
+        decoded = false;
+      }
+      if (decoded) {
+        createRecord(benID, guidParts.slice(1).join("-")).catch((e) => {
+          setError(e);
+        });
+      } else {
+        setError(
+          new Error(
+            t("We did not recognise this link. Please request a new link")
+          )
+        );
+      }
+    }
+  }, []);
 
   const logResult = (label: string) => {
     ReactGA.event({
@@ -27,9 +61,12 @@ const SummonAcceptanceInner = (p: IProps) => {
     });
   };
 
-  const createRecord = (beneficiaryID: string): Promise<void> => {
+  const createRecord = (
+    beneficiaryID: string,
+    summonID?: string
+  ): Promise<void> => {
     return p
-      .newMeetingFromSummon(p.match.params.id, beneficiaryID)
+      .newMeetingFromSummon(summonID ?? p.match.params.id, beneficiaryID)
       .then((jti) => {
         logResult("success");
         setURL(`/jti/${jti}`);
@@ -44,7 +81,10 @@ const SummonAcceptanceInner = (p: IProps) => {
           throw new Error(
             t("This link has been exhausted. Please request a new link")
           );
-        } else if (e.message.includes("found")) {
+        } else if (
+          e.message.includes("found") ||
+          e.message.includes("no documents")
+        ) {
           throw new Error(
             t("We did not recognise this link. Please request a new link")
           );
@@ -57,7 +97,14 @@ const SummonAcceptanceInner = (p: IProps) => {
         }
       });
   };
-  return <SummonForm onBeneficiarySelect={createRecord} />;
+
+  if (idNeeded) {
+    return <SummonForm onBeneficiarySelect={createRecord} />;
+  } else if (error) {
+    return <CustomError inner={<span>{error.message}</span>} />;
+  } else {
+    return <Loader active={true} inline="centered" />;
+  }
 };
 
 const SummonAcceptanceData = newMeetingFromSummon<IProps>(
