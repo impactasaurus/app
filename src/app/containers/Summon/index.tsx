@@ -8,6 +8,7 @@ import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import { Loader } from "semantic-ui-react";
 import { CustomError } from "components/Error";
+import { Decode } from "helpers/summon";
 
 interface IProps extends ISummonAcceptanceMutation {
   match: {
@@ -24,32 +25,21 @@ const SummonAcceptanceInner = (p: IProps) => {
   const [error, setError] = useState<Error>(undefined);
 
   useEffect(() => {
-    // For single beneficiary summons, the first component of the ID
-    // is a base 64 encoded beneficiary ID. The remaining components
-    // are the Summon ID
-    const guidParts = p.match.params.id.split("-");
-    const idIncludesBen = guidParts.length === 6;
-    if (!idIncludesBen) {
-      setIDNeeded(true);
-    } else {
-      let decoded = true;
-      let benID = undefined;
-      try {
-        benID = atob(guidParts[0]);
-      } catch (error) {
-        decoded = false;
-      }
-      if (decoded) {
-        createRecord(benID, guidParts.slice(1).join("-")).catch((e) => {
+    try {
+      const { id, ben } = Decode(p.match.params.id);
+      if (ben) {
+        createRecord(ben, id).catch((e) => {
           setError(e);
         });
       } else {
-        setError(
-          new Error(
-            t("We did not recognise this link. Please request a new link")
-          )
-        );
+        setIDNeeded(true);
       }
+    } catch (e) {
+      setError(
+        new Error(
+          t("We did not recognise this link. Please request a new link")
+        )
+      );
     }
   }, []);
 
