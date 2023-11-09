@@ -251,7 +251,7 @@ const AssessmentConfigInner = withFormik<IProps, IAssessmentConfigAndDebounce>({
         errors.date = t("Please select a date in the past");
       }
     }
-    if (values.requiredTags.filter((v) => v === undefined).length > 0) {
+    if ((values.requiredTags || []).filter((v) => v === undefined).length > 0) {
       errors.requiredTags = t("Required tags not provided");
     }
     return errors;
