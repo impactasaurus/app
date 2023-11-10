@@ -11,6 +11,8 @@ export const QuestionnaireLink = (p: {
 }): JSX.Element => {
   const { t } = useTranslation();
   const url = `${config.app.root}/${p.link}`;
+  const newStyleSingleLink =
+    p.typ == AssessmentType.remote && p.link.includes("smn/");
   return (
     <Message success={true}>
       <Message.Header>{t("Success")}</Message.Header>
@@ -26,6 +28,16 @@ export const QuestionnaireLink = (p: {
       <div style={{ marginTop: "1em" }}>
         <CopyBox text={url} />
       </div>
+      {newStyleSingleLink && (
+        <div style={{ marginTop: "1em" }}>
+          <b>{t("Single beneficiary links have recently changed")}: </b>
+          <span>
+            {t(
+              "Each time the link is used, a new record will be created. So there is no need to create multiple links for the same beneficiary now. Enjoy!"
+            )}
+          </span>
+        </div>
+      )}
     </Message>
   );
 };
