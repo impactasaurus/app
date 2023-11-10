@@ -31,6 +31,8 @@ import {
 import { QuestionnairishType } from "components/QuestionnairesAndSequencesHoC";
 import { externalLinkURI, forwardURLParam, isUrlAbsolute } from "helpers/url";
 import { ISummonConfig } from "./summonConfig";
+import { IGetOrgResult, getOrganisation } from "apollo/modules/organisation";
+import { Encode } from "helpers/summon";
 
 interface IProps
   extends IMeetingMutation,
@@ -43,6 +45,7 @@ interface IProps
       type: string;
     };
   };
+  org?: IGetOrgResult;
 }
 
 const Wrapper = (p: {
@@ -80,8 +83,8 @@ const AssessmentConfigInner = (p: IProps) => {
   );
   const [link, setLink] = useState<string>();
 
-  const startSummon = (c: ISummonConfig): Promise<void> => {
-    if (typ !== AssessmentType.summon) {
+  const startSummon = (c: ISummonConfig, ben?: string): Promise<void> => {
+    if (typ !== AssessmentType.summon && typ !== AssessmentType.remote) {
       return Promise.reject("unexpected error");
     }
     const promFn =
@@ -89,18 +92,33 @@ const AssessmentConfigInner = (p: IProps) => {
         ? p.generateSummon
         : p.generateSequenceSummon;
     return promFn(c.qishID, c.tags).then((smn) => {
-      setLink(`smn/${smn}`);
+      setLink(`smn/${Encode(smn, ben)}`);
     });
   };
 
   const startRemote = (c: IAssessmentConfig): Promise<void> => {
-    const promFn =
-      c.qishType === QuestionnairishType.QUESTIONNAIRE
-        ? p.newRemoteMeeting
-        : p.startRemoteSequence;
-    return promFn(c, defaultRemoteMeetingLimit).then((jti) => {
-      setLink(`jti/${jti}`);
-    });
+    // by default, for single beneficiary links, we use specalised summons
+    // so that the link can be reused multiple times
+    const orgPlugins = (p.org?.getOrganisation?.plugins || []).map((p) => p.id);
+    const noSingleBenSummons =
+      orgPlugins.indexOf("no-single-ben-summon") !== -1;
+    if (noSingleBenSummons) {
+      const promFn =
+        c.qishType === QuestionnairishType.QUESTIONNAIRE
+          ? p.newRemoteMeeting
+          : p.startRemoteSequence;
+      return promFn(c, defaultRemoteMeetingLimit).then((jti) => {
+        setLink(`jti/${jti}`);
+      });
+    }
+    return startSummon(
+      {
+        qishID: c.qishID,
+        qishType: c.qishType,
+        tags: c.tags,
+      },
+      c.beneficiaryID
+    );
   };
 
   const startMeeting = (c: IAssessmentConfig): Promise<void> => {
@@ -164,7 +182,9 @@ export const AssessmentConfig = newRemoteMeeting<IProps>(
   newMeeting(
     generateSummon(
       startSequence(
-        startRemoteSequence(generateSequenceSummon(AssessmentConfigInner))
+        startRemoteSequence(
+          generateSequenceSummon(getOrganisation(AssessmentConfigInner, "org"))
+        )
       )
     )
   )
