@@ -26,7 +26,7 @@ const answerDifferences = (
     if (answer === undefined) {
       return deltas;
     }
-    return deltas.concat(answer.stats.delta);
+    return deltas.concat(answer.latest.value - answer.initial.value);
   }, []);
 };
 
