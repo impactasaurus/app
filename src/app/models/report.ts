@@ -12,10 +12,6 @@ export const reportFragment = gql`
         latest {
           value
         }
-        noRecords
-        stats {
-          delta
-        }
       }
       categories {
         id
@@ -25,27 +21,17 @@ export const reportFragment = gql`
         latest {
           value
         }
-        noRecords
-        stats {
-          delta
-        }
       }
     }
     questions {
       id
       initial
       latest
-      stats {
-        delta
-      }
     }
     categories {
       id
       initial
       latest
-      stats {
-        delta
-      }
     }
     excluded {
       beneficiary
@@ -67,10 +53,6 @@ export interface IExclusion {
   reason: string;
 }
 
-export interface IReportStats {
-  delta: number;
-}
-
 export interface IValue {
   value: number;
 }
@@ -78,8 +60,6 @@ export interface IValue {
 export interface IAnswerSummary extends IID {
   initial: IValue;
   latest: IValue;
-  noRecords: number;
-  stats: IReportStats;
 }
 
 export interface IBenReport extends IID {
@@ -90,7 +70,6 @@ export interface IBenReport extends IID {
 export interface IAnswerAggregation extends IID {
   initial: number;
   latest: number;
-  stats: IReportStats;
 }
 
 export interface IReport {
