@@ -9,6 +9,7 @@ import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import "rc-slider/assets/index.css";
 import "./style.less";
+import { FeelingsSelector } from "components/FeelingsSelector";
 
 interface IProps extends ISetMeetingNotes {
   record: IMeeting;
@@ -17,25 +18,56 @@ interface IProps extends ISetMeetingNotes {
   isNext?: boolean; // defaults to false
 }
 
+const parseNotes = (notes: string) => {
+  const existingNotes = notes || "";
+  if (existingNotes.indexOf("Feelings:") !== -1) {
+    const [textNotes, wordSection] = existingNotes.split("Feelings:");
+    return {
+      notes: textNotes.trim(),
+      words: wordSection
+        .trim()
+        .split(", ")
+        .filter((w) => w),
+    };
+  }
+  return {
+    notes: existingNotes,
+    words: [],
+  };
+};
+
 const MeetingNotepadInner = (p: IProps) => {
   const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [savingError, setSavingError] = useState<boolean>(false);
-  const [notes, setNotes] = useState((p.record || {}).notes);
+  const [selectedFeelings, setSelectedFeelings] = useState<string[]>(
+    () => parseNotes(p.record?.notes).words
+  );
+  const [notes, setNotes] = useState<string>(
+    () => parseNotes(p.record?.notes).notes
+  );
+
   useEffect(() => {
-    setNotes((p.record || {}).notes);
+    const { notes: newNotes, words: newWords } = parseNotes(p.record?.notes);
+    setNotes(newNotes);
+    setSelectedFeelings(newWords);
   }, [p.record]);
 
   const saveNotes = () => {
-    const notesNotChanged = p.record.notes === notes;
+    const combinedNotes = `${notes || ""}\n\nFeelings: ${selectedFeelings.join(
+      ", "
+    )}`;
+    const notesNotChanged = p.record.notes === combinedNotes;
     const bothEmpty =
-      isNullOrUndefined(p.record.notes) && isNullOrUndefined(notes);
+      isNullOrUndefined(p.record.notes) && isNullOrUndefined(combinedNotes);
+
     if (notesNotChanged || bothEmpty) {
       return p.onComplete();
     }
+
     setSaving(true);
     setSavingError(false);
-    p.setMeetingNotes(p.record.id, notes)
+    p.setMeetingNotes(p.record.id, combinedNotes)
       .then(() => {
         ReactGA.event({
           category: "assessment",
@@ -63,6 +95,12 @@ const MeetingNotepadInner = (p: IProps) => {
   return (
     <div className="meeting-notepad">
       <h1>{t("Additional Comments")}</h1>
+
+      <FeelingsSelector
+        selectedWords={selectedFeelings}
+        onChange={setSelectedFeelings}
+      />
+
       <Notepad
         onChange={setNotes}
         notes={notes}

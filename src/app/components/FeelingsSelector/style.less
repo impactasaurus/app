@@ -1,0 +1,28 @@
+.feelings-selector {
+  margin-bottom: 2em;
+
+  .feelings-prompt {
+    text-align: left;
+    padding-top: 1em;
+    padding-bottom: 0.5em;
+  }
+
+  .feelings-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+
+    .ui.label {
+      margin: 0.3em;
+
+      &.selected {
+        background-color: var(--brand-color);
+        color: white;
+        &:hover {
+          background-color: var(--brand-color);
+          color: white;
+        }
+      }
+    }
+  }
+}
