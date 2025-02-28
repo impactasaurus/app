@@ -1,6 +1,8 @@
 import React from "react";
 import { Label } from "semantic-ui-react";
 import "./style.less";
+import { IOutcomeSet } from "models/outcomeSet";
+import { useTranslation } from "react-i18next";
 
 const FEELING_OPTIONS = [
   "Accepting",
@@ -70,9 +72,16 @@ const FEELING_OPTIONS = [
 interface IProps {
   selectedWords: string[];
   onChange: (words: string[]) => void;
+  outcomeSet: IOutcomeSet;
 }
 
 export const FeelingsSelector = (p: IProps): JSX.Element => {
+  const { t } = useTranslation();
+
+  if (!p.outcomeSet.plugins.some((p) => p.id === "feelings-selector")) {
+    return null;
+  }
+
   const toggleWord = (word: string) => {
     p.onChange(
       p.selectedWords.indexOf(word) !== -1

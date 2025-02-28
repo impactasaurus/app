@@ -1,9 +1,7 @@
+import { IPlugin } from "./plugin";
+
 export interface IOrgSettings {
   beneficiaryTypeAhead: boolean;
-}
-
-export interface IPlugin {
-  id: string;
 }
 
 export interface IOrganisation {

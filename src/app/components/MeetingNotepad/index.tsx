@@ -99,6 +99,7 @@ const MeetingNotepadInner = (p: IProps) => {
       <FeelingsSelector
         selectedWords={selectedFeelings}
         onChange={setSelectedFeelings}
+        outcomeSet={p.record.outcomeSet}
       />
 
       <Notepad
