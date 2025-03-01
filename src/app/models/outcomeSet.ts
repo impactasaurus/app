@@ -1,6 +1,7 @@
 import { IQuestion, fragment as qFragment, IWithNotes } from "./question";
 import { ICategory, fragment as cFragment } from "./category";
 import { gql } from "react-apollo";
+import { IPlugin } from "./plugin";
 
 export interface IOutcomeSet extends IWithNotes {
   id: string;
@@ -12,6 +13,7 @@ export interface IOutcomeSet extends IWithNotes {
   categories: ICategory[];
   readOnly: boolean;
   requiredTags: IRequiredTag[];
+  plugins: IPlugin[];
 }
 
 export interface IRequiredTag {
@@ -38,6 +40,9 @@ export const fragment = gql`
     requiredTags {
       label
       options
+    }
+    plugins {
+      id
     }
   }
   ${qFragment}
