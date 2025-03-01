@@ -18,21 +18,20 @@ interface IProps extends ISetMeetingNotes {
   isNext?: boolean; // defaults to false
 }
 
+const FEELINGS_INTRO = "Feelings:";
+
 const parseNotes = (notes: string) => {
   const existingNotes = notes || "";
-  if (existingNotes.indexOf("Feelings:") !== -1) {
-    const [textNotes, wordSection] = existingNotes.split("Feelings:");
+  if (existingNotes.indexOf(FEELINGS_INTRO) !== -1) {
+    const [notes, feelings] = existingNotes.split(FEELINGS_INTRO);
     return {
-      notes: textNotes.trim(),
-      words: wordSection
-        .trim()
-        .split(", ")
-        .filter((w) => w),
+      notes: notes.trim(),
+      feelings: feelings.split(", ").map((w) => w.trim()),
     };
   }
   return {
     notes: existingNotes,
-    words: [],
+    feelings: [],
   };
 };
 
@@ -41,25 +40,28 @@ const MeetingNotepadInner = (p: IProps) => {
   const [saving, setSaving] = useState(false);
   const [savingError, setSavingError] = useState<boolean>(false);
   const [selectedFeelings, setSelectedFeelings] = useState<string[]>(
-    () => parseNotes(p.record?.notes).words
+    () => parseNotes(p.record?.notes).feelings
   );
   const [notes, setNotes] = useState<string>(
     () => parseNotes(p.record?.notes).notes
   );
 
   useEffect(() => {
-    const { notes: newNotes, words: newWords } = parseNotes(p.record?.notes);
+    const { notes: newNotes, feelings: newFeelings } = parseNotes(
+      p.record?.notes
+    );
     setNotes(newNotes);
-    setSelectedFeelings(newWords);
+    setSelectedFeelings(newFeelings);
   }, [p.record]);
 
   const saveNotes = () => {
-    const combinedNotes = `${notes || ""}\n\nFeelings: ${selectedFeelings.join(
-      ", "
-    )}`;
-    const notesNotChanged = p.record.notes === combinedNotes;
+    let toSave = notes || "";
+    if (selectedFeelings.length > 0) {
+      toSave = `${toSave}\n\n${FEELINGS_INTRO} ${selectedFeelings.join(", ")}`;
+    }
+    const notesNotChanged = p.record.notes === toSave;
     const bothEmpty =
-      isNullOrUndefined(p.record.notes) && isNullOrUndefined(combinedNotes);
+      isNullOrUndefined(p.record.notes) && isNullOrUndefined(toSave);
 
     if (notesNotChanged || bothEmpty) {
       return p.onComplete();
@@ -67,7 +69,7 @@ const MeetingNotepadInner = (p: IProps) => {
 
     setSaving(true);
     setSavingError(false);
-    p.setMeetingNotes(p.record.id, combinedNotes)
+    p.setMeetingNotes(p.record.id, toSave)
       .then(() => {
         ReactGA.event({
           category: "assessment",
@@ -97,7 +99,7 @@ const MeetingNotepadInner = (p: IProps) => {
       <h1>{t("Additional Comments")}</h1>
 
       <FeelingsSelector
-        selectedWords={selectedFeelings}
+        selectedFeelings={selectedFeelings}
         onChange={setSelectedFeelings}
         outcomeSet={p.record.outcomeSet}
       />

@@ -4,6 +4,8 @@ import "./style.less";
 import { IOutcomeSet } from "models/outcomeSet";
 import { useTranslation } from "react-i18next";
 
+const FEELINGS_PLUGIN_ID = "feelings-selector";
+
 const FEELING_OPTIONS = [
   "Accepting",
   "Anxious",
@@ -70,23 +72,26 @@ const FEELING_OPTIONS = [
 ];
 
 interface IProps {
-  selectedWords: string[];
-  onChange: (words: string[]) => void;
+  selectedFeelings: string[];
+  onChange: (feelings: string[]) => void;
   outcomeSet: IOutcomeSet;
 }
 
 export const FeelingsSelector = (p: IProps): JSX.Element => {
   const { t } = useTranslation();
 
-  if (!p.outcomeSet.plugins.some((p) => p.id === "feelings-selector")) {
+  const pluginActive = p.outcomeSet.plugins.some(
+    (p) => p.id === FEELINGS_PLUGIN_ID
+  );
+  if (!pluginActive) {
     return null;
   }
 
-  const toggleWord = (word: string) => {
+  const toggleFeeling = (feeling: string) => {
     p.onChange(
-      p.selectedWords.indexOf(word) !== -1
-        ? p.selectedWords.filter((w) => w !== word)
-        : [...p.selectedWords, word]
+      p.selectedFeelings.indexOf(feeling) !== -1
+        ? p.selectedFeelings.filter((w) => w !== feeling)
+        : [...p.selectedFeelings, feeling]
     );
   };
 
@@ -94,16 +99,18 @@ export const FeelingsSelector = (p: IProps): JSX.Element => {
     <div className="feelings-selector">
       <div className="feelings-prompt">{t("What are you feeling?")}:</div>
       <div className="feelings-container">
-        {FEELING_OPTIONS.map((word) => (
+        {FEELING_OPTIONS.map((feeling) => (
           <Label
-            key={word}
+            key={feeling}
             as="a"
-            onClick={() => toggleWord(word)}
+            onClick={() => toggleFeeling(feeling)}
             className={
-              p.selectedWords.indexOf(word) !== -1 ? "selected" : undefined
+              p.selectedFeelings.indexOf(feeling) !== -1
+                ? "selected"
+                : undefined
             }
           >
-            {word}
+            {feeling}
           </Label>
         ))}
       </div>
