@@ -10,6 +10,10 @@ import { useTranslation } from "react-i18next";
 import "rc-slider/assets/index.css";
 import "./style.less";
 import { FeelingsSelector } from "components/FeelingsSelector";
+import {
+  parseFeelings,
+  printFeelings,
+} from "components/FeelingsSelector/string";
 
 interface IProps extends ISetMeetingNotes {
   record: IMeeting;
@@ -20,19 +24,30 @@ interface IProps extends ISetMeetingNotes {
 
 const FEELINGS_INTRO = "Feelings:";
 
-const parseNotes = (notes: string) => {
+const parseNotes = (notes?: string): { notes: string; feelings: string[] } => {
   const existingNotes = notes || "";
+
   if (existingNotes.indexOf(FEELINGS_INTRO) !== -1) {
-    const [notes, feelings] = existingNotes.split(FEELINGS_INTRO);
+    const [notesText, feelingsSection] = existingNotes.split(FEELINGS_INTRO);
     return {
-      notes: notes.trim(),
-      feelings: feelings.split(", ").map((w) => w.trim()),
+      notes: notesText.trim(),
+      feelings: parseFeelings(feelingsSection),
     };
   }
+
   return {
     notes: existingNotes,
     feelings: [],
   };
+};
+
+const printNotes = (notes: string, feelings: string[]): string => {
+  let toSave = notes || "";
+  if (feelings.length > 0) {
+    toSave += `\n\n${FEELINGS_INTRO}\n`;
+    toSave += printFeelings(feelings);
+  }
+  return toSave;
 };
 
 const MeetingNotepadInner = (p: IProps) => {
@@ -55,13 +70,11 @@ const MeetingNotepadInner = (p: IProps) => {
   }, [p.record]);
 
   const saveNotes = () => {
-    let toSave = notes || "";
-    if (selectedFeelings.length > 0) {
-      toSave = `${toSave}\n\n${FEELINGS_INTRO} ${selectedFeelings.join(", ")}`;
-    }
+    const toSave = printNotes(notes, selectedFeelings);
     const notesNotChanged = p.record.notes === toSave;
     const bothEmpty =
-      isNullOrUndefined(p.record.notes) && isNullOrUndefined(toSave);
+      (isNullOrUndefined(p.record.notes) || p.record.notes === "") &&
+      toSave === "";
 
     if (notesNotChanged || bothEmpty) {
       return p.onComplete();
